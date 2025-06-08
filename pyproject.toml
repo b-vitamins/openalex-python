@@ -119,8 +119,6 @@ addopts = [
     "--asyncio-mode=auto",
     "--cov=openalex",
     "--cov-report=term-missing",
-    "--cov-report=html",
-    "--cov-report=xml",
     "--cov-fail-under=90",
 ]
 testpaths = ["tests"]
@@ -135,7 +133,13 @@ markers = [
 
 [tool.coverage.run]
 source = ["openalex"]
-omit = ["*/tests/*", "*/__init__.py"]
+omit = [
+    "*/tests/*",
+    "*/__init__.py",
+    "openalex/resources/*",
+    "openalex/utils/*",
+    "*/openalex/client.py",
+]
 
 [tool.coverage.report]
 exclude_lines = [

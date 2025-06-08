@@ -4,13 +4,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+import pytest
+
 from openalex.models import Author, Institution, Work
 from openalex.utils import Paginator
 
 if TYPE_CHECKING:
     from pytest_httpx import HTTPXMock
 
-    from openalex import OpenAlex
+    from openalex import AsyncOpenAlex, OpenAlex
 
 
 class TestWorksResource:
@@ -443,3 +445,35 @@ class TestPaginationIntegration:
         works = list(paginator)
 
         assert len(works) <= 10
+
+    def test_open_access_shortcut(
+        self,
+        client: OpenAlex,
+        httpx_mock: HTTPXMock,
+        mock_list_response: dict[str, Any],
+    ) -> None:
+        """Ensure open_access filter clones resource."""
+        httpx_mock.add_response(
+            url="https://api.openalex.org/works?filter=is_oa%3Atrue&mailto=test%40example.com",
+            json=mock_list_response,
+        )
+
+        result = client.works.open_access().list()
+        assert result.meta.count == 100
+
+    @pytest.mark.asyncio
+    async def test_async_open_access_shortcut(
+        self,
+        async_client: AsyncOpenAlex,
+        httpx_mock: HTTPXMock,
+        mock_list_response: dict[str, Any],
+    ) -> None:
+        """Async open_access filter."""
+        httpx_mock.add_response(
+            url="https://api.openalex.org/works?filter=is_oa%3Atrue&mailto=test%40example.com",
+            json=mock_list_response,
+        )
+
+        resource = await async_client.works.open_access()
+        result = await resource.list()
+        assert result.meta.count == 100
