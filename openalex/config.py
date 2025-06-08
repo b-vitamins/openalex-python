@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel, Field, HttpUrl, field_validator
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 
 
 class OpenAlexConfig(BaseModel):
@@ -102,7 +102,4 @@ class OpenAlexConfig(BaseModel):
             params["mailto"] = self.email
         return params
 
-    class Config:
-        """Pydantic config."""
-
-        frozen = True
+    model_config = ConfigDict(frozen=True)

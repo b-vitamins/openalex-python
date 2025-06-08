@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from enum import Enum
-from typing import Generic, TypeVar
+from typing import Any, Generic, TypeVar
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_serializer
 
 
 class EntityType(str, Enum):
@@ -31,12 +31,13 @@ class OpenAlexBase(BaseModel):
         use_enum_values=True,
         validate_assignment=True,
         str_strip_whitespace=True,
-        json_encoders={
-            datetime: lambda v: v.isoformat(),
-            date: lambda v: v.isoformat(),
-            HttpUrl: str,
-        },
     )
+
+    @field_serializer("*", when_used="json")
+    def _serialize(self, v: Any) -> str | Any:
+        if isinstance(v, datetime | date | HttpUrl):
+            return str(v)
+        return v
 
 
 class OpenAlexEntity(OpenAlexBase):
