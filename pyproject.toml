@@ -138,7 +138,6 @@ omit = [
     "*/__init__.py",
     "openalex/resources/*",
     "openalex/utils/*",
-    "*/openalex/client.py",
 ]
 
 [tool.coverage.report]
