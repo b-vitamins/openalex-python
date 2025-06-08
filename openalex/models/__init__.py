@@ -36,7 +36,7 @@ from .institution import (
 from .keyword import Keyword
 from .publisher import Publisher, PublisherIds
 from .source import APCPrice, Society, Source, SourceIds, SourceType
-from .topic import Topic, TopicIds, TopicLevel
+from .topic import Topic, TopicHierarchy, TopicIds, TopicLevel
 from .work import (
     APC,
     Authorship,
@@ -127,6 +127,7 @@ __all__ = [
     "SustainableDevelopmentGoal",
     # Topic models
     "Topic",
+    "TopicHierarchy",
     "TopicIds",
     "TopicLevel",
     # Work models
