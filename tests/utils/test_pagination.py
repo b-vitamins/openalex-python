@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import pytest
 from typing import Any
+
+import pytest
 
 from openalex.exceptions import APIError
 from openalex.models import ListResult, Meta, Work
@@ -75,7 +76,8 @@ def test_paginator_pages_and_max_results() -> None:
 
 def test_paginator_error() -> None:
     def fetch(_: dict[str, Any]) -> ListResult[Work]:
-        raise APIError("oops", status_code=500)
+        msg = "oops"
+        raise APIError(msg, status_code=500)
 
     paginator = Paginator(fetch)
     with pytest.raises(APIError):
@@ -106,7 +108,8 @@ async def test_async_paginator_pages_first_all() -> None:
 @pytest.mark.asyncio
 async def test_async_paginator_error() -> None:
     async def fetch(_: dict[str, Any]) -> ListResult[Work]:
-        raise APIError("bad", status_code=500)
+        msg = "bad"
+        raise APIError(msg, status_code=500)
 
     paginator = AsyncPaginator(fetch)
     with pytest.raises(APIError):
