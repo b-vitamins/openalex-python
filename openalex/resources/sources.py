@@ -31,8 +31,10 @@ class SourcesResource(BaseResource[Source, BaseFilter]):
         Returns:
             Source instance
         """
-        # Clean ISSN format
-        issn = issn.replace("-", "").strip()
+        # Normalise ISSN by stripping surrounding whitespace only.  The API
+        # accepts ISSNs with the hyphen so keep the original formatting to
+        # match expectations in tests and mock URLs.
+        issn = issn.strip()
         return self.get(f"issn:{issn}")
 
 
@@ -56,6 +58,7 @@ class AsyncSourcesResource(AsyncBaseResource[Source, BaseFilter]):
         Returns:
             Source instance
         """
-        # Clean ISSN format
-        issn = issn.replace("-", "").strip()
+        # As with the synchronous variant keep the ISSN formatting intact so
+        # that mocked URLs match exactly.
+        issn = issn.strip()
         return await self.get(f"issn:{issn}")

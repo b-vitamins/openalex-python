@@ -72,7 +72,14 @@ class OpenAlex:
             config = config.model_copy(update={"api_key": api_key})
 
         self.config = config
-        self.retry_config = retry_config or RetryConfig()
+        # Honour the retry_count value from the configuration when a custom
+        # retry configuration isn't supplied.  This allows tests to disable
+        # retries completely by setting ``retry_count=0`` on the config.
+        if retry_config is None:
+            # ``retry_count`` represents the number of retries in addition to
+            # the initial request, so ensure at least one attempt is allowed.
+            retry_config = RetryConfig(max_attempts=config.retry_count + 1)
+        self.retry_config = retry_config
         self.retry_handler = RetryHandler(self.retry_config)
         self.rate_limiter = RateLimiter(rate_limit)
 
@@ -334,7 +341,13 @@ class AsyncOpenAlex:
             config = config.model_copy(update={"api_key": api_key})
 
         self.config = config
-        self.retry_config = retry_config or RetryConfig()
+        # Allow configuration to specify retry_count so tests can disable
+        # retries without providing a custom ``RetryConfig`` instance.
+        if retry_config is None:
+            # ``retry_count`` is the number of retries beyond the first
+            # attempt; add 1 so at least one request is performed.
+            retry_config = RetryConfig(max_attempts=config.retry_count + 1)
+        self.retry_config = retry_config
         self.retry_handler = RetryHandler(self.retry_config)
         self.rate_limiter = AsyncRateLimiter(rate_limit)
 
