@@ -1,5 +1,4 @@
 """Authors resource for OpenAlex API."""
-# pragma: no cover
 
 from __future__ import annotations
 
@@ -28,7 +27,7 @@ class AuthorsResource(BaseResource[Author, AuthorsFilter]):
         self._default_filter = default_filter
 
     def _clone_with(self, filter_update: dict[str, Any]) -> AuthorsResource:
-        base_filter = self._default_filter or AuthorsFilter()  # type: ignore[call-arg]
+        base_filter = self._default_filter or AuthorsFilter.model_validate({})
         current = base_filter.filter or {}
         if isinstance(current, str):
             current = {"raw": current}
@@ -112,7 +111,7 @@ class AsyncAuthorsResource(AsyncBaseResource[Author, AuthorsFilter]):
         self._default_filter = default_filter
 
     def _clone_with(self, filter_update: dict[str, Any]) -> AsyncAuthorsResource:
-        base_filter = self._default_filter or AuthorsFilter()  # type: ignore[call-arg]
+        base_filter = self._default_filter or AuthorsFilter.model_validate({})
         current = base_filter.filter or {}
         if isinstance(current, str):
             current = {"raw": current}

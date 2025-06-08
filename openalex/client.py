@@ -1,10 +1,9 @@
 """OpenAlex client implementation."""
-# pragma: no cover
 
 from __future__ import annotations
 
 from contextlib import asynccontextmanager, contextmanager
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import httpx
 from structlog import get_logger
@@ -73,13 +72,8 @@ class OpenAlex:
             config = config.model_copy(update={"api_key": api_key})
 
         self.config = config
-        # Honour the retry_count value from the configuration when a custom
-        # retry configuration isn't supplied.  This allows tests to disable
-        # retries completely by setting ``retry_count=0`` on the config.
         if retry_config is None:
-            # ``retry_count`` represents the number of retries in addition to
-            # the initial request, so ensure at least one attempt is allowed.
-            retry_config = RetryConfig(max_attempts=config.retry_count + 1)
+            retry_config = RetryConfig()
         self.retry_config = retry_config
         self.retry_handler = RetryHandler(self.retry_config)
         self.rate_limiter = RateLimiter(rate_limit)
@@ -256,7 +250,7 @@ class OpenAlex:
         response = self._request("GET", url, params=params)
         response.raise_for_status()
 
-        return response.json()
+        return cast(dict[str, Any], response.json())
 
     def search_all(
         self,
@@ -342,12 +336,8 @@ class AsyncOpenAlex:
             config = config.model_copy(update={"api_key": api_key})
 
         self.config = config
-        # Allow configuration to specify retry_count so tests can disable
-        # retries without providing a custom ``RetryConfig`` instance.
         if retry_config is None:
-            # ``retry_count`` is the number of retries beyond the first
-            # attempt; add 1 so at least one request is performed.
-            retry_config = RetryConfig(max_attempts=config.retry_count + 1)
+            retry_config = RetryConfig()
         self.retry_config = retry_config
         self.retry_handler = RetryHandler(self.retry_config)
         self.rate_limiter = AsyncRateLimiter(rate_limit)
@@ -513,7 +503,7 @@ class AsyncOpenAlex:
         response = await self._request("GET", url, params=params)
         response.raise_for_status()
 
-        return response.json()
+        return cast(dict[str, Any], response.json())
 
     async def search_all(
         self,
