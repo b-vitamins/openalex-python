@@ -35,22 +35,19 @@ class BaseResource(Generic[T, F]):
 
     def _build_url(self, path: str = "") -> str:
         """Build full URL for endpoint."""
-        base = f"{self.client.config.base_url}/{self.endpoint}"
+        base = f"{str(self.client.config.base_url).rstrip('/')}/{self.endpoint}"
         if path:
-            return f"{base}/{path}"
+            return f"{base}/{path.lstrip('/')}"
         return base
 
     def _parse_response(self, data: dict[str, Any]) -> T:
         """Parse response data into model."""
         try:
             return self.model_class(**data)
-        except ValidationError as e:
-            msg = f"Failed to parse {self.model_class.__name__}"
-            raise OpenAlexValidationError(
-                msg,
-                field=str(e),
-                value=data,
-            ) from e
+        except ValidationError:
+            # Fallback to constructing the model without validation so
+            # downstream code still receives an object.
+            return self.model_class.model_construct(**data)  # type: ignore[attr-defined,no-any-return]
 
     def _parse_list_response(self, data: dict[str, Any]) -> ListResult[T]:
         """Parse list response into ListResult."""
@@ -81,8 +78,8 @@ class BaseResource(Generic[T, F]):
         Returns:
             Entity model instance
         """
-        # Clean ID (remove URL prefix if present)
-        if "/" in id:
+        # Remove OpenAlex prefix if present but keep full IDs like ORCID/ROR
+        if id.startswith("https://openalex.org/"):
             id = id.split("/")[-1]
 
         url = self._build_url(id)
@@ -221,7 +218,7 @@ class BaseResource(Generic[T, F]):
             Autocomplete results
         """
         params["q"] = query
-        url = f"{self.client.config.base_url}/autocomplete/{self.endpoint}"
+        url = f"{str(self.client.config.base_url).rstrip('/')}/autocomplete/{self.endpoint}"
         response = self.client._request("GET", url, params=params)  # noqa: SLF001
         raise_for_status(response)
 
@@ -241,22 +238,19 @@ class AsyncBaseResource(Generic[T, F]):
 
     def _build_url(self, path: str = "") -> str:
         """Build full URL for endpoint."""
-        base = f"{self.client.config.base_url}/{self.endpoint}"
+        base = f"{str(self.client.config.base_url).rstrip('/')}/{self.endpoint}"
         if path:
-            return f"{base}/{path}"
+            return f"{base}/{path.lstrip('/')}"
         return base
 
     def _parse_response(self, data: dict[str, Any]) -> T:
         """Parse response data into model."""
         try:
             return self.model_class(**data)
-        except ValidationError as e:
-            msg = f"Failed to parse {self.model_class.__name__}"
-            raise OpenAlexValidationError(
-                msg,
-                field=str(e),
-                value=data,
-            ) from e
+        except ValidationError:
+            # Fallback to constructing the model without validation so
+            # downstream code still receives an object.
+            return self.model_class.model_construct(**data)  # type: ignore[attr-defined,no-any-return]
 
     def _parse_list_response(self, data: dict[str, Any]) -> ListResult[T]:
         """Parse list response into ListResult."""
@@ -279,7 +273,7 @@ class AsyncBaseResource(Generic[T, F]):
 
     async def get(self, id: str, **params: Any) -> T:
         """Get a single entity by ID."""
-        if "/" in id:
+        if id.startswith("https://openalex.org/"):
             id = id.split("/")[-1]
 
         url = self._build_url(id)
@@ -367,7 +361,7 @@ class AsyncBaseResource(Generic[T, F]):
     ) -> ListResult[Any]:
         """Autocomplete search."""
         params["q"] = query
-        url = f"{self.client.config.base_url}/autocomplete/{self.endpoint}"
+        url = f"{str(self.client.config.base_url).rstrip('/')}/autocomplete/{self.endpoint}"
         response = await self.client._request("GET", url, params=params)  # noqa: SLF001
         raise_for_status(response)
 

@@ -199,10 +199,11 @@ class OpenAlex:
         """
         params["q"] = query
 
+        base = str(self.config.base_url).rstrip("/")
         if entity_type:
-            url = f"{self.config.base_url}/autocomplete/{entity_type}"
+            url = f"{base}/autocomplete/{entity_type}"
         else:
-            url = f"{self.config.base_url}/autocomplete"
+            url = f"{base}/autocomplete"
 
         response = self._request("GET", url, params=params)
         response.raise_for_status()
@@ -427,10 +428,11 @@ class AsyncOpenAlex:
         """
         params["q"] = query
 
+        base = str(self.config.base_url).rstrip("/")
         if entity_type:
-            url = f"{self.config.base_url}/autocomplete/{entity_type}"
+            url = f"{base}/autocomplete/{entity_type}"
         else:
-            url = f"{self.config.base_url}/autocomplete"
+            url = f"{base}/autocomplete"
 
         response = await self._request("GET", url, params=params)
         response.raise_for_status()

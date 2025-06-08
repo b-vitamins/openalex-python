@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from pydantic import Field, HttpUrl
 
@@ -15,7 +16,9 @@ from .base import (
     Role,
     SummaryStats,
 )
-from .work import DehydratedConcept  # noqa: TC001
+
+if TYPE_CHECKING:
+    from .work import DehydratedConcept
 
 
 class InstitutionType(str, Enum):
@@ -157,3 +160,8 @@ class Institution(OpenAlexEntity):
         return self.geo is not None and (
             self.geo.latitude is not None or self.geo.city is not None
         )
+
+
+from .work import DehydratedConcept  # noqa: E402,TCH001
+
+Institution.model_rebuild()

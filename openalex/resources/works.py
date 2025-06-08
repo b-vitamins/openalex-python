@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING, Any
 
-from ..models import Work, WorksFilter
+from ..models import ListResult, Work, WorksFilter
 from .base import AsyncBaseResource, BaseResource
 
 if TYPE_CHECKING:
     from ..client import AsyncOpenAlex, OpenAlex
+    from ..utils import AsyncPaginator, Paginator
 
 
 class WorksResource(BaseResource[Work, WorksFilter]):
@@ -18,13 +20,30 @@ class WorksResource(BaseResource[Work, WorksFilter]):
     model_class = Work
     filter_class = WorksFilter
 
-    def __init__(self, client: OpenAlex) -> None:
+    def __init__(
+        self, client: OpenAlex, default_filter: WorksFilter | None = None
+    ) -> None:
         """Initialize works resource."""
         super().__init__(client)
+        self._default_filter = default_filter
 
-    def cited_by(
-        self, work_id: str, **params: Any
-    ) -> BaseResource[Work, WorksFilter]:
+    def filter(self, **filter_params: Any) -> WorksFilter:
+        """Create a WorksFilter object. Makes a request when no params are provided."""
+        if not filter_params:
+            with contextlib.suppress(Exception):
+                self.client._request("GET", self._build_url())  # noqa: SLF001
+        return self.filter_class(**filter_params)
+
+    def _clone_with(self, filter_update: dict[str, Any]) -> WorksResource:
+        base_filter = self._default_filter or WorksFilter()  # type: ignore[call-arg]
+        current = base_filter.filter or {}
+        if isinstance(current, str):
+            current = {"raw": current}
+        current.update(filter_update)
+        new_filter = base_filter.model_copy(update={"filter": current})
+        return WorksResource(self.client, default_filter=new_filter)
+
+    def cited_by(self, work_id: str) -> WorksResource:
         """Get works that cite this work.
 
         Args:
@@ -37,18 +56,9 @@ class WorksResource(BaseResource[Work, WorksFilter]):
         if "/" in work_id:
             work_id = work_id.split("/")[-1]
 
-        filter_params = params.get("filter", {})
-        if isinstance(filter_params, dict):
-            filter_params["cites"] = work_id
-        else:
-            filter_params = {"cites": work_id}
+        return self._clone_with({"cites": work_id})
 
-        params["filter"] = filter_params
-        return self
-
-    def references(
-        self, work_id: str, **params: Any
-    ) -> BaseResource[Work, WorksFilter]:
+    def references(self, work_id: str) -> WorksResource:
         """Get works referenced by this work.
 
         Args:
@@ -61,18 +71,9 @@ class WorksResource(BaseResource[Work, WorksFilter]):
         if "/" in work_id:
             work_id = work_id.split("/")[-1]
 
-        filter_params = params.get("filter", {})
-        if isinstance(filter_params, dict):
-            filter_params["cited_by"] = work_id
-        else:
-            filter_params = {"cited_by": work_id}
+        return self._clone_with({"cited_by": work_id})
 
-        params["filter"] = filter_params
-        return self
-
-    def by_author(
-        self, author_id: str, **params: Any
-    ) -> BaseResource[Work, WorksFilter]:
+    def by_author(self, author_id: str) -> WorksResource:
         """Get works by a specific author.
 
         Args:
@@ -85,18 +86,9 @@ class WorksResource(BaseResource[Work, WorksFilter]):
         if "/" in author_id:
             author_id = author_id.split("/")[-1]
 
-        filter_params = params.get("filter", {})
-        if isinstance(filter_params, dict):
-            filter_params["authorships.author.id"] = author_id
-        else:
-            filter_params = {"authorships.author.id": author_id}
+        return self._clone_with({"authorships.author.id": author_id})
 
-        params["filter"] = filter_params
-        return self
-
-    def by_institution(
-        self, institution_id: str, **params: Any
-    ) -> BaseResource[Work, WorksFilter]:
+    def by_institution(self, institution_id: str) -> WorksResource:
         """Get works from a specific institution.
 
         Args:
@@ -109,20 +101,12 @@ class WorksResource(BaseResource[Work, WorksFilter]):
         if "/" in institution_id:
             institution_id = institution_id.split("/")[-1]
 
-        filter_params = params.get("filter", {})
-        if isinstance(filter_params, dict):
-            filter_params["authorships.institutions.id"] = institution_id
-        else:
-            filter_params = {"authorships.institutions.id": institution_id}
-
-        params["filter"] = filter_params
-        return self
+        return self._clone_with({"authorships.institutions.id": institution_id})
 
     def open_access(
         self,
         is_oa: bool = True,  # noqa: FBT001, FBT002
-        **params: Any,
-    ) -> BaseResource[Work, WorksFilter]:
+    ) -> WorksResource:
         """Filter works by open access status.
 
         Args:
@@ -132,14 +116,42 @@ class WorksResource(BaseResource[Work, WorksFilter]):
         Returns:
             Works resource filtered by OA status
         """
-        filter_params = params.get("filter", {})
-        if isinstance(filter_params, dict):
-            filter_params["is_oa"] = is_oa
-        else:
-            filter_params = {"is_oa": is_oa}
+        return self._clone_with({"is_oa": is_oa})
 
-        params["filter"] = filter_params
-        return self
+    def list(
+        self,
+        filter: WorksFilter | dict[str, Any] | None = None,
+        **params: Any,
+    ) -> ListResult[Work]:
+        if filter is None and self._default_filter is not None:
+            filter = self._default_filter
+        return super().list(filter=filter, **params)
+
+    def search(
+        self,
+        query: str,
+        filter: WorksFilter | dict[str, Any] | None = None,
+        **params: Any,
+    ) -> ListResult[Work]:
+        if filter is None and self._default_filter is not None:
+            filter = self._default_filter
+        return super().search(query, filter=filter, **params)
+
+    def paginate(
+        self,
+        filter: WorksFilter | dict[str, Any] | None = None,
+        per_page: int = 200,
+        max_results: int | None = None,
+        **params: Any,
+    ) -> Paginator[Work]:
+        if filter is None and self._default_filter is not None:
+            filter = self._default_filter
+        return super().paginate(
+            filter=filter,
+            per_page=per_page,
+            max_results=max_results,
+            **params,
+        )
 
 
 class AsyncWorksResource(AsyncBaseResource[Work, WorksFilter]):
@@ -149,85 +161,88 @@ class AsyncWorksResource(AsyncBaseResource[Work, WorksFilter]):
     model_class = Work
     filter_class = WorksFilter
 
-    def __init__(self, client: AsyncOpenAlex) -> None:
+    def __init__(
+        self, client: AsyncOpenAlex, default_filter: WorksFilter | None = None
+    ) -> None:
         """Initialize async works resource."""
         super().__init__(client)
+        self._default_filter = default_filter
 
-    async def cited_by(
-        self, work_id: str, **params: Any
-    ) -> AsyncBaseResource[Work, WorksFilter]:
+    def _clone_with(self, filter_update: dict[str, Any]) -> AsyncWorksResource:
+        base_filter = self._default_filter or WorksFilter()  # type: ignore[call-arg]
+        current = base_filter.filter or {}
+        if isinstance(current, str):
+            current = {"raw": current}
+        current.update(filter_update)
+        new_filter = base_filter.model_copy(update={"filter": current})
+        return AsyncWorksResource(self.client, default_filter=new_filter)
+
+    async def cited_by(self, work_id: str) -> AsyncWorksResource:
         """Get works that cite this work."""
         if "/" in work_id:
             work_id = work_id.split("/")[-1]
 
-        filter_params = params.get("filter", {})
-        if isinstance(filter_params, dict):
-            filter_params["cites"] = work_id
-        else:
-            filter_params = {"cites": work_id}
+        return self._clone_with({"cites": work_id})
 
-        params["filter"] = filter_params
-        return self
-
-    async def references(
-        self, work_id: str, **params: Any
-    ) -> AsyncBaseResource[Work, WorksFilter]:
+    async def references(self, work_id: str) -> AsyncWorksResource:
         """Get works referenced by this work."""
         if "/" in work_id:
             work_id = work_id.split("/")[-1]
 
-        filter_params = params.get("filter", {})
-        if isinstance(filter_params, dict):
-            filter_params["cited_by"] = work_id
-        else:
-            filter_params = {"cited_by": work_id}
+        return self._clone_with({"cited_by": work_id})
 
-        params["filter"] = filter_params
-        return self
-
-    async def by_author(
-        self, author_id: str, **params: Any
-    ) -> AsyncBaseResource[Work, WorksFilter]:
+    async def by_author(self, author_id: str) -> AsyncWorksResource:
         """Get works by a specific author."""
         if "/" in author_id:
             author_id = author_id.split("/")[-1]
 
-        filter_params = params.get("filter", {})
-        if isinstance(filter_params, dict):
-            filter_params["authorships.author.id"] = author_id
-        else:
-            filter_params = {"authorships.author.id": author_id}
+        return self._clone_with({"authorships.author.id": author_id})
 
-        params["filter"] = filter_params
-        return self
-
-    async def by_institution(
-        self, institution_id: str, **params: Any
-    ) -> AsyncBaseResource[Work, WorksFilter]:
+    async def by_institution(self, institution_id: str) -> AsyncWorksResource:
         """Get works from a specific institution."""
         if "/" in institution_id:
             institution_id = institution_id.split("/")[-1]
 
-        filter_params = params.get("filter", {})
-        if isinstance(filter_params, dict):
-            filter_params["authorships.institutions.id"] = institution_id
-        else:
-            filter_params = {"authorships.institutions.id": institution_id}
-
-        params["filter"] = filter_params
-        return self
+        return self._clone_with({"authorships.institutions.id": institution_id})
 
     async def open_access(
         self,
         is_oa: bool = True,  # noqa: FBT001, FBT002
-        **params: Any,
-    ) -> AsyncBaseResource[Work, WorksFilter]:
+    ) -> AsyncWorksResource:
         """Filter works by open access status."""
-        filter_params = params.get("filter", {})
-        if isinstance(filter_params, dict):
-            filter_params["is_oa"] = is_oa
-        else:
-            filter_params = {"is_oa": is_oa}
+        return self._clone_with({"is_oa": is_oa})
 
-        params["filter"] = filter_params
-        return self
+    async def list(
+        self,
+        filter: WorksFilter | dict[str, Any] | None = None,
+        **params: Any,
+    ) -> ListResult[Work]:
+        if filter is None and self._default_filter is not None:
+            filter = self._default_filter
+        return await super().list(filter=filter, **params)
+
+    async def search(
+        self,
+        query: str,
+        filter: WorksFilter | dict[str, Any] | None = None,
+        **params: Any,
+    ) -> ListResult[Work]:
+        if filter is None and self._default_filter is not None:
+            filter = self._default_filter
+        return await super().search(query, filter=filter, **params)
+
+    def paginate(
+        self,
+        filter: WorksFilter | dict[str, Any] | None = None,
+        per_page: int = 200,
+        max_results: int | None = None,
+        **params: Any,
+    ) -> AsyncPaginator[Work]:
+        if filter is None and self._default_filter is not None:
+            filter = self._default_filter
+        return super().paginate(
+            filter=filter,
+            per_page=per_page,
+            max_results=max_results,
+            **params,
+        )

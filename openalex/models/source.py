@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from pydantic import Field, HttpUrl
 
 from .base import CountsByYear, OpenAlexBase, OpenAlexEntity, SummaryStats
-from .work import DehydratedConcept  # noqa: TC001
+
+if TYPE_CHECKING:
+    from .work import DehydratedConcept
 
 
 class SourceType(str, Enum):
@@ -136,3 +139,8 @@ class Source(OpenAlexEntity):
         if self.issn_l and self.issn_l not in issns:
             issns.insert(0, self.issn_l)
         return issns
+
+
+from .work import DehydratedConcept  # noqa: E402,TCH001
+
+Source.model_rebuild()
