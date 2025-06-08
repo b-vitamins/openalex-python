@@ -2,13 +2,18 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from dataclasses import dataclass
 
 from .counts_by_year_inner import CountsByYearInner
 
 
+@dataclass(slots=True)
 class CountsByYear:
     """Container for yearly count data."""
 
-    def __init__(self, results: Iterable[CountsByYearInner]) -> None:
-        self.results = list(results)
+    results: Iterable[CountsByYearInner]
+
+    def __post_init__(self) -> None:
+        """Normalize results to a list."""
+        self.results = list(self.results)
 

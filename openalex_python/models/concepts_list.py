@@ -2,23 +2,22 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from dataclasses import dataclass
 
 from .concept import Concept
 from .group_by_result import GroupByResult
 from .meta import Meta
 
 
+@dataclass(slots=True)
 class ConceptsList:
     """A list of concepts returned with metadata."""
 
-    def __init__(
-        self,
-        *,
-        meta: Meta,
-        results: Iterable[Concept],
-        group_by: GroupByResult | None = None,
-    ) -> None:
-        self.meta = meta
-        self.results = list(results)
-        self.group_by = group_by
+    meta: Meta
+    results: Iterable[Concept]
+    group_by: GroupByResult | None = None
+
+    def __post_init__(self) -> None:
+        """Normalize results to a list."""
+        self.results = list(self.results)
 
