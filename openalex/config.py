@@ -100,6 +100,8 @@ class OpenAlexConfig(BaseModel):
         params: dict[str, Any] = {}
         if self.email:
             params["mailto"] = self.email
+        if self.api_key:
+            params["api_key"] = self.api_key
         return params
 
     model_config = ConfigDict(frozen=True)
