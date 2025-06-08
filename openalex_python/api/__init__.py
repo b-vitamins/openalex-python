@@ -1,12 +1,31 @@
-from openalex_python.api.authors_api import AuthorsApi
-from openalex_python.api.autocomplete_api import AutocompleteApi
-from openalex_python.api.concepts_api import ConceptsApi
-from openalex_python.api.funders_api import FundersApi
-from openalex_python.api.general_api import GeneralApi
-from openalex_python.api.institutions_api import InstitutionsApi
-from openalex_python.api.keywords_api import KeywordsApi
-from openalex_python.api.publishers_api import PublishersApi
-from openalex_python.api.sources_api import SourcesApi
-from openalex_python.api.text_api import TextApi
-from openalex_python.api.topics_api import TopicsApi
-from openalex_python.api.works_api import WorksApi
+"""Expose API client classes."""
+
+from __future__ import annotations
+
+from .authors_api import AuthorsApi
+from .autocomplete_api import AutocompleteApi
+from .concepts_api import ConceptsApi
+from .funders_api import FundersApi
+from .general_api import GeneralApi
+from .institutions_api import InstitutionsApi
+from .keywords_api import KeywordsApi
+from .publishers_api import PublishersApi
+from .sources_api import SourcesApi
+from .text_api import TextApi
+from .topics_api import TopicsApi
+from .works_api import WorksApi
+
+__all__ = [
+    "AuthorsApi",
+    "AutocompleteApi",
+    "ConceptsApi",
+    "FundersApi",
+    "GeneralApi",
+    "InstitutionsApi",
+    "KeywordsApi",
+    "PublishersApi",
+    "SourcesApi",
+    "TextApi",
+    "TopicsApi",
+    "WorksApi",
+]
