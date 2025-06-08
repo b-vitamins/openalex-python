@@ -113,6 +113,7 @@ from .models import (
     SustainableDevelopmentGoal,
     # Topic models
     Topic,
+    TopicHierarchy,
     TopicIds,
     TopicLevel,
     Work,
@@ -224,6 +225,7 @@ __all__ = [
     "TimeoutError",
     # Topic models
     "Topic",
+    "TopicHierarchy",
     "TopicIds",
     "TopicLevel",
     "ValidationError",

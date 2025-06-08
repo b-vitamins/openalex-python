@@ -2,15 +2,25 @@
 
 from __future__ import annotations
 
+from enum import IntEnum
+
 from pydantic import Field, HttpUrl
 
-from .base import OpenAlexEntity
+from .base import OpenAlexEntity, SummaryStats
 
 
-class TopicLevel(OpenAlexEntity):
-    """Topic hierarchy level (domain, field, subfield)."""
+class TopicHierarchy(OpenAlexEntity):
+    """Represents a node in the topic hierarchy."""
 
     pass
+
+
+class TopicLevel(IntEnum):
+    """Enumeration of hierarchy levels for a topic."""
+
+    DOMAIN = 0
+    FIELD = 1
+    SUBFIELD = 2
 
 
 class TopicIds(OpenAlexEntity):
@@ -29,20 +39,30 @@ class Topic(OpenAlexEntity):
         default_factory=list, description="Keywords associated with the topic"
     )
 
-    subfield: TopicLevel | None = Field(
+    subfield: TopicHierarchy | None = Field(
         None, description="Subfield level in hierarchy"
     )
 
-    field: TopicLevel | None = Field(
+    field: TopicHierarchy | None = Field(
         None, description="Field level in hierarchy"
     )
 
-    domain: TopicLevel | None = Field(
+    domain: TopicHierarchy | None = Field(
         None, description="Domain level in hierarchy"
     )
 
     works_count: int = Field(0, description="Number of works")
     cited_by_count: int = Field(0, description="Total citations")
+
+    summary_stats: SummaryStats | None = None
+
+    sisters: list[DehydratedTopic] = Field(
+        default_factory=list, description="Sister topics"
+    )
+
+    works_api_url: HttpUrl | None = Field(
+        None, description="API URL for topic's works"
+    )
 
     ids: TopicIds | None = None
 
@@ -61,17 +81,22 @@ class Topic(OpenAlexEntity):
         return " > ".join(parts) if parts else ""
 
     @property
-    def level(self) -> int:
-        """Get hierarchy level (0=domain, 1=field, 2=subfield)."""
+    def level(self) -> TopicLevel | None:
+        """Get the topic's hierarchy level."""
         if self.subfield:
-            return 2
+            return TopicLevel.SUBFIELD
         if self.field:
-            return 1
+            return TopicLevel.FIELD
         if self.domain:
-            return 0
-        return -1
+            return TopicLevel.DOMAIN
+        return None
 
     def has_keyword(self, keyword: str) -> bool:
         """Check if topic has a specific keyword."""
         keyword_lower = keyword.lower()
         return any(k.lower() == keyword_lower for k in self.keywords)
+
+
+from .work import DehydratedTopic  # noqa: E402,TC001
+
+Topic.model_rebuild()
