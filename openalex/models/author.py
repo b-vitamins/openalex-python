@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from pydantic import Field, HttpUrl
 
 from .base import CountsByYear, OpenAlexBase, OpenAlexEntity, SummaryStats
-from .work import DehydratedConcept, DehydratedInstitution  # noqa: TC001
+
+if TYPE_CHECKING:
+    from .work import DehydratedConcept, DehydratedInstitution
 
 
 class AuthorIds(OpenAlexBase):
@@ -117,3 +121,8 @@ class Author(OpenAlexEntity):
     def concept_names(self) -> list[str]:
         """Get list of associated concept names."""
         return [c.display_name for c in self.x_concepts if c.display_name]
+
+
+from .work import DehydratedConcept, DehydratedInstitution  # noqa: E402,TCH001
+
+Author.model_rebuild()

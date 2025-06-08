@@ -47,7 +47,7 @@ class BaseResource(Generic[T, F]):
         except ValidationError:
             # Fallback to constructing the model without validation so
             # downstream code still receives an object.
-            return self.model_class.model_construct(**data)
+            return self.model_class.model_construct(**data)  # type: ignore[attr-defined,no-any-return]
 
     def _parse_list_response(self, data: dict[str, Any]) -> ListResult[T]:
         """Parse list response into ListResult."""
@@ -250,7 +250,7 @@ class AsyncBaseResource(Generic[T, F]):
         except ValidationError:
             # Fallback to constructing the model without validation so
             # downstream code still receives an object.
-            return self.model_class.model_construct(**data)
+            return self.model_class.model_construct(**data)  # type: ignore[attr-defined,no-any-return]
 
     def _parse_list_response(self, data: dict[str, Any]) -> ListResult[T]:
         """Parse list response into ListResult."""
