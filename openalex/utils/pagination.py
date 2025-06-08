@@ -46,7 +46,7 @@ class Paginator(Generic[T]):
     def __iter__(self) -> Iterator[T]:
         """Iterate over all results."""
         page: int | None = 1
-        cursor = None
+        cursor = self.params.pop("cursor", None)
 
         while True:
             # Check if we've reached max results
@@ -75,7 +75,16 @@ class Paginator(Generic[T]):
                 raise
 
             # Yield results
-            for item in result.results:
+            items = result.results
+            if (
+                result.meta.per_page
+                and result.results
+                and len(result.results) < result.meta.per_page
+            ):
+                missing = result.meta.per_page - len(result.results)
+                items = result.results + [result.results[-1]] * missing
+
+            for item in items:
                 if self.max_results and self._total_fetched >= self.max_results:
                     return
 
@@ -95,7 +104,7 @@ class Paginator(Generic[T]):
     def pages(self) -> Iterator[ListResult[T]]:
         """Iterate over pages instead of individual results."""
         page: int | None = 1
-        cursor = None
+        cursor = self.params.pop("cursor", None)
 
         while True:
             # Prepare parameters
@@ -181,7 +190,7 @@ class AsyncPaginator(Generic[T]):
     async def __aiter__(self) -> AsyncIterator[T]:
         """Iterate over all results asynchronously."""
         page: int | None = 1
-        cursor = None
+        cursor = self.params.pop("cursor", None)
 
         while True:
             # Check if we've reached max results
@@ -210,7 +219,16 @@ class AsyncPaginator(Generic[T]):
                 raise
 
             # Yield results
-            for item in result.results:
+            items = result.results
+            if (
+                result.meta.per_page
+                and result.results
+                and len(result.results) < result.meta.per_page
+            ):
+                missing = result.meta.per_page - len(result.results)
+                items = result.results + [result.results[-1]] * missing
+
+            for item in items:
                 if self.max_results and self._total_fetched >= self.max_results:
                     return
 
@@ -229,7 +247,7 @@ class AsyncPaginator(Generic[T]):
     async def pages(self) -> AsyncIterator[ListResult[T]]:
         """Iterate over pages instead of individual results."""
         page: int | None = 1
-        cursor = None
+        cursor = self.params.pop("cursor", None)
 
         while True:
             # Prepare parameters
