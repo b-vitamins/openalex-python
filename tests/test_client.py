@@ -278,7 +278,8 @@ def test_request_retry(monkeypatch: pytest.MonkeyPatch, client: OpenAlex) -> Non
     def fake_request(method: str, url: str, params=None, **kwargs):
         calls["attempts"] += 1
         if calls["attempts"] == 1:
-            raise httpx.TimeoutException("timeout")
+            message = "timeout"
+            raise httpx.TimeoutException(message)
         return httpx.Response(200, json={"ok": True})
 
     monkeypatch.setattr(client.rate_limiter, "acquire", fake_acquire)
@@ -304,7 +305,8 @@ def test_search_all_error(monkeypatch: pytest.MonkeyPatch, client: OpenAlex) -> 
     monkeypatch.setattr(BaseResource, "search", stub_search)
 
     def fail_search(query: str, **params: Any) -> ListResult:
-        raise ValueError("boom")
+        msg = "boom"
+        raise ValueError(msg)
 
     monkeypatch.setattr(client.authors, "search", fail_search)
 
@@ -321,7 +323,8 @@ async def test_async_request_retry(monkeypatch: pytest.MonkeyPatch, config: Open
     async def fake_request(method: str, url: str, params=None, **kwargs):
         calls["attempts"] += 1
         if calls["attempts"] == 1:
-            raise httpx.NetworkError("net")
+            message = "net"
+            raise httpx.NetworkError(message)
         return httpx.Response(200, json={"ok": True})
 
     async def fake_wait(seconds: float) -> None:
@@ -343,7 +346,7 @@ async def test_async_request_retry(monkeypatch: pytest.MonkeyPatch, config: Open
 
 @pytest.mark.asyncio
 async def test_async_autocomplete_entity(
-    httpx_mock: "HTTPXMock", config: OpenAlexConfig, mock_autocomplete_response: dict[str, Any]
+    httpx_mock: HTTPXMock, config: OpenAlexConfig, mock_autocomplete_response: dict[str, Any]
 ) -> None:
     httpx_mock.add_response(
         url="https://api.openalex.org/autocomplete/works?q=ml&mailto=test%40example.com",
@@ -366,7 +369,8 @@ async def test_async_search_all_error(monkeypatch: pytest.MonkeyPatch, config: O
         return async_result
 
     async def fail_search(query: str, **params: Any):
-        raise ValueError("fail")
+        msg = "fail"
+        raise ValueError(msg)
 
     monkeypatch.setattr(BaseResource, "search", stub_search)
     monkeypatch.setattr(AsyncBaseResource, "search", stub_search)
