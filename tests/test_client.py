@@ -263,7 +263,9 @@ async def test_async_client_api_key_override(config: OpenAlexConfig) -> None:
         await client.close()
 
 
-def test_request_retry(monkeypatch: pytest.MonkeyPatch, client: OpenAlex) -> None:
+def test_request_retry(
+    monkeypatch: pytest.MonkeyPatch, client: OpenAlex
+) -> None:
     calls: dict[str, Any] = {"wait_sync": [], "attempts": 0}
 
     def fake_acquire() -> float:
@@ -284,7 +286,9 @@ def test_request_retry(monkeypatch: pytest.MonkeyPatch, client: OpenAlex) -> Non
 
     monkeypatch.setattr(client.rate_limiter, "acquire", fake_acquire)
     monkeypatch.setattr(client.retry_handler, "wait_sync", fake_wait_sync)
-    monkeypatch.setattr(client.retry_handler, "get_wait_time", fake_get_wait_time)
+    monkeypatch.setattr(
+        client.retry_handler, "get_wait_time", fake_get_wait_time
+    )
     monkeypatch.setattr(client._client, "request", fake_request)
 
     resp = client._request("GET", "https://api.openalex.org/test")
@@ -293,9 +297,18 @@ def test_request_retry(monkeypatch: pytest.MonkeyPatch, client: OpenAlex) -> Non
     assert calls["wait_sync"]
 
 
-def test_search_all_error(monkeypatch: pytest.MonkeyPatch, client: OpenAlex) -> None:
+def test_search_all_error(
+    monkeypatch: pytest.MonkeyPatch, client: OpenAlex
+) -> None:
     result = ListResult(
-        meta=Meta(count=1, db_response_time_ms=1, page=1, per_page=25, groups_count=0, next_cursor=None),
+        meta=Meta(
+            count=1,
+            db_response_time_ms=1,
+            page=1,
+            per_page=25,
+            groups_count=0,
+            next_cursor=None,
+        ),
         results=[],
     )
 
@@ -316,7 +329,9 @@ def test_search_all_error(monkeypatch: pytest.MonkeyPatch, client: OpenAlex) -> 
 
 
 @pytest.mark.asyncio
-async def test_async_request_retry(monkeypatch: pytest.MonkeyPatch, config: OpenAlexConfig) -> None:
+async def test_async_request_retry(
+    monkeypatch: pytest.MonkeyPatch, config: OpenAlexConfig
+) -> None:
     client = AsyncOpenAlex(config=config)
     calls = {"attempts": 0}
 
@@ -346,7 +361,9 @@ async def test_async_request_retry(monkeypatch: pytest.MonkeyPatch, config: Open
 
 @pytest.mark.asyncio
 async def test_async_autocomplete_entity(
-    httpx_mock: HTTPXMock, config: OpenAlexConfig, mock_autocomplete_response: dict[str, Any]
+    httpx_mock: HTTPXMock,
+    config: OpenAlexConfig,
+    mock_autocomplete_response: dict[str, Any],
 ) -> None:
     httpx_mock.add_response(
         url="https://api.openalex.org/autocomplete/works?q=ml&mailto=test%40example.com",
@@ -358,10 +375,19 @@ async def test_async_autocomplete_entity(
 
 
 @pytest.mark.asyncio
-async def test_async_search_all_error(monkeypatch: pytest.MonkeyPatch, config: OpenAlexConfig) -> None:
+async def test_async_search_all_error(
+    monkeypatch: pytest.MonkeyPatch, config: OpenAlexConfig
+) -> None:
     client = AsyncOpenAlex(config=config)
     async_result = ListResult(
-        meta=Meta(count=1, db_response_time_ms=1, page=1, per_page=25, groups_count=0, next_cursor=None),
+        meta=Meta(
+            count=1,
+            db_response_time_ms=1,
+            page=1,
+            per_page=25,
+            groups_count=0,
+            next_cursor=None,
+        ),
         results=[],
     )
 

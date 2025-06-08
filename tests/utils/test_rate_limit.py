@@ -49,7 +49,9 @@ def test_rate_limited_decorator(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.mark.asyncio
-async def test_async_rate_limited_decorator(monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_async_rate_limited_decorator(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     calls: list[float] = []
 
     async def fake_sleep(seconds: float) -> None:
@@ -75,7 +77,9 @@ def test_rate_limiter_try_acquire_success() -> None:
 
 
 def test_sliding_window_rate_limiter() -> None:
-    limiter = SlidingWindowRateLimiter(max_requests=2, window_seconds=0.1, buffer=0)
+    limiter = SlidingWindowRateLimiter(
+        max_requests=2, window_seconds=0.1, buffer=0
+    )
     assert limiter.try_acquire()
     assert limiter.try_acquire()
     assert not limiter.try_acquire()
@@ -84,7 +88,9 @@ def test_sliding_window_rate_limiter() -> None:
 
 
 @pytest.mark.asyncio
-async def test_async_rate_limiter_context(monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_async_rate_limiter_context(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     calls: list[float] = []
 
     async def fake_sleep(seconds: float) -> None:

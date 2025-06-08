@@ -44,7 +44,9 @@ async def test_async_with_retry(monkeypatch: pytest.MonkeyPatch) -> None:
         return None
 
     monkeypatch.setattr(asyncio, "sleep", fake_sleep)
-    wrapped = async_with_retry(func, RetryConfig(max_attempts=3, initial_wait=0))
+    wrapped = async_with_retry(
+        func, RetryConfig(max_attempts=3, initial_wait=0)
+    )
     assert await wrapped() == "done"
     assert len(attempts) == 3
 
@@ -66,7 +68,9 @@ def test_retry_config_wait_strategy() -> None:
 
 
 @pytest.mark.asyncio
-async def test_retry_handler_should_retry_and_wait(monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_retry_handler_should_retry_and_wait(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     handler = RetryHandler(RetryConfig(max_attempts=2))
     assert handler.should_retry(APIError("server", status_code=500), 1)
     assert not handler.should_retry(APIError("server", status_code=500), 2)

@@ -9,7 +9,9 @@ from openalex.models import ListResult, Meta, Work
 from openalex.utils import AsyncPaginator, Paginator
 
 
-def _make_page(start: int, per_page: int, total: int, cursor: str | None = None) -> ListResult[Work]:
+def _make_page(
+    start: int, per_page: int, total: int, cursor: str | None = None
+) -> ListResult[Work]:
     meta = Meta(
         count=total,
         db_response_time_ms=1,
@@ -17,7 +19,10 @@ def _make_page(start: int, per_page: int, total: int, cursor: str | None = None)
         per_page=per_page,
         next_cursor=cursor,
     )
-    results = [Work(id=f"W{i}", display_name=f"Work {i}") for i in range(start, start + per_page)]
+    results = [
+        Work(id=f"W{i}", display_name=f"Work {i}")
+        for i in range(start, start + per_page)
+    ]
     return ListResult(meta=meta, results=results)
 
 
@@ -29,7 +34,9 @@ def test_paginator_iteration() -> None:
         page = int(params.get("cursor", params.get("page", 1)))
         start = (page - 1) * per_page
         next_cursor = str(page + 1) if start + per_page < total else None
-        return _make_page(start, min(per_page, total - start), total, next_cursor)
+        return _make_page(
+            start, min(per_page, total - start), total, next_cursor
+        )
 
     paginator = Paginator(fetch, per_page=2)
     items = list(paginator)
@@ -114,7 +121,7 @@ async def test_async_paginator_error() -> None:
     paginator = AsyncPaginator(fetch)
     # Ruff's PT012 rule expects a simple statement inside ``pytest.raises``.
     # However, we need to iterate to trigger the exception.
-    with pytest.raises(APIError):  # noqa: PT012
+    with pytest.raises(APIError):
         async for _ in paginator:
             pass
 

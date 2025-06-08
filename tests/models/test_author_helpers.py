@@ -1,4 +1,3 @@
-
 from openalex.models import (
     Author,
     AuthorAffiliation,
@@ -20,11 +19,15 @@ def _make_author() -> Author:
         ],
         affiliations=[
             AuthorAffiliation(
-                institution=DehydratedInstitution(id="I1", display_name="Inst A"),
+                institution=DehydratedInstitution(
+                    id="I1", display_name="Inst A"
+                ),
                 years=[2020, 2021],
             ),
             AuthorAffiliation(
-                institution=DehydratedInstitution(id="I1", display_name="Inst A"),
+                institution=DehydratedInstitution(
+                    id="I1", display_name="Inst A"
+                ),
                 years=[2021],
             ),
         ],

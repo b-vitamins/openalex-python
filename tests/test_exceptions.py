@@ -30,7 +30,6 @@ def test_raise_for_status(status: int, exc: type[Exception]) -> None:
         raise_for_status(response)
 
 
-
 def test_validation_and_network_errors() -> None:
     err = ValidationError("bad", field="field", value=123)
     assert err.field == "field"

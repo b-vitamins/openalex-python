@@ -8,7 +8,9 @@ from openalex.models import ListResult, Meta, Work
 class TestListResult:
     """Test ListResult model."""
 
-    def test_list_result_creation(self, mock_list_response: dict[str, Any]) -> None:
+    def test_list_result_creation(
+        self, mock_list_response: dict[str, Any]
+    ) -> None:
         result = ListResult[Work](
             meta=Meta(**mock_list_response["meta"]),
             results=[Work(**r) for r in mock_list_response["results"]],

@@ -1,5 +1,3 @@
-
-
 def test_list_keywords(client, httpx_mock, mock_list_response):
     httpx_mock.add_response(
         url="https://api.openalex.org/keywords?mailto=test%40example.com",

@@ -18,6 +18,9 @@ class DummyResource(BaseResource[DummyModel, BaseFilter]):
 
 def test_parse_list_error(client, httpx_mock):
     dummy = DummyResource(client)
-    httpx_mock.add_response(url="https://api.openalex.org/dummy?mailto=test%40example.com", json={"results": [{}]})
+    httpx_mock.add_response(
+        url="https://api.openalex.org/dummy?mailto=test%40example.com",
+        json={"results": [{}]},
+    )
     with pytest.raises(OpenAlexValidationError):
         dummy.list()

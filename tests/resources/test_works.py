@@ -6,7 +6,9 @@ from openalex.resources import WorksResource
 
 
 def test_clone_with_raw_filter(client):
-    res = WorksResource(client, default_filter=WorksFilter(filter="type:article"))
+    res = WorksResource(
+        client, default_filter=WorksFilter(filter="type:article")
+    )
     clone = res.cited_by("https://openalex.org/W1")
     assert clone._default_filter.filter["raw"] == "type:article"
     assert clone._default_filter.filter["cites"] == "W1"
