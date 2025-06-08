@@ -50,7 +50,7 @@ class BaseResource(Generic[T, F]):
                 msg,
                 field=str(e),
                 value=data,
-            )
+            ) from e
 
     def _parse_list_response(self, data: dict[str, Any]) -> ListResult[T]:
         """Parse list response into ListResult."""
@@ -69,7 +69,7 @@ class BaseResource(Generic[T, F]):
                 msg,
                 field=str(e),
                 value=data,
-            )
+            ) from e
 
     def get(self, id: str, **params: Any) -> T:
         """Get a single entity by ID.
@@ -86,7 +86,7 @@ class BaseResource(Generic[T, F]):
             id = id.split("/")[-1]
 
         url = self._build_url(id)
-        response = self.client._request("GET", url, params=params)
+        response = self.client._request("GET", url, params=params)  # noqa: SLF001
         raise_for_status(response)
 
         return self._parse_response(response.json())
@@ -114,7 +114,7 @@ class BaseResource(Generic[T, F]):
                 params.update(filter_obj.to_params())
 
         url = self._build_url()
-        response = self.client._request("GET", url, params=params)
+        response = self.client._request("GET", url, params=params)  # noqa: SLF001
         raise_for_status(response)
 
         return self._parse_list_response(response.json())
@@ -178,7 +178,9 @@ class BaseResource(Generic[T, F]):
         def fetch_page(page_params: dict[str, Any]) -> ListResult[T]:
             url = self._build_url()
             all_params = {**params, **page_params}
-            response = self.client._request("GET", url, params=all_params)
+            response = self.client._request(  # noqa: SLF001
+                "GET", url, params=all_params
+            )
             raise_for_status(response)
             return self._parse_list_response(response.json())
 
@@ -199,7 +201,7 @@ class BaseResource(Generic[T, F]):
             Random entity
         """
         url = self._build_url("random")
-        response = self.client._request("GET", url, params=params)
+        response = self.client._request("GET", url, params=params)  # noqa: SLF001
         raise_for_status(response)
 
         return self._parse_response(response.json())
@@ -220,7 +222,7 @@ class BaseResource(Generic[T, F]):
         """
         params["q"] = query
         url = f"{self.client.config.base_url}/autocomplete/{self.endpoint}"
-        response = self.client._request("GET", url, params=params)
+        response = self.client._request("GET", url, params=params)  # noqa: SLF001
         raise_for_status(response)
 
         return self._parse_list_response(response.json())
@@ -254,7 +256,7 @@ class AsyncBaseResource(Generic[T, F]):
                 msg,
                 field=str(e),
                 value=data,
-            )
+            ) from e
 
     def _parse_list_response(self, data: dict[str, Any]) -> ListResult[T]:
         """Parse list response into ListResult."""
@@ -273,7 +275,7 @@ class AsyncBaseResource(Generic[T, F]):
                 msg,
                 field=str(e),
                 value=data,
-            )
+            ) from e
 
     async def get(self, id: str, **params: Any) -> T:
         """Get a single entity by ID."""
@@ -281,7 +283,7 @@ class AsyncBaseResource(Generic[T, F]):
             id = id.split("/")[-1]
 
         url = self._build_url(id)
-        response = await self.client._request("GET", url, params=params)
+        response = await self.client._request("GET", url, params=params)  # noqa: SLF001
         raise_for_status(response)
 
         return self._parse_response(response.json())
@@ -300,7 +302,7 @@ class AsyncBaseResource(Generic[T, F]):
                 params.update(filter_obj.to_params())
 
         url = self._build_url()
-        response = await self.client._request("GET", url, params=params)
+        response = await self.client._request("GET", url, params=params)  # noqa: SLF001
         raise_for_status(response)
 
         return self._parse_list_response(response.json())
@@ -337,7 +339,9 @@ class AsyncBaseResource(Generic[T, F]):
         async def fetch_page(page_params: dict[str, Any]) -> ListResult[T]:
             url = self._build_url()
             all_params = {**params, **page_params}
-            response = await self.client._request("GET", url, params=all_params)
+            response = await self.client._request(  # noqa: SLF001
+                "GET", url, params=all_params
+            )
             raise_for_status(response)
             return self._parse_list_response(response.json())
 
@@ -351,7 +355,7 @@ class AsyncBaseResource(Generic[T, F]):
     async def random(self, **params: Any) -> T:
         """Get a random entity."""
         url = self._build_url("random")
-        response = await self.client._request("GET", url, params=params)
+        response = await self.client._request("GET", url, params=params)  # noqa: SLF001
         raise_for_status(response)
 
         return self._parse_response(response.json())
@@ -364,7 +368,7 @@ class AsyncBaseResource(Generic[T, F]):
         """Autocomplete search."""
         params["q"] = query
         url = f"{self.client.config.base_url}/autocomplete/{self.endpoint}"
-        response = await self.client._request("GET", url, params=params)
+        response = await self.client._request("GET", url, params=params)  # noqa: SLF001
         raise_for_status(response)
 
         return self._parse_list_response(response.json())

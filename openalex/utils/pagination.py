@@ -10,7 +10,7 @@ from structlog import get_logger
 from ..exceptions import APIError
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncIterator, Callable, Iterator
+    from collections.abc import AsyncIterator, Awaitable, Callable, Iterator
 
     from ..models import ListResult
 
@@ -45,7 +45,7 @@ class Paginator(Generic[T]):
 
     def __iter__(self) -> Iterator[T]:
         """Iterate over all results."""
-        page = 1
+        page: int | None = 1
         cursor = None
 
         while True:
@@ -94,7 +94,7 @@ class Paginator(Generic[T]):
 
     def pages(self) -> Iterator[ListResult[T]]:
         """Iterate over pages instead of individual results."""
-        page = 1
+        page: int | None = 1
         cursor = None
 
         while True:
@@ -156,7 +156,7 @@ class AsyncPaginator(Generic[T]):
 
     def __init__(
         self,
-        fetch_func: Callable[[dict[str, Any]], AsyncIterator[ListResult[T]]],
+        fetch_func: Callable[[dict[str, Any]], Awaitable[ListResult[T]]],
         params: dict[str, Any] | None = None,
         per_page: int = 200,
         max_results: int | None = None,
@@ -180,7 +180,7 @@ class AsyncPaginator(Generic[T]):
 
     async def __aiter__(self) -> AsyncIterator[T]:
         """Iterate over all results asynchronously."""
-        page = 1
+        page: int | None = 1
         cursor = None
 
         while True:
@@ -228,7 +228,7 @@ class AsyncPaginator(Generic[T]):
 
     async def pages(self) -> AsyncIterator[ListResult[T]]:
         """Iterate over pages instead of individual results."""
-        page = 1
+        page: int | None = 1
         cursor = None
 
         while True:
@@ -283,7 +283,7 @@ class AsyncPaginator(Generic[T]):
         params["per-page"] = 1
         params["page"] = 1
 
-        result = await self.fetch_func(params)
+        result: ListResult[T] = await self.fetch_func(params)
         return result.meta.count
 
     async def gather(self, pages: int | None = None) -> list[T]:

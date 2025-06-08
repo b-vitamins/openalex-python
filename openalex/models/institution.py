@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING
 
 from pydantic import Field, HttpUrl
 
@@ -11,13 +10,12 @@ from .base import (
     CountsByYear,
     Geo,
     InternationalNames,
+    OpenAlexBase,
     OpenAlexEntity,
     Role,
     SummaryStats,
 )
-
-if TYPE_CHECKING:
-    from .work import DehydratedConcept
+from .work import DehydratedConcept  # noqa: TC001
 
 
 class InstitutionType(str, Enum):
@@ -50,7 +48,7 @@ class AssociatedInstitution(OpenAlexEntity):
     type: InstitutionType | None = None
 
 
-class InstitutionIds(OpenAlexEntity):
+class InstitutionIds(OpenAlexBase):
     """External identifiers for an institution."""
 
     openalex: str | None = None
@@ -96,7 +94,8 @@ class Institution(OpenAlexEntity):
     )
 
     is_super_system: bool = Field(
-        False, description="Whether this is a parent of other institutions"
+        default=False,
+        description="Whether this is a parent of other institutions",
     )
 
     international: InternationalNames | None = None

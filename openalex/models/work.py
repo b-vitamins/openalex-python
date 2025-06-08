@@ -6,7 +6,14 @@ from datetime import date, datetime
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, HttpUrl, field_validator
+
+from .base import (
+    CountsByYear,
+    DehydratedEntity,
+    OpenAlexBase,
+    OpenAlexEntity,
+)
 
 
 class SortOrder(str, Enum):
@@ -28,6 +35,169 @@ class GroupBy(str, Enum):
     INSTITUTIONS_TYPE = "institutions.type"
     CITED_BY_COUNT = "cited_by_count"
     WORKS_COUNT = "works_count"
+
+
+class WorkType(str, Enum):
+    """Types of works."""
+
+    ARTICLE = "article"
+    BOOK = "book"
+    REPORT = "report"
+    OTHER = "other"
+
+
+class OpenAccessStatus(str, Enum):
+    """Open access status values."""
+
+    BRONZE = "bronze"
+    GREEN = "green"
+    GOLD = "gold"
+    HYBRID = "hybrid"
+    CLOSED = "closed"
+
+
+class OpenAccess(BaseModel):
+    """Open access information for a work."""
+
+    is_oa: bool = False
+    oa_status: OpenAccessStatus | None = None
+    oa_url: HttpUrl | None = None
+
+
+class DehydratedAuthor(DehydratedEntity):
+    """Minimal author representation."""
+
+
+class DehydratedConcept(DehydratedEntity):
+    """Minimal concept representation."""
+
+
+class DehydratedInstitution(DehydratedEntity):
+    """Minimal institution representation."""
+
+
+class DehydratedSource(DehydratedEntity):
+    """Minimal source representation."""
+
+
+class DehydratedTopic(DehydratedEntity):
+    """Minimal topic representation."""
+
+
+class KeywordTag(OpenAlexBase):
+    """Keyword tag for a work."""
+
+    keyword: str | None = None
+
+
+class MeshTag(OpenAlexBase):
+    """MeSH tag for a work."""
+
+    descriptor_name: str | None = None
+
+
+class Location(OpenAlexBase):
+    """Location of a hosted version of the work."""
+
+    source: DehydratedSource | None = None
+    landing_page_url: HttpUrl | None = None
+
+
+class Grant(OpenAlexBase):
+    """Grant supporting the work."""
+
+    funder: DehydratedInstitution | None = None
+    award_id: str | None = None
+
+
+class APC(OpenAlexBase):
+    """Article processing charge information."""
+
+    value: int | None = None
+    currency: str | None = None
+
+
+class Biblio(OpenAlexBase):
+    """Bibliographic information for a work."""
+
+    volume: str | None = None
+    issue: str | None = None
+    first_page: str | None = None
+    last_page: str | None = None
+
+
+class CitationNormalizedPercentile(OpenAlexBase):
+    """Citation percentile information."""
+
+    year: int | None = None
+    percentile: float | None = None
+
+
+class SustainableDevelopmentGoal(OpenAlexBase):
+    """UN SDG associated with a work."""
+
+    id: str | None = None
+    description: str | None = None
+
+
+class WorkIds(OpenAlexBase):
+    """External identifiers for a work."""
+
+    openalex: str | None = None
+    doi: HttpUrl | None = None
+    pmid: str | None = None
+
+
+class Authorship(OpenAlexBase):
+    """Authorship information."""
+
+    author_position: str | None = None
+    author: DehydratedAuthor | None = None
+    institutions: list[DehydratedInstitution] = Field(default_factory=list)
+    countries: list[str] = Field(default_factory=list)
+    is_corresponding: bool | None = None
+
+
+class Work(OpenAlexEntity):
+    """Representation of a work."""
+
+    title: str | None = None
+    publication_year: int | None = None
+    publication_date: date | None = None
+    type: WorkType | None = None
+    cited_by_count: int = 0
+    is_retracted: bool = False
+    is_paratext: bool = False
+    open_access: OpenAccess | None = None
+    authorships: list[Authorship] = Field(default_factory=list)
+    counts_by_year: list[CountsByYear] = Field(default_factory=list)
+    abstract_inverted_index: dict[str, list[int]] | None = None
+    created_date: date | None = None
+    ids: WorkIds | None = None
+
+    @property
+    def abstract(self) -> str | None:
+        """Reconstruct abstract from inverted index."""
+        if not self.abstract_inverted_index:
+            return None
+
+        length = (
+            max(
+                (
+                    pos
+                    for positions in self.abstract_inverted_index.values()
+                    for pos in positions
+                ),
+                default=-1,
+            )
+            + 1
+        )
+        words: list[str] = [""] * length
+        for word, positions in self.abstract_inverted_index.items():
+            for pos in positions:
+                if 0 <= pos < length:
+                    words[pos] = word
+        return " ".join(words).strip()
 
 
 class BaseFilter(BaseModel):
@@ -122,7 +292,7 @@ class WorksFilter(BaseFilter):
     sort: str | None = Field(
         None,
         description="Sort field",
-        regex="^(publication_date|cited_by_count|relevance_score)(:(asc|desc))?$",
+        pattern="^(publication_date|cited_by_count|relevance_score)(:(asc|desc))?$",
     )
 
     def with_publication_year(self, year: int | list[int]) -> WorksFilter:
@@ -149,7 +319,7 @@ class WorksFilter(BaseFilter):
         current_filter["type"] = work_type
         return self.model_copy(update={"filter": current_filter})
 
-    def with_open_access(self, is_oa: bool = True) -> WorksFilter:
+    def with_open_access(self, is_oa: bool = True) -> WorksFilter:  # noqa: FBT001,FBT002
         """Filter by open access status."""
         current_filter = self.filter or {}
         if isinstance(current_filter, str):
@@ -165,7 +335,7 @@ class AuthorsFilter(BaseFilter):
     sort: str | None = Field(
         None,
         description="Sort field",
-        regex="^(display_name|cited_by_count|works_count|relevance_score)(:(asc|desc))?$",
+        pattern="^(display_name|cited_by_count|works_count|relevance_score)(:(asc|desc))?$",
     )
 
 
@@ -175,7 +345,7 @@ class InstitutionsFilter(BaseFilter):
     sort: str | None = Field(
         None,
         description="Sort field",
-        regex="^(display_name|cited_by_count|works_count|relevance_score)(:(asc|desc))?$",
+        pattern="^(display_name|cited_by_count|works_count|relevance_score)(:(asc|desc))?$",
     )
 
     def with_country(self, country_code: str | list[str]) -> InstitutionsFilter:

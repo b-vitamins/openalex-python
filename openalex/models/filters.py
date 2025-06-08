@@ -122,7 +122,7 @@ class WorksFilter(BaseFilter):
     sort: str | None = Field(
         None,
         description="Sort field",
-        regex="^(publication_date|cited_by_count|relevance_score)(:(asc|desc))?$",
+        pattern="^(publication_date|cited_by_count|relevance_score)(:(asc|desc))?$",
     )
 
     def with_publication_year(self, year: int | list[int]) -> WorksFilter:
@@ -149,7 +149,7 @@ class WorksFilter(BaseFilter):
         current_filter["type"] = work_type
         return self.model_copy(update={"filter": current_filter})
 
-    def with_open_access(self, is_oa: bool = True) -> WorksFilter:
+    def with_open_access(self, is_oa: bool = True) -> WorksFilter:  # noqa: FBT001, FBT002
         """Filter by open access status."""
         current_filter = self.filter or {}
         if isinstance(current_filter, str):
@@ -165,7 +165,7 @@ class AuthorsFilter(BaseFilter):
     sort: str | None = Field(
         None,
         description="Sort field",
-        regex="^(display_name|cited_by_count|works_count|relevance_score)(:(asc|desc))?$",
+        pattern="^(display_name|cited_by_count|works_count|relevance_score)(:(asc|desc))?$",
     )
 
 
@@ -175,7 +175,7 @@ class InstitutionsFilter(BaseFilter):
     sort: str | None = Field(
         None,
         description="Sort field",
-        regex="^(display_name|cited_by_count|works_count|relevance_score)(:(asc|desc))?$",
+        pattern="^(display_name|cited_by_count|works_count|relevance_score)(:(asc|desc))?$",
     )
 
     def with_country(self, country_code: str | list[str]) -> InstitutionsFilter:

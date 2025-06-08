@@ -2,17 +2,13 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from pydantic import Field, HttpUrl
 
-from .base import CountsByYear, OpenAlexEntity, SummaryStats
-
-if TYPE_CHECKING:
-    from .work import DehydratedConcept, DehydratedInstitution
+from .base import CountsByYear, OpenAlexBase, OpenAlexEntity, SummaryStats
+from .work import DehydratedConcept, DehydratedInstitution  # noqa: TC001
 
 
-class AuthorIds(OpenAlexEntity):
+class AuthorIds(OpenAlexBase):
     """External identifiers for an author."""
 
     openalex: str | None = None
@@ -23,7 +19,7 @@ class AuthorIds(OpenAlexEntity):
     mag: int | None = None
 
 
-class AuthorAffiliation(OpenAlexEntity):
+class AuthorAffiliation(OpenAlexBase):
     """Author affiliation information."""
 
     institution: DehydratedInstitution | None = None

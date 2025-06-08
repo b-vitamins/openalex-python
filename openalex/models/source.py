@@ -3,14 +3,11 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING
 
 from pydantic import Field, HttpUrl
 
-from .base import CountsByYear, OpenAlexEntity, SummaryStats
-
-if TYPE_CHECKING:
-    from .work import DehydratedConcept
+from .base import CountsByYear, OpenAlexBase, OpenAlexEntity, SummaryStats
+from .work import DehydratedConcept  # noqa: TC001
 
 
 class SourceType(str, Enum):
@@ -24,7 +21,7 @@ class SourceType(str, Enum):
     OTHER = "other"
 
 
-class APCPrice(OpenAlexEntity):
+class APCPrice(OpenAlexBase):
     """Article Processing Charge price."""
 
     price: int | None = None
@@ -38,7 +35,7 @@ class Society(OpenAlexEntity):
     organization: str | None = None
 
 
-class SourceIds(OpenAlexEntity):
+class SourceIds(OpenAlexBase):
     """External identifiers for a source."""
 
     openalex: str | None = None
@@ -66,8 +63,8 @@ class Source(OpenAlexEntity):
 
     summary_stats: SummaryStats | None = None
 
-    is_oa: bool = Field(False, description="Is open access")
-    is_in_doaj: bool = Field(False, description="In DOAJ")
+    is_oa: bool = Field(default=False, description="Is open access")
+    is_in_doaj: bool = Field(default=False, description="In DOAJ")
     is_core: bool | None = Field(None, description="Is CORE source")
 
     type: SourceType | None = None

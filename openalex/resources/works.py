@@ -119,7 +119,9 @@ class WorksResource(BaseResource[Work, WorksFilter]):
         return self
 
     def open_access(
-        self, is_oa: bool = True, **params: Any
+        self,
+        is_oa: bool = True,  # noqa: FBT001, FBT002
+        **params: Any,
     ) -> BaseResource[Work, WorksFilter]:
         """Filter works by open access status.
 
@@ -216,7 +218,9 @@ class AsyncWorksResource(AsyncBaseResource[Work, WorksFilter]):
         return self
 
     async def open_access(
-        self, is_oa: bool = True, **params: Any
+        self,
+        is_oa: bool = True,  # noqa: FBT001, FBT002
+        **params: Any,
     ) -> AsyncBaseResource[Work, WorksFilter]:
         """Filter works by open access status."""
         filter_params = params.get("filter", {})

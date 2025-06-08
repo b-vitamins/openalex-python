@@ -11,7 +11,7 @@ class OpenAlexConfig(BaseModel):
     """Configuration for OpenAlex API client."""
 
     base_url: HttpUrl = Field(
-        default="https://api.openalex.org",
+        default=HttpUrl("https://api.openalex.org"),
         description="Base URL for the OpenAlex API",
     )
     email: str | None = Field(
