@@ -44,7 +44,7 @@ class Configuration(six.with_metaclass(TypeWithDefault, object)):
         self.username = ""
         self.password = ""
         self.logger = {}
-        self.logger["package_logger"] = logging.getLogger("swagger_client")
+        self.logger["package_logger"] = logging.getLogger("openalex_python")
         self.logger["urllib3_logger"] = logging.getLogger("urllib3")
         self.logger_format = "%(asctime)s %(levelname)s %(message)s"
         self.logger_stream_handler = None

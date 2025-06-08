@@ -1,12 +1,31 @@
-from swagger_client.api.authors_api import AuthorsApi
-from swagger_client.api.autocomplete_api import AutocompleteApi
-from swagger_client.api.concepts_api import ConceptsApi
-from swagger_client.api.funders_api import FundersApi
-from swagger_client.api.general_api import GeneralApi
-from swagger_client.api.institutions_api import InstitutionsApi
-from swagger_client.api.keywords_api import KeywordsApi
-from swagger_client.api.publishers_api import PublishersApi
-from swagger_client.api.sources_api import SourcesApi
-from swagger_client.api.text_api import TextApi
-from swagger_client.api.topics_api import TopicsApi
-from swagger_client.api.works_api import WorksApi
+"""Expose API client classes."""
+
+from __future__ import annotations
+
+from .authors_api import AuthorsApi
+from .autocomplete_api import AutocompleteApi
+from .concepts_api import ConceptsApi
+from .funders_api import FundersApi
+from .general_api import GeneralApi
+from .institutions_api import InstitutionsApi
+from .keywords_api import KeywordsApi
+from .publishers_api import PublishersApi
+from .sources_api import SourcesApi
+from .text_api import TextApi
+from .topics_api import TopicsApi
+from .works_api import WorksApi
+
+__all__ = [
+    "AuthorsApi",
+    "AutocompleteApi",
+    "ConceptsApi",
+    "FundersApi",
+    "GeneralApi",
+    "InstitutionsApi",
+    "KeywordsApi",
+    "PublishersApi",
+    "SourcesApi",
+    "TextApi",
+    "TopicsApi",
+    "WorksApi",
+]
