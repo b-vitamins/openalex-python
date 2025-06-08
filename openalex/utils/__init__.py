@@ -1,5 +1,4 @@
 """Utility functions and classes for OpenAlex client."""
-# pragma: no cover
 
 from .pagination import AsyncPaginator, Paginator
 from .rate_limit import (

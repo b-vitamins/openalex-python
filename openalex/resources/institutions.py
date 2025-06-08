@@ -1,5 +1,4 @@
 """Institutions resource for OpenAlex API."""
-# pragma: no cover
 
 from __future__ import annotations
 

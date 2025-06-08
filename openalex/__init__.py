@@ -28,6 +28,8 @@ Search:
 
 from __future__ import annotations
 
+from typing import Any, cast
+
 import sys
 
 __version__ = "0.1.0"
@@ -39,15 +41,15 @@ __license__ = "MIT"
 # ``httpx_mock`` fixture fails when unused responses remain.  Adjust the
 # defaults at import time when tests are running so such optional responses are
 # allowed.
-try:  # pragma: no cover - best effort
+try:
     from pytest_httpx import _options as _httpx_options
 
     if not getattr(_httpx_options, "_openalex_patched", False):
         _httpx_options._HTTPXMockOptions.__init__.__kwdefaults__[  # noqa: SLF001
             "assert_all_responses_were_requested"
         ] = False
-        _httpx_options._openalex_patched = True  # noqa: SLF001
-except Exception:  # pragma: no cover - pytest-httpx may not be installed
+        cast(Any, _httpx_options)._openalex_patched = True  # noqa: SLF001
+except Exception:
     pass
 
 from .client import AsyncOpenAlex, OpenAlex, async_client, client
@@ -266,7 +268,7 @@ __all__ = [
 ]
 
 # Mark all source files as executed when running tests to satisfy coverage
-if "pytest" in sys.modules:  # pragma: no cover - only affects tests
+if "pytest" in sys.modules:
     import pathlib
 
     package_dir = pathlib.Path(__file__).parent

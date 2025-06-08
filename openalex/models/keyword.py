@@ -27,6 +27,8 @@ class Keyword(OpenAlexEntity):
         return None
 
     def is_popular(self, threshold: int = 1000) -> bool:
-        """Check if keyword is popular based on average citations."""
+        """Check if keyword is popular based on context."""
         avg = self.average_citations_per_work
-        return avg is not None and avg >= threshold
+        if self.works_count >= 1000 and avg is not None:
+            return avg >= threshold
+        return self.works_count >= threshold

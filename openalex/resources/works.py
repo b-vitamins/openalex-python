@@ -1,10 +1,9 @@
 """Works resource for OpenAlex API."""
-# pragma: no cover
 
 from __future__ import annotations
 
 import contextlib
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 from ..models import ListResult, Work, WorksFilter
 from .base import AsyncBaseResource, BaseResource
@@ -42,7 +41,7 @@ class WorksResource(BaseResource[Work, WorksFilter]):
             pmid = f"pmid:{pmid}"
         return self.get(pmid)
 
-    def filter(self, **filter_params: Any) -> WorksResource | WorksFilter:
+    def filter(self, **filter_params: Any) -> Self | WorksFilter:
         """Add filter parameters or return a ``WorksFilter`` builder.
 
         When called without parameters, this behaves like the base ``filter``
@@ -56,7 +55,7 @@ class WorksResource(BaseResource[Work, WorksFilter]):
         if not filter_params:
             with contextlib.suppress(Exception):
                 self.client._request("GET", self._build_url())  # noqa: SLF001
-            return self.filter_class()
+            return self.filter_class.model_validate({})
 
         known_fields = set(self.filter_class.model_fields)
         if set(filter_params).issubset(known_fields):
@@ -78,14 +77,14 @@ class WorksResource(BaseResource[Work, WorksFilter]):
 
         return self._clone_with(normalized)
 
-    def _clone_with(self, filter_update: dict[str, Any]) -> WorksResource:
-        base_filter = self._default_filter or WorksFilter()  # type: ignore[call-arg]
+    def _clone_with(self, filter_update: dict[str, Any]) -> Self:
+        base_filter = self._default_filter or WorksFilter.model_validate({})
         current = base_filter.filter or {}
         if isinstance(current, str):
             current = {"raw": current}
         current.update(filter_update)
         new_filter = base_filter.model_copy(update={"filter": current})
-        return WorksResource(self.client, default_filter=new_filter)
+        return self.__class__(self.client, default_filter=new_filter)
 
     def cited_by(self, work_id: str) -> WorksResource:
         """Get works that cite this work.
@@ -242,14 +241,14 @@ class AsyncWorksResource(AsyncBaseResource[Work, WorksFilter]):
             pmid = f"pmid:{pmid}"
         return await self.get(pmid)
 
-    def _clone_with(self, filter_update: dict[str, Any]) -> AsyncWorksResource:
-        base_filter = self._default_filter or WorksFilter()  # type: ignore[call-arg]
+    def _clone_with(self, filter_update: dict[str, Any]) -> Self:
+        base_filter = self._default_filter or WorksFilter.model_validate({})
         current = base_filter.filter or {}
         if isinstance(current, str):
             current = {"raw": current}
         current.update(filter_update)
         new_filter = base_filter.model_copy(update={"filter": current})
-        return AsyncWorksResource(self.client, default_filter=new_filter)
+        return self.__class__(self.client, default_filter=new_filter)
 
     async def cited_by(self, work_id: str) -> AsyncWorksResource:
         """Get works that cite this work."""

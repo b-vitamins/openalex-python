@@ -1,9 +1,8 @@
 """Base resource class for OpenAlex API endpoints."""
-# pragma: no cover
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, Self
 
 from pydantic import ValidationError
 from structlog import get_logger
@@ -167,7 +166,7 @@ class BaseResource(Generic[T, F]):
         params["search"] = query
         return self.list(filter=filter, **params)
 
-    def filter(self, **filter_params: Any) -> F:
+    def filter(self, **filter_params: Any) -> Self | F:
         """Create a filter object.
 
         Args:
@@ -388,7 +387,7 @@ class AsyncBaseResource(Generic[T, F]):
         params["search"] = query
         return await self.list(filter=filter, **params)
 
-    def filter(self, **filter_params: Any) -> F:
+    def filter(self, **filter_params: Any) -> Self | F:
         """Create a filter object."""
         return self.filter_class(**filter_params)
 
