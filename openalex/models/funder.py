@@ -32,6 +32,8 @@ class Funder(OpenAlexEntity):
     image_url: HttpUrl | None = None
     image_thumbnail_url: HttpUrl | None = None
 
+    ror: HttpUrl | None = None
+
     grants_count: int = Field(0, description="Number of grants")
     works_count: int = Field(0, description="Number of funded works")
     cited_by_count: int = Field(0, description="Total citations")
