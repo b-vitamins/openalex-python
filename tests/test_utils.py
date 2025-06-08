@@ -37,11 +37,11 @@ def test_paginator_iteration() -> None:
     total = 5
 
     def fetch(params: dict[str, Any]) -> ListResult[Work]:
-        page = int(params.get("page", 1))
         per_page = int(params.get("per-page", 2))
+        page = int(params.get("cursor", params.get("page", 1)))
         start = (page - 1) * per_page
-        cursor = "next" if start + per_page < total else None
-        return _make_page(start, min(per_page, total - start), total, cursor)
+        next_cursor = str(page + 1) if start + per_page < total else None
+        return _make_page(start, min(per_page, total - start), total, next_cursor)
 
     paginator = Paginator(fetch, per_page=2)
     items = list(paginator)
@@ -146,7 +146,10 @@ async def test_async_with_retry(monkeypatch: pytest.MonkeyPatch) -> None:
             raise RateLimitError(retry_after=0)
         return "done"
 
-    monkeypatch.setattr(asyncio, "sleep", lambda x: None)
+    async def fake_sleep(_: float) -> None:
+        return None
+
+    monkeypatch.setattr(asyncio, "sleep", fake_sleep)
     wrapped = async_with_retry(func, RetryConfig(max_attempts=3, initial_wait=0))
     assert await wrapped() == "done"
     assert len(attempts) == 3
