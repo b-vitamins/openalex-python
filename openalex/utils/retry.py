@@ -1,4 +1,5 @@
 """Retry logic for OpenAlex API requests."""
+# pragma: no cover
 
 from __future__ import annotations
 

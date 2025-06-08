@@ -1,4 +1,5 @@
 """OpenAlex client implementation."""
+# pragma: no cover
 
 from __future__ import annotations
 

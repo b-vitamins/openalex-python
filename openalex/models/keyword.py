@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pydantic import Field
 
-from .base import OpenAlexEntity
+from .base import CountsByYear, OpenAlexEntity
 
 
 class Keyword(OpenAlexEntity):
@@ -12,6 +12,12 @@ class Keyword(OpenAlexEntity):
 
     works_count: int = Field(0, description="Number of works with this keyword")
     cited_by_count: int = Field(0, description="Total citations")
+    counts_by_year: list[CountsByYear] = Field(
+        default_factory=list, description="Yearly statistics"
+    )
+    works_api_url: str | None = Field(
+        None, description="API endpoint for works using this keyword"
+    )
 
     @property
     def average_citations_per_work(self) -> float | None:
@@ -21,5 +27,6 @@ class Keyword(OpenAlexEntity):
         return None
 
     def is_popular(self, threshold: int = 1000) -> bool:
-        """Check if keyword is popular based on works count."""
-        return self.works_count >= threshold
+        """Check if keyword is popular based on average citations."""
+        avg = self.average_citations_per_work
+        return avg is not None and avg >= threshold
