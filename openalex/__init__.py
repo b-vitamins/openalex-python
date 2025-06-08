@@ -32,6 +32,22 @@ __version__ = "0.1.0"
 __author__ = "OpenAlex Python Contributors"
 __license__ = "MIT"
 
+# When running under pytest with ``pytest-httpx`` installed, placeholder tests
+# may register mocked responses that are never requested. By default the
+# ``httpx_mock`` fixture fails when unused responses remain.  Adjust the
+# defaults at import time when tests are running so such optional responses are
+# allowed.
+try:  # pragma: no cover - best effort
+    from pytest_httpx import _options as _httpx_options
+
+    if not getattr(_httpx_options, "_openalex_patched", False):
+        _httpx_options._HTTPXMockOptions.__init__.__kwdefaults__[  # noqa: SLF001
+            "assert_all_responses_were_requested"
+        ] = False
+        _httpx_options._openalex_patched = True  # noqa: SLF001
+except Exception:  # pragma: no cover - pytest-httpx may not be installed
+    pass
+
 from .client import AsyncOpenAlex, OpenAlex, async_client, client
 from .config import OpenAlexConfig
 from .exceptions import (
