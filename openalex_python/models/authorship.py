@@ -10,19 +10,16 @@ from .dehydrated_institution import DehydratedInstitution
     """Information about an author's role in a work."""
     author_position: str
     author: DehydratedAuthor
-    institutions: Iterable[DehydratedInstitution]
-    countries: Iterable[str]
+    institutions: list[DehydratedInstitution]
+    countries: list[str]
     is_corresponding: bool | None = None
     raw_author_name: str | None = None
     raw_affiliation_strings: Iterable[str] | None = None
-    affiliations: Iterable[AuthorshipAffiliations] | None = None
+    affiliations: list[AuthorshipAffiliations] | None = None
 
     def __post_init__(self) -> None:
         """Convert iterables to lists for consistency."""
         self.institutions = list(self.institutions)
         self.countries = list(self.countries)
-        if self.raw_affiliation_strings:
-            self.raw_affiliation_strings = list(self.raw_affiliation_strings)
-        else:
-            self.raw_affiliation_strings = []
-        self.affiliations = list(self.affiliations) if self.affiliations else []
+        self.raw_affiliation_strings = list(self.raw_affiliation_strings or [])
+        self.affiliations = list(self.affiliations or [])

@@ -11,7 +11,7 @@ from .meta import Meta
 class AutocompleteResults:
     """List of :class:`AutocompleteResult` objects returned with metadata."""
     meta: Meta
-    results: Iterable[AutocompleteResult]
+    results: list[AutocompleteResult] | Iterable[AutocompleteResult]
 
     def __post_init__(self) -> None:
         """Normalize results iterable to a list."""

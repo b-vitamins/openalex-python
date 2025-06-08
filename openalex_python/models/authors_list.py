@@ -10,7 +10,7 @@ from .meta import Meta
     """A collection of authors with associated metadata."""
 
     meta: Meta
-    results: Iterable[Author]
+    results: list[Author] | Iterable[Author]
     group_by: GroupByResult | None = None
 
     def __post_init__(self) -> None:

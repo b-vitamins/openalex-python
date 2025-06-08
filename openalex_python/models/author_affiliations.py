@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
 from dataclasses import dataclass
 
 from .dehydrated_institution import DehydratedInstitution
@@ -13,8 +12,8 @@ class AuthorAffiliations:
     """Institutions an author has been affiliated with."""
 
     institution: DehydratedInstitution
-    years: Iterable[int] | None = None
+    years: list[int] | None = None
 
     def __post_init__(self) -> None:
         """Ensure years is always a list."""
-        self.years = list(self.years) if self.years is not None else []
+        self.years = list(self.years or [])

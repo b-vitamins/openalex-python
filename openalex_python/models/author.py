@@ -25,9 +25,9 @@ class Author:
     works_count: int | None = None
     cited_by_count: int | None = None
     summary_stats: SummaryStats | None = None
-    affiliations: list[AuthorAffiliations] | None = None
-    last_known_institutions: list[DehydratedInstitution] | None = None
-    x_concepts: list[DehydratedConcept] | None = None
+    affiliations: Iterable[AuthorAffiliations] | None = None
+    last_known_institutions: Iterable[DehydratedInstitution] | None = None
+    x_concepts: Iterable[DehydratedConcept] | None = None
     counts_by_year: CountsByYear | None = None
     works_api_url: str | None = None
     updated_date: datetime | None = None
@@ -38,3 +38,9 @@ class Author:
         """Ensure alternative names are stored as a list."""
         if self.display_name_alternatives is not None:
             self.display_name_alternatives = list(self.display_name_alternatives)
+        if self.affiliations is not None:
+            self.affiliations = list(self.affiliations)
+        if self.last_known_institutions is not None:
+            self.last_known_institutions = list(self.last_known_institutions)
+        if self.x_concepts is not None:
+            self.x_concepts = list(self.x_concepts)
