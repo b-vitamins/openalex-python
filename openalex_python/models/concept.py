@@ -5,11 +5,13 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import date, datetime
 
-from .concept_ids import ConceptIds
-from .counts_by_year import CountsByYear
-from .dehydrated_concept import DehydratedConcept
-from .international_names import InternationalNames
-from .summary_stats import SummaryStats
+from .common import (
+    CountsByYear,
+    GroupByResult,
+    InternationalNames,
+    Meta,
+    SummaryStats,
+)
 
 
 @dataclass(slots=True)
@@ -41,4 +43,53 @@ class Concept:
             self.ancestors = list(self.ancestors)
         if self.related_concepts is not None:
             self.related_concepts = list(self.related_concepts)
+
+
+class DehydratedConcept:
+    """Core information about a concept."""
+
+    def __init__(
+        self,
+        *,
+        id: str,
+        display_name: str,
+        level: int | None = None,
+        score: float | None = None,
+        wikidata: str | None = None,
+    ) -> None:
+        self.id = id
+        self.display_name = display_name
+        self.level = level
+        self.score = score
+        self.wikidata = wikidata
+
+
+@dataclass(slots=True)
+class ConceptIds:
+    """Different identifier schemes used for a concept."""
+
+    openalex: str
+    wikidata: str | None = None
+    wikipedia: str | None = None
+    umls_cui: Iterable[str] | None = None
+    umls_aui: Iterable[str] | None = None
+    mag: int | None = None
+
+    def __post_init__(self) -> None:
+        if self.umls_cui is not None:
+            self.umls_cui = list(self.umls_cui)
+        if self.umls_aui is not None:
+            self.umls_aui = list(self.umls_aui)
+
+
+@dataclass(slots=True)
+class ConceptsList:
+    """A list of concepts returned with metadata."""
+
+    meta: Meta
+    results: Iterable[Concept]
+    group_by: GroupByResult | None = None
+
+    def __post_init__(self) -> None:
+        self.results = list(self.results)
 

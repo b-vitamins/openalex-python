@@ -4,10 +4,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from datetime import date, datetime
 
-from .counts_by_year import CountsByYear
-from .funder_ids import FunderIds
-from .role import Role
-from .summary_stats import SummaryStats
+from .common import CountsByYear, GroupByResult, Meta, Role, SummaryStats
 
 
 class Funder:
@@ -51,3 +48,45 @@ class Funder:
         self.updated_date = updated_date
         self.created_date = created_date
         self.ids = ids
+
+
+class DehydratedFunder:
+    """Basic funder details."""
+
+    def __init__(self, *, id: str, display_name: str) -> None:
+        self.id = id
+        self.display_name = display_name
+
+
+class FunderIds:
+    """Different identifier schemes used for a funder."""
+
+    def __init__(
+        self,
+        *,
+        openalex: str,
+        ror: str | None = None,
+        wikidata: str | None = None,
+        crossref: str | None = None,
+        doi: str | None = None,
+    ) -> None:
+        self.openalex = openalex
+        self.ror = ror
+        self.wikidata = wikidata
+        self.crossref = crossref
+        self.doi = doi
+
+
+class FundersList:
+    """List of funders returned by the API."""
+
+    def __init__(
+        self,
+        *,
+        meta: Meta,
+        results: Iterable[Funder],
+        group_by: GroupByResult | None = None,
+    ) -> None:
+        self.meta = meta
+        self.results = list(results)
+        self.group_by = group_by
