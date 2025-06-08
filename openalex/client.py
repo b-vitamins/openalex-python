@@ -218,6 +218,39 @@ class OpenAlex:
             results=results,
         )
 
+
+    def text_aboutness(
+        self,
+        title: str,
+        abstract: str | None = None,
+        entity_type: str | None = None,
+        **params: Any,
+    ) -> dict[str, Any]:
+        """Tag free text with OpenAlex aboutness entities.
+
+        Args:
+            title: Title text to tag
+            abstract: Optional abstract text
+            entity_type: Limit to a specific entity type
+            **params: Additional query parameters
+
+        Returns:
+            Aboutness results from the ``/text`` endpoint
+        """
+        params["title"] = title
+        if abstract is not None:
+            params["abstract"] = abstract
+
+        base = str(self.config.base_url).rstrip("/")
+        url = f"{base}/text"
+        if entity_type:
+            url = f"{url}/{entity_type}"
+
+        response = self._request("GET", url, params=params)
+        response.raise_for_status()
+
+        return response.json()
+
     def search_all(
         self,
         query: str,
@@ -446,6 +479,28 @@ class AsyncOpenAlex:
             meta=data.get("meta", {}),
             results=results,
         )
+
+    async def text_aboutness(
+        self,
+        title: str,
+        abstract: str | None = None,
+        entity_type: str | None = None,
+        **params: Any,
+    ) -> dict[str, Any]:
+        """Tag free text with OpenAlex aboutness entities asynchronously."""
+        params["title"] = title
+        if abstract is not None:
+            params["abstract"] = abstract
+
+        base = str(self.config.base_url).rstrip("/")
+        url = f"{base}/text"
+        if entity_type:
+            url = f"{url}/{entity_type}"
+
+        response = await self._request("GET", url, params=params)
+        response.raise_for_status()
+
+        return response.json()
 
     async def search_all(
         self,
