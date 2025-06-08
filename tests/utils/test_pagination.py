@@ -119,11 +119,13 @@ async def test_async_paginator_error() -> None:
         raise APIError(msg, status_code=500)
 
     paginator = AsyncPaginator(fetch)
-    # Ruff's PT012 rule expects a simple statement inside ``pytest.raises``.
-    # However, we need to iterate to trigger the exception.
-    with pytest.raises(APIError):
+
+    async def iterate_paginator() -> None:
         async for _ in paginator:
             pass
+
+    with pytest.raises(APIError):
+        await iterate_paginator()
 
 
 @pytest.mark.asyncio
