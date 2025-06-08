@@ -218,7 +218,6 @@ class OpenAlex:
             results=results,
         )
 
-
     def text_aboutness(
         self,
         title: str,
