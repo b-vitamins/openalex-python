@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from .authors_api import AuthorsApi
 from .autocomplete_api import AutocompleteApi
+from .base import BaseApi
 from .concepts_api import ConceptsApi
 from .funders_api import FundersApi
 from .general_api import GeneralApi
@@ -18,6 +19,7 @@ from .works_api import WorksApi
 __all__ = [
     "AuthorsApi",
     "AutocompleteApi",
+    "BaseApi",
     "ConceptsApi",
     "FundersApi",
     "GeneralApi",
