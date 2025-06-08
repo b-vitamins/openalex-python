@@ -90,6 +90,13 @@ class Author(OpenAlexEntity):
 
         return max_citations
 
+    @property
+    def two_year_mean_citedness(self) -> float | None:
+        """Return the 2-year mean citedness from summary stats."""
+        if self.summary_stats is None:
+            return None
+        return self.summary_stats.two_year_mean_citedness
+
     def works_in_year(self, year: int) -> int:
         """Get number of works published in a specific year."""
         for year_data in self.counts_by_year:
