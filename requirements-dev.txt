@@ -1,0 +1,22 @@
+# Development dependencies for OpenAlex Python client
+# Install with: pip install -r requirements-dev.txt
+
+# Testing
+pytest==8.3.3
+pytest-asyncio==0.24.0
+pytest-cov==6.0.0
+pytest-httpx==0.35.0
+
+# Code quality
+mypy==1.13.0
+ruff>=0.2.0
+pre-commit>=3.6.0
+
+# Development tools
+ipython>=8.20.0
+
+# Documentation
+sphinx==6.2.1
+sphinx-rtd-theme>=2.0.0
+sphinx-autodoc-typehints>=2.0.0
+myst-parser>=2.0.0

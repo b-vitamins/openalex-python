@@ -1,127 +1,149 @@
 [tool.poetry]
-name = "openalex-python"
+name = "openalex"
 version = "0.1.0"
-description = ""
+description = "Python client for the OpenAlex API with async support"
 authors = ["Ayan Das <bvits@riseup.net>"]
 readme = "README.md"
+license = "GPL-3.0-or-later"
+homepage = "https://github.com/b-vitamins/openalex-python"
+repository = "https://github.com/b-vitamins/openalex-python"
+keywords = ["openalex", "api", "client", "research", "scholarly", "publications"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
 
 [tool.poetry.dependencies]
-python = "^3.11"
-certifi = ">=14.05.14"
-six = ">=1.10"
-python-dateutil = ">=2.5.3"
-setuptools = ">=21.0.0"
-urllib3 = ">=1.15.1"
+python = "^3.12"
+httpx = "0.28.1"
+pydantic = "2.10.4"
+tenacity = "9.0.0"
+structlog = "23.1.0"
+rich = "13.7.1"
+python-dateutil = "2.8.2"
+orjson = "3.9.7"
+typing-extensions = "4.12.2"
 
 [tool.poetry.group.dev.dependencies]
-coverage = ">=4.0.3"
-nose = ">=1.3.7"
-pluggy = ">=0.3.1"
-py = ">=1.4.31"
-randomize = ">=0.13"
-ruff = "^0.3.0"
-mypy = "^1.0.0"
-pytest = "^7.0.0"
-pytest-cov = "^4.0.0"
-types-python-dateutil = "^2.8.0"
-types-six = "^1.16.0"
+pytest = "8.3.3"
+pytest-asyncio = "0.24.0"
+pytest-cov = "6.0.0"
+pytest-httpx = "0.35.0"
+mypy = "1.13.0"
+ruff = "0.9.3"
+pre-commit = "^3.6.0"
+ipython = "^8.20.0"
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "6.2.1"
+sphinx-rtd-theme = "^2.0.0"
+sphinx-autodoc-typehints = "^2.0.0"
+myst-parser = "^2.0.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
-line-length = 88
-target-version = "py311"
-exclude = [
-    ".git",
-    "__pycache__",
-    "build",
-    "dist",
-    ".venv",
-    "venv",
-]
+line-length = 80
+target-version = "py312"
+fix = true
 
 [tool.ruff.lint]
 select = [
-    "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings
-    "F",   # pyflakes
-    "I",   # isort
-    "B",   # flake8-bugbear
-    "C4",  # flake8-comprehensions
-    "UP",  # pyupgrade
-    "N",   # pep8-naming
-    "D",   # pydocstyle
-    "SIM", # flake8-simplify
-    "RUF", # ruff-specific rules
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "UP",   # pyupgrade
+    "ARG",  # flake8-unused-arguments
+    "SIM",  # flake8-simplify
+    "TCH",  # flake8-type-checking
+    "RUF",  # Ruff-specific rules
+    "PT",   # flake8-pytest-style
+    "N",    # pep8-naming
+    "COM",  # flake8-commas
+    "Q",    # flake8-quotes
+    "PTH",  # flake8-use-pathlib
+    "RSE",  # flake8-raise
+    "RET",  # flake8-return
+    "SLF",  # flake8-self
+    "G",    # flake8-logging-format
+    "TRY",  # tryceratops
+    "EM",   # flake8-errmsg
+    "FBT",  # flake8-boolean-trap
+    "ICN",  # flake8-import-conventions
 ]
 ignore = [
-    "D100", # Missing docstring in public module
-    "D104", # Missing docstring in public package
-    "D107", # Missing docstring in __init__
+    "E501",  # line too long (handled by formatter)
+    "COM812", # missing trailing comma (handled by formatter)
 ]
-
-[tool.ruff.lint.pydocstyle]
-convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["D"]  # Ignore docstring requirements in tests
+"tests/*" = ["ARG", "FBT", "SLF"]
+
+[tool.ruff.format]
+# Use Black-compatible formatting
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.12"
+strict = true
 warn_return_any = true
 warn_unused_configs = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-check_untyped_defs = true
-disallow_untyped_decorators = true
-no_implicit_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-warn_no_return = true
-warn_unreachable = true
-strict_equality = true
-ignore_missing_imports = true
-exclude = [
-    ".venv",
-    "venv",
-    "build",
-    "dist",
-]
+no_implicit_reexport = true
+namespace_packages = true
+show_error_codes = true
+show_column_numbers = true
+pretty = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+ignore_errors = true
 
 [tool.pytest.ini_options]
-minversion = "7.0"
+minversion = "8.0"
 addopts = [
     "-ra",
     "--strict-markers",
-    "--cov=openalex_python",
+    "--asyncio-mode=auto",
+    "--cov=openalex",
     "--cov-report=term-missing",
     "--cov-report=html",
     "--cov-report=xml",
-    "--cov-fail-under=80",
+    "--cov-fail-under=90",
 ]
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
 
 [tool.coverage.run]
-source = ["openalex_python"]
-omit = [
-    "*/tests/*",
-    "*/__init__.py",
-    "*/venv/*",
-    "*/.venv/*",
-]
+source = ["openalex"]
+omit = ["*/tests/*", "*/__init__.py"]
 
 [tool.coverage.report]
 exclude_lines = [
     "pragma: no cover",
     "def __repr__",
-    "if self.debug:",
-    "if __name__ == .__main__.:",
+    "raise AssertionError",
     "raise NotImplementedError",
-    "pass",
-    "except ImportError:",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@abstractmethod",
 ]

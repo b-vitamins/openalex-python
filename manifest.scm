@@ -1,51 +1,43 @@
-;; GNU Guix manifest for openalex-python development environment
+;; GNU Guix manifest for OpenAlex Python client development environment
+;; 
+;; Usage: guix shell -m manifest.scm
+;;
+;; For a pure environment: guix shell --pure -m manifest.scm
+;; For a containerized environment: guix shell --container -m manifest.scm
 
 (specifications->manifest
- '(
-   ;; Version control and shell
+ '(;; Core development tools
    "git"
-   "bash"
-   "make"
-   
-   ;; Python and package management
    "python"
-   "python-pip"
-   "python-virtualenv"
    "poetry"
    
-   ;; Runtime dependencies
-   "python-certifi"
-   "python-six"
-   "python-dateutil"
-   "python-setuptools"
-   "python-urllib3"
+   ;; Core Python dependencies (from pyproject.toml)
+   "python-httpx"
+   "python-pydantic"
+   "python-tenacity"
+   "python-structlog"
+   "python-rich"
+   "python-dateutil" 
+   "python-orjson"
+   "python-typing-extensions"
    
-   ;; Testing framework
+   ;; Testing framework and tools
    "python-pytest"
+   "python-pytest-asyncio"
    "python-pytest-cov"
-   "python-pytest-xdist"
+   "python-pytest-httpx"
    "python-coverage"
-   "python-nose"
    
    ;; Code quality and linting
    "python-mypy"
-   "python-ruff"
    "python-black"
    "python-isort"
-   "python-flake8"
+   "python-ruff"
    "pre-commit"
    
-   ;; Development utilities
-   "python-pluggy"
-   "python-py"
-   "python-tox"
-   
-   ;; Documentation
+   ;; Documentation tools
    "python-sphinx"
+   "python-sphinx-rtd-theme"
    "python-sphinx-autodoc-typehints"
-   
-   ;; Additional tools
-   "python-wheel"
-   "python-setuptools"
-   "python-twine"
-   ))
+   "python-myst-parser"
+))
