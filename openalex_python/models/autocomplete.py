@@ -1,12 +1,25 @@
-"""Container for a set of autocomplete suggestions."""
+"""Models for the autocomplete API."""
 
 from __future__ import annotations
 
 from collections.abc import Iterable
 from dataclasses import dataclass
 
-from .autocomplete_result import AutocompleteResult
-from .meta import Meta
+from .common import Meta
+
+
+@dataclass(slots=True)
+class AutocompleteResult:
+    """Details of an individual autocomplete match."""
+
+    id: str
+    display_name: str
+    entity_type: str
+    hint: str | None = None
+    cited_by_count: int | None = None
+    works_count: int | None = None
+    external_id: str | None = None
+    filter_key: str | None = None
 
 
 @dataclass(slots=True)
@@ -17,5 +30,4 @@ class AutocompleteResults:
     results: list[AutocompleteResult] | Iterable[AutocompleteResult]
 
     def __post_init__(self) -> None:
-        """Normalize results iterable to a list."""
         self.results = list(self.results)

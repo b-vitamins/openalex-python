@@ -6,12 +6,14 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import date, datetime
 
-from .author_affiliations import AuthorAffiliations
-from .author_ids import AuthorIds
-from .counts_by_year import CountsByYear
-from .dehydrated_concept import DehydratedConcept
-from .dehydrated_institution import DehydratedInstitution
-from .summary_stats import SummaryStats
+from .concept import DehydratedConcept
+from .institution import DehydratedInstitution
+from .common import (
+    CountsByYear,
+    GroupByResult,
+    Meta,
+    SummaryStats,
+)
 
 
 @dataclass(slots=True)
@@ -44,3 +46,77 @@ class Author:
             self.last_known_institutions = list(self.last_known_institutions)
         if self.x_concepts is not None:
             self.x_concepts = list(self.x_concepts)
+
+
+@dataclass(slots=True)
+class AuthorAffiliations:
+    """Institutions an author has been affiliated with."""
+
+    institution: DehydratedInstitution
+    years: list[int] | None = None
+
+    def __post_init__(self) -> None:
+        self.years = list(self.years or [])
+
+
+@dataclass(slots=True)
+class AuthorIds:
+    """Various IDs pointing to author profiles in external systems."""
+
+    openalex: str
+    orcid: str | None = None
+    scopus: str | None = None
+    twitter: str | None = None
+    wikipedia: str | None = None
+
+
+@dataclass(slots=True)
+class AuthorshipAffiliations:
+    """Stores raw affiliation string and related institution IDs."""
+
+    raw_affiliation_string: str | None = None
+    institution_ids: list[str] | None = None
+
+    def __post_init__(self) -> None:
+        self.institution_ids = list(self.institution_ids or [])
+
+
+class DehydratedAuthor:
+    """Lightweight author record."""
+
+    def __init__(self, *, id: str, display_name: str, orcid: str | None = None) -> None:
+        self.id = id
+        self.display_name = display_name
+        self.orcid = orcid
+
+
+@dataclass(slots=True)
+class Authorship:
+    """Information about an author's role in a work."""
+
+    author_position: str
+    author: DehydratedAuthor
+    institutions: list[DehydratedInstitution]
+    countries: list[str]
+    is_corresponding: bool | None = None
+    raw_author_name: str | None = None
+    raw_affiliation_strings: Iterable[str] | None = None
+    affiliations: list[AuthorshipAffiliations] | None = None
+
+    def __post_init__(self) -> None:
+        self.institutions = list(self.institutions)
+        self.countries = list(self.countries)
+        self.raw_affiliation_strings = list(self.raw_affiliation_strings or [])
+        self.affiliations = list(self.affiliations or [])
+
+
+@dataclass(slots=True)
+class AuthorsList:
+    """A collection of authors with associated metadata."""
+
+    meta: Meta
+    results: list[Author] | Iterable[Author]
+    group_by: GroupByResult | None = None
+
+    def __post_init__(self) -> None:
+        self.results = list(self.results)

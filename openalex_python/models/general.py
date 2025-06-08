@@ -1,4 +1,5 @@
-"""Root-level API response metadata."""
+"""General API response models."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

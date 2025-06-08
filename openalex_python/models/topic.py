@@ -6,8 +6,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import date, datetime
 
-from .topic_ids import TopicIds
-from .topic_level import TopicLevel
+from .common import GroupByResult, Meta
 
 
 @dataclass(slots=True)
@@ -31,3 +30,52 @@ class Topic:
         """Convert iterable keywords to a list."""
         if self.keywords is not None:
             self.keywords = list(self.keywords)
+
+
+@dataclass(slots=True)
+class TopicLevel:
+    """Represents one level in the topic hierarchy."""
+
+    id: str
+    display_name: str
+
+
+@dataclass(slots=True)
+class TopicIds:
+    """Various IDs associated with a topic."""
+
+    openalex: str
+    wikipedia: str | None = None
+
+
+class DehydratedTopic:
+    """Basic topic details."""
+
+    def __init__(
+        self,
+        *,
+        id: str,
+        display_name: str,
+        score: float | None = None,
+        subfield: TopicLevel | None = None,
+        field: TopicLevel | None = None,
+        domain: TopicLevel | None = None,
+    ) -> None:
+        self.id = id
+        self.display_name = display_name
+        self.score = score
+        self.subfield = subfield
+        self.field = field
+        self.domain = domain
+
+
+@dataclass(slots=True)
+class TopicsList:
+    """Container for topics and related metadata."""
+
+    meta: Meta
+    results: Iterable[Topic]
+    group_by: GroupByResult | None = None
+
+    def __post_init__(self) -> None:
+        self.results = list(self.results)

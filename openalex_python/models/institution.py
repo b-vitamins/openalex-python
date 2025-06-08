@@ -5,15 +5,16 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import date, datetime
 
-from .associated_institution import AssociatedInstitution
-from .counts_by_year import CountsByYear
-from .dehydrated_concept import DehydratedConcept
-from .geo import Geo
-from .institution_ids import InstitutionIds
-from .international_names import InternationalNames
-from .repository import Repository
-from .role import Role
-from .summary_stats import SummaryStats
+from .concept import DehydratedConcept
+from .common import (
+    CountsByYear,
+    Geo,
+    GroupByResult,
+    InternationalNames,
+    Meta,
+    Role,
+    SummaryStats,
+)
 
 
 @dataclass(slots=True)
@@ -70,3 +71,78 @@ class Institution:
         self.lineage = list(self.lineage) if self.lineage is not None else None
         self.roles = list(self.roles) if self.roles is not None else None
         self.x_concepts = list(self.x_concepts) if self.x_concepts is not None else None
+
+
+@dataclass(slots=True)
+class Repository:
+    """Institutional or subject repository details."""
+
+    id: str | None = None
+    display_name: str | None = None
+    host_organization: str | None = None
+    host_organization_name: str | None = None
+    host_organization_lineage: list[str] | None = None
+
+    def __post_init__(self) -> None:
+        self.host_organization_lineage = (
+            list(self.host_organization_lineage)
+            if self.host_organization_lineage is not None
+            else None
+        )
+
+
+@dataclass(slots=True)
+class AssociatedInstitution:
+    """Institution linked with an author."""
+
+    id: str
+    display_name: str
+    relationship: str
+    ror: str | None = None
+    country_code: str | None = None
+    type: str | None = None
+
+
+class DehydratedInstitution:
+    """Minimal institution record."""
+
+    def __init__(
+        self,
+        *,
+        id: str,
+        display_name: str,
+        ror: str | None = None,
+        country_code: str | None = None,
+        type: str | None = None,
+        lineage: Iterable[str] | None = None,
+    ) -> None:
+        self.id = id
+        self.display_name = display_name
+        self.ror = ror
+        self.country_code = country_code
+        self.type = type
+        self.lineage = list(lineage) if lineage is not None else None
+
+
+@dataclass(slots=True)
+class InstitutionIds:
+    """Collection of identifier strings."""
+
+    openalex: str
+    ror: str | None = None
+    grid: str | None = None
+    wikipedia: str | None = None
+    wikidata: str | None = None
+    mag: int | None = None
+
+
+@dataclass(slots=True)
+class InstitutionsList:
+    """Institutions returned from the API."""
+
+    meta: Meta
+    results: list[Institution]
+    group_by: GroupByResult | None = None
+
+    def __post_init__(self) -> None:
+        self.results = list(self.results)

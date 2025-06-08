@@ -4,10 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date, datetime
 
-from .counts_by_year import CountsByYear
-from .publisher_ids import PublisherIds
-from .role import Role
-from .summary_stats import SummaryStats
+from .common import CountsByYear, GroupByResult, Meta, Role, SummaryStats
 
 
 @dataclass(slots=True)
@@ -44,3 +41,32 @@ class Publisher:
         )
         self.lineage = list(self.lineage) if self.lineage is not None else None
         self.roles = list(self.roles) if self.roles is not None else None
+
+
+class DehydratedPublisher:
+    """Basic publisher data."""
+
+    def __init__(self, *, id: str, display_name: str) -> None:
+        self.id = id
+        self.display_name = display_name
+
+
+@dataclass(slots=True)
+class PublisherIds:
+    """Various ID systems used for a publisher."""
+
+    openalex: str
+    ror: str | None = None
+    wikidata: str | None = None
+
+
+@dataclass(slots=True)
+class PublishersList:
+    """Container for a page of publishers."""
+
+    meta: Meta
+    results: list[Publisher]
+    group_by: GroupByResult | None = None
+
+    def __post_init__(self) -> None:
+        self.results = list(self.results)

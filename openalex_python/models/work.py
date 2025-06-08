@@ -6,20 +6,11 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import date, datetime
 
-from .apc import APC
-from .authorship import Authorship
-from .biblio import Biblio
-from .counts_by_year import CountsByYear
-from .dehydrated_concept import DehydratedConcept
-from .dehydrated_topic import DehydratedTopic
-from .grant import Grant
-from .keyword_tag import KeywordTag
-from .location import Location
-from .mesh_tag import MeshTag
-from .open_access import OpenAccess
-from .sustainable_development_goal import SustainableDevelopmentGoal
-from .work_citation_normalized_percentile import WorkCitationNormalizedPercentile
-from .work_ids import WorkIds
+from .author import Authorship
+from .concept import DehydratedConcept
+from .topic import DehydratedTopic
+from .common import CountsByYear, GroupByResult, Meta
+from .source import DehydratedSource
 
 
 @dataclass(slots=True)
@@ -106,3 +97,115 @@ class Work:
             if self.sustainable_development_goals is not None
             else None
         )
+
+
+@dataclass(slots=True)
+class APC:
+    """Article processing charge details."""
+
+    value: int | None = None
+    currency: str | None = None
+
+
+@dataclass(slots=True)
+class Biblio:
+    """Container for bibliographic fields."""
+
+    volume: str | None = None
+    issue: str | None = None
+    first_page: str | None = None
+    last_page: str | None = None
+
+
+@dataclass(slots=True)
+class Location:
+    """Details about where a work can be found."""
+
+    is_oa: bool | None = None
+    landing_page_url: str | None = None
+    pdf_url: str | None = None
+    source: DehydratedSource | None = None
+    license: str | None = None
+    license_id: str | None = None
+    version: str | None = None
+    is_accepted: bool | None = None
+    is_published: bool | None = None
+
+
+@dataclass(slots=True)
+class MeshTag:
+    """MeSH descriptor and qualifier."""
+
+    descriptor_ui: str
+    descriptor_name: str
+    is_major_topic: bool
+    qualifier_ui: str | None = None
+    qualifier_name: str | None = None
+
+
+@dataclass(slots=True)
+class KeywordTag:
+    """Keyword with relevance score."""
+
+    id: str
+    display_name: str
+    score: float
+
+
+@dataclass(slots=True)
+class Grant:
+    """Funding grant metadata."""
+
+    funder: str
+    funder_display_name: str | None = None
+    award_id: str | None = None
+
+
+@dataclass(slots=True)
+class OpenAccess:
+    """Details about a work's OA status."""
+
+    is_oa: bool
+    oa_status: str
+    oa_url: str | None = None
+    any_repository_has_fulltext: bool | None = None
+
+
+@dataclass(slots=True)
+class SustainableDevelopmentGoal:
+    """SDG tag for a work."""
+
+    id: int
+    description: str | None = None
+
+
+@dataclass(slots=True)
+class WorkCitationNormalizedPercentile:
+    """Citation percentile scores."""
+
+    value: float | None = None
+    is_in_top_1_percent: bool | None = None
+    is_in_top_10_percent: bool | None = None
+
+
+@dataclass(slots=True)
+class WorkIds:
+    """Various IDs referencing a work."""
+
+    openalex: str
+    doi: str | None = None
+    mag: int | None = None
+    pmid: str | None = None
+    pmcid: str | None = None
+
+
+@dataclass(slots=True)
+class WorksList:
+    """Container for a collection of works."""
+
+    meta: Meta
+    results: Iterable[Work]
+    group_by: GroupByResult | None = None
+
+    def __post_init__(self) -> None:
+        self.results = list(self.results)
