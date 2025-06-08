@@ -1,6 +1,6 @@
 import pytest
+
 from openalex.models import Author
-from openalex.resources import AsyncAuthorsResource
 
 
 @pytest.mark.asyncio

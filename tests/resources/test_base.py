@@ -1,8 +1,9 @@
 import pytest
 from pydantic import BaseModel
-from openalex.resources.base import BaseResource
-from openalex.models import BaseFilter
+
 from openalex.exceptions import ValidationError as OpenAlexValidationError
+from openalex.models import BaseFilter
+from openalex.resources.base import BaseResource
 
 
 class DummyModel(BaseModel):
