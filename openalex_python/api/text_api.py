@@ -2,35 +2,13 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from typing import Any
 
-from openalex_python.api_client import ApiClient
+from .base import BaseApi
 
 
-def _prep(params: Mapping[str, Any]) -> list[tuple[str, Any]]:
-    return [(k, v) for k, v in params.items() if v is not None]
-
-
-class TextApi:
+class TextApi(BaseApi):
     """Access text analysis endpoints."""
-
-    def __init__(self, api_client: ApiClient | None = None) -> None:
-        self.api_client = api_client or ApiClient()
-
-    def _get(self, path: str, **params: Any) -> Any:
-        return self.api_client.call_api(
-            path, "GET", query_params=_prep(params), _return_http_data_only=True
-        )
-
-    def _post(self, path: str, body: Any, **params: Any) -> Any:
-        return self.api_client.call_api(
-            path,
-            "POST",
-            body=body,
-            query_params=_prep(params),
-            _return_http_data_only=True,
-        )
 
     def text_concepts_get(self, title: str, **params: Any) -> Any:
         """Extract concepts from text title."""

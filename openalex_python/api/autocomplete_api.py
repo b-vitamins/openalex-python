@@ -2,26 +2,13 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from typing import Any
 
-from openalex_python.api_client import ApiClient
+from .base import BaseApi
 
 
-def _prep(params: Mapping[str, Any]) -> list[tuple[str, Any]]:
-    return [(k, v) for k, v in params.items() if v is not None]
-
-
-class AutocompleteApi:
+class AutocompleteApi(BaseApi):
     """Autocomplete API."""
-
-    def __init__(self, api_client: ApiClient | None = None) -> None:
-        self.api_client = api_client or ApiClient()
-
-    def _get(self, path: str, **params: Any) -> Any:
-        return self.api_client.call_api(
-            path, "GET", query_params=_prep(params), _return_http_data_only=True
-        )
 
     def autocomplete_authors_get(self, q: str, **params: Any) -> Any:
         """Autocomplete authors."""
