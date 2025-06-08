@@ -136,7 +136,6 @@ source = ["openalex"]
 omit = [
     "*/tests/*",
     "*/__init__.py",
-    "openalex/resources/*",
 ]
 
 [tool.coverage.report]
