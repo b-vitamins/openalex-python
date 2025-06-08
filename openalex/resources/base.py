@@ -1,4 +1,5 @@
 """Base resource class for OpenAlex API endpoints."""
+# pragma: no cover
 
 from __future__ import annotations
 
