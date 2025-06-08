@@ -1,4 +1,3 @@
-from openalex.models import Topic
 
 
 def test_list_topics(client, httpx_mock, mock_list_response):

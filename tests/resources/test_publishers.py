@@ -1,4 +1,3 @@
-from openalex.models import Publisher
 
 
 def test_list_publishers(client, httpx_mock, mock_list_response):

@@ -1,4 +1,3 @@
-from openalex.models import Keyword
 
 
 def test_list_keywords(client, httpx_mock, mock_list_response):

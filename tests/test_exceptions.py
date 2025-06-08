@@ -3,12 +3,12 @@ import pytest
 
 from openalex.exceptions import (
     APIError,
-    NetworkError,
-    TimeoutError,
-    ValidationError,
     AuthenticationError,
+    NetworkError,
     NotFoundError,
     RateLimitError,
+    TimeoutError,
+    ValidationError,
     raise_for_status,
 )
 

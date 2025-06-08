@@ -1,11 +1,11 @@
 from openalex.models import (
     Funder,
     Institution,
+    Keyword,
     Publisher,
     Source,
     SourceType,
     Topic,
-    Keyword,
 )
 from openalex.models import work as work_models
 

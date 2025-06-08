@@ -1,4 +1,5 @@
 import pytest
+
 from openalex.models import Work
 from openalex.models.filters import WorksFilter
 from openalex.resources import WorksResource

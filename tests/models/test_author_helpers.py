@@ -1,4 +1,3 @@
-import pytest
 
 from openalex.models import (
     Author,

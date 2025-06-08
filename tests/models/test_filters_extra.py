@@ -1,8 +1,9 @@
 from datetime import date
-import pytest
 
-from openalex.models import BaseFilter, WorksFilter, GroupBy
+import pytest
 from pydantic import ValidationError
+
+from openalex.models import BaseFilter, GroupBy, WorksFilter
 
 
 def test_base_filter_validation() -> None:
