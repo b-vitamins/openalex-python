@@ -1,4 +1,5 @@
 """Identifier collection for an author."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -13,4 +14,3 @@ class AuthorIds:
     scopus: str | None = None
     twitter: str | None = None
     wikipedia: str | None = None
-

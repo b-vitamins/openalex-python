@@ -1,4 +1,5 @@
 """Representation of an author in OpenAlex."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -37,5 +38,3 @@ class Author:
         """Ensure alternative names are stored as a list."""
         if self.display_name_alternatives is not None:
             self.display_name_alternatives = list(self.display_name_alternatives)
-
-

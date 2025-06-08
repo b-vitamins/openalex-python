@@ -1,4 +1,5 @@
 """Model representing article processing charge information."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -12,4 +13,3 @@ class APC:
     currency: str
     value_usd: int | None = None
     provenance: str | None = None
-

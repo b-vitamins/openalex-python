@@ -1,4 +1,5 @@
 """Single autocomplete suggestion returned from the API."""
+
 from __future__ import annotations
 from dataclasses import dataclass
 

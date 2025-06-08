@@ -1,4 +1,5 @@
 """Model describing an author's institutional affiliations."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -17,4 +18,3 @@ class AuthorAffiliations:
     def __post_init__(self) -> None:
         """Ensure years is always a list."""
         self.years = list(self.years) if self.years is not None else []
-

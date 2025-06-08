@@ -1,4 +1,5 @@
 """Model for institutions associated with an author."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -14,4 +15,3 @@ class AssociatedInstitution:
     ror: str | None = None
     country_code: str | None = None
     type: str | None = None
-
