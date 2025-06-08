@@ -13,10 +13,10 @@ import tempfile
 from multiprocessing.pool import ThreadPool
 
 import six
-import swagger_client.models
+import openalex_python.models
 from six.moves.urllib.parse import quote
-from swagger_client import rest
-from swagger_client.configuration import Configuration
+from openalex_python import rest
+from openalex_python.configuration import Configuration
 
 
 class ApiClient:
@@ -215,7 +215,7 @@ class ApiClient:
             if klass in self.NATIVE_TYPES_MAPPING:
                 klass = self.NATIVE_TYPES_MAPPING[klass]
             else:
-                klass = getattr(swagger_client.models, klass)
+                klass = getattr(openalex_python.models, klass)
         if klass in self.PRIMITIVE_TYPES:
             return self.__deserialize_primitive(data, klass)
         elif klass == object:
