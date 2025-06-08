@@ -10,7 +10,7 @@ from structlog import get_logger
 
 from .config import OpenAlexConfig
 from .exceptions import NetworkError, TimeoutError
-from .models import AutocompleteResult, ListResult
+from .models import AutocompleteResult, ListResult, Meta
 from .resources import (
     AsyncAuthorsResource,
     AsyncConceptsResource,
@@ -34,7 +34,9 @@ from .resources import (
 from .utils import AsyncRateLimiter, RateLimiter, RetryConfig, RetryHandler
 
 if TYPE_CHECKING:
-    from collections.abc import Generator
+    from collections.abc import AsyncIterator, Awaitable, Generator
+
+    from .resources.base import BaseResource
 
 logger = get_logger(__name__)
 
@@ -229,10 +231,10 @@ class OpenAlex:
         Returns:
             Dictionary of results by entity type
         """
-        results = {}
+        results: dict[str, ListResult[Any]] = {}
 
         # Search each entity type
-        entity_types = [
+        entity_types: list[tuple[str, BaseResource[Any, Any]]] = [
             ("works", self.works),
             ("authors", self.authors),
             ("institutions", self.institutions),
@@ -249,10 +251,21 @@ class OpenAlex:
                 results[entity_type] = resource.search(query, **params)
             except Exception as e:
                 logger.warning(
-                    f"Failed to search {entity_type}",
+                    "Failed to search %s",
+                    entity_type,
                     error=str(e),
                 )
-                results[entity_type] = ListResult(meta={}, results=[])
+                results[entity_type] = ListResult(
+                    meta=Meta(
+                        count=0,
+                        db_response_time_ms=0,
+                        page=1,
+                        per_page=0,
+                        groups_count=0,
+                        next_cursor=None,
+                    ),
+                    results=[],
+                )
 
         return results
 
@@ -447,7 +460,7 @@ class AsyncOpenAlex:
             Dictionary of results by entity type
         """
         # Create search tasks
-        tasks = {
+        tasks: dict[str, Awaitable[ListResult[Any]]] = {
             "works": self.works.search(query, **params),
             "authors": self.authors.search(query, **params),
             "institutions": self.institutions.search(query, **params),
@@ -460,16 +473,27 @@ class AsyncOpenAlex:
         }
 
         # Run concurrently
-        results = {}
+        results: dict[str, ListResult[Any]] = {}
         for entity_type, task in tasks.items():
             try:
                 results[entity_type] = await task
             except Exception as e:
                 logger.warning(
-                    f"Failed to search {entity_type}",
+                    "Failed to search %s",
+                    entity_type,
                     error=str(e),
                 )
-                results[entity_type] = ListResult(meta={}, results=[])
+                results[entity_type] = ListResult(
+                    meta=Meta(
+                        count=0,
+                        db_response_time_ms=0,
+                        page=1,
+                        per_page=0,
+                        groups_count=0,
+                        next_cursor=None,
+                    ),
+                    results=[],
+                )
 
         return results
 
@@ -503,7 +527,7 @@ async def async_client(
     email: str | None = None,
     api_key: str | None = None,
     **kwargs: Any,
-) -> AsyncOpenAlex:
+) -> AsyncIterator[AsyncOpenAlex]:
     """Create async OpenAlex client as context manager.
 
     Args:

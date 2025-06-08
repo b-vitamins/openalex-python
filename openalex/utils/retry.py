@@ -11,22 +11,23 @@ from tenacity import (
     AsyncRetrying,
     RetryError,
     Retrying,
-    retry_if_exception_type,
+    retry_if_exception,
     stop_after_attempt,
+    wait_exponential,
     wait_exponential_jitter,
 )
 
 from ..exceptions import APIError, NetworkError, RateLimitError, TimeoutError
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Awaitable, Callable
 
 logger = get_logger(__name__)
 
 T = TypeVar("T")
 
 
-def is_retryable_error(error: Exception) -> bool:
+def is_retryable_error(error: BaseException) -> bool:
     """Check if an error is retryable."""
     if isinstance(error, RateLimitError):
         return True
@@ -50,6 +51,7 @@ class RetryConfig:
         initial_wait: float = 1.0,
         max_wait: float = 60.0,
         exponential_base: float = 2.0,
+        *,
         jitter: bool = True,
     ) -> None:
         """Initialize retry configuration.
@@ -67,7 +69,7 @@ class RetryConfig:
         self.exponential_base = exponential_base
         self.jitter = jitter
 
-    def get_wait_strategy(self):
+    def get_wait_strategy(self) -> Any:
         """Get tenacity wait strategy."""
         if self.jitter:
             return wait_exponential_jitter(
@@ -103,7 +105,7 @@ def with_retry(
         retrying = Retrying(
             stop=stop_after_attempt(config.max_attempts),
             wait=config.get_wait_strategy(),
-            retry=retry_if_exception_type(is_retryable_error),
+            retry=retry_if_exception(is_retryable_error),
             before_sleep=lambda retry_state: logger.info(
                 "Retrying request",
                 attempt=retry_state.attempt_number,
@@ -118,18 +120,20 @@ def with_retry(
                 with attempt:
                     return func(*args, **kwargs)
         except RetryError as e:
-            # Re-raise the last exception
             if e.last_attempt.failed:
-                raise e.last_attempt.result()
+                raise e.last_attempt.result() from e
             raise
+
+        _msg = "Unreachable"
+        raise AssertionError(_msg)
 
     return wrapper
 
 
 def async_with_retry(
-    func: Callable[..., T],
+    func: Callable[..., Awaitable[T]],
     config: RetryConfig | None = None,
-) -> Callable[..., T]:
+) -> Callable[..., Awaitable[T]]:
     """Async decorator to add retry logic to a function.
 
     Args:
@@ -147,7 +151,7 @@ def async_with_retry(
         retrying = AsyncRetrying(
             stop=stop_after_attempt(config.max_attempts),
             wait=config.get_wait_strategy(),
-            retry=retry_if_exception_type(is_retryable_error),
+            retry=retry_if_exception(is_retryable_error),
             before_sleep=lambda retry_state: logger.info(
                 "Retrying request",
                 attempt=retry_state.attempt_number,
@@ -162,10 +166,12 @@ def async_with_retry(
                 with attempt:
                     return await func(*args, **kwargs)
         except RetryError as e:
-            # Re-raise the last exception
             if e.last_attempt.failed:
-                raise e.last_attempt.result()
+                raise e.last_attempt.result() from e
             raise
+
+        _msg = "Unreachable"
+        raise AssertionError(_msg)
 
     return wrapper
 
@@ -206,12 +212,12 @@ class RetryHandler:
 
     async def wait(self, seconds: float) -> None:
         """Wait for specified seconds."""
-        logger.debug(f"Waiting {seconds:.2f} seconds before retry")
+        logger.debug("Waiting %.2f seconds before retry", seconds)
         await asyncio.sleep(seconds)
 
     def wait_sync(self, seconds: float) -> None:
         """Synchronous wait for specified seconds."""
         import time
 
-        logger.debug(f"Waiting {seconds:.2f} seconds before retry")
+        logger.debug("Waiting %.2f seconds before retry", seconds)
         time.sleep(seconds)

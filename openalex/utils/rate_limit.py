@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 from structlog import get_logger
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Awaitable, Callable
 
 logger = get_logger(__name__)
 
@@ -230,7 +230,7 @@ def rate_limited(
         def wrapper(*args: Any, **kwargs: Any) -> T:
             wait_time = limiter.acquire()
             if wait_time > 0:
-                logger.debug(f"Rate limit: waiting {wait_time:.2f}s")
+                logger.debug("Rate limit: waiting %.2fs", wait_time)
                 time.sleep(wait_time)
             return func(*args, **kwargs)
 
@@ -243,15 +243,17 @@ def async_rate_limited(
     rate: float,
     burst: int | None = None,
     buffer: float = 0.1,
-) -> Callable[[Callable[..., T]], Callable[..., T]]:
+) -> Callable[[Callable[..., Awaitable[T]]], Callable[..., Awaitable[T]]]:
     """Async decorator to rate limit function calls."""
     limiter = AsyncRateLimiter(rate, burst, buffer)
 
-    def decorator(func: Callable[..., T]) -> Callable[..., T]:
+    def decorator(
+        func: Callable[..., Awaitable[T]],
+    ) -> Callable[..., Awaitable[T]]:
         async def wrapper(*args: Any, **kwargs: Any) -> T:
             wait_time = await limiter.acquire()
             if wait_time > 0:
-                logger.debug(f"Rate limit: waiting {wait_time:.2f}s")
+                logger.debug("Rate limit: waiting %.2fs", wait_time)
                 await asyncio.sleep(wait_time)
             return await func(*args, **kwargs)
 
