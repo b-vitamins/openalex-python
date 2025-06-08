@@ -2,9 +2,6 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-
-
-class AuthorshipAffiliations:
     """Stores raw affiliation string and related institution IDs."""
 
     def __init__(

@@ -1,18 +1,10 @@
 """Model describing how an author contributed to a work."""
 from __future__ import annotations
-
 from collections.abc import Iterable
-
 from .authorship_affiliations import AuthorshipAffiliations
 from .dehydrated_author import DehydratedAuthor
 from .dehydrated_institution import DehydratedInstitution
-
-
-class Authorship:
     """Information about an author's role in a work."""
-
-    def __init__(
-        self,
         *,
         author_position: str,
         author: DehydratedAuthor,
@@ -23,8 +15,6 @@ class Authorship:
         raw_affiliation_strings: Iterable[str] | None = None,
         affiliations: Iterable[AuthorshipAffiliations] | None = None,
     ) -> None:
-        self.author_position = author_position
-        self.author = author
         self.institutions = list(institutions)
         self.countries = list(countries)
         self.is_corresponding = is_corresponding
