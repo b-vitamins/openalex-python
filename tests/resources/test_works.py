@@ -624,3 +624,58 @@ async def test_async_filter_builder(async_client: AsyncOpenAlex) -> None:
     assert isinstance(filt, WorksFilter)
     assert filt.page == 3
 
+
+def test_search_default_filter_usage(
+    client: OpenAlex, httpx_mock: HTTPXMock, mock_list_response: dict[str, Any]
+) -> None:
+    default = WorksFilter(filter="is_oa:true")
+    resource = WorksResource(client, default_filter=default)
+    httpx_mock.add_response(
+        url="https://api.openalex.org/works?search=query&filter=is_oa%3Atrue&mailto=test%40example.com",
+        json=mock_list_response,
+    )
+    result = resource.search("query")
+    assert result.meta.count == 100
+
+
+def test_paginate_default_filter_usage(
+    client: OpenAlex, httpx_mock: HTTPXMock, mock_list_response: dict[str, Any]
+) -> None:
+    default = WorksFilter(filter="is_oa:true")
+    resource = WorksResource(client, default_filter=default)
+    httpx_mock.add_response(
+        url="https://api.openalex.org/works?filter=is_oa%3Atrue&page=1&per-page=1&mailto=test%40example.com",
+        json=mock_list_response,
+    )
+    paginator = resource.paginate(per_page=1, max_results=1)
+    assert len(paginator.all()) == 1
+
+
+@pytest.mark.asyncio
+async def test_async_clone_with_string_filter(async_client: AsyncOpenAlex) -> None:
+    from openalex.resources import AsyncWorksResource
+
+    default = WorksFilter(filter="is_oa:true")
+    resource = AsyncWorksResource(async_client, default_filter=default)
+    new_res = await resource.by_author("A123")
+    assert new_res._default_filter.filter["raw"] == "is_oa:true"
+    assert new_res._default_filter.filter["authorships.author.id"] == "A123"
+
+
+@pytest.mark.asyncio
+async def test_async_paginate_default_filter(
+    async_client: AsyncOpenAlex, httpx_mock: HTTPXMock, mock_list_response: dict[str, Any]
+) -> None:
+    from openalex.resources import AsyncWorksResource
+
+    default = WorksFilter(filter="is_oa:true")
+    resource = AsyncWorksResource(async_client, default_filter=default)
+    httpx_mock.add_response(
+        url="https://api.openalex.org/works?filter=is_oa%3Atrue&page=1&per-page=1&mailto=test%40example.com",
+        json=mock_list_response,
+    )
+    paginator = resource.paginate(per_page=1, max_results=1)
+    results = []
+    async for item in paginator:
+        results.append(item)
+    assert len(results) == 1

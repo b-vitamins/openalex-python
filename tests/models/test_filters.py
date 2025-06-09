@@ -955,3 +955,21 @@ class TestFilterEdgeCases:
         assert "cited_by_count:>4" in filter_str
         assert "has_doi:true" in filter_str
         assert "language:en" in filter_str
+
+
+def test_validate_select_none() -> None:
+    bf = BaseFilter(select=None)
+    assert bf.select is None
+
+
+def test_string_filter_branches() -> None:
+    wf = WorksFilter(filter="raw").with_type("article").with_open_access(is_oa=False)
+    params = wf.to_params()
+    assert "raw:raw" in params["filter"]
+    assert "type:article" in params["filter"]
+    assert "is_oa:false" in params["filter"]
+
+    inst = InstitutionsFilter(filter="start").with_type("education")
+    inst_str = inst.to_params()["filter"]
+    assert "raw:start" in inst_str
+    assert "type:education" in inst_str
