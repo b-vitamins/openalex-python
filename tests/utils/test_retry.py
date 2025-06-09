@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import random
 import time
 
 import pytest
@@ -92,3 +93,48 @@ async def test_retry_handler_should_retry_and_wait(
     monkeypatch.setattr(time, "sleep", fake_sleep_sync)
     handler.wait_sync(2)
     assert sync_calls == [2]
+
+
+def test_with_retry_failure(monkeypatch: pytest.MonkeyPatch) -> None:
+    attempts: list[int] = []
+
+    def func() -> None:
+        attempts.append(1)
+        msg = "err"
+        raise APIError(msg, status_code=500)
+
+    monkeypatch.setattr(time, "sleep", lambda _: None)
+    wrapped = with_retry(func, RetryConfig(max_attempts=2, initial_wait=0))
+    with pytest.raises(APIError):
+        wrapped()
+    assert len(attempts) == 2
+
+
+@pytest.mark.asyncio
+async def test_async_with_retry_failure(monkeypatch: pytest.MonkeyPatch) -> None:
+    attempts: list[int] = []
+
+    async def func() -> None:
+        attempts.append(1)
+        msg = "err"
+        raise APIError(msg, status_code=500)
+
+    async def fake_sleep(_: float) -> None:
+        return None
+
+    monkeypatch.setattr(asyncio, "sleep", fake_sleep)
+    wrapped = async_with_retry(func, RetryConfig(max_attempts=2, initial_wait=0))
+    with pytest.raises(APIError):
+        await wrapped()
+    assert len(attempts) == 2
+
+
+def test_retry_handler_get_wait_time(monkeypatch: pytest.MonkeyPatch) -> None:
+    handler = RetryHandler(RetryConfig(jitter=False))
+    err = RateLimitError(retry_after=5)
+    assert handler.get_wait_time(err, 1) == 5.0
+
+    handler_jitter = RetryHandler(RetryConfig(jitter=True))
+    monkeypatch.setattr(random, "uniform", lambda a, b: 0)
+    wait = handler_jitter.get_wait_time(NetworkError(), 2)
+    assert wait == handler_jitter.config.initial_wait * handler_jitter.config.exponential_base

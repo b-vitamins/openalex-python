@@ -2,10 +2,15 @@
 
 from __future__ import annotations
 
+from datetime import date
 from typing import TYPE_CHECKING, Any, ClassVar
 
+import pytest
+
 from openalex import OpenAlex
-from openalex.models import Work
+from openalex.models import Work, WorksFilter
+from openalex.models import work as legacy
+from openalex.resources import WorksResource
 
 from .base import BaseResourceTest
 
@@ -13,7 +18,7 @@ if TYPE_CHECKING:
     from pytest_httpx import HTTPXMock
 
     from openalex import AsyncOpenAlex
-    from openalex.resources import AsyncWorksResource, WorksResource
+    from openalex.resources import AsyncWorksResource
 
 
 class TestWorksResource(BaseResourceTest[Work]):
@@ -380,3 +385,69 @@ class TestWorksResource(BaseResourceTest[Work]):
         # Should handle gracefully with model_construct fallback
         work = client.works.get(self.sample_id)
         assert work.id == malformed_data["id"]
+
+    def test_filter_range_normalization(
+        self,
+        client: OpenAlex,
+        httpx_mock: HTTPXMock,
+        mock_list_response: dict[str, Any],
+    ) -> None:
+        httpx_mock.add_response(
+            url="https://api.openalex.org/works?filter=cited_by_count%3A1-4&mailto=test%40example.com",
+            json=mock_list_response,
+        )
+
+        resource = client.works.filter(cited_by_count=[1, 2, 3, 4])
+        assert isinstance(resource, WorksResource)
+        result = resource.list()
+        assert result.meta.count == 100
+
+    def test_clone_with_default_filter(
+        self,
+        client: OpenAlex,
+        httpx_mock: HTTPXMock,
+        mock_list_response: dict[str, Any],
+    ) -> None:
+        default = WorksFilter().with_open_access(is_oa=True)
+        resource = WorksResource(client, default_filter=default)
+
+        httpx_mock.add_response(
+            url="https://api.openalex.org/works?filter=is_oa%3Atrue%2Cauthorships.author.id%3AA123&mailto=test%40example.com",
+            json=mock_list_response,
+        )
+
+        result = resource.by_author("A123").list()
+        assert result.meta.count == 100
+
+
+def test_legacy_basefilter_validation() -> None:
+    with pytest.raises(ValueError, match="string or dictionary"):
+        legacy.BaseFilter(filter=123)
+    with pytest.raises(ValueError, match="list of strings"):
+        legacy.BaseFilter(select=123)
+
+
+def test_legacy_basefilter_to_params() -> None:
+    bf = legacy.BaseFilter(
+        filter={"is_oa": True, "created": date(2024, 1, 1)},
+        select=["id", "title"],
+        per_page=50,
+    )
+    params = bf.to_params()
+    assert params["filter"] == "is_oa:true,created:2024-01-01"
+    assert params["select"] == "id,title"
+    assert params["per-page"] == 50
+
+
+def test_legacy_worksfilter_methods() -> None:
+    wf = (
+        legacy.WorksFilter()
+        .with_publication_year(2023)
+        .with_type("article")
+        .with_open_access(True)
+    )
+    params = wf.to_params()
+    filter_str = params["filter"]
+    assert "publication_year:2023" in filter_str
+    assert "type:article" in filter_str
+    assert "is_oa:true" in filter_str
