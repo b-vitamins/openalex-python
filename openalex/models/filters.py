@@ -41,13 +41,13 @@ class BaseFilter(BaseModel):
     sort: str | None = Field(None, description="Sort field")
     group_by: str | GroupBy | None = Field(None, description="Group by field")
     page: int | None = Field(
-        default=None,
+        default=1,
         ge=1,
         le=10000,
         description="Page number",
     )
     per_page: int | None = Field(
-        default=None,
+        default=25,
         ge=1,
         le=200,
         description="Results per page",
@@ -83,12 +83,24 @@ class BaseFilter(BaseModel):
         msg = "Select must be a string or list of strings"
         raise ValueError(msg)
 
-    def to_params(self) -> dict[str, Any]:
-        """Convert to API query parameters."""
+    def to_params(self, *, include_defaults: bool = True) -> dict[str, Any]:
+        """Convert to API query parameters.
+
+        Args:
+            include_defaults: Include default paging parameters even if not
+                explicitly set.
+        """
         params = {}
 
+        exclude: set[str] = set()
+        if not include_defaults:
+            if "page" not in self.model_fields_set:
+                exclude.add("page")
+            if "per_page" not in self.model_fields_set:
+                exclude.add("per_page")
+
         for field_name, field_value in self.model_dump(
-            exclude_none=True
+            exclude_none=True, exclude=exclude
         ).items():
             if field_name == "filter" and isinstance(field_value, dict):
                 # Convert filter dict to API format

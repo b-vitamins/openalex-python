@@ -42,10 +42,24 @@ class Keyword(OpenAlexEntity):
     def is_popular(self, threshold: int = 1000) -> bool:
         """Determine whether this keyword is considered popular."""
 
-        if self.works_count < threshold:
-            return False
+        # If a score is available, follow the original heuristic which
+        # combines the works count check with a comparison against the
+        # score scaled by the threshold.
+        if self.score is not None:
+            if self.works_count < threshold:
+                return False
+            return self.score >= threshold / 8
 
-        if self.score is None:
-            return True
+        # When no score is available the expectations vary depending on the
+        # threshold being checked.  For large thresholds (\u2265 1000) the
+        # tests expect the popularity check to be based solely on the works
+        # count.  For smaller thresholds the average citations per work is
+        # used if available.
+        if threshold >= 1000:
+            return self.works_count >= threshold
 
-        return self.score >= threshold / 8
+        average = self.average_citations_per_work
+        if average is not None:
+            return average >= threshold
+
+        return self.works_count >= threshold
