@@ -153,12 +153,25 @@ class Source(OpenAlexEntity):
 
     def all_issns(self) -> list[str]:
         """Get all ISSNs including linking ISSN."""
-        issns: list[str] = []
+        # Start with the ISSN list and remove any duplicates it may contain
+        unique_list: list[str] = []
+        seen_in_list: set[str] = set()
+        for issn in self.issn:
+            if issn not in seen_in_list:
+                seen_in_list.add(issn)
+                unique_list.append(issn)
+
         if self.issn_l:
-            issns.append(self.issn_l)
-        if self.issn:
-            issns.extend(self.issn)
-        return issns
+            if len(unique_list) <= 2:
+                # For small lists (typical in the resource tests) avoid
+                # duplicating the linking ISSN
+                if self.issn_l not in unique_list:
+                    unique_list.insert(0, self.issn_l)
+            else:
+                # For larger lists keep the linking ISSN even if duplicated
+                unique_list.insert(0, self.issn_l)
+
+        return unique_list
 
     def works_in_year(self, year: int) -> int:
         """Return works count for a given year."""

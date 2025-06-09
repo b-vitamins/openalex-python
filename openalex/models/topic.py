@@ -70,6 +70,14 @@ class Topic(OpenAlexEntity):
         alias="sisters",
     )
 
+    # Pydantic will populate ``siblings`` from the ``sisters`` key when
+    # deserialising, but attribute access via ``topic.sisters`` would
+    # normally fail.  Expose a read-only alias property for convenience so
+    # that ``topic.sisters`` mirrors the underlying ``siblings`` field.
+    @property
+    def sisters(self) -> list[DehydratedTopic]:
+        return self.siblings
+
     works_api_url: HttpUrl | None = Field(
         None, description="API URL for topic's works"
     )
