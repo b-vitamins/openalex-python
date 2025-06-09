@@ -30,29 +30,18 @@ from __future__ import annotations
 
 from typing import Any, cast
 
+from structlog import get_logger
+
+logger = get_logger(__name__)
+
 __version__ = "0.1.0"
 __author__ = "OpenAlex Python Contributors"
 __license__ = "MIT"
 
-# When running under pytest with ``pytest-httpx`` installed, placeholder tests
-# may register mocked responses that are never requested. By default the
-# ``httpx_mock`` fixture fails when unused responses remain.  Adjust the
-# defaults at import time when tests are running so such optional responses are
-# allowed.
-try:
-    from pytest_httpx import _options as _httpx_options
 
-    if not getattr(_httpx_options, "_openalex_patched", False):
-        _httpx_options._HTTPXMockOptions.__init__.__kwdefaults__[  # noqa: SLF001
-            "assert_all_responses_were_requested"
-        ] = False
-        cast("Any", _httpx_options)._openalex_patched = True  # noqa: SLF001
-except Exception:
-    pass
-
-from .client import AsyncOpenAlex, OpenAlex, async_client, client
-from .config import OpenAlexConfig
-from .exceptions import (
+from .client import AsyncOpenAlex, OpenAlex, async_client, client  # noqa: E402
+from .config import OpenAlexConfig  # noqa: E402
+from .exceptions import (  # noqa: E402
     APIError,
     AuthenticationError,
     NetworkError,
@@ -62,7 +51,7 @@ from .exceptions import (
     TimeoutError,
     ValidationError,
 )
-from .models import (
+from .models import (  # noqa: E402
     # Work models
     APC,
     # Source models
@@ -139,7 +128,7 @@ from .models import (
     WorksFilter,
     WorkType,
 )
-from .utils import (
+from .utils import (  # noqa: E402
     AsyncPaginator,
     AsyncRateLimiter,
     Paginator,
@@ -264,3 +253,19 @@ __all__ = [
     "rate_limited",
     "with_retry",
 ]
+
+# When running under pytest with ``pytest-httpx`` installed, placeholder tests
+# may register mocked responses that are never requested. By default the
+# ``httpx_mock`` fixture fails when unused responses remain. Adjust the
+# defaults at import time when tests are running so such optional responses are
+# allowed.
+try:
+    from pytest_httpx import _options as _httpx_options
+
+    if not getattr(_httpx_options, "_openalex_patched", False):
+        _httpx_options._HTTPXMockOptions.__init__.__kwdefaults__[  # noqa: SLF001
+            "assert_all_responses_were_requested"
+        ] = False
+        cast("Any", _httpx_options)._openalex_patched = True  # noqa: SLF001
+except Exception:
+    logger.debug("Failed to patch httpx mock options", exc_info=True)
