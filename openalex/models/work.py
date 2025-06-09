@@ -4,9 +4,12 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from enum import Enum
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from pydantic import BaseModel, Field, HttpUrl, field_validator
+
+if TYPE_CHECKING:
+    from .institution import InstitutionType
 
 from .base import (
     CountsByYear,
@@ -69,11 +72,19 @@ class DehydratedAuthor(DehydratedEntity):
 
 
 class DehydratedConcept(DehydratedEntity):
-    """Minimal concept representation."""
+    """Minimal concept representation with optional details."""
+
+    level: int | None = None
+    score: float | None = None
 
 
 class DehydratedInstitution(DehydratedEntity):
-    """Minimal institution representation."""
+    """Minimal institution representation with optional details."""
+
+    ror: HttpUrl | None = None
+    country_code: str | None = None
+    type: InstitutionType | None = None
+    lineage: list[str] = Field(default_factory=list)
 
 
 class DehydratedSource(DehydratedEntity):
@@ -373,3 +384,9 @@ class InstitutionsFilter(BaseFilter):
 
         current_filter["type"] = institution_type
         return self.model_copy(update={"filter": current_filter})
+
+
+from .institution import InstitutionType  # noqa: E402,TC001
+
+DehydratedInstitution.model_rebuild()
+Work.model_rebuild()
