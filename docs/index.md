@@ -17,3 +17,8 @@ Short examples showing how to accomplish common tasks with the Python client.
 - [Filter sources](filter-sources.md)
 - [Search sources](search-sources.md)
 - [Group sources](group-sources.md)
+- [Get a single publisher](get-a-single-publisher.md)
+- [Get lists of publishers](get-lists-of-publishers.md)
+- [Filter publishers](filter-publishers.md)
+- [Search publishers](search-publishers.md)
+- [Group publishers](group-publishers.md)
