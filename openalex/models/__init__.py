@@ -34,9 +34,9 @@ from .institution import (
     AssociatedInstitution,
     Institution,
     InstitutionIds,
-    InstitutionType,
     InstitutionTopic,
     InstitutionTopicShare,
+    InstitutionType,
     Repository,
 )
 from .keyword import Keyword
@@ -69,18 +69,15 @@ __all__ = [
     "APC",
     "APCPrice",
     "AssociatedInstitution",
-    # Author models
     "Author",
     "AuthorAffiliation",
     "AuthorIds",
     "AuthorsFilter",
     "Authorship",
     "AutocompleteResult",
-    # Filters
     "BaseFilter",
     "Biblio",
     "CitationNormalizedPercentile",
-    # Concept models
     "Concept",
     "ConceptAncestor",
     "ConceptIds",
@@ -93,7 +90,6 @@ __all__ = [
     "DehydratedSource",
     "DehydratedTopic",
     "EntityType",
-    # Funder models
     "Funder",
     "FunderIds",
     "FundersFilter",
@@ -101,15 +97,13 @@ __all__ = [
     "Grant",
     "GroupBy",
     "GroupByResult",
-    # Institution models
     "Institution",
     "InstitutionIds",
+    "InstitutionTopic",
+    "InstitutionTopicShare",
     "InstitutionType",
     "InstitutionsFilter",
     "InternationalNames",
-    "InstitutionTopic",
-    "InstitutionTopicShare",
-    # Keyword models
     "Keyword",
     "KeywordTag",
     "ListResult",
@@ -118,10 +112,8 @@ __all__ = [
     "Meta",
     "OpenAccess",
     "OpenAccessStatus",
-    # Base models
     "OpenAlexBase",
     "OpenAlexEntity",
-    # Publisher models
     "Publisher",
     "PublisherIds",
     "PublishersFilter",
@@ -130,19 +122,16 @@ __all__ = [
     "Role",
     "Society",
     "SortOrder",
-    # Source models
     "Source",
     "SourceIds",
     "SourceType",
     "SourcesFilter",
     "SummaryStats",
     "SustainableDevelopmentGoal",
-    # Topic models
     "Topic",
     "TopicHierarchy",
     "TopicIds",
     "TopicLevel",
-    # Work models
     "Work",
     "WorkIds",
     "WorkType",

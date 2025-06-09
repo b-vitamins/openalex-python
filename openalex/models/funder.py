@@ -60,7 +60,8 @@ class Funder(OpenAlexEntity):
         if v is None:
             return None
         if len(v) != 2 or not v.isalpha():
-            raise ValueError("Invalid country code")
+            msg = "Invalid country code"
+            raise ValueError(msg)
         return v.upper()
 
     @field_validator("updated_date", mode="before")
@@ -87,7 +88,8 @@ class Funder(OpenAlexEntity):
                     fixed = f"{date_part}T{new_time}"
                     return datetime.fromisoformat(fixed)
                 except Exception as exc:  # pragma: no cover - defensive
-                    raise ValueError("Invalid datetime format") from exc
+                    msg = "Invalid datetime format"
+                    raise ValueError(msg) from exc
         return v
 
     @property
@@ -125,4 +127,6 @@ class Funder(OpenAlexEntity):
 
     def active_years(self) -> list[int]:
         """Return list of years with grant activity."""
-        return sorted([y.year for y in self.counts_by_year if y.works_count > 0])
+        return sorted(
+            [y.year for y in self.counts_by_year if y.works_count > 0]
+        )

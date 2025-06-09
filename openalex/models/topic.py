@@ -5,8 +5,9 @@ from __future__ import annotations
 import re
 from datetime import datetime
 from enum import IntEnum
+from typing import cast
 
-from dateutil import parser
+from dateutil import parser  # type: ignore
 from pydantic import (
     Field,
     HttpUrl,
@@ -94,7 +95,7 @@ class Topic(OpenAlexEntity):
             return datetime.fromisoformat(v)
         except ValueError:
             try:
-                return parser.parse(v)
+                return cast("datetime", parser.parse(v))
             except Exception:
                 match = re.match(
                     r"(?P<prefix>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}):(?P<sec>\d{2})(?P<rest>.*)",
@@ -107,7 +108,7 @@ class Topic(OpenAlexEntity):
                     try:
                         return datetime.fromisoformat(new_v)
                     except Exception:
-                        return parser.parse(new_v)
+                        return cast("datetime", parser.parse(new_v))
         return None
 
     @model_validator(mode="after")

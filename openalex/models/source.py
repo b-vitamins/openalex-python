@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
-from pydantic import Field, HttpUrl
-from pydantic import field_validator
+from pydantic import Field, HttpUrl, field_validator
 
 from .base import CountsByYear, OpenAlexBase, OpenAlexEntity, SummaryStats
 
@@ -59,10 +58,10 @@ class Source(OpenAlexEntity):
     @field_validator("issn", mode="before")
     @classmethod
     def ensure_list(cls, v: Any) -> list[str]:
-        """Coerce `issn` to an empty list when given None."""
+        """Coerce ``issn`` to an empty list when given ``None``."""
         if v is None:
             return []
-        return v
+        return cast("list[str]", v)
 
     host_organization: str | None = Field(
         None, description="Publisher or hosting organization ID"

@@ -72,7 +72,7 @@ class OpenAccess(BaseModel):
 class DehydratedAuthor(DehydratedEntity):
     """Minimal author representation."""
 
-    id: str | None = None
+    id: str | None = None  # type: ignore[assignment]
     orcid: str | None = None
 
 
@@ -245,7 +245,7 @@ class Work(OpenAlexEntity):
     citation_normalized_percentile: CitationNormalizedPercentile | None = None
     counts_by_year: list[CountsByYear] = Field(default_factory=list)
     abstract_inverted_index: dict[str, list[int]] | None = None
-    created_date: date | None = None
+    created_date: str | None = None
     ids: WorkIds | None = None
     referenced_works: list[str] = Field(default_factory=list)
     referenced_works_count: int | None = None
@@ -281,14 +281,14 @@ class Work(OpenAlexEntity):
                 if 0 <= pos < length:
                     words[pos] = word
         abstract = " ".join(words).strip()
-        if not abstract.endswith(('.', '!', '?')):
-            last_punct = max(abstract.rfind(p) for p in '.!?')
+        if not abstract.endswith((".", "!", "?")):
+            last_punct = max(abstract.rfind(p) for p in ".!?")
             if last_punct != -1:
                 abstract = abstract[: last_punct + 1]
         return abstract
 
     @model_validator(mode="after")
-    def _set_defaults(self) -> "Work":
+    def _set_defaults(self) -> Work:
         """Populate derived fields after initialization."""
         if self.title is None:
             self.title = self.display_name
