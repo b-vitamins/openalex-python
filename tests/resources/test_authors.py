@@ -5,7 +5,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, ClassVar
 
 import pytest
-from openalex.models import Author
+from openalex.models import Author, AuthorsFilter
+from openalex.resources import AuthorsResource, AsyncAuthorsResource
 
 from .base import BaseResourceTest
 
@@ -347,3 +348,36 @@ class TestAuthorsResource(BaseResourceTest[Author]):
         )
         author = await async_client.authors.by_orcid(orcid)
         assert author.id == entity_data["id"]
+
+    def test_clone_with_raw_filter(
+        self,
+        client: OpenAlex,
+        httpx_mock: HTTPXMock,
+        mock_list_response: dict[str, Any],
+    ) -> None:
+        """Ensure _clone_with handles string filters."""
+        default = AuthorsFilter(filter="is_oa:true")
+        resource = AuthorsResource(client, default_filter=default)
+        httpx_mock.add_response(
+            url="https://api.openalex.org/authors?filter=raw%3Ais_oa%3Atrue%2Caffiliations.institution.id%3AI123&mailto=test%40example.com",
+            json=mock_list_response,
+        )
+        result = resource.by_institution("I123").list()
+        assert result.meta.count == 100
+
+    @pytest.mark.asyncio
+    async def test_async_clone_with_raw_filter(
+        self,
+        async_client: AsyncOpenAlex,
+        httpx_mock: HTTPXMock,
+        mock_list_response: dict[str, Any],
+    ) -> None:
+        default = AuthorsFilter(filter="is_oa:true")
+        resource = AsyncAuthorsResource(async_client, default_filter=default)
+        httpx_mock.add_response(
+            url="https://api.openalex.org/authors?filter=raw%3Ais_oa%3Atrue%2Caffiliations.institution.id%3AI123&mailto=test%40example.com",
+            json=mock_list_response,
+        )
+        new_res = await resource.by_institution("I123")
+        result = await new_res.list()
+        assert result.meta.count == 100

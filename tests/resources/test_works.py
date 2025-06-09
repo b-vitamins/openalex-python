@@ -403,6 +403,37 @@ class TestWorksResource(BaseResourceTest[Work]):
         result = resource.list()
         assert result.meta.count == 100
 
+    def test_filter_non_contiguous_range(
+        self,
+        client: OpenAlex,
+        httpx_mock: HTTPXMock,
+        mock_list_response: dict[str, Any],
+    ) -> None:
+        """List with non-contiguous int list should not collapse to range."""
+        httpx_mock.add_response(
+            url="https://api.openalex.org/works?filter=cited_by_count%3A1%7C3%7C5&mailto=test%40example.com",
+            json=mock_list_response,
+        )
+
+        resource = client.works.filter(cited_by_count=[1, 3, 5])
+        result = resource.list()
+        assert result.meta.count == 100
+
+    def test_open_access_false(
+        self,
+        client: OpenAlex,
+        httpx_mock: HTTPXMock,
+        mock_list_response: dict[str, Any],
+    ) -> None:
+        """WorksResource open_access with explicit False."""
+        httpx_mock.add_response(
+            url="https://api.openalex.org/works?filter=is_oa%3Afalse&mailto=test%40example.com",
+            json=mock_list_response,
+        )
+
+        result = client.works.open_access(False).list()
+        assert result.meta.count == 100
+
     def test_clone_with_default_filter(
         self,
         client: OpenAlex,
@@ -515,6 +546,53 @@ async def test_async_open_access_list(async_client: AsyncOpenAlex, httpx_mock: H
     resource = await async_client.works.open_access()
     result = await resource.list()
     assert result.meta.count == 2
+
+
+@pytest.mark.asyncio
+async def test_async_work_helpers(async_client: AsyncOpenAlex, httpx_mock: HTTPXMock) -> None:
+    data = TestWorksResource().get_list_response()
+    httpx_mock.add_response(
+        url="https://api.openalex.org/works?filter=cites%3AW2741809807&mailto=test%40example.com",
+        json=data,
+    )
+    httpx_mock.add_response(
+        url="https://api.openalex.org/works?filter=cited_by%3AW2741809807&mailto=test%40example.com",
+        json=data,
+    )
+    httpx_mock.add_response(
+        url="https://api.openalex.org/works?filter=authorships.author.id%3AA123&mailto=test%40example.com",
+        json=data,
+    )
+    httpx_mock.add_response(
+        url="https://api.openalex.org/works?filter=concepts.id%3AC41008148&mailto=test%40example.com",
+        json=data,
+    )
+    httpx_mock.add_response(
+        url="https://api.openalex.org/works?filter=authorships.institutions.id%3AI1174212&mailto=test%40example.com",
+        json=data,
+    )
+    httpx_mock.add_response(
+        url="https://api.openalex.org/works?filter=related_to%3AW2741809807&mailto=test%40example.com",
+        json=data,
+    )
+
+    assert (await (await async_client.works.cited_by("W2741809807")).list()).meta.count == 100
+    assert (await (await async_client.works.references("W2741809807")).list()).meta.count == 100
+    assert (await (await async_client.works.by_author("A123")).list()).meta.count == 100
+    assert (await (await async_client.works.by_concept("C41008148")).list()).meta.count == 100
+    assert (await (await async_client.works.by_institution("I1174212")).list()).meta.count == 100
+    assert (await (await async_client.works.related_to("W2741809807")).list()).meta.count == 100
+
+
+@pytest.mark.asyncio
+async def test_async_search_with_default_filter(async_client: AsyncOpenAlex, httpx_mock: HTTPXMock) -> None:
+    data = TestWorksResource().get_list_response(count=1)
+    httpx_mock.add_response(
+        url="https://api.openalex.org/works?filter=is_oa%3Atrue&search=test&mailto=test%40example.com",
+        json=data,
+    )
+    result = await (await async_client.works.open_access()).search("test")
+    assert result.meta.count == 1
 
 def test_parse_list_response_error(client: OpenAlex) -> None:
     resource = WorksResource(client)

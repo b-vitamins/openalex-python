@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, ClassVar
 
+import pytest
 from openalex.models import Source, SourceType
 
 from .base import BaseResourceTest
@@ -280,3 +281,18 @@ class TestSourcesResource(BaseResourceTest[Source]):
             filter={"homepage_url": "!null"}
         )
         assert sources_with_homepage.meta.count == 8000
+
+    @pytest.mark.asyncio
+    async def test_async_by_issn(
+        self,
+        async_client: AsyncOpenAlex,
+        httpx_mock: HTTPXMock,
+    ) -> None:
+        issn = "0031-9007"
+        entity = self.get_sample_entity()
+        httpx_mock.add_response(
+            url=f"https://api.openalex.org/sources/issn:{issn}?mailto=test%40example.com",
+            json=entity,
+        )
+        source = await async_client.sources.by_issn(f" {issn} ")
+        assert source.id == entity["id"]
