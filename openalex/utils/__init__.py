@@ -1,5 +1,12 @@
 """Utility functions and classes for OpenAlex client."""
 
+from ..constants import (
+    DOI_URL_PREFIX,
+    MAG_PREFIX,
+    OPENALEX_ID_PREFIX,
+    ORCID_URL_PREFIX,
+    PMID_PREFIX,
+)
 from .common import ensure_prefix, normalize_params, strip_id_prefix
 from .pagination import AsyncPaginator, Paginator
 from .rate_limit import (
@@ -18,6 +25,11 @@ from .retry import (
 )
 
 __all__ = [
+    "DOI_URL_PREFIX",
+    "MAG_PREFIX",
+    "OPENALEX_ID_PREFIX",
+    "ORCID_URL_PREFIX",
+    "PMID_PREFIX",
     "AsyncPaginator",
     "AsyncRateLimiter",
     "Paginator",

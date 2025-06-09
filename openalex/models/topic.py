@@ -17,6 +17,7 @@ from pydantic import (
     model_validator,
 )
 
+from ..constants import MAX_SECONDS_IN_MINUTE
 from .base import OpenAlexBase, OpenAlexEntity, SummaryStats
 
 
@@ -104,7 +105,7 @@ class Topic(OpenAlexEntity):
                 )
                 if match:
                     sec = int(match.group("sec"))
-                    sec = min(sec, 59)
+                    sec = min(sec, MAX_SECONDS_IN_MINUTE)
                     new_v = f"{match.group('prefix')}:{sec:02d}{match.group('rest')}"
                     try:
                         return datetime.fromisoformat(new_v)

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from ..constants import MAG_PREFIX, ORCID_URL_PREFIX
 from ..models import Author, AuthorsFilter, ListResult
 from ..utils import ensure_prefix, strip_id_prefix
 from ..utils.pagination import MAX_PER_PAGE
@@ -41,8 +42,8 @@ class AuthorsResource(BaseResource[Author, AuthorsFilter]):
 
     def by_mag(self, mag_id: str) -> Author:
         """Get author by Microsoft Academic Graph ID."""
-        if not str(mag_id).startswith("mag:"):
-            mag_id = f"mag:{mag_id}"
+        if not str(mag_id).startswith(MAG_PREFIX):
+            mag_id = f"{MAG_PREFIX}{mag_id}"
         return self.get(mag_id)
 
     def by_institution(self, institution_id: str) -> AuthorsResource:
@@ -94,7 +95,7 @@ class AuthorsResource(BaseResource[Author, AuthorsFilter]):
         Returns:
             Author instance
         """
-        return self.get(ensure_prefix(orcid, "https://orcid.org/"))
+        return self.get(ensure_prefix(orcid, ORCID_URL_PREFIX))
 
 
 class AsyncAuthorsResource(AsyncBaseResource[Author, AuthorsFilter]):
@@ -124,8 +125,8 @@ class AsyncAuthorsResource(AsyncBaseResource[Author, AuthorsFilter]):
 
     async def by_mag(self, mag_id: str) -> Author:
         """Get author by Microsoft Academic Graph ID."""
-        if not str(mag_id).startswith("mag:"):
-            mag_id = f"mag:{mag_id}"
+        if not str(mag_id).startswith(MAG_PREFIX):
+            mag_id = f"{MAG_PREFIX}{mag_id}"
         return await self.get(mag_id)
 
     async def by_institution(self, institution_id: str) -> AsyncAuthorsResource:
@@ -177,4 +178,4 @@ class AsyncAuthorsResource(AsyncBaseResource[Author, AuthorsFilter]):
         Returns:
             Author instance
         """
-        return await self.get(ensure_prefix(orcid, "https://orcid.org/"))
+        return await self.get(ensure_prefix(orcid, ORCID_URL_PREFIX))

@@ -115,17 +115,25 @@ class Funder(OpenAlexEntity):
 
     def works_in_year(self, year: int) -> int:
         """Return number of works funded in a specific year."""
-        for year_data in self.counts_by_year:
-            if year_data.year == year:
-                return year_data.works_count
-        return 0
+        return next(
+            (
+                year_data.works_count
+                for year_data in self.counts_by_year
+                if year_data.year == year
+            ),
+            0,
+        )
 
     def citations_in_year(self, year: int) -> int:
         """Return citation count for a specific year."""
-        for year_data in self.counts_by_year:
-            if year_data.year == year:
-                return year_data.cited_by_count
-        return 0
+        return next(
+            (
+                year_data.cited_by_count
+                for year_data in self.counts_by_year
+                if year_data.year == year
+            ),
+            0,
+        )
 
     def active_years(self) -> list[int]:
         """Return list of years with grant activity."""

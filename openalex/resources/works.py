@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Self
 
+from ..constants import DOI_URL_PREFIX, PMID_PREFIX
 from ..models import ListResult, Work, WorksFilter
 from ..utils import ensure_prefix, strip_id_prefix
 from ..utils.pagination import MAX_PER_PAGE
@@ -33,12 +34,12 @@ class WorksResource(BaseResource[Work, WorksFilter]):
     def by_doi(self, doi: str) -> Work:
         """Retrieve a work by DOI."""
 
-        return self.get(ensure_prefix(doi, "https://doi.org/"))
+        return self.get(ensure_prefix(doi, DOI_URL_PREFIX))
 
     def by_pmid(self, pmid: str) -> Work:
         """Retrieve a work by PubMed ID."""
 
-        return self.get(ensure_prefix(str(pmid), "pmid:"))
+        return self.get(ensure_prefix(str(pmid), PMID_PREFIX))
 
     def filter(self, **filter_params: Any) -> Self | WorksFilter:
         """Add filter parameters or return a ``WorksFilter`` builder.
@@ -221,12 +222,12 @@ class AsyncWorksResource(AsyncBaseResource[Work, WorksFilter]):
     async def by_doi(self, doi: str) -> Work:
         """Retrieve a work by DOI."""
 
-        return await self.get(ensure_prefix(doi, "https://doi.org/"))
+        return await self.get(ensure_prefix(doi, DOI_URL_PREFIX))
 
     async def by_pmid(self, pmid: str) -> Work:
         """Retrieve a work by PubMed ID."""
 
-        return await self.get(ensure_prefix(str(pmid), "pmid:"))
+        return await self.get(ensure_prefix(str(pmid), PMID_PREFIX))
 
     def _clone_with(self, filter_update: dict[str, Any]) -> Self:
         base_filter = self._default_filter or WorksFilter.model_validate({})
