@@ -97,6 +97,11 @@ class OpenAlex:
         self.funders = FundersResource(self)
         self.keywords = KeywordsResource(self)
 
+    @property
+    def base_url(self) -> str:
+        """Base URL without a trailing slash."""
+        return str(self.config.base_url).rstrip("/")
+
     @staticmethod
     def _empty_list_result() -> ListResult[Any]:
         """Return an empty ``ListResult`` object."""
@@ -215,11 +220,10 @@ class OpenAlex:
         """
         params["q"] = query
 
-        base = str(self.config.base_url).rstrip("/")
         if entity_type:
-            url = f"{base}/autocomplete/{entity_type}"
+            url = f"{self.base_url}/autocomplete/{entity_type}"
         else:
-            url = f"{base}/autocomplete"
+            url = f"{self.base_url}/autocomplete"
 
         response = self._request("GET", url, params=params)
         response.raise_for_status()
@@ -256,8 +260,7 @@ class OpenAlex:
         if abstract is not None:
             params["abstract"] = abstract
 
-        base = str(self.config.base_url).rstrip("/")
-        url = f"{base}/text"
+        url = f"{self.base_url}/text"
         if entity_type:
             url = f"{url}/{entity_type}"
 
@@ -363,6 +366,11 @@ class AsyncOpenAlex:
         self.publishers = AsyncPublishersResource(self)
         self.funders = AsyncFundersResource(self)
         self.keywords = AsyncKeywordsResource(self)
+
+    @property
+    def base_url(self) -> str:
+        """Base URL without a trailing slash."""
+        return str(self.config.base_url).rstrip("/")
 
     @staticmethod
     def _empty_list_result() -> ListResult[Any]:
@@ -482,11 +490,10 @@ class AsyncOpenAlex:
         """
         params["q"] = query
 
-        base = str(self.config.base_url).rstrip("/")
         if entity_type:
-            url = f"{base}/autocomplete/{entity_type}"
+            url = f"{self.base_url}/autocomplete/{entity_type}"
         else:
-            url = f"{base}/autocomplete"
+            url = f"{self.base_url}/autocomplete"
 
         response = await self._request("GET", url, params=params)
         response.raise_for_status()
@@ -513,8 +520,7 @@ class AsyncOpenAlex:
         if abstract is not None:
             params["abstract"] = abstract
 
-        base = str(self.config.base_url).rstrip("/")
-        url = f"{base}/text"
+        url = f"{self.base_url}/text"
         if entity_type:
             url = f"{url}/{entity_type}"
 

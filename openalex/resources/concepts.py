@@ -8,6 +8,8 @@ from ..models import BaseFilter, Concept
 from ..utils import ensure_prefix
 from .base import AsyncBaseResource, BaseResource
 
+__all__ = ["AsyncConceptsResource", "ConceptsResource"]
+
 if TYPE_CHECKING:
     from ..client import AsyncOpenAlex, OpenAlex
 
