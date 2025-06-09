@@ -5,6 +5,12 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
+from ..constants import (
+    GOVERNMENT_KEYWORDS,
+    MINUTES_PER_HOUR,
+    SECONDS_PER_MINUTE,
+)
+
 __all__ = ["Funder", "FunderIds"]
 
 from pydantic import Field, HttpUrl, field_validator
@@ -80,10 +86,10 @@ class Funder(OpenAlexEntity):
                     date_part, time_part = v.split("T")
                     time_str, *rest = time_part.split(".")
                     hour, minute, second = [int(x) for x in time_str.split(":")]
-                    minute += second // 60
-                    second = second % 60
-                    hour += minute // 60
-                    minute = minute % 60
+                    minute += second // SECONDS_PER_MINUTE
+                    second %= SECONDS_PER_MINUTE
+                    hour += minute // MINUTES_PER_HOUR
+                    minute %= MINUTES_PER_HOUR
                     new_time = f"{hour:02d}:{minute:02d}:{second:02d}"
                     if rest:
                         new_time += f".{rest[0]}"
@@ -103,15 +109,8 @@ class Funder(OpenAlexEntity):
 
     def is_government_funder(self) -> bool:
         """Check if funder is government-based."""
-        gov_keywords = [
-            "national",
-            "federal",
-            "ministry",
-            "department",
-            "agency",
-        ]
         name_lower = self.display_name.lower()
-        return any(keyword in name_lower for keyword in gov_keywords)
+        return any(keyword in name_lower for keyword in GOVERNMENT_KEYWORDS)
 
     def works_in_year(self, year: int) -> int:
         """Return number of works funded in a specific year."""

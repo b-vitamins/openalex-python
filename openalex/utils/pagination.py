@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, Final, Generic, TypeVar
 from structlog import get_logger
 
 from ..constants import (
+    DEFAULT_CONCURRENCY,
     DEFAULT_PER_PAGE,
     PARAM_CURSOR,
     PARAM_PAGE,
@@ -29,7 +30,6 @@ if TYPE_CHECKING:
 logger = get_logger(__name__)
 
 MAX_PER_PAGE: Final = DEFAULT_PER_PAGE
-DEFAULT_CONCURRENCY: Final = 5
 
 T = TypeVar("T")
 

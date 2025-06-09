@@ -19,6 +19,7 @@ from tenacity import (
     wait_exponential_jitter,
 )
 
+from ..constants import UNREACHABLE_MSG
 from ..exceptions import APIError, NetworkError, RateLimitError, TimeoutError
 
 if TYPE_CHECKING:
@@ -27,7 +28,6 @@ if TYPE_CHECKING:
 logger = get_logger(__name__)
 
 JITTER_FACTOR: Final = 0.25
-UNREACHABLE_MSG: Final = "Unreachable"
 
 T = TypeVar("T")
 
