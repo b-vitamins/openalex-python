@@ -15,8 +15,12 @@ from openalex.models import (
 )
 from openalex.models.work import (
     BaseFilter as WorkBaseFilter,
-    WorksFilter as WorkWorksFilter,
+)
+from openalex.models.work import (
     InstitutionsFilter as WorkInstitutionsFilter,
+)
+from openalex.models.work import (
+    WorksFilter as WorkWorksFilter,
 )
 
 
@@ -1291,7 +1295,11 @@ def test_work_filter_string_operations() -> None:
     assert wf.filter["type"] == ["article"]
     assert wf.filter["is_oa"] is True
 
-    inf = WorkInstitutionsFilter(filter="start").with_country("US").with_type("education")
+    inf = (
+        WorkInstitutionsFilter(filter="start")
+        .with_country("US")
+        .with_type("education")
+    )
     assert inf.filter["raw"] == "start"
     assert inf.filter["country_code"] == ["US"]
     assert inf.filter["type"] == ["education"]

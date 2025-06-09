@@ -1,6 +1,9 @@
-import pytest
-
-from openalex.utils import ensure_prefix, strip_id_prefix, normalize_params, empty_list_result
+from openalex.utils import (
+    empty_list_result,
+    ensure_prefix,
+    normalize_params,
+    strip_id_prefix,
+)
 
 
 def test_ensure_prefix() -> None:

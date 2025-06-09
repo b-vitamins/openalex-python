@@ -15,7 +15,6 @@ if TYPE_CHECKING:
     from pytest_httpx import HTTPXMock
 
     from openalex import AsyncOpenAlex, OpenAlex
-    from openalex.resources import AsyncAuthorsResource, AuthorsResource
 
 
 class TestAuthorsResource(BaseResourceTest[Author]):
@@ -389,8 +388,11 @@ def test_filter_builder_authors(client: OpenAlex) -> None:
     assert isinstance(filt, AuthorsFilter)
     assert filt.page == 2
 
+
 @pytest.mark.asyncio
-async def test_async_filter_builder_authors(async_client: AsyncOpenAlex) -> None:
+async def test_async_filter_builder_authors(
+    async_client: AsyncOpenAlex,
+) -> None:
     filt = async_client.authors.filter(page=2)
     assert isinstance(filt, AuthorsFilter)
     assert filt.page == 2
@@ -454,4 +456,3 @@ async def test_async_default_filter_usage(
     async for item in paginator:
         results.append(item)
     assert len(results) == 1
-

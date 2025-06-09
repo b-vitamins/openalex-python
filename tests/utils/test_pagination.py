@@ -153,7 +153,8 @@ def test_pad_results_padding() -> None:
 
 def test_paginator_pages_error() -> None:
     def fetch(_: dict[str, Any]) -> ListResult[Work]:
-        raise APIError("boom", status_code=500)
+        msg = "boom"
+        raise APIError(msg, status_code=500)
 
     paginator = Paginator(fetch)
     with pytest.raises(APIError):
@@ -163,7 +164,8 @@ def test_paginator_pages_error() -> None:
 @pytest.mark.asyncio
 async def test_async_paginator_pages_error() -> None:
     async def fetch(_: dict[str, Any]) -> ListResult[Work]:
-        raise APIError("boom", status_code=500)
+        msg = "boom"
+        raise APIError(msg, status_code=500)
 
     paginator = AsyncPaginator(fetch)
     with pytest.raises(APIError):
@@ -173,7 +175,9 @@ async def test_async_paginator_pages_error() -> None:
 
 def test_paginator_first_no_results() -> None:
     def fetch(_: dict[str, Any]) -> ListResult[Work]:
-        meta = Meta(count=0, db_response_time_ms=1, page=1, per_page=1, next_cursor=None)
+        meta = Meta(
+            count=0, db_response_time_ms=1, page=1, per_page=1, next_cursor=None
+        )
         return ListResult(meta=meta, results=[])
 
     paginator = Paginator(fetch, per_page=0)
@@ -184,7 +188,9 @@ def test_paginator_first_no_results() -> None:
 @pytest.mark.asyncio
 async def test_async_paginator_first_no_results() -> None:
     async def fetch(_: dict[str, Any]) -> ListResult[Work]:
-        meta = Meta(count=0, db_response_time_ms=1, page=1, per_page=1, next_cursor=None)
+        meta = Meta(
+            count=0, db_response_time_ms=1, page=1, per_page=1, next_cursor=None
+        )
         return ListResult(meta=meta, results=[])
 
     paginator = AsyncPaginator(fetch, per_page=0)

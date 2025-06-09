@@ -5,9 +5,15 @@ from openalex.query import Query
 class DummyResource:
     def __init__(self) -> None:
         self.calls = []
+
     def list(self, *, filter=None, **params):
         self.calls.append(("list", filter, params))
-        meta = Meta(count=1, db_response_time_ms=1, page=1, per_page=params.get("per_page", 25))
+        meta = Meta(
+            count=1,
+            db_response_time_ms=1,
+            page=1,
+            per_page=params.get("per_page", 25),
+        )
         return ListResult(meta=meta, results=[])
 
     def paginate(self, *, filter=None, per_page=25, max_results=None, **params):
@@ -22,7 +28,6 @@ def test_query_builder_and_execution() -> None:
     assert q_filtered.params["filter"] == {"is_oa": True, "type": "article"}
     q_string = Query(resource, {"filter": "raw"}).filter(tag="x")
     assert q_string.params["filter"] == {"tag": "x"}
-
 
     q_exec = (
         Query(resource)

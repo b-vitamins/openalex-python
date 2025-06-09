@@ -6,7 +6,7 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from openalex.models import Funder, CountsByYear
+from openalex.models import CountsByYear, Funder
 
 
 class TestFunder:
@@ -349,14 +349,19 @@ class TestFunder:
 
     def test_country_code_none_and_invalid(self) -> None:
         """Country code validation branches."""
-        funder = Funder(id="F1", display_name="Foo", country_code=None, updated_date=None)
+        funder = Funder(
+            id="F1", display_name="Foo", country_code=None, updated_date=None
+        )
         assert funder.country_code is None
-        with pytest.raises(ValueError):
+        msg = "Invalid country code"
+        with pytest.raises(ValueError, match=msg):
             Funder(id="F2", display_name="Bar", country_code="ZZZ")
 
     def test_parse_updated_date_out_of_range(self) -> None:
         """Handle times with minutes/seconds overflow."""
-        funder = Funder(id="F3", display_name="Baz", updated_date="2024-12-31T22:70:10")
+        funder = Funder(
+            id="F3", display_name="Baz", updated_date="2024-12-31T22:70:10"
+        )
         assert isinstance(funder.updated_date, datetime)
         assert funder.updated_date.minute == 10
         assert funder.updated_date.hour == 23
@@ -374,5 +379,6 @@ class TestFunder:
 
     def test_parse_updated_date_invalid(self) -> None:
         """Invalid updated_date string raises error."""
-        with pytest.raises(ValueError):
+        msg = "Invalid datetime format"
+        with pytest.raises(ValueError, match=msg):
             Funder(id="F5", display_name="Bad", updated_date="not-a-date")

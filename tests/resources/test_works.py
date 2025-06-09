@@ -484,6 +484,7 @@ def test_legacy_worksfilter_methods() -> None:
     assert "type:article" in filter_str
     assert "is_oa:true" in filter_str
 
+
 def test_filter_returns_filter_instance(client: OpenAlex) -> None:
     resource = client.works.filter(page=2)
     assert isinstance(resource, WorksFilter)
@@ -500,6 +501,7 @@ def test_apply_filter_params(client: OpenAlex) -> None:
     params2 = res._apply_filter_params({}, wf)
     assert params2["filter"] == "is_oa:true"
 
+
 def test_filter_no_params_returns_filter(client: OpenAlex) -> None:
     wf = client.works.filter()
     assert isinstance(wf, WorksFilter)
@@ -514,8 +516,11 @@ def test_clone_with_merges_default_filter(client: OpenAlex) -> None:
     assert new_res._default_filter.filter["raw"] == "is_oa:true"
     assert new_res._default_filter.filter["authorships.author.id"] == "A123"
 
+
 @pytest.mark.asyncio
-async def test_async_by_doi(async_client: AsyncOpenAlex, httpx_mock: HTTPXMock) -> None:
+async def test_async_by_doi(
+    async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
+) -> None:
     doi = "10.1103/physrevlett.77.3865"
     entity_data = TestWorksResource().get_sample_entity()
     httpx_mock.add_response(
@@ -525,8 +530,11 @@ async def test_async_by_doi(async_client: AsyncOpenAlex, httpx_mock: HTTPXMock) 
     work = await async_client.works.by_doi(doi)
     assert work.id == entity_data["id"]
 
+
 @pytest.mark.asyncio
-async def test_async_by_pmid(async_client: AsyncOpenAlex, httpx_mock: HTTPXMock) -> None:
+async def test_async_by_pmid(
+    async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
+) -> None:
     pmid = "10062328"
     entity_data = TestWorksResource().get_sample_entity()
     httpx_mock.add_response(
@@ -536,8 +544,11 @@ async def test_async_by_pmid(async_client: AsyncOpenAlex, httpx_mock: HTTPXMock)
     work = await async_client.works.by_pmid(pmid)
     assert work.id == entity_data["id"]
 
+
 @pytest.mark.asyncio
-async def test_async_open_access_list(async_client: AsyncOpenAlex, httpx_mock: HTTPXMock) -> None:
+async def test_async_open_access_list(
+    async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
+) -> None:
     list_response = TestWorksResource().get_list_response(count=2)
     httpx_mock.add_response(
         url="https://api.openalex.org/works?filter=is_oa%3Atrue&mailto=test%40example.com",
@@ -549,7 +560,9 @@ async def test_async_open_access_list(async_client: AsyncOpenAlex, httpx_mock: H
 
 
 @pytest.mark.asyncio
-async def test_async_work_helpers(async_client: AsyncOpenAlex, httpx_mock: HTTPXMock) -> None:
+async def test_async_work_helpers(
+    async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
+) -> None:
     data = TestWorksResource().get_list_response()
     httpx_mock.add_response(
         url="https://api.openalex.org/works?filter=cites%3AW2741809807&mailto=test%40example.com",
@@ -576,16 +589,30 @@ async def test_async_work_helpers(async_client: AsyncOpenAlex, httpx_mock: HTTPX
         json=data,
     )
 
-    assert (await (await async_client.works.cited_by("W2741809807")).list()).meta.count == 100
-    assert (await (await async_client.works.references("W2741809807")).list()).meta.count == 100
-    assert (await (await async_client.works.by_author("A123")).list()).meta.count == 100
-    assert (await (await async_client.works.by_concept("C41008148")).list()).meta.count == 100
-    assert (await (await async_client.works.by_institution("I1174212")).list()).meta.count == 100
-    assert (await (await async_client.works.related_to("W2741809807")).list()).meta.count == 100
+    assert (
+        await (await async_client.works.cited_by("W2741809807")).list()
+    ).meta.count == 100
+    assert (
+        await (await async_client.works.references("W2741809807")).list()
+    ).meta.count == 100
+    assert (
+        await (await async_client.works.by_author("A123")).list()
+    ).meta.count == 100
+    assert (
+        await (await async_client.works.by_concept("C41008148")).list()
+    ).meta.count == 100
+    assert (
+        await (await async_client.works.by_institution("I1174212")).list()
+    ).meta.count == 100
+    assert (
+        await (await async_client.works.related_to("W2741809807")).list()
+    ).meta.count == 100
 
 
 @pytest.mark.asyncio
-async def test_async_search_with_default_filter(async_client: AsyncOpenAlex, httpx_mock: HTTPXMock) -> None:
+async def test_async_search_with_default_filter(
+    async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
+) -> None:
     data = TestWorksResource().get_list_response(count=1)
     httpx_mock.add_response(
         url="https://api.openalex.org/works?filter=is_oa%3Atrue&search=test&mailto=test%40example.com",
@@ -594,14 +621,18 @@ async def test_async_search_with_default_filter(async_client: AsyncOpenAlex, htt
     result = await (await async_client.works.open_access()).search("test")
     assert result.meta.count == 1
 
+
 def test_parse_list_response_error(client: OpenAlex) -> None:
     resource = WorksResource(client)
     bad_data = {"meta": {"foo": "bar"}, "results": [{"bad": "data"}]}
     with pytest.raises(ValidationError):
         resource._parse_list_response(bad_data)
 
+
 @pytest.mark.asyncio
-async def test_async_apply_filter_params(async_client: AsyncOpenAlex, httpx_mock: HTTPXMock) -> None:
+async def test_async_apply_filter_params(
+    async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
+) -> None:
     data = TestWorksResource().get_list_response(count=1)
     httpx_mock.add_response(
         url="https://api.openalex.org/works?filter=is_oa%3Atrue&page=2&mailto=test%40example.com",
@@ -612,11 +643,14 @@ async def test_async_apply_filter_params(async_client: AsyncOpenAlex, httpx_mock
 
 
 @pytest.mark.asyncio
-async def test_async_parse_list_response_error(async_client: AsyncOpenAlex) -> None:
+async def test_async_parse_list_response_error(
+    async_client: AsyncOpenAlex,
+) -> None:
     resource = async_client.works
     bad_data = {"meta": {"foo": "bar"}, "results": [{"bad": "data"}]}
     with pytest.raises(ValidationError):
         resource._parse_list_response(bad_data)
+
 
 @pytest.mark.asyncio
 async def test_async_filter_builder(async_client: AsyncOpenAlex) -> None:
@@ -652,7 +686,9 @@ def test_paginate_default_filter_usage(
 
 
 @pytest.mark.asyncio
-async def test_async_clone_with_string_filter(async_client: AsyncOpenAlex) -> None:
+async def test_async_clone_with_string_filter(
+    async_client: AsyncOpenAlex,
+) -> None:
     from openalex.resources import AsyncWorksResource
 
     default = WorksFilter(filter="is_oa:true")
@@ -664,7 +700,9 @@ async def test_async_clone_with_string_filter(async_client: AsyncOpenAlex) -> No
 
 @pytest.mark.asyncio
 async def test_async_paginate_default_filter(
-    async_client: AsyncOpenAlex, httpx_mock: HTTPXMock, mock_list_response: dict[str, Any]
+    async_client: AsyncOpenAlex,
+    httpx_mock: HTTPXMock,
+    mock_list_response: dict[str, Any],
 ) -> None:
     from openalex.resources import AsyncWorksResource
 

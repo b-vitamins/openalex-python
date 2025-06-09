@@ -490,4 +490,3 @@ class BaseResourceTest(Generic[T]):
         resource = self.get_async_resource(async_client)
         entity = await resource.get(full_url)
         assert entity.id == entity_data["id"]
-

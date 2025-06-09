@@ -467,7 +467,9 @@ class TestWorksFilter:
         assert "primary_location.license:cc-by" in filter_str
         assert "topics.id:T1" in filter_str
 
-        wf2 = WorksFilter(filter="bar").with_created_date_range(date(2022, 1, 1))
+        wf2 = WorksFilter(filter="bar").with_created_date_range(
+            date(2022, 1, 1)
+        )
         assert "raw:bar" in wf2.to_params()["filter"]
 
 
@@ -559,7 +561,10 @@ class TestAuthorsFilter:
         c3 = base.with_cited_by_count_range(None, None)
         assert "cited_by_count" not in c3.to_params()["filter"]
 
-        assert "x_concepts.id:C1" in base.with_x_concepts_id("C1").to_params()["filter"]
+        assert (
+            "x_concepts.id:C1"
+            in base.with_x_concepts_id("C1").to_params()["filter"]
+        )
 
 
 class TestInstitutionsFilter:
@@ -963,7 +968,11 @@ def test_validate_select_none() -> None:
 
 
 def test_string_filter_branches() -> None:
-    wf = WorksFilter(filter="raw").with_type("article").with_open_access(is_oa=False)
+    wf = (
+        WorksFilter(filter="raw")
+        .with_type("article")
+        .with_open_access(is_oa=False)
+    )
     params = wf.to_params()
     assert "raw:raw" in params["filter"]
     assert "type:article" in params["filter"]
