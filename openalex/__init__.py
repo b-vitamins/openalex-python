@@ -28,6 +28,7 @@ Search:
 
 from __future__ import annotations
 
+from importlib import import_module
 from typing import Any, cast
 
 from structlog import get_logger
@@ -260,12 +261,13 @@ __all__ = [
 # defaults at import time when tests are running so such optional responses are
 # allowed.
 try:
-    from pytest_httpx import _options as _httpx_options  # type: ignore[import-not-found]
+    _pytest_httpx = import_module("pytest_httpx")
+    _httpx_options = _pytest_httpx._options  # noqa: SLF001
 
     if not getattr(_httpx_options, "_openalex_patched", False):
         _httpx_options._HTTPXMockOptions.__init__.__kwdefaults__[  # noqa: SLF001
             "assert_all_responses_were_requested"
         ] = False
         cast("Any", _httpx_options)._openalex_patched = True  # noqa: SLF001
-except Exception as exc:
+except Exception as exc:  # pragma: no cover - optional
     logger.debug("Failed to patch httpx mock options", exc_info=exc)
