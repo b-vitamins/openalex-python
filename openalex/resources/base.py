@@ -15,6 +15,7 @@ from ..utils import (
     Paginator,
     normalize_params,
 )
+from ..utils.pagination import MAX_PER_PAGE
 
 if TYPE_CHECKING:
     from ..client import AsyncOpenAlex, OpenAlex
@@ -179,7 +180,7 @@ class BaseResource(Generic[T, F]):
     def paginate(
         self,
         filter: F | dict[str, Any] | None = None,
-        per_page: int = 200,
+        per_page: int = MAX_PER_PAGE,
         max_results: int | None = None,
         **params: Any,
     ) -> Paginator[T]:
@@ -370,7 +371,7 @@ class AsyncBaseResource(Generic[T, F]):
     def paginate(
         self,
         filter: F | dict[str, Any] | None = None,
-        per_page: int = 200,
+        per_page: int = MAX_PER_PAGE,
         max_results: int | None = None,
         **params: Any,
     ) -> AsyncPaginator[T]:

@@ -10,6 +10,8 @@ from typing import TYPE_CHECKING, Any, TypeVar
 
 from structlog import get_logger
 
+DEFAULT_BUFFER = 0.1
+
 __all__ = [
     "AsyncRateLimiter",
     "RateLimiter",
@@ -33,7 +35,7 @@ class RateLimiter:
         self,
         rate: float,
         burst: int | None = None,
-        buffer: float = 0.1,
+        buffer: float = DEFAULT_BUFFER,
     ) -> None:
         """Initialize rate limiter.
 
@@ -108,7 +110,7 @@ class SlidingWindowRateLimiter:
         self,
         max_requests: int,
         window_seconds: float,
-        buffer: float = 0.1,
+        buffer: float = DEFAULT_BUFFER,
     ) -> None:
         """Initialize sliding window rate limiter.
 
@@ -173,7 +175,7 @@ class AsyncRateLimiter:
         self,
         rate: float,
         burst: int | None = None,
-        buffer: float = 0.1,
+        buffer: float = DEFAULT_BUFFER,
     ) -> None:
         """Initialize async rate limiter."""
         self.rate = rate * (1 - buffer)
@@ -220,7 +222,7 @@ class AsyncRateLimiter:
 def rate_limited(
     rate: float,
     burst: int | None = None,
-    buffer: float = 0.1,
+    buffer: float = DEFAULT_BUFFER,
 ) -> Callable[[Callable[..., T]], Callable[..., T]]:
     """Decorator to rate limit function calls.
 
@@ -250,7 +252,7 @@ def rate_limited(
 def async_rate_limited(
     rate: float,
     burst: int | None = None,
-    buffer: float = 0.1,
+    buffer: float = DEFAULT_BUFFER,
 ) -> Callable[[Callable[..., Awaitable[T]]], Callable[..., Awaitable[T]]]:
     """Async decorator to rate limit function calls."""
     limiter = AsyncRateLimiter(rate, burst, buffer)

@@ -8,6 +8,8 @@ __all__ = ["OpenAlexConfig"]
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 
+from .utils.rate_limit import DEFAULT_BUFFER
+
 
 class OpenAlexConfig(BaseModel):
     """Configuration for OpenAlex API client."""
@@ -62,7 +64,7 @@ class OpenAlexConfig(BaseModel):
         description="Cache TTL in seconds",
     )
     rate_limit_buffer: float = Field(
-        default=0.1,
+        default=DEFAULT_BUFFER,
         ge=0,
         le=1,
         description="Rate limit buffer (0-1)",
