@@ -97,6 +97,21 @@ class OpenAlex:
         self.funders = FundersResource(self)
         self.keywords = KeywordsResource(self)
 
+    @staticmethod
+    def _empty_list_result() -> ListResult[Any]:
+        """Return an empty ``ListResult`` object."""
+        return ListResult(
+            meta=Meta(
+                count=0,
+                db_response_time_ms=0,
+                page=1,
+                per_page=0,
+                groups_count=0,
+                next_cursor=None,
+            ),
+            results=[],
+        )
+
     def __enter__(self) -> OpenAlex:
         """Context manager entry."""
         return self
@@ -283,23 +298,13 @@ class OpenAlex:
         for entity_type, resource in entity_types:
             try:
                 results[entity_type] = resource.search(query, **params)
-            except Exception as e:
+            except Exception as exc:  # pragma: no cover - defensive
                 logger.warning(
                     "Failed to search %s",
                     entity_type,
-                    error=str(e),
+                    exc_info=exc,
                 )
-                results[entity_type] = ListResult(
-                    meta=Meta(
-                        count=0,
-                        db_response_time_ms=0,
-                        page=1,
-                        per_page=0,
-                        groups_count=0,
-                        next_cursor=None,
-                    ),
-                    results=[],
-                )
+                results[entity_type] = self._empty_list_result()
 
         return results
 
@@ -358,6 +363,21 @@ class AsyncOpenAlex:
         self.publishers = AsyncPublishersResource(self)
         self.funders = AsyncFundersResource(self)
         self.keywords = AsyncKeywordsResource(self)
+
+    @staticmethod
+    def _empty_list_result() -> ListResult[Any]:
+        """Return an empty ``ListResult`` object."""
+        return ListResult(
+            meta=Meta(
+                count=0,
+                db_response_time_ms=0,
+                page=1,
+                per_page=0,
+                groups_count=0,
+                next_cursor=None,
+            ),
+            results=[],
+        )
 
     async def __aenter__(self) -> AsyncOpenAlex:
         """Async context manager entry."""
@@ -535,23 +555,13 @@ class AsyncOpenAlex:
         for entity_type, task in tasks.items():
             try:
                 results[entity_type] = await task
-            except Exception as e:
+            except Exception as exc:  # pragma: no cover - defensive
                 logger.warning(
                     "Failed to search %s",
                     entity_type,
-                    error=str(e),
+                    exc_info=exc,
                 )
-                results[entity_type] = ListResult(
-                    meta=Meta(
-                        count=0,
-                        db_response_time_ms=0,
-                        page=1,
-                        per_page=0,
-                        groups_count=0,
-                        next_cursor=None,
-                    ),
-                    results=[],
-                )
+                results[entity_type] = self._empty_list_result()
 
         return results
 

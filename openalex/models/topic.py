@@ -89,12 +89,13 @@ class Topic(OpenAlexEntity):
         """Parse potentially malformed datetime strings."""
         if v is None or isinstance(v, datetime):
             return v
+
         try:
             return datetime.fromisoformat(v)
         except ValueError:
             try:
                 return cast("datetime", parser.parse(v))
-            except Exception:
+            except (ValueError, TypeError):
                 match = re.match(
                     r"(?P<prefix>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}):(?P<sec>\d{2})(?P<rest>.*)",
                     v,
@@ -105,8 +106,9 @@ class Topic(OpenAlexEntity):
                     new_v = f"{match.group('prefix')}:{sec:02d}{match.group('rest')}"
                     try:
                         return datetime.fromisoformat(new_v)
-                    except Exception:
+                    except ValueError:
                         return cast("datetime", parser.parse(new_v))
+
         return None
 
     @model_validator(mode="after")
