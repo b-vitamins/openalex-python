@@ -250,7 +250,7 @@ class OpenAlex:
         response = self._request("GET", url, params=params)
         response.raise_for_status()
 
-        return cast(dict[str, Any], response.json())
+        return cast("dict[str, Any]", response.json())
 
     def search_all(
         self,
@@ -503,7 +503,7 @@ class AsyncOpenAlex:
         response = await self._request("GET", url, params=params)
         response.raise_for_status()
 
-        return cast(dict[str, Any], response.json())
+        return cast("dict[str, Any]", response.json())
 
     async def search_all(
         self,

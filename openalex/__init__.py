@@ -28,7 +28,6 @@ Search:
 
 from __future__ import annotations
 
-import sys
 from typing import Any, cast
 
 __version__ = "0.1.0"
@@ -47,7 +46,7 @@ try:
         _httpx_options._HTTPXMockOptions.__init__.__kwdefaults__[  # noqa: SLF001
             "assert_all_responses_were_requested"
         ] = False
-        cast(Any, _httpx_options)._openalex_patched = True  # noqa: SLF001
+        cast("Any", _httpx_options)._openalex_patched = True  # noqa: SLF001
 except Exception:
     pass
 
@@ -265,4 +264,3 @@ __all__ = [
     "rate_limited",
     "with_retry",
 ]
-

@@ -16,7 +16,7 @@ from .base import (
     Role,
     SummaryStats,
 )
-from .topic import TopicHierarchy
+from .topic import TopicHierarchy  # noqa: TC001
 
 if TYPE_CHECKING:
     from .work import DehydratedConcept
@@ -182,7 +182,8 @@ class Institution(OpenAlexEntity):
         if v is None:
             return None
         if len(v) != 2 or not v.isalpha():
-            raise ValueError("Invalid country code")
+            msg = "Invalid country code"
+            raise ValueError(msg)
         return v.upper()
 
     @property
@@ -254,7 +255,9 @@ class Institution(OpenAlexEntity):
 
     def active_years(self) -> list[int]:
         """Return list of years with publications."""
-        return sorted([y.year for y in self.counts_by_year if y.works_count > 0])
+        return sorted(
+            [y.year for y in self.counts_by_year if y.works_count > 0]
+        )
 
 
 from .work import DehydratedConcept  # noqa: E402,TC001
