@@ -26,12 +26,6 @@ class OpenAlexConfig(BaseModel):
         default=None,
         description="Premium API key for higher rate limits",
     )
-    retry_count: int = Field(
-        default=3,
-        ge=0,
-        le=10,
-        description="Number of retries for failed requests",
-    )
     timeout: float = Field(
         default=30.0,
         gt=0,
@@ -43,12 +37,6 @@ class OpenAlexConfig(BaseModel):
         ge=1,
         le=200,
         description="Default items per page",
-    )
-    max_retries: int = Field(
-        default=3,
-        ge=0,
-        le=10,
-        description="Maximum number of retries",
     )
     user_agent: str | None = Field(
         default=None,

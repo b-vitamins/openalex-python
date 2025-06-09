@@ -4,7 +4,14 @@ from __future__ import annotations
 
 from typing import Any
 
-__all__ = ["ensure_prefix", "normalize_params", "strip_id_prefix"]
+from ..constants import OPENALEX_ID_PREFIX
+
+__all__ = [
+    "OPENALEX_ID_PREFIX",
+    "ensure_prefix",
+    "normalize_params",
+    "strip_id_prefix",
+]
 
 
 KEY_MAP = {"per_page": "per-page", "group_by": "group-by"}
@@ -22,8 +29,10 @@ def normalize_params(params: dict[str, Any]) -> dict[str, Any]:
     return normalized
 
 
-def strip_id_prefix(value: str) -> str:
-    """Remove URL style prefixes from an OpenAlex identifier."""
+def strip_id_prefix(value: str, prefix: str = OPENALEX_ID_PREFIX) -> str:
+    """Remove URL-style prefix from an OpenAlex identifier."""
+    if value.startswith(prefix):
+        return value[len(prefix) :]
     return value.rsplit("/", 1)[-1]
 
 

@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, Generic, Self, TypeVar
 from pydantic import ValidationError
 from structlog import get_logger
 
+from ..constants import OPENALEX_ID_PREFIX
 from ..exceptions import ValidationError as OpenAlexValidationError
 from ..exceptions import raise_for_status
 from ..models import BaseFilter, ListResult
@@ -114,8 +115,8 @@ class BaseResource(Generic[T, F]):
             Entity model instance
         """
         # Remove OpenAlex prefix if present but keep full IDs like ORCID/ROR
-        if id.startswith("https://openalex.org/"):
-            id = id.rsplit("/", 1)[-1]
+        if id.startswith(OPENALEX_ID_PREFIX):
+            id = id[len(OPENALEX_ID_PREFIX) :]
 
         url = self._build_url(id)
         response = self.client._request("GET", url, params=params)  # noqa: SLF001
@@ -329,8 +330,8 @@ class AsyncBaseResource(Generic[T, F]):
 
     async def get(self, id: str, **params: Any) -> T:
         """Get a single entity by ID."""
-        if id.startswith("https://openalex.org/"):
-            id = id.rsplit("/", 1)[-1]
+        if id.startswith(OPENALEX_ID_PREFIX):
+            id = id[len(OPENALEX_ID_PREFIX) :]
 
         url = self._build_url(id)
         response = await self.client._request("GET", url, params=params)  # noqa: SLF001
