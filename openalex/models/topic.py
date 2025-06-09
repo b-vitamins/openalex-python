@@ -21,8 +21,6 @@ from .base import OpenAlexBase, OpenAlexEntity, SummaryStats
 class TopicHierarchy(OpenAlexEntity):
     """Represents a node in the topic hierarchy."""
 
-    pass
-
 
 class TopicLevel(IntEnum):
     """Enumeration of hierarchy levels for a topic."""

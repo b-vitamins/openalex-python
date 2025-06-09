@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from contextlib import asynccontextmanager, contextmanager
 from typing import TYPE_CHECKING, Any, cast
 
@@ -131,17 +132,15 @@ class OpenAlex:
         if params:
             all_params.update(params)
 
-        # Rate limiting
-        wait_time = self.rate_limiter.acquire()
-        if wait_time > 0:
-            self.retry_handler.wait_sync(wait_time)
-
         # Retry logic
         attempt = 0
         last_error: Exception | None = None
 
         while attempt < self.retry_config.max_attempts:
             try:
+                wait_time = self.rate_limiter.acquire()
+                if wait_time > 0:
+                    self.retry_handler.wait_sync(wait_time)
                 logger.debug(
                     "Making request",
                     method=method,
@@ -395,16 +394,15 @@ class AsyncOpenAlex:
         if params:
             all_params.update(params)
 
-        # Rate limiting
-        async with self.rate_limiter:
-            pass
-
         # Retry logic
         attempt = 0
         last_error: Exception | None = None
 
         while attempt < self.retry_config.max_attempts:
             try:
+                wait_time = await self.rate_limiter.acquire()
+                if wait_time > 0:
+                    await asyncio.sleep(wait_time)
                 logger.debug(
                     "Making async request",
                     method=method,
