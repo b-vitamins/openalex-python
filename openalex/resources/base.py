@@ -26,6 +26,7 @@ from ..utils.pagination import MAX_PER_PAGE
 
 if TYPE_CHECKING:
     from ..client import AsyncOpenAlex, OpenAlex
+    from ..query import Query
 
 logger = get_logger(__name__)
 
@@ -46,6 +47,15 @@ class BaseResource(Generic[T, F]):
     def __init__(self, client: OpenAlex) -> None:
         """Initialize resource."""
         self.client = client
+
+    def query(self, **filter_params: Any) -> "Query[T, F]":
+        """Start building a fluent query for this resource."""
+        from ..query import Query  # Local import to avoid circular dependency
+
+        params: dict[str, Any] = {}
+        if filter_params:
+            params["filter"] = filter_params
+        return Query(self, params)
 
     def _build_url(self, path: str = "") -> str:
         """Build full URL for endpoint."""
