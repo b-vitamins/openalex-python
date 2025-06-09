@@ -5,6 +5,18 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Any
 
+__all__ = [
+    "APIError",
+    "AuthenticationError",
+    "NetworkError",
+    "NotFoundError",
+    "OpenAlexError",
+    "RateLimitError",
+    "TimeoutError",
+    "ValidationError",
+    "raise_for_status",
+]
+
 if TYPE_CHECKING:
     import httpx
 

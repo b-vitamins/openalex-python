@@ -4,6 +4,13 @@ from __future__ import annotations
 
 from pydantic import Field, HttpUrl
 
+__all__ = [
+    "Concept",
+    "ConceptAncestor",
+    "ConceptIds",
+    "RelatedConcept",
+]
+
 from .base import CountsByYear, OpenAlexBase, OpenAlexEntity, SummaryStats
 
 

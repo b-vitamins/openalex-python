@@ -7,6 +7,8 @@ from datetime import datetime
 from enum import IntEnum
 from typing import cast
 
+__all__ = ["Topic", "TopicHierarchy", "TopicIds", "TopicLevel"]
+
 from dateutil import parser  # type: ignore
 from pydantic import (
     Field,

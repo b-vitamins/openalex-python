@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+__all__ = ["Author", "AuthorAffiliation", "AuthorIds"]
+
 from pydantic import Field, HttpUrl
 
 from .base import CountsByYear, OpenAlexBase, OpenAlexEntity, SummaryStats

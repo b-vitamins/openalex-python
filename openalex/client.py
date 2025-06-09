@@ -6,6 +6,13 @@ import asyncio
 from contextlib import asynccontextmanager, contextmanager
 from typing import TYPE_CHECKING, Any, cast
 
+__all__ = [
+    "AsyncOpenAlex",
+    "OpenAlex",
+    "async_client",
+    "client",
+]
+
 import httpx
 from structlog import get_logger
 
@@ -558,11 +565,15 @@ class AsyncOpenAlex:
         }
 
         results: dict[str, ListResult[Any]] = {}
-        tasks_list = await asyncio.gather(*tasks.values(), return_exceptions=True)
+        tasks_list = await asyncio.gather(
+            *tasks.values(), return_exceptions=True
+        )
         for (entity_type, _), task_result in zip(
             tasks.items(), tasks_list, strict=False
         ):
-            if isinstance(task_result, Exception):  # pragma: no cover - defensive
+            if isinstance(
+                task_result, Exception
+            ):  # pragma: no cover - defensive
                 logger.warning(
                     "Failed to search %s",
                     entity_type,
@@ -570,7 +581,7 @@ class AsyncOpenAlex:
                 )
                 results[entity_type] = self._empty_list_result()
             else:
-                results[entity_type] = cast(ListResult[Any], task_result)
+                results[entity_type] = cast("ListResult[Any]", task_result)
 
         return results
 

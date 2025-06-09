@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pydantic import Field, HttpUrl
 
+__all__ = ["Publisher", "PublisherIds"]
+
 from .base import CountsByYear, OpenAlexBase, OpenAlexEntity, Role, SummaryStats
 
 
