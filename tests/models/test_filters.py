@@ -320,7 +320,7 @@ class TestWorksFilter:
             WorksFilter()
             .with_is_retracted(is_retracted=True)
             .with_is_paratext(is_paratext=False)
-            .with_has_fulltext(is_fulltext=True)
+            .with_has_fulltext(has_fulltext=True)
             .with_has_abstract(has_abstract=True)
             .with_has_doi(has_doi=True)
         )
