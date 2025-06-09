@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
-from pydantic import Field, HttpUrl
+from datetime import datetime
+from typing import Any
 
-from .base import CountsByYear, OpenAlexEntity, Role, SummaryStats
+from pydantic import Field, HttpUrl, field_validator
+
+from .base import CountsByYear, OpenAlexBase, OpenAlexEntity, Role, SummaryStats
 
 
-class FunderIds(OpenAlexEntity):
+class FunderIds(OpenAlexBase):
     """External identifiers for a funder."""
 
     openalex: str | None = None
@@ -34,9 +37,9 @@ class Funder(OpenAlexEntity):
 
     ror: HttpUrl | None = None
 
-    grants_count: int = Field(0, description="Number of grants")
-    works_count: int = Field(0, description="Number of funded works")
-    cited_by_count: int = Field(0, description="Total citations")
+    grants_count: int = Field(0, ge=0, description="Number of grants")
+    works_count: int = Field(0, ge=0, description="Number of funded works")
+    cited_by_count: int = Field(0, ge=0, description="Total citations")
 
     summary_stats: SummaryStats | None = None
 
@@ -49,6 +52,43 @@ class Funder(OpenAlexEntity):
     )
 
     ids: FunderIds | None = None
+
+    @field_validator("country_code")
+    @classmethod
+    def validate_country_code(cls, v: str | None) -> str | None:
+        """Ensure country code is two uppercase letters."""
+        if v is None:
+            return None
+        if len(v) != 2 or not v.isalpha():
+            raise ValueError("Invalid country code")
+        return v.upper()
+
+    @field_validator("updated_date", mode="before")
+    @classmethod
+    def parse_updated_date(cls, v: Any) -> datetime | Any:
+        """Parse updated_date allowing out-of-range seconds."""
+        if v is None or isinstance(v, datetime):
+            return v
+        if isinstance(v, str):
+            try:
+                return datetime.fromisoformat(v)
+            except ValueError:
+                try:
+                    date_part, time_part = v.split("T")
+                    time_str, *rest = time_part.split(".")
+                    hour, minute, second = [int(x) for x in time_str.split(":")]
+                    minute += second // 60
+                    second = second % 60
+                    hour += minute // 60
+                    minute = minute % 60
+                    new_time = f"{hour:02d}:{minute:02d}:{second:02d}"
+                    if rest:
+                        new_time += f".{rest[0]}"
+                    fixed = f"{date_part}T{new_time}"
+                    return datetime.fromisoformat(fixed)
+                except Exception as exc:  # pragma: no cover - defensive
+                    raise ValueError("Invalid datetime format") from exc
+        return v
 
     @property
     def funding_per_work(self) -> float | None:
@@ -68,3 +108,21 @@ class Funder(OpenAlexEntity):
         ]
         name_lower = self.display_name.lower()
         return any(keyword in name_lower for keyword in gov_keywords)
+
+    def works_in_year(self, year: int) -> int:
+        """Return number of works funded in a specific year."""
+        for year_data in self.counts_by_year:
+            if year_data.year == year:
+                return year_data.works_count
+        return 0
+
+    def citations_in_year(self, year: int) -> int:
+        """Return citation count for a specific year."""
+        for year_data in self.counts_by_year:
+            if year_data.year == year:
+                return year_data.cited_by_count
+        return 0
+
+    def active_years(self) -> list[int]:
+        """Return list of years with grant activity."""
+        return sorted([y.year for y in self.counts_by_year if y.works_count > 0])
