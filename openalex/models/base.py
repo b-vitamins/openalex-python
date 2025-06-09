@@ -45,7 +45,7 @@ class OpenAlexEntity(OpenAlexBase):
 
     id: str = Field(..., description="OpenAlex ID")
     display_name: str = Field(..., description="Display name")
-    created_date: date | None = Field(None, description="Creation date")
+    created_date: str | None = Field(None, description="Creation date")
     updated_date: datetime | None = Field(None, description="Last update date")
 
 

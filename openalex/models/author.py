@@ -16,7 +16,7 @@ class AuthorIds(OpenAlexBase):
     """External identifiers for an author."""
 
     openalex: str | None = None
-    orcid: HttpUrl | None = None
+    orcid: str | None = None
     scopus: str | None = None
     twitter: str | None = None
     wikipedia: HttpUrl | None = None
@@ -39,14 +39,16 @@ class Author(OpenAlexEntity):
         default_factory=list, description="Alternative names"
     )
 
-    works_count: int = Field(0, description="Number of works")
-    cited_by_count: int = Field(0, description="Total citations")
+    works_count: int = Field(0, ge=0, description="Number of works")
+    cited_by_count: int = Field(0, ge=0, description="Total citations")
 
     summary_stats: SummaryStats | None = None
 
     affiliations: list[AuthorAffiliation] = Field(
         default_factory=list, description="Institutional affiliations"
     )
+
+    last_known_institution: DehydratedInstitution | None = None
 
     last_known_institutions: list[DehydratedInstitution] = Field(
         default_factory=list, description="Most recent affiliations"
@@ -124,6 +126,23 @@ class Author(OpenAlexEntity):
             if affiliation.institution and affiliation.institution.display_name:
                 names.append(affiliation.institution.display_name)
         return list(set(names))  # Remove duplicates
+
+    def current_institutions(self) -> list[DehydratedInstitution]:
+        """Return institutions with the most recent affiliation year."""
+        if not self.affiliations:
+            return []
+
+        # Determine most recent year across all affiliations
+        max_year = max((max(a.years) for a in self.affiliations if a.years), default=None)
+        if max_year is None:
+            return []
+
+        institutions: list[DehydratedInstitution] = []
+        for affiliation in self.affiliations:
+            if affiliation.institution and max_year in affiliation.years:
+                institutions.append(affiliation.institution)
+
+        return institutions
 
     def concept_names(self) -> list[str]:
         """Get list of associated concept names."""
