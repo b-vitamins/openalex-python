@@ -4,11 +4,18 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+import asyncio
+
 import httpx
 import pytest
 
 from openalex import AsyncOpenAlex, OpenAlex, OpenAlexConfig
-from openalex.exceptions import NetworkError, NotFoundError, RateLimitError
+from openalex.exceptions import (
+    NetworkError,
+    NotFoundError,
+    RateLimitError,
+    TimeoutError,
+)
 from openalex.models import ListResult, Meta
 from openalex.resources.base import AsyncBaseResource, BaseResource
 from openalex.utils import RetryConfig, RetryHandler
@@ -516,5 +523,88 @@ async def test_async_request_all_fail(monkeypatch: pytest.MonkeyPatch, config: O
     with pytest.raises(NetworkError):
         await client._request("GET", "https://api.openalex.org/test")
     assert calls["attempts"] == 2
+    await client.close()
+
+
+def test_request_zero_attempts(config: OpenAlexConfig) -> None:
+    """Ensure NetworkError raised when no retry attempts configured."""
+    client = OpenAlex(config=config)
+    client.retry_config = RetryConfig(max_attempts=0)
+    client.retry_handler = RetryHandler(client.retry_config)
+    with pytest.raises(NetworkError):
+        client._request("GET", "https://api.openalex.org/test")
+
+
+@pytest.mark.asyncio
+async def test_async_request_sleep(monkeypatch: pytest.MonkeyPatch, config: OpenAlexConfig) -> None:
+    """Verify sleep occurs when rate limiter requires a wait."""
+    client = AsyncOpenAlex(config=config)
+    called: list[float] = []
+
+    async def fake_acquire() -> float:
+        return 0.1
+
+    async def fake_sleep(seconds: float) -> None:
+        called.append(seconds)
+
+    async def fake_request(method: str, url: str, params=None, **kwargs):
+        return httpx.Response(200, json={"ok": True})
+
+    monkeypatch.setattr(client.rate_limiter, "acquire", fake_acquire)
+    monkeypatch.setattr(asyncio, "sleep", fake_sleep)
+    monkeypatch.setattr(client._client, "request", fake_request)
+
+    resp = await client._request("GET", "http://example.com")
+    assert resp.status_code == 200
+    assert called
+    await client.close()
+
+
+@pytest.mark.asyncio
+async def test_async_request_timeout(monkeypatch: pytest.MonkeyPatch, config: OpenAlexConfig) -> None:
+    """Timeout exceptions should propagate as TimeoutError."""
+    client = AsyncOpenAlex(config=config)
+
+    async def fake_request(method: str, url: str, params=None, **kwargs):
+        raise httpx.TimeoutException("boom")
+
+    async def acquire_zero() -> int:
+        return 0
+
+    monkeypatch.setattr(client.rate_limiter, "acquire", acquire_zero)
+    monkeypatch.setattr(client.retry_handler, "should_retry", lambda e, a: False)
+    monkeypatch.setattr(client._client, "request", fake_request)
+
+    with pytest.raises(TimeoutError):
+        await client._request("GET", "http://x.com")
+    await client.close()
+
+
+@pytest.mark.asyncio
+async def test_async_request_generic_error(monkeypatch: pytest.MonkeyPatch, config: OpenAlexConfig) -> None:
+    """Unhandled exceptions should propagate without retry."""
+    client = AsyncOpenAlex(config=config)
+
+    async def fake_request(method: str, url: str, params=None, **kwargs):
+        raise ValueError("boom")
+
+    async def acquire_zero() -> int:
+        return 0
+
+    monkeypatch.setattr(client.rate_limiter, "acquire", acquire_zero)
+    monkeypatch.setattr(client.retry_handler, "should_retry", lambda e, a: False)
+    monkeypatch.setattr(client._client, "request", fake_request)
+
+    with pytest.raises(ValueError):
+        await client._request("GET", "http://x.com")
+    await client.close()
+
+
+@pytest.mark.asyncio
+async def test_async_request_no_attempts(config: OpenAlexConfig) -> None:
+    """Async client should raise NetworkError when attempts are zero."""
+    client = AsyncOpenAlex(config=config, retry_config=RetryConfig(max_attempts=0))
+    with pytest.raises(NetworkError):
+        await client._request("GET", "http://x.com")
     await client.close()
 
