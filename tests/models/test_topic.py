@@ -9,6 +9,7 @@ from pydantic import ValidationError
 from openalex.models import (
     DehydratedTopic,
     Topic,
+    TopicHierarchy,
     TopicLevel,
 )
 
@@ -420,3 +421,39 @@ class TestTopic:
 
         assert isinstance(topic.updated_date, datetime)
         assert topic.updated_date.year == 2024
+
+    def test_parse_updated_date_malformed(self) -> None:
+        """Seconds above 59 are clamped."""
+        topic = Topic(
+            id="T1",
+            display_name="Topic",
+            updated_date="2024-12-31T23:59:70Z",
+        )
+        assert isinstance(topic.updated_date, datetime)
+        assert topic.updated_date.second == 59
+
+    def test_hierarchy_path_and_level(self) -> None:
+        """Hierarchy helpers work with all levels."""
+        domain = TopicHierarchy(id="D1", display_name="Domain")
+        field = TopicHierarchy(id="F1", display_name="Field")
+        sub = TopicHierarchy(id="S1", display_name="Sub")
+        topic = Topic(id="T2", display_name="Name", domain=domain, field=field, subfield=sub)
+        assert topic.hierarchy_path == "Domain > Field > Sub"
+        assert topic.level.name == "SUBFIELD"
+
+    def test_parse_updated_date_regex_branch(self) -> None:
+        """Malformed datetime handled via regex."""
+        topic = Topic(
+            id="T3",
+            display_name="Topic",
+            updated_date="2024-12-31T12:34:61BAD",
+        )
+        assert isinstance(topic.updated_date, datetime)
+        assert topic.updated_date.second == 59
+
+    def test_parse_updated_date_none_and_invalid(self) -> None:
+        """None or invalid updated_date returns None."""
+        t_none = Topic(id="T4", display_name="t", updated_date=None)
+        assert t_none.updated_date is None
+        t_bad = Topic(id="T5", display_name="t", updated_date="bad")
+        assert t_bad.updated_date is None

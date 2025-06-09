@@ -6,7 +6,7 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from openalex.models import Funder
+from openalex.models import Funder, CountsByYear
 
 
 class TestFunder:
@@ -346,3 +346,33 @@ class TestFunder:
 
         assert isinstance(funder.updated_date, datetime)
         assert funder.updated_date.year == 2024
+
+    def test_country_code_none_and_invalid(self) -> None:
+        """Country code validation branches."""
+        funder = Funder(id="F1", display_name="Foo", country_code=None, updated_date=None)
+        assert funder.country_code is None
+        with pytest.raises(ValueError):
+            Funder(id="F2", display_name="Bar", country_code="ZZZ")
+
+    def test_parse_updated_date_out_of_range(self) -> None:
+        """Handle times with minutes/seconds overflow."""
+        funder = Funder(id="F3", display_name="Baz", updated_date="2024-12-31T22:70:10")
+        assert isinstance(funder.updated_date, datetime)
+        assert funder.updated_date.minute == 10
+        assert funder.updated_date.hour == 23
+
+    def test_active_years_helpers(self) -> None:
+        """Year helper methods with partial data."""
+        years = [
+            CountsByYear(year=2020, works_count=1, cited_by_count=2),
+            CountsByYear(year=2021, works_count=0, cited_by_count=3),
+        ]
+        funder = Funder(id="F4", display_name="Qux", counts_by_year=years)
+        assert funder.works_in_year(2020) == 1
+        assert funder.citations_in_year(2021) == 3
+        assert funder.active_years() == [2020]
+
+    def test_parse_updated_date_invalid(self) -> None:
+        """Invalid updated_date string raises error."""
+        with pytest.raises(ValueError):
+            Funder(id="F5", display_name="Bad", updated_date="not-a-date")
