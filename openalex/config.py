@@ -9,6 +9,16 @@ __all__ = ["OpenAlexConfig"]
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 
 from . import __version__
+from .constants import (
+    DEFAULT_BASE_URL,
+    DEFAULT_CACHE_TTL,
+    DEFAULT_PER_PAGE,
+    DEFAULT_TIMEOUT,
+    HEADER_ACCEPT,
+    HEADER_ACCEPT_ENCODING,
+    HEADER_AUTHORIZATION,
+    HEADER_USER_AGENT,
+)
 from .utils.rate_limit import DEFAULT_BUFFER
 
 
@@ -16,7 +26,7 @@ class OpenAlexConfig(BaseModel):
     """Configuration for OpenAlex API client."""
 
     base_url: HttpUrl = Field(
-        default=HttpUrl("https://api.openalex.org"),
+        default=DEFAULT_BASE_URL,
         description="Base URL for the OpenAlex API",
     )
     email: str | None = Field(
@@ -28,13 +38,13 @@ class OpenAlexConfig(BaseModel):
         description="Premium API key for higher rate limits",
     )
     timeout: float = Field(
-        default=30.0,
+        default=DEFAULT_TIMEOUT,
         gt=0,
         le=300,
         description="Request timeout in seconds",
     )
     per_page: int = Field(
-        default=200,
+        default=DEFAULT_PER_PAGE,
         ge=1,
         le=200,
         description="Default items per page",
@@ -48,7 +58,7 @@ class OpenAlexConfig(BaseModel):
         description="Enable response caching",
     )
     cache_ttl: int = Field(
-        default=3600,
+        default=DEFAULT_CACHE_TTL,
         ge=0,
         description="Cache TTL in seconds",
     )
@@ -69,8 +79,8 @@ class OpenAlexConfig(BaseModel):
     def headers(self) -> dict[str, str]:
         """Get default headers for requests."""
         headers: dict[str, str] = {
-            "Accept": "application/json",
-            "Accept-Encoding": "gzip, deflate",
+            HEADER_ACCEPT: "application/json",
+            HEADER_ACCEPT_ENCODING: "gzip, deflate",
         }
 
         # Build user agent
@@ -79,11 +89,11 @@ class OpenAlexConfig(BaseModel):
             ua_parts.append(f"(mailto:{self.email})")
         if self.user_agent:
             ua_parts.append(self.user_agent)
-        headers["User-Agent"] = " ".join(ua_parts)
+        headers[HEADER_USER_AGENT] = " ".join(ua_parts)
 
         # Add API key if provided
         if self.api_key:
-            headers["Authorization"] = f"Bearer {self.api_key}"
+            headers[HEADER_AUTHORIZATION] = f"Bearer {self.api_key}"
 
         return headers
 
