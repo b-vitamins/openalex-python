@@ -10,7 +10,11 @@ from structlog import get_logger
 from ..exceptions import ValidationError as OpenAlexValidationError
 from ..exceptions import raise_for_status
 from ..models import BaseFilter, ListResult
-from ..utils import AsyncPaginator, Paginator
+from ..utils import (
+    AsyncPaginator,
+    Paginator,
+    normalize_params,
+)
 
 if TYPE_CHECKING:
     from ..client import AsyncOpenAlex, OpenAlex
@@ -39,23 +43,6 @@ class BaseResource(Generic[T, F]):
         if path:
             return f"{base}/{path.lstrip('/')}"
         return base
-
-    def _normalize_params(self, params: dict[str, Any]) -> dict[str, Any]:
-        """Normalize parameter names and values for the API."""
-        normalized: dict[str, Any] = {}
-        for key, value in params.items():
-            # Convert snake_case keys used by the SDK to the API format
-            if key == "per_page":
-                key = "per-page"
-            elif key == "group_by":
-                key = "group-by"
-
-            if key == "select" and isinstance(value, list):
-                normalized[key] = ",".join(value)
-            else:
-                normalized[key] = value
-
-        return normalized
 
     def _parse_response(self, data: dict[str, Any]) -> T:
         """Parse response data into model."""
@@ -139,7 +126,7 @@ class BaseResource(Generic[T, F]):
                 filter_obj = self.filter_class(**filter_kwargs)
                 params.update(filter_obj.to_params(include_defaults=False))
 
-        params = self._normalize_params(params)
+        params = normalize_params(params)
 
         url = self._build_url()
         response = self.client._request("GET", url, params=params)  # noqa: SLF001
@@ -218,7 +205,7 @@ class BaseResource(Generic[T, F]):
         def fetch_page(page_params: dict[str, Any]) -> ListResult[T]:
             url = self._build_url()
             all_params = {**params, **page_params}
-            all_params = self._normalize_params(all_params)
+            all_params = normalize_params(all_params)
             response = self.client._request(  # noqa: SLF001
                 "GET", url, params=all_params
             )
@@ -242,7 +229,7 @@ class BaseResource(Generic[T, F]):
             Random entity
         """
         url = self._build_url("random")
-        params = self._normalize_params(params)
+        params = normalize_params(params)
         response = self.client._request("GET", url, params=params)  # noqa: SLF001
         raise_for_status(response)
 
@@ -264,7 +251,7 @@ class BaseResource(Generic[T, F]):
         """
         params["q"] = query
         url = f"{str(self.client.config.base_url).rstrip('/')}/autocomplete/{self.endpoint}"
-        params = self._normalize_params(params)
+        params = normalize_params(params)
         response = self.client._request("GET", url, params=params)  # noqa: SLF001
         raise_for_status(response)
 
@@ -281,22 +268,6 @@ class AsyncBaseResource(Generic[T, F]):
     def __init__(self, client: AsyncOpenAlex) -> None:
         """Initialize async resource."""
         self.client = client
-
-    def _normalize_params(self, params: dict[str, Any]) -> dict[str, Any]:
-        """Normalize parameter names and values for the API."""
-        normalized: dict[str, Any] = {}
-        for key, value in params.items():
-            if key == "per_page":
-                key = "per-page"
-            elif key == "group_by":
-                key = "group-by"
-
-            if key == "select" and isinstance(value, list):
-                normalized[key] = ",".join(value)
-            else:
-                normalized[key] = value
-
-        return normalized
 
     def _build_url(self, path: str = "") -> str:
         """Build full URL for endpoint."""
@@ -369,7 +340,7 @@ class AsyncBaseResource(Generic[T, F]):
                 filter_obj = self.filter_class(**filter_kwargs)
                 params.update(filter_obj.to_params(include_defaults=False))
 
-        params = self._normalize_params(params)
+        params = normalize_params(params)
 
         url = self._build_url()
         response = await self.client._request("GET", url, params=params)  # noqa: SLF001
@@ -421,7 +392,7 @@ class AsyncBaseResource(Generic[T, F]):
         async def fetch_page(page_params: dict[str, Any]) -> ListResult[T]:
             url = self._build_url()
             all_params = {**params, **page_params}
-            all_params = self._normalize_params(all_params)
+            all_params = normalize_params(all_params)
             response = await self.client._request(  # noqa: SLF001
                 "GET", url, params=all_params
             )
@@ -438,7 +409,7 @@ class AsyncBaseResource(Generic[T, F]):
     async def random(self, **params: Any) -> T:
         """Get a random entity."""
         url = self._build_url("random")
-        params = self._normalize_params(params)
+        params = normalize_params(params)
         response = await self.client._request("GET", url, params=params)  # noqa: SLF001
         raise_for_status(response)
 
@@ -452,7 +423,7 @@ class AsyncBaseResource(Generic[T, F]):
         """Autocomplete search."""
         params["q"] = query
         url = f"{str(self.client.config.base_url).rstrip('/')}/autocomplete/{self.endpoint}"
-        params = self._normalize_params(params)
+        params = normalize_params(params)
         response = await self.client._request("GET", url, params=params)  # noqa: SLF001
         raise_for_status(response)
 

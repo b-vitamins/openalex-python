@@ -1,5 +1,6 @@
 """Utility functions and classes for OpenAlex client."""
 
+from .common import normalize_params, strip_id_prefix
 from .pagination import AsyncPaginator, Paginator
 from .rate_limit import (
     AsyncRateLimiter,
@@ -19,17 +20,16 @@ from .retry import (
 __all__ = [
     "AsyncPaginator",
     "AsyncRateLimiter",
-    # Pagination
     "Paginator",
-    # Rate limiting
     "RateLimiter",
-    # Retry
     "RetryConfig",
     "RetryHandler",
     "SlidingWindowRateLimiter",
     "async_rate_limited",
     "async_with_retry",
     "is_retryable_error",
+    "normalize_params",
     "rate_limited",
+    "strip_id_prefix",
     "with_retry",
 ]
