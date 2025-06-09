@@ -285,7 +285,6 @@ class OpenAlex:
         """
         results: dict[str, ListResult[Any]] = {}
 
-        # Search each entity type
         entity_types: list[tuple[str, BaseResource[Any, Any]]] = [
             ("works", self.works),
             ("authors", self.authors),
@@ -300,14 +299,16 @@ class OpenAlex:
 
         for entity_type, resource in entity_types:
             try:
-                results[entity_type] = resource.search(query, **params)
+                result = resource.search(query, **params)
             except Exception as exc:  # pragma: no cover - defensive
                 logger.warning(
                     "Failed to search %s",
                     entity_type,
                     exc_info=exc,
                 )
-                results[entity_type] = self._empty_list_result()
+                result = self._empty_list_result()
+
+            results[entity_type] = result
 
         return results
 
@@ -556,18 +557,20 @@ class AsyncOpenAlex:
             "keywords": self.keywords.search(query, **params),
         }
 
-        # Run concurrently
         results: dict[str, ListResult[Any]] = {}
-        for entity_type, task in tasks.items():
-            try:
-                results[entity_type] = await task
-            except Exception as exc:  # pragma: no cover - defensive
+        tasks_list = await asyncio.gather(*tasks.values(), return_exceptions=True)
+        for (entity_type, _), task_result in zip(
+            tasks.items(), tasks_list, strict=False
+        ):
+            if isinstance(task_result, Exception):  # pragma: no cover - defensive
                 logger.warning(
                     "Failed to search %s",
                     entity_type,
-                    exc_info=exc,
+                    exc_info=task_result,
                 )
                 results[entity_type] = self._empty_list_result()
+            else:
+                results[entity_type] = cast(ListResult[Any], task_result)
 
         return results
 

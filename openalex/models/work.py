@@ -169,9 +169,7 @@ class Biblio(OpenAlexBase):
         """Return formatted page range if available."""
         if self.first_page and self.last_page:
             return f"{self.first_page}-{self.last_page}"
-        if self.first_page:
-            return self.first_page
-        return None
+        return self.first_page
 
 
 class CitationNormalizedPercentile(OpenAlexBase):
@@ -264,25 +262,17 @@ class Work(OpenAlexEntity):
         if not self.abstract_inverted_index:
             return None
 
-        length = (
-            max(
-                (
-                    pos
-                    for positions in self.abstract_inverted_index.values()
-                    for pos in positions
-                ),
-                default=-1,
-            )
-            + 1
-        )
-        words: list[str] = [""] * length
-        for word, positions in self.abstract_inverted_index.items():
-            for pos in positions:
-                if 0 <= pos < length:
-                    words[pos] = word
+        word_positions = {
+            pos: word
+            for word, positions in self.abstract_inverted_index.items()
+            for pos in positions
+            if pos >= 0
+        }
+        length = max(word_positions, default=-1) + 1
+        words = [word_positions.get(i, "") for i in range(length)]
         abstract = " ".join(words).strip()
         if not abstract.endswith((".", "!", "?")):
-            last_punct = max(abstract.rfind(p) for p in ".!?")
+            last_punct = max((abstract.rfind(p) for p in ".!?"), default=-1)
             if last_punct != -1:
                 abstract = abstract[: last_punct + 1]
         return abstract
@@ -298,27 +288,33 @@ class Work(OpenAlexEntity):
 
     def citations_in_year(self, year: int) -> int:
         """Return citation count for a given year."""
-        for cy in self.counts_by_year:
-            if cy.year == year:
-                return cy.cited_by_count
-        return 0
+        return next(
+            (
+                cy.cited_by_count
+                for cy in self.counts_by_year
+                if cy.year == year
+            ),
+            0,
+        )
 
     def author_names(self) -> list[str]:
         """Return list of author display names."""
-        names = []
-        for auth in self.authorships:
-            if auth.author and auth.author.display_name:
-                names.append(auth.author.display_name)
-        return names
+        return [
+            auth.author.display_name
+            for auth in self.authorships
+            if auth.author and auth.author.display_name
+        ]
 
     def institution_names(self) -> list[str]:
         """Return list of affiliated institution names."""
-        names: set[str] = set()
-        for auth in self.authorships:
-            for inst in auth.institutions:
-                if inst.display_name:
-                    names.add(inst.display_name)
-        return list(names)
+        return list(
+            {
+                inst.display_name
+                for auth in self.authorships
+                for inst in auth.institutions
+                if inst.display_name
+            }
+        )
 
     def has_abstract(self) -> bool:
         """Return ``True`` if the work has an abstract."""
@@ -326,9 +322,7 @@ class Work(OpenAlexEntity):
 
     def has_references(self) -> bool:
         """Return ``True`` if the work has reference information."""
-        if self.referenced_works_count:
-            return self.referenced_works_count > 0
-        return bool(self.referenced_works)
+        return bool(self.referenced_works_count or self.referenced_works)
 
 
 class BaseFilter(BaseModel):

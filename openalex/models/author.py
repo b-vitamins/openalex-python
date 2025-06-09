@@ -85,12 +85,7 @@ class Author(OpenAlexEntity):
         if not self.counts_by_year:
             return 0
 
-        max_citations = 0
-        for year_data in self.counts_by_year:
-            if year_data.cited_by_count > max_citations:
-                max_citations = year_data.cited_by_count
-
-        return max_citations
+        return max((y.cited_by_count for y in self.counts_by_year), default=0)
 
     @property
     def two_year_mean_citedness(self) -> float | None:
@@ -101,31 +96,31 @@ class Author(OpenAlexEntity):
 
     def works_in_year(self, year: int) -> int:
         """Get number of works published in a specific year."""
-        for year_data in self.counts_by_year:
-            if year_data.year == year:
-                return year_data.works_count
-        return 0
+        return next(
+            (y.works_count for y in self.counts_by_year if y.year == year), 0
+        )
 
     def citations_in_year(self, year: int) -> int:
         """Get number of citations in a specific year."""
-        for year_data in self.counts_by_year:
-            if year_data.year == year:
-                return year_data.cited_by_count
-        return 0
+        return next(
+            (y.cited_by_count for y in self.counts_by_year if y.year == year), 0
+        )
 
     def active_years(self) -> list[int]:
         """Get list of years with publications."""
         return sorted(
-            [y.year for y in self.counts_by_year if y.works_count > 0]
+            {y.year for y in self.counts_by_year if y.works_count > 0}
         )
 
     def institution_names(self) -> list[str]:
         """Get list of affiliated institution names."""
-        names = []
-        for affiliation in self.affiliations:
-            if affiliation.institution and affiliation.institution.display_name:
-                names.append(affiliation.institution.display_name)
-        return list(set(names))  # Remove duplicates
+        return list(
+            {
+                aff.institution.display_name
+                for aff in self.affiliations
+                if aff.institution and aff.institution.display_name
+            }
+        )
 
     def current_institutions(self) -> list[DehydratedInstitution]:
         """Return institutions with the most recent affiliation year."""
@@ -139,12 +134,11 @@ class Author(OpenAlexEntity):
         if max_year is None:
             return []
 
-        institutions: list[DehydratedInstitution] = []
-        for affiliation in self.affiliations:
-            if affiliation.institution and max_year in affiliation.years:
-                institutions.append(affiliation.institution)
-
-        return institutions
+        return [
+            a.institution
+            for a in self.affiliations
+            if a.institution and max_year in a.years
+        ]
 
     def concept_names(self) -> list[str]:
         """Get list of associated concept names."""

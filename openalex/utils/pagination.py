@@ -92,9 +92,8 @@ class Paginator(Generic[T]):
             for item in items:
                 if self.max_results and self._total_fetched >= self.max_results:
                     return
-
-                yield item
                 self._total_fetched += 1
+                yield item
 
             # Check if there are more pages
             if result.meta.next_cursor:
@@ -236,9 +235,8 @@ class AsyncPaginator(Generic[T]):
             for item in items:
                 if self.max_results and self._total_fetched >= self.max_results:
                     return
-
-                yield item
                 self._total_fetched += 1
+                yield item
 
             # Check if there are more pages
             if result.meta.next_cursor:
@@ -326,14 +324,12 @@ class AsyncPaginator(Generic[T]):
             total_pages = min(pages, total_pages)
 
         # Create tasks for all pages
-        tasks = []
-        for page in range(1, total_pages + 1):
-            params = self.params.copy()
-            params["per-page"] = self.per_page
-            params["page"] = page
-
-            task = self.fetch_func(params)
-            tasks.append(task)
+        tasks = [
+            self.fetch_func(
+                {**self.params, "per-page": self.per_page, "page": page}
+            )
+            for page in range(1, total_pages + 1)
+        ]
 
         # Limit concurrency
         results = []
