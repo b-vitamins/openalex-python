@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from ..models import Institution, InstitutionsFilter
+from ..utils import ensure_prefix
 from .base import AsyncBaseResource, BaseResource
 
 if TYPE_CHECKING:
@@ -31,11 +32,7 @@ class InstitutionsResource(BaseResource[Institution, InstitutionsFilter]):
         Returns:
             Institution instance
         """
-        # Ensure ROR is properly formatted
-        if not ror.startswith("https://ror.org/"):
-            ror = f"https://ror.org/{ror}"
-
-        return self.get(ror)
+        return self.get(ensure_prefix(ror, "https://ror.org/"))
 
 
 class AsyncInstitutionsResource(
@@ -60,8 +57,4 @@ class AsyncInstitutionsResource(
         Returns:
             Institution instance
         """
-        # Ensure ROR is properly formatted
-        if not ror.startswith("https://ror.org/"):
-            ror = f"https://ror.org/{ror}"
-
-        return await self.get(ror)
+        return await self.get(ensure_prefix(ror, "https://ror.org/"))

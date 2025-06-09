@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from ..models import BaseFilter, Concept
+from ..utils import ensure_prefix
 from .base import AsyncBaseResource, BaseResource
 
 if TYPE_CHECKING:
@@ -31,12 +32,13 @@ class ConceptsResource(BaseResource[Concept, BaseFilter]):
         Returns:
             Concept instance
         """
-        # Ensure proper Wikidata URL format
         if not wikidata_id.startswith("https://"):
-            if wikidata_id.startswith("Q"):
-                wikidata_id = f"https://www.wikidata.org/entity/{wikidata_id}"
-            else:
-                wikidata_id = f"https://www.wikidata.org/entity/Q{wikidata_id}"
+            if not wikidata_id.startswith("Q"):
+                wikidata_id = f"Q{wikidata_id}"
+            wikidata_id = ensure_prefix(
+                wikidata_id,
+                "https://www.wikidata.org/entity/",
+            )
 
         return self.get(wikidata_id)
 
@@ -61,11 +63,12 @@ class AsyncConceptsResource(AsyncBaseResource[Concept, BaseFilter]):
         Returns:
             Concept instance
         """
-        # Ensure proper Wikidata URL format
         if not wikidata_id.startswith("https://"):
-            if wikidata_id.startswith("Q"):
-                wikidata_id = f"https://www.wikidata.org/entity/{wikidata_id}"
-            else:
-                wikidata_id = f"https://www.wikidata.org/entity/Q{wikidata_id}"
+            if not wikidata_id.startswith("Q"):
+                wikidata_id = f"Q{wikidata_id}"
+            wikidata_id = ensure_prefix(
+                wikidata_id,
+                "https://www.wikidata.org/entity/",
+            )
 
         return await self.get(wikidata_id)

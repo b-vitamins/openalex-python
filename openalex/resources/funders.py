@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from ..models import BaseFilter, Funder
+from ..utils import ensure_prefix
 from .base import AsyncBaseResource, BaseResource
 
 if TYPE_CHECKING:
@@ -31,11 +32,7 @@ class FundersResource(BaseResource[Funder, BaseFilter]):
         Returns:
             Funder instance
         """
-        # Ensure ROR is properly formatted
-        if not ror.startswith("https://ror.org/"):
-            ror = f"https://ror.org/{ror}"
-
-        return self.get(ror)
+        return self.get(ensure_prefix(ror, "https://ror.org/"))
 
 
 class AsyncFundersResource(AsyncBaseResource[Funder, BaseFilter]):
@@ -58,8 +55,4 @@ class AsyncFundersResource(AsyncBaseResource[Funder, BaseFilter]):
         Returns:
             Funder instance
         """
-        # Ensure ROR is properly formatted
-        if not ror.startswith("https://ror.org/"):
-            ror = f"https://ror.org/{ror}"
-
-        return await self.get(ror)
+        return await self.get(ensure_prefix(ror, "https://ror.org/"))
