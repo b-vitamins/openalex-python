@@ -35,6 +35,8 @@ from .institution import (
     Institution,
     InstitutionIds,
     InstitutionType,
+    InstitutionTopic,
+    InstitutionTopicShare,
     Repository,
 )
 from .keyword import Keyword
@@ -105,6 +107,8 @@ __all__ = [
     "InstitutionType",
     "InstitutionsFilter",
     "InternationalNames",
+    "InstitutionTopic",
+    "InstitutionTopicShare",
     # Keyword models
     "Keyword",
     "KeywordTag",
