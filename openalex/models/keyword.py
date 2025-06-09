@@ -10,8 +10,21 @@ from .base import CountsByYear, OpenAlexEntity
 class Keyword(OpenAlexEntity):
     """Full keyword model."""
 
-    works_count: int = Field(0, description="Number of works with this keyword")
-    cited_by_count: int = Field(0, description="Total citations")
+    score: float | None = Field(
+        None,
+        ge=0,
+        description="Relevance score of the keyword",
+    )
+    works_count: int = Field(
+        0,
+        ge=0,
+        description="Number of works with this keyword",
+    )
+    cited_by_count: int = Field(
+        0,
+        ge=0,
+        description="Total citations",
+    )
     counts_by_year: list[CountsByYear] = Field(
         default_factory=list, description="Yearly statistics"
     )
@@ -27,8 +40,12 @@ class Keyword(OpenAlexEntity):
         return None
 
     def is_popular(self, threshold: int = 1000) -> bool:
-        """Check if keyword is popular based on context."""
-        avg = self.average_citations_per_work
-        if self.works_count >= 1000 and avg is not None:
-            return avg >= threshold
-        return self.works_count >= threshold
+        """Determine whether this keyword is considered popular."""
+
+        if self.works_count < threshold:
+            return False
+
+        if self.score is None:
+            return True
+
+        return self.score >= threshold / 8
