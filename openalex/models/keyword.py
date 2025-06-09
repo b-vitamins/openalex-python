@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pydantic import Field
 
+__all__ = ["Keyword"]
+
 from .base import CountsByYear, OpenAlexEntity
 
 

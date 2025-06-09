@@ -5,6 +5,16 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
+__all__ = [
+    "AssociatedInstitution",
+    "Institution",
+    "InstitutionIds",
+    "InstitutionTopic",
+    "InstitutionTopicShare",
+    "InstitutionType",
+    "Repository",
+]
+
 from pydantic import Field, HttpUrl, TypeAdapter, field_validator
 
 from .base import (

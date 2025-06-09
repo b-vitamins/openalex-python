@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import random
 import time
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, TypeVar
 
 from structlog import get_logger
@@ -51,32 +52,15 @@ def is_retryable_error(error: BaseException) -> bool:
     return False
 
 
+@dataclass(slots=True)
 class RetryConfig:
     """Configuration for retry behavior."""
 
-    def __init__(
-        self,
-        max_attempts: int = 3,
-        initial_wait: float = 1.0,
-        max_wait: float = 60.0,
-        exponential_base: float = 2.0,
-        *,
-        jitter: bool = True,
-    ) -> None:
-        """Initialize retry configuration.
-
-        Args:
-            max_attempts: Maximum number of attempts
-            initial_wait: Initial wait time in seconds
-            max_wait: Maximum wait time in seconds
-            exponential_base: Base for exponential backoff
-            jitter: Whether to add jitter to wait times
-        """
-        self.max_attempts = max_attempts
-        self.initial_wait = initial_wait
-        self.max_wait = max_wait
-        self.exponential_base = exponential_base
-        self.jitter = jitter
+    max_attempts: int = 3
+    initial_wait: float = 1.0
+    max_wait: float = 60.0
+    exponential_base: float = 2.0
+    jitter: bool = True
 
     def get_wait_strategy(self) -> Any:
         """Get tenacity wait strategy."""

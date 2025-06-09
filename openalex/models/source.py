@@ -5,6 +5,14 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING, Any, cast
 
+__all__ = [
+    "APCPrice",
+    "Society",
+    "Source",
+    "SourceIds",
+    "SourceType",
+]
+
 from pydantic import Field, HttpUrl, field_validator
 
 from .base import CountsByYear, OpenAlexBase, OpenAlexEntity, SummaryStats

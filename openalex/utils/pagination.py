@@ -24,6 +24,14 @@ logger = get_logger(__name__)
 T = TypeVar("T")
 
 
+def _pad_results(results: list[T], per_page: int | None) -> list[T]:
+    """Pad ``results`` to ``per_page`` length if necessary."""
+    if per_page and results and len(results) < per_page:
+        missing = per_page - len(results)
+        return results + [results[-1]] * missing
+    return results
+
+
 class Paginator(Generic[T]):
     """Synchronous paginator for OpenAlex API results."""
 
@@ -80,14 +88,7 @@ class Paginator(Generic[T]):
                 raise
 
             # Yield results
-            items = result.results
-            if (
-                result.meta.per_page
-                and result.results
-                and len(result.results) < result.meta.per_page
-            ):
-                missing = result.meta.per_page - len(result.results)
-                items = result.results + [result.results[-1]] * missing
+            items = _pad_results(result.results, result.meta.per_page)
 
             for item in items:
                 if self.max_results and self._total_fetched >= self.max_results:
@@ -223,14 +224,7 @@ class AsyncPaginator(Generic[T]):
                 raise
 
             # Yield results
-            items = result.results
-            if (
-                result.meta.per_page
-                and result.results
-                and len(result.results) < result.meta.per_page
-            ):
-                missing = result.meta.per_page - len(result.results)
-                items = result.results + [result.results[-1]] * missing
+            items = _pad_results(result.results, result.meta.per_page)
 
             for item in items:
                 if self.max_results and self._total_fetched >= self.max_results:

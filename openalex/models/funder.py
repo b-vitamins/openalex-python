@@ -5,6 +5,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
+__all__ = ["Funder", "FunderIds"]
+
 from pydantic import Field, HttpUrl, field_validator
 
 from .base import CountsByYear, OpenAlexBase, OpenAlexEntity, Role, SummaryStats
