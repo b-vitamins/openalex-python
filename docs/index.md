@@ -32,3 +32,8 @@ Short examples showing how to accomplish common tasks with the Python client.
 - [Filter funders](filter-funders.md)
 - [Search funders](search-funders.md)
 - [Group funders](group-funders.md)
+- [Get a single topic](get-a-single-topic.md)
+- [Get lists of topics](get-lists-of-topics.md)
+- [Filter topics](filter-topics.md)
+- [Search topics](search-topics.md)
+- [Group topics](group-topics.md)
