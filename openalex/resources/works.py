@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Self
 
-from ..constants import DOI_URL_PREFIX, PMID_PREFIX
+from ..constants import DOI_URL_PREFIX, PMID_PREFIX, Resource
 from ..models import ListResult, Work, WorksFilter
 from ..utils import ensure_prefix, strip_id_prefix
 from ..utils.pagination import MAX_PER_PAGE
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 class WorksResource(BaseResource[Work, WorksFilter]):
     """Resource for accessing works endpoints."""
 
-    endpoint = "works"
+    endpoint = Resource.WORKS.value
     model_class = Work
     filter_class = WorksFilter
 
@@ -210,7 +210,7 @@ class WorksResource(BaseResource[Work, WorksFilter]):
 class AsyncWorksResource(AsyncBaseResource[Work, WorksFilter]):
     """Async resource for accessing works endpoints."""
 
-    endpoint = "works"
+    endpoint = Resource.WORKS.value
     model_class = Work
     filter_class = WorksFilter
 

@@ -10,9 +10,11 @@ from structlog import get_logger
 from ..constants import (
     DEFAULT_CONCURRENCY,
     DEFAULT_PER_PAGE,
+    FIRST_PAGE,
     PARAM_CURSOR,
     PARAM_PAGE,
     PARAM_PER_PAGE,
+    SINGLE_PER_PAGE,
 )
 
 __all__ = [
@@ -68,7 +70,7 @@ class Paginator(Generic[T]):
 
     def __iter__(self) -> Iterator[T]:
         """Iterate over all results."""
-        page: int | None = 1
+        page: int | None = FIRST_PAGE
         cursor = self.params.get(PARAM_CURSOR)
         base_params = {
             k: v for k, v in self.params.items() if k != PARAM_CURSOR
@@ -121,7 +123,7 @@ class Paginator(Generic[T]):
 
     def pages(self) -> Iterator[ListResult[T]]:
         """Iterate over pages instead of individual results."""
-        page: int | None = 1
+        page: int | None = FIRST_PAGE
         cursor = self.params.get(PARAM_CURSOR)
         base_params = {
             k: v for k, v in self.params.items() if k != PARAM_CURSOR
@@ -174,8 +176,8 @@ class Paginator(Generic[T]):
     def count(self) -> int:
         """Get total count without fetching all results."""
         params = self.params.copy()
-        params[PARAM_PER_PAGE] = 1
-        params[PARAM_PAGE] = 1
+        params[PARAM_PER_PAGE] = SINGLE_PER_PAGE
+        params[PARAM_PAGE] = FIRST_PAGE
 
         result = self.fetch_func(params)
         return result.meta.count
@@ -210,7 +212,7 @@ class AsyncPaginator(Generic[T]):
 
     async def __aiter__(self) -> AsyncIterator[T]:
         """Iterate over all results asynchronously."""
-        page: int | None = 1
+        page: int | None = FIRST_PAGE
         cursor = self.params.get(PARAM_CURSOR)
         base_params = {
             k: v for k, v in self.params.items() if k != PARAM_CURSOR
@@ -262,7 +264,7 @@ class AsyncPaginator(Generic[T]):
 
     async def pages(self) -> AsyncIterator[ListResult[T]]:
         """Iterate over pages instead of individual results."""
-        page: int | None = 1
+        page: int | None = FIRST_PAGE
         cursor = self.params.get(PARAM_CURSOR)
         base_params = {
             k: v for k, v in self.params.items() if k != PARAM_CURSOR
@@ -317,8 +319,8 @@ class AsyncPaginator(Generic[T]):
     async def count(self) -> int:
         """Get total count without fetching all results."""
         params = self.params.copy()
-        params[PARAM_PER_PAGE] = 1
-        params[PARAM_PAGE] = 1
+        params[PARAM_PER_PAGE] = SINGLE_PER_PAGE
+        params[PARAM_PAGE] = FIRST_PAGE
 
         result: ListResult[T] = await self.fetch_func(params)
         return result.meta.count

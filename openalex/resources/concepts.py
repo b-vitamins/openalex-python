@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from ..constants import Resource
 from ..models import BaseFilter, Concept
 from ..utils import ensure_prefix
 from .base import AsyncBaseResource, BaseResource
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
 class ConceptsResource(BaseResource[Concept, BaseFilter]):
     """Resource for accessing concepts endpoints."""
 
-    endpoint = "concepts"
+    endpoint = Resource.CONCEPTS.value
     model_class = Concept
     filter_class = BaseFilter
 
@@ -48,7 +49,7 @@ class ConceptsResource(BaseResource[Concept, BaseFilter]):
 class AsyncConceptsResource(AsyncBaseResource[Concept, BaseFilter]):
     """Async resource for accessing concepts endpoints."""
 
-    endpoint = "concepts"
+    endpoint = Resource.CONCEPTS.value
     model_class = Concept
     filter_class = BaseFilter
 

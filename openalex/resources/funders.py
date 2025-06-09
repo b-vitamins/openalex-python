@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from ..constants import ROR_URL_PREFIX, Resource
 from ..models import BaseFilter, Funder
 from ..utils import ensure_prefix
 from .base import AsyncBaseResource, BaseResource
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
 class FundersResource(BaseResource[Funder, BaseFilter]):
     """Resource for accessing funders endpoints."""
 
-    endpoint = "funders"
+    endpoint = Resource.FUNDERS.value
     model_class = Funder
     filter_class = BaseFilter
 
@@ -34,13 +35,13 @@ class FundersResource(BaseResource[Funder, BaseFilter]):
         Returns:
             Funder instance
         """
-        return self.get(ensure_prefix(ror, "https://ror.org/"))
+        return self.get(ensure_prefix(ror, ROR_URL_PREFIX))
 
 
 class AsyncFundersResource(AsyncBaseResource[Funder, BaseFilter]):
     """Async resource for accessing funders endpoints."""
 
-    endpoint = "funders"
+    endpoint = Resource.FUNDERS.value
     model_class = Funder
     filter_class = BaseFilter
 
@@ -57,4 +58,4 @@ class AsyncFundersResource(AsyncBaseResource[Funder, BaseFilter]):
         Returns:
             Funder instance
         """
-        return await self.get(ensure_prefix(ror, "https://ror.org/"))
+        return await self.get(ensure_prefix(ror, ROR_URL_PREFIX))
