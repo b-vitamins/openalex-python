@@ -12,3 +12,8 @@ Short examples showing how to accomplish common tasks with the Python client.
 - [Filter authors](filter-authors.md)
 - [Search authors](search-authors.md)
 - [Group authors](group-authors.md)
+- [Get a single source](get-a-single-source.md)
+- [Get lists of sources](get-lists-of-sources.md)
+- [Filter sources](filter-sources.md)
+- [Search sources](search-sources.md)
+- [Group sources](group-sources.md)
