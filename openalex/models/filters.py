@@ -40,9 +40,17 @@ class BaseFilter(BaseModel):
     )
     sort: str | None = Field(None, description="Sort field")
     group_by: str | GroupBy | None = Field(None, description="Group by field")
-    page: int | None = Field(1, ge=1, le=10000, description="Page number")
+    page: int | None = Field(
+        default=None,
+        ge=1,
+        le=10000,
+        description="Page number",
+    )
     per_page: int | None = Field(
-        25, ge=1, le=200, description="Results per page"
+        default=None,
+        ge=1,
+        le=200,
+        description="Results per page",
     )
     cursor: str | None = Field(None, description="Pagination cursor")
     sample: int | None = Field(None, ge=1, description="Random sample size")
