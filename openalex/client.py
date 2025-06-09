@@ -64,16 +64,19 @@ if TYPE_CHECKING:
 
 logger = get_logger(__name__)
 
+SEARCH_ALL_RESOURCE_NAMES: Final[list[str]] = [
+    "works",
+    "authors",
+    "institutions",
+    "sources",
+    "concepts",
+    "topics",
+    "publishers",
+    "funders",
+    "keywords",
+]
 SEARCH_ALL_RESOURCES: Final[list[tuple[str, str]]] = [
-    ("works", "works"),
-    ("authors", "authors"),
-    ("institutions", "institutions"),
-    ("sources", "sources"),
-    ("concepts", "concepts"),
-    ("topics", "topics"),
-    ("publishers", "publishers"),
-    ("funders", "funders"),
-    ("keywords", "keywords"),
+    (name, name) for name in SEARCH_ALL_RESOURCE_NAMES
 ]
 
 

@@ -66,8 +66,10 @@ class WorksResource(BaseResource[Work, WorksFilter]):
                 and value
                 and all(isinstance(v, int) for v in value)
             ):
-                if value == list(range(min(value), max(value) + 1)):
-                    normalized[key] = f"{min(value)}-{max(value)}"
+                min_val = min(value)
+                max_val = max(value)
+                if value == list(range(min_val, max_val + 1)):
+                    normalized[key] = f"{min_val}-{max_val}"
                 else:
                     normalized[key] = value
             else:
