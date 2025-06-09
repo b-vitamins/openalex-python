@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from pydantic import Field, HttpUrl
+from pydantic import field_validator
 
 from .base import CountsByYear, OpenAlexBase, OpenAlexEntity, SummaryStats
 
@@ -44,7 +45,7 @@ class SourceIds(OpenAlexBase):
     openalex: str | None = None
     issn_l: str | None = None
     issn: list[str] | None = None
-    mag: int | None = None
+    mag: str | None = None
     fatcat: str | None = None
     wikidata: HttpUrl | None = None
 
@@ -54,6 +55,14 @@ class Source(OpenAlexEntity):
 
     issn_l: str | None = Field(None, description="Linking ISSN")
     issn: list[str] = Field(default_factory=list, description="All ISSNs")
+
+    @field_validator("issn", mode="before")
+    @classmethod
+    def ensure_list(cls, v: Any) -> list[str]:
+        """Coerce `issn` to an empty list when given None."""
+        if v is None:
+            return []
+        return v
 
     host_organization: str | None = Field(
         None, description="Publisher or hosting organization ID"
@@ -122,9 +131,18 @@ class Source(OpenAlexEntity):
         return self.type == SourceType.REPOSITORY
 
     @property
+    def is_ebook_platform(self) -> bool:
+        """Check if source is an e-book platform."""
+        return self.type == SourceType.EBOOK_PLATFORM
+
+    @property
     def has_apc(self) -> bool:
         """Check if source has article processing charges."""
         return bool(self.apc_prices) or self.apc_usd is not None
+
+    def has_issn(self) -> bool:
+        """Return ``True`` if the source has any ISSN information."""
+        return bool(self.issn_l or self.issn)
 
     def get_apc_in_currency(self, currency: str) -> int | None:
         """Get APC in specific currency if available."""
@@ -135,10 +153,32 @@ class Source(OpenAlexEntity):
 
     def all_issns(self) -> list[str]:
         """Get all ISSNs including linking ISSN."""
-        issns = self.issn.copy() if self.issn else []
-        if self.issn_l and self.issn_l not in issns:
-            issns.insert(0, self.issn_l)
+        issns: list[str] = []
+        if self.issn_l:
+            issns.append(self.issn_l)
+        if self.issn:
+            issns.extend(self.issn)
         return issns
+
+    def works_in_year(self, year: int) -> int:
+        """Return works count for a given year."""
+        for year_data in self.counts_by_year:
+            if year_data.year == year:
+                return year_data.works_count
+        return 0
+
+    def citations_in_year(self, year: int) -> int:
+        """Return citation count for a given year."""
+        for year_data in self.counts_by_year:
+            if year_data.year == year:
+                return year_data.cited_by_count
+        return 0
+
+    def active_years(self) -> list[int]:
+        """Return list of years with publication activity."""
+        return sorted(
+            [y.year for y in self.counts_by_year if y.works_count > 0]
+        )
 
 
 from .work import DehydratedConcept  # noqa: E402,TC001
