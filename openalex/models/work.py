@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field, HttpUrl, field_validator
 
 if TYPE_CHECKING:
     from .institution import InstitutionType
+    from .topic import TopicHierarchy
 
 from .base import (
     CountsByYear,
@@ -93,6 +94,11 @@ class DehydratedSource(DehydratedEntity):
 
 class DehydratedTopic(DehydratedEntity):
     """Minimal topic representation."""
+
+    score: float | None = None
+    subfield: TopicHierarchy | None = None
+    field: TopicHierarchy | None = None
+    domain: TopicHierarchy | None = None
 
 
 class KeywordTag(OpenAlexBase):
@@ -387,6 +393,9 @@ class InstitutionsFilter(BaseFilter):
 
 
 from .institution import InstitutionType  # noqa: E402,TC001
+from .topic import TopicHierarchy  # noqa: E402,TC001
+
+DehydratedTopic.model_rebuild()
 
 DehydratedInstitution.model_rebuild()
 Work.model_rebuild()

@@ -2,11 +2,19 @@
 
 from __future__ import annotations
 
+import re
+from datetime import datetime
 from enum import IntEnum
 
-from pydantic import Field, HttpUrl
+from dateutil import parser
+from pydantic import (
+    Field,
+    HttpUrl,
+    field_validator,
+    model_validator,
+)
 
-from .base import OpenAlexEntity, SummaryStats
+from .base import OpenAlexBase, OpenAlexEntity, SummaryStats
 
 
 class TopicHierarchy(OpenAlexEntity):
@@ -23,7 +31,7 @@ class TopicLevel(IntEnum):
     SUBFIELD = 2
 
 
-class TopicIds(OpenAlexEntity):
+class TopicIds(OpenAlexBase):
     """External identifiers for a topic."""
 
     openalex: str | None = None
@@ -56,8 +64,10 @@ class Topic(OpenAlexEntity):
 
     summary_stats: SummaryStats | None = None
 
-    sisters: list[DehydratedTopic] = Field(
-        default_factory=list, description="Sister topics"
+    siblings: list[DehydratedTopic] = Field(
+        default_factory=list,
+        description="Sibling topics",
+        alias="sisters",
     )
 
     works_api_url: HttpUrl | None = Field(
@@ -65,6 +75,40 @@ class Topic(OpenAlexEntity):
     )
 
     ids: TopicIds | None = None
+
+    @field_validator("updated_date", mode="before")
+    @classmethod
+    def parse_updated_date(cls, v: datetime | str | None) -> datetime | None:
+        """Parse potentially malformed datetime strings."""
+        if v is None or isinstance(v, datetime):
+            return v
+        try:
+            return datetime.fromisoformat(v)
+        except ValueError:
+            try:
+                return parser.parse(v)
+            except Exception:
+                match = re.match(
+                    r"(?P<prefix>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}):(?P<sec>\d{2})(?P<rest>.*)",
+                    v,
+                )
+                if match:
+                    sec = int(match.group("sec"))
+                    sec = min(sec, 59)
+                    new_v = f"{match.group('prefix')}:{sec:02d}{match.group('rest')}"
+                    try:
+                        return datetime.fromisoformat(new_v)
+                    except Exception:
+                        return parser.parse(new_v)
+        return None
+
+    @model_validator(mode="after")
+    def validate_hierarchy(self) -> Topic:
+        """Ensure subfield is not provided without a field."""
+        if self.subfield is not None and self.field is None:
+            msg = "subfield provided without field"
+            raise ValueError(msg)
+        return self
 
     @property
     def hierarchy_path(self) -> str:
@@ -81,20 +125,26 @@ class Topic(OpenAlexEntity):
         return " > ".join(parts) if parts else ""
 
     @property
-    def level(self) -> TopicLevel | None:
+    def level(self) -> TopicLevel:
         """Get the topic's hierarchy level."""
         if self.subfield:
             return TopicLevel.SUBFIELD
         if self.field:
             return TopicLevel.FIELD
-        if self.domain:
-            return TopicLevel.DOMAIN
-        return None
+        return TopicLevel.DOMAIN
 
     def has_keyword(self, keyword: str) -> bool:
         """Check if topic has a specific keyword."""
         keyword_lower = keyword.lower()
-        return any(k.lower() == keyword_lower for k in self.keywords)
+        return any(keyword_lower in k.lower() for k in self.keywords)
+
+    def get_hierarchy(self) -> dict[str, str | None]:
+        """Return hierarchy display names."""
+        return {
+            "domain": self.domain.display_name if self.domain else None,
+            "field": self.field.display_name if self.field else None,
+            "subfield": self.subfield.display_name if self.subfield else None,
+        }
 
 
 from .work import DehydratedTopic  # noqa: E402,TC001
