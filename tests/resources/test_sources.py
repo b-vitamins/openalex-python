@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, ClassVar
 
 import pytest
+
 from openalex.models import Source, SourceType
 
 from .base import BaseResourceTest

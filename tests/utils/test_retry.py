@@ -111,7 +111,9 @@ def test_with_retry_failure(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.mark.asyncio
-async def test_async_with_retry_failure(monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_async_with_retry_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     attempts: list[int] = []
 
     async def func() -> None:
@@ -123,7 +125,9 @@ async def test_async_with_retry_failure(monkeypatch: pytest.MonkeyPatch) -> None
         return None
 
     monkeypatch.setattr(asyncio, "sleep", fake_sleep)
-    wrapped = async_with_retry(func, RetryConfig(max_attempts=2, initial_wait=0))
+    wrapped = async_with_retry(
+        func, RetryConfig(max_attempts=2, initial_wait=0)
+    )
     with pytest.raises(APIError):
         await wrapped()
     assert len(attempts) == 2
@@ -175,4 +179,8 @@ def test_retry_handler_get_wait_time(monkeypatch: pytest.MonkeyPatch) -> None:
     handler_jitter = RetryHandler(RetryConfig(jitter=True))
     monkeypatch.setattr(random, "uniform", lambda a, b: 0)
     wait = handler_jitter.get_wait_time(NetworkError(), 2)
-    assert wait == handler_jitter.config.initial_wait * handler_jitter.config.exponential_base
+    assert (
+        wait
+        == handler_jitter.config.initial_wait
+        * handler_jitter.config.exponential_base
+    )

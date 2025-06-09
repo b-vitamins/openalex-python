@@ -48,7 +48,7 @@ class BaseResource(Generic[T, F]):
         """Initialize resource."""
         self.client = client
 
-    def query(self, **filter_params: Any) -> "Query[T, F]":
+    def query(self, **filter_params: Any) -> Query[T, F]:
         """Start building a fluent query for this resource."""
         from ..query import Query  # Local import to avoid circular dependency
 

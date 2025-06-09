@@ -437,7 +437,13 @@ class TestTopic:
         domain = TopicHierarchy(id="D1", display_name="Domain")
         field = TopicHierarchy(id="F1", display_name="Field")
         sub = TopicHierarchy(id="S1", display_name="Sub")
-        topic = Topic(id="T2", display_name="Name", domain=domain, field=field, subfield=sub)
+        topic = Topic(
+            id="T2",
+            display_name="Name",
+            domain=domain,
+            field=field,
+            subfield=sub,
+        )
         assert topic.hierarchy_path == "Domain > Field > Sub"
         assert topic.level.name == "SUBFIELD"
 

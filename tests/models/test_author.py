@@ -483,6 +483,8 @@ class TestAuthor:
         assert author.most_cited_work_count == 7234
         assert "Physics" in author.concept_names()
 
-        empty = Author(id="A0", display_name="Empty", counts_by_year=[], x_concepts=[])
+        empty = Author(
+            id="A0", display_name="Empty", counts_by_year=[], x_concepts=[]
+        )
         assert empty.most_cited_work_count == 0
         assert empty.concept_names() == []
