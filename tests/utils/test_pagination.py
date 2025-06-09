@@ -208,3 +208,57 @@ async def test_async_paginator_max_results_iter() -> None:
     async for item in paginator:
         results.append(item)
     assert len(results) == 3
+
+
+def test_paginator_page_increment_and_all() -> None:
+    """Paginator increments page when no cursor is provided."""
+    total = 5
+
+    def fetch(params: dict[str, Any]) -> ListResult[Work]:
+        page = int(params.get("page", 1))
+        per_page = int(params.get("per-page", 2))
+        start = (page - 1) * per_page
+        return _make_page(start, min(per_page, total - start), total, None)
+
+    paginator = Paginator(fetch, per_page=2)
+    items = paginator.all()
+    assert [w.id for w in items] == ["W0", "W1", "W2", "W3", "W4"]
+
+
+@pytest.mark.asyncio
+async def test_async_paginator_pages_page_increment() -> None:
+    """Async paginator uses page numbers when no cursor is returned."""
+    total = 5
+
+    async def fetch(params: dict[str, Any]) -> ListResult[Work]:
+        page = int(params.get("page", 1))
+        per_page = int(params.get("per-page", 2))
+        start = (page - 1) * per_page
+        return _make_page(start, min(per_page, total - start), total, None)
+
+    paginator = AsyncPaginator(fetch, per_page=2)
+    pages = []
+    async for p in paginator.pages():
+        pages.append(p)
+    assert len(pages) == 3
+
+
+@pytest.mark.asyncio
+async def test_async_paginator_gather_respects_max_results() -> None:
+    """gather stops when reaching ``max_results``."""
+    total = 10
+
+    async def fetch(params: dict[str, Any]) -> ListResult[Work]:
+        page = int(params.get("page", 1))
+        per_page = int(params.get("per-page", 3))
+        start = (page - 1) * per_page
+        return _make_page(start, min(per_page, total - start), total, None)
+
+    paginator = AsyncPaginator(
+        fetch,
+        per_page=3,
+        concurrency=2,
+        max_results=5,
+    )
+    results = await paginator.gather(pages=2)
+    assert len(results) == 5

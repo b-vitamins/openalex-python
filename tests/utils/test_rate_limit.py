@@ -87,6 +87,21 @@ def test_sliding_window_rate_limiter() -> None:
     assert wait > 0
 
 
+def test_sliding_window_rate_limiter_clean(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Old entries are removed when acquiring after the window."""
+    orig = time.monotonic()
+    monkeypatch.setattr(time, "monotonic", lambda: orig)
+    limiter = SlidingWindowRateLimiter(max_requests=1, window_seconds=0.1, buffer=0)
+    assert limiter.acquire() == 0.0
+
+    wait = limiter.acquire()
+    assert wait > 0
+
+    monkeypatch.setattr(time, "monotonic", lambda: orig + 0.2)
+    wait_after = limiter.acquire()
+    assert wait_after == 0.0
+
+
 @pytest.mark.asyncio
 async def test_async_rate_limiter_context(
     monkeypatch: pytest.MonkeyPatch,
