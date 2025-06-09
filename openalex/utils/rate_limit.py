@@ -82,11 +82,11 @@ class RateLimiter:
 
             return wait_time
 
-    def try_acquire(self, tokens: int = 1) -> bool:
+    def try_acquire(self, amount: int = 1) -> bool:
         """Try to acquire tokens without blocking.
 
         Args:
-            tokens: Number of tokens to acquire
+            amount: Number of tokens to acquire
 
         Returns:
             True if tokens were acquired, False otherwise
@@ -94,8 +94,8 @@ class RateLimiter:
         with self.lock:
             self._update_tokens()
 
-            if self.tokens >= tokens:
-                self.tokens -= tokens
+            if self.tokens >= amount:
+                self.tokens -= amount
                 return True
 
             return False
@@ -214,7 +214,7 @@ class AsyncRateLimiter:
 
     async def __aexit__(self, *args: Any) -> None:
         """Context manager exit."""
-        pass
+        return
 
 
 def rate_limited(

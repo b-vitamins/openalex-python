@@ -4,22 +4,22 @@ from __future__ import annotations
 
 from typing import Any
 
-__all__ = [
-    "ensure_prefix",
-    "normalize_params",
-    "strip_id_prefix",
-]
+__all__ = ["ensure_prefix", "normalize_params", "strip_id_prefix"]
+
+
+KEY_MAP = {"per_page": "per-page", "group_by": "group-by"}
 
 
 def normalize_params(params: dict[str, Any]) -> dict[str, Any]:
     """Normalize parameter keys and values for API requests."""
-    key_map = {"per_page": "per-page", "group_by": "group-by"}
-    return {
-        key_map.get(k, k): ",".join(v)
-        if k == "select" and isinstance(v, list)
-        else v
-        for k, v in params.items()
-    }
+    normalized: dict[str, Any] = {}
+    for key, value in params.items():
+        key = KEY_MAP.get(key, key)
+        if key == "select" and isinstance(value, list):
+            normalized[key] = ",".join(value)
+        else:
+            normalized[key] = value
+    return normalized
 
 
 def strip_id_prefix(value: str) -> str:
