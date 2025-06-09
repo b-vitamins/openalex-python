@@ -6,7 +6,7 @@ import asyncio
 import random
 import time
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, Final, TypeVar
 
 from structlog import get_logger
 from tenacity import (
@@ -26,8 +26,8 @@ if TYPE_CHECKING:
 
 logger = get_logger(__name__)
 
-JITTER_FACTOR = 0.25
-UNREACHABLE_MSG = "Unreachable"
+JITTER_FACTOR: Final = 0.25
+UNREACHABLE_MSG: Final = "Unreachable"
 
 T = TypeVar("T")
 

@@ -8,6 +8,7 @@ __all__ = ["OpenAlexConfig"]
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 
+from . import __version__
 from .utils.rate_limit import DEFAULT_BUFFER
 
 
@@ -73,7 +74,7 @@ class OpenAlexConfig(BaseModel):
         }
 
         # Build user agent
-        ua_parts = ["openalex-python/0.1.0"]
+        ua_parts = [f"openalex-python/{__version__}"]
         if self.email:
             ua_parts.append(f"(mailto:{self.email})")
         if self.user_agent:

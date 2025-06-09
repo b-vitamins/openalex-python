@@ -17,8 +17,9 @@ import httpx
 from structlog import get_logger
 
 from .config import OpenAlexConfig
+from .constants import DEFAULT_RATE_LIMIT
 from .exceptions import NetworkError, TimeoutError
-from .models import AutocompleteResult, ListResult, Meta
+from .models import AutocompleteResult, ListResult
 from .resources import (
     AsyncAuthorsResource,
     AsyncConceptsResource,
@@ -39,9 +40,13 @@ from .resources import (
     TopicsResource,
     WorksResource,
 )
-from .utils import AsyncRateLimiter, RateLimiter, RetryConfig, RetryHandler
-
-DEFAULT_RATE_LIMIT = 10.0
+from .utils import (
+    AsyncRateLimiter,
+    RateLimiter,
+    RetryConfig,
+    RetryHandler,
+    empty_list_result,
+)
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Awaitable, Generator
@@ -110,21 +115,6 @@ class OpenAlex:
     def base_url(self) -> str:
         """Base URL without a trailing slash."""
         return str(self.config.base_url).rstrip("/")
-
-    @staticmethod
-    def _empty_list_result() -> ListResult[Any]:
-        """Return an empty ``ListResult`` object."""
-        return ListResult(
-            meta=Meta(
-                count=0,
-                db_response_time_ms=0,
-                page=1,
-                per_page=0,
-                groups_count=0,
-                next_cursor=None,
-            ),
-            results=[],
-        )
 
     def __enter__(self) -> OpenAlex:
         """Context manager entry."""
@@ -315,7 +305,7 @@ class OpenAlex:
                     entity_type,
                     exc_info=exc,
                 )
-                result = self._empty_list_result()
+                result = empty_list_result()
 
             results[entity_type] = result
 
@@ -381,21 +371,6 @@ class AsyncOpenAlex:
     def base_url(self) -> str:
         """Base URL without a trailing slash."""
         return str(self.config.base_url).rstrip("/")
-
-    @staticmethod
-    def _empty_list_result() -> ListResult[Any]:
-        """Return an empty ``ListResult`` object."""
-        return ListResult(
-            meta=Meta(
-                count=0,
-                db_response_time_ms=0,
-                page=1,
-                per_page=0,
-                groups_count=0,
-                next_cursor=None,
-            ),
-            results=[],
-        )
 
     async def __aenter__(self) -> AsyncOpenAlex:
         """Async context manager entry."""
@@ -581,7 +556,7 @@ class AsyncOpenAlex:
                     entity_type,
                     exc_info=task_result,
                 )
-                results[entity_type] = self._empty_list_result()
+                results[entity_type] = empty_list_result()
             else:
                 results[entity_type] = cast("ListResult[Any]", task_result)
 
