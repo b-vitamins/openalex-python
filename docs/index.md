@@ -27,3 +27,8 @@ Short examples showing how to accomplish common tasks with the Python client.
 - [Filter institutions](filter-institutions.md)
 - [Search institutions](search-institutions.md)
 - [Group institutions](group-institutions.md)
+- [Get a single funder](get-a-single-funder.md)
+- [Get lists of funders](get-lists-of-funders.md)
+- [Filter funders](filter-funders.md)
+- [Search funders](search-funders.md)
+- [Group funders](group-funders.md)
