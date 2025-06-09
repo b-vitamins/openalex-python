@@ -13,6 +13,11 @@ from openalex.models import (
     Work,
     WorkType,
 )
+from openalex.models.work import (
+    BaseFilter as WorkBaseFilter,
+    WorksFilter as WorkWorksFilter,
+    InstitutionsFilter as WorkInstitutionsFilter,
+)
 
 
 class TestWork:
@@ -1241,3 +1246,52 @@ class TestWork:
         )
         assert work_multi_currency.apc_list.currency == "EUR"
         assert work_multi_currency.apc_list.value_usd == 2750
+
+
+def test_work_basefilter_paths() -> None:
+    """Validate BaseFilter parameter handling and filter string building."""
+    bf_none = WorkBaseFilter(filter=None)
+    assert bf_none.filter is None
+
+    bf_str = WorkBaseFilter(filter="foo")
+    assert bf_str.filter == "foo"
+
+    bf = WorkBaseFilter(
+        filter={"x": 1},
+        select="id",
+        group_by="type",
+        per_page=10,
+    )
+    params = bf.to_params()
+    assert params["filter"] == "x:1"
+    assert params["select"] == "id"
+    assert params["group-by"] == "type"
+    assert params["per-page"] == 10
+
+    built = bf._build_filter_string(
+        {"a": None, "b": True, "c": [1, 2], "d": date(2024, 1, 2), "e": "v"}
+    )
+    assert "b:true" in built
+    assert "c:1|2" in built
+    assert "d:2024-01-02" in built
+    assert "e:v" in built
+    assert "a" not in built
+
+
+def test_work_filter_string_operations() -> None:
+    """Ensure Works and Institutions filters accumulate correctly."""
+    wf = (
+        WorkWorksFilter(filter="raw")
+        .with_publication_year(2024)
+        .with_type("article")
+        .with_open_access()
+    )
+    assert wf.filter["raw"] == "raw"
+    assert wf.filter["publication_year"] == [2024]
+    assert wf.filter["type"] == ["article"]
+    assert wf.filter["is_oa"] is True
+
+    inf = WorkInstitutionsFilter(filter="start").with_country("US").with_type("education")
+    assert inf.filter["raw"] == "start"
+    assert inf.filter["country_code"] == ["US"]
+    assert inf.filter["type"] == ["education"]
