@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from ..constants import Resource
 from ..models import BaseFilter, Keyword
 from .base import AsyncBaseResource, BaseResource
 
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
 class KeywordsResource(BaseResource[Keyword, BaseFilter]):
     """Resource for accessing keywords endpoints."""
 
-    endpoint = "keywords"
+    endpoint = Resource.KEYWORDS.value
     model_class = Keyword
     filter_class = BaseFilter
 
@@ -28,7 +29,7 @@ class KeywordsResource(BaseResource[Keyword, BaseFilter]):
 class AsyncKeywordsResource(AsyncBaseResource[Keyword, BaseFilter]):
     """Async resource for accessing keywords endpoints."""
 
-    endpoint = "keywords"
+    endpoint = Resource.KEYWORDS.value
     model_class = Keyword
     filter_class = BaseFilter
 

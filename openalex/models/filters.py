@@ -8,6 +8,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
+from ..constants import FILTER_DEFAULT_PER_PAGE, FIRST_PAGE
+
 
 class SortOrder(str, Enum):
     """Sort order options."""
@@ -41,13 +43,13 @@ class BaseFilter(BaseModel):
     sort: str | None = Field(None, description="Sort field")
     group_by: str | GroupBy | None = Field(None, description="Group by field")
     page: int | None = Field(
-        default=1,
+        default=FIRST_PAGE,
         ge=1,
         le=10000,
         description="Page number",
     )
     per_page: int | None = Field(
-        default=25,
+        default=FILTER_DEFAULT_PER_PAGE,
         ge=1,
         le=200,
         description="Results per page",

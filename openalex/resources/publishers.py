@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from ..constants import Resource
 from ..models import BaseFilter, Publisher
 from .base import AsyncBaseResource, BaseResource
 
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
 class PublishersResource(BaseResource[Publisher, BaseFilter]):
     """Resource for accessing publishers endpoints."""
 
-    endpoint = "publishers"
+    endpoint = Resource.PUBLISHERS.value
     model_class = Publisher
     filter_class = BaseFilter
 
@@ -28,7 +29,7 @@ class PublishersResource(BaseResource[Publisher, BaseFilter]):
 class AsyncPublishersResource(AsyncBaseResource[Publisher, BaseFilter]):
     """Async resource for accessing publishers endpoints."""
 
-    endpoint = "publishers"
+    endpoint = Resource.PUBLISHERS.value
     model_class = Publisher
     filter_class = BaseFilter
 

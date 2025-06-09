@@ -26,6 +26,7 @@ from .constants import (
     PARAM_Q,
     REQUEST_FAILED_MSG,
     TEXT_PATH,
+    Resource,
 )
 from .exceptions import NetworkError, TimeoutError
 from .models import AutocompleteResult, ListResult
@@ -64,17 +65,7 @@ if TYPE_CHECKING:
 
 logger = get_logger(__name__)
 
-SEARCH_ALL_RESOURCE_NAMES: Final[list[str]] = [
-    "works",
-    "authors",
-    "institutions",
-    "sources",
-    "concepts",
-    "topics",
-    "publishers",
-    "funders",
-    "keywords",
-]
+SEARCH_ALL_RESOURCE_NAMES: Final[list[str]] = [r.value for r in Resource]
 SEARCH_ALL_RESOURCES: Final[list[tuple[str, str]]] = [
     (name, name) for name in SEARCH_ALL_RESOURCE_NAMES
 ]

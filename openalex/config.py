@@ -10,6 +10,8 @@ from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 
 from . import __version__
 from .constants import (
+    ACCEPT_ENCODING_GZIP,
+    ACCEPT_JSON,
     DEFAULT_BASE_URL,
     DEFAULT_CACHE_TTL,
     DEFAULT_PER_PAGE,
@@ -79,8 +81,8 @@ class OpenAlexConfig(BaseModel):
     def headers(self) -> dict[str, str]:
         """Get default headers for requests."""
         headers: dict[str, str] = {
-            HEADER_ACCEPT: "application/json",
-            HEADER_ACCEPT_ENCODING: "gzip, deflate",
+            HEADER_ACCEPT: ACCEPT_JSON,
+            HEADER_ACCEPT_ENCODING: ACCEPT_ENCODING_GZIP,
         }
 
         # Build user agent

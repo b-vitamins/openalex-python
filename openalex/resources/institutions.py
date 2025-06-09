@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from ..constants import ROR_URL_PREFIX, Resource
 from ..models import Institution, InstitutionsFilter
 from ..utils import ensure_prefix
 from .base import AsyncBaseResource, BaseResource
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
 class InstitutionsResource(BaseResource[Institution, InstitutionsFilter]):
     """Resource for accessing institutions endpoints."""
 
-    endpoint = "institutions"
+    endpoint = Resource.INSTITUTIONS.value
     model_class = Institution
     filter_class = InstitutionsFilter
 
@@ -34,7 +35,7 @@ class InstitutionsResource(BaseResource[Institution, InstitutionsFilter]):
         Returns:
             Institution instance
         """
-        return self.get(ensure_prefix(ror, "https://ror.org/"))
+        return self.get(ensure_prefix(ror, ROR_URL_PREFIX))
 
 
 class AsyncInstitutionsResource(
@@ -42,7 +43,7 @@ class AsyncInstitutionsResource(
 ):
     """Async resource for accessing institutions endpoints."""
 
-    endpoint = "institutions"
+    endpoint = Resource.INSTITUTIONS.value
     model_class = Institution
     filter_class = InstitutionsFilter
 
@@ -59,4 +60,4 @@ class AsyncInstitutionsResource(
         Returns:
             Institution instance
         """
-        return await self.get(ensure_prefix(ror, "https://ror.org/"))
+        return await self.get(ensure_prefix(ror, ROR_URL_PREFIX))

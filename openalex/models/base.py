@@ -8,6 +8,8 @@ from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_serializer
 
+from ..constants import FILTER_DEFAULT_PER_PAGE, FIRST_PAGE
+
 
 class EntityType(str, Enum):
     """OpenAlex entity types."""
@@ -105,8 +107,10 @@ class Meta(OpenAlexBase):
 
     count: int = Field(..., description="Total count of results")
     db_response_time_ms: int = Field(..., description="Database response time")
-    page: int = Field(1, description="Current page")
-    per_page: int = Field(25, description="Results per page")
+    page: int = Field(FIRST_PAGE, description="Current page")
+    per_page: int = Field(
+        FILTER_DEFAULT_PER_PAGE, description="Results per page"
+    )
     groups_count: int | None = Field(None, description="Number of groups")
     next_cursor: str | None = Field(None, description="Cursor for next page")
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from ..constants import MAG_PREFIX, ORCID_URL_PREFIX
+from ..constants import MAG_PREFIX, ORCID_URL_PREFIX, Resource
 from ..models import Author, AuthorsFilter, ListResult
 from ..utils import ensure_prefix, strip_id_prefix
 from ..utils.pagination import MAX_PER_PAGE
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 class AuthorsResource(BaseResource[Author, AuthorsFilter]):
     """Resource for accessing authors endpoints."""
 
-    endpoint = "authors"
+    endpoint = Resource.AUTHORS.value
     model_class = Author
     filter_class = AuthorsFilter
 
@@ -102,7 +102,7 @@ class AuthorsResource(BaseResource[Author, AuthorsFilter]):
 class AsyncAuthorsResource(AsyncBaseResource[Author, AuthorsFilter]):
     """Async resource for accessing authors endpoints."""
 
-    endpoint = "authors"
+    endpoint = Resource.AUTHORS.value
     model_class = Author
     filter_class = AuthorsFilter
 

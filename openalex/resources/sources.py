@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from ..constants import Resource
 from ..models import BaseFilter, Source
 from .base import AsyncBaseResource, BaseResource
 
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
 class SourcesResource(BaseResource[Source, BaseFilter]):
     """Resource for accessing sources endpoints."""
 
-    endpoint = "sources"
+    endpoint = Resource.SOURCES.value
     model_class = Source
     filter_class = BaseFilter
 
@@ -43,7 +44,7 @@ class SourcesResource(BaseResource[Source, BaseFilter]):
 class AsyncSourcesResource(AsyncBaseResource[Source, BaseFilter]):
     """Async resource for accessing sources endpoints."""
 
-    endpoint = "sources"
+    endpoint = Resource.SOURCES.value
     model_class = Source
     filter_class = BaseFilter
 
