@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from ..models import Author, AuthorsFilter, ListResult
+from ..utils import strip_id_prefix
 from .base import AsyncBaseResource, BaseResource
 
 if TYPE_CHECKING:
@@ -43,8 +44,7 @@ class AuthorsResource(BaseResource[Author, AuthorsFilter]):
 
     def by_institution(self, institution_id: str) -> AuthorsResource:
         """Filter authors by institution."""
-        if "/" in institution_id:
-            institution_id = institution_id.split("/")[-1]
+        institution_id = strip_id_prefix(institution_id)
         return self._clone_with({"affiliations.institution.id": institution_id})
 
     def list(
@@ -131,8 +131,7 @@ class AsyncAuthorsResource(AsyncBaseResource[Author, AuthorsFilter]):
 
     async def by_institution(self, institution_id: str) -> AsyncAuthorsResource:
         """Filter authors by institution."""
-        if "/" in institution_id:
-            institution_id = institution_id.split("/")[-1]
+        institution_id = strip_id_prefix(institution_id)
         return self._clone_with({"affiliations.institution.id": institution_id})
 
     async def list(

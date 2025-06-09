@@ -6,6 +6,7 @@ import contextlib
 from typing import TYPE_CHECKING, Any, Self
 
 from ..models import ListResult, Work, WorksFilter
+from ..utils import strip_id_prefix
 from .base import AsyncBaseResource, BaseResource
 
 if TYPE_CHECKING:
@@ -96,8 +97,7 @@ class WorksResource(BaseResource[Work, WorksFilter]):
         Returns:
             Works resource filtered by citations
         """
-        if "/" in work_id:
-            work_id = work_id.split("/")[-1]
+        work_id = strip_id_prefix(work_id)
 
         return self._clone_with({"cites": work_id})
 
@@ -111,8 +111,7 @@ class WorksResource(BaseResource[Work, WorksFilter]):
         Returns:
             Works resource filtered by references
         """
-        if "/" in work_id:
-            work_id = work_id.split("/")[-1]
+        work_id = strip_id_prefix(work_id)
 
         return self._clone_with({"cited_by": work_id})
 
@@ -126,16 +125,14 @@ class WorksResource(BaseResource[Work, WorksFilter]):
         Returns:
             Works resource filtered by author
         """
-        if "/" in author_id:
-            author_id = author_id.split("/")[-1]
+        author_id = strip_id_prefix(author_id)
 
         return self._clone_with({"authorships.author.id": author_id})
 
     def by_concept(self, concept_id: str) -> WorksResource:
         """Filter works associated with a concept."""
 
-        if "/" in concept_id:
-            concept_id = concept_id.split("/")[-1]
+        concept_id = strip_id_prefix(concept_id)
 
         return self._clone_with({"concepts.id": concept_id})
 
@@ -149,16 +146,14 @@ class WorksResource(BaseResource[Work, WorksFilter]):
         Returns:
             Works resource filtered by institution
         """
-        if "/" in institution_id:
-            institution_id = institution_id.split("/")[-1]
+        institution_id = strip_id_prefix(institution_id)
 
         return self._clone_with({"authorships.institutions.id": institution_id})
 
     def related_to(self, work_id: str) -> WorksResource:
         """Get works related to a specific work."""
 
-        if "/" in work_id:
-            work_id = work_id.split("/")[-1]
+        work_id = strip_id_prefix(work_id)
 
         return self._clone_with({"related_to": work_id})
 
@@ -252,45 +247,39 @@ class AsyncWorksResource(AsyncBaseResource[Work, WorksFilter]):
 
     async def cited_by(self, work_id: str) -> AsyncWorksResource:
         """Get works that cite this work."""
-        if "/" in work_id:
-            work_id = work_id.split("/")[-1]
+        work_id = strip_id_prefix(work_id)
 
         return self._clone_with({"cites": work_id})
 
     async def references(self, work_id: str) -> AsyncWorksResource:
         """Get works referenced by this work."""
-        if "/" in work_id:
-            work_id = work_id.split("/")[-1]
+        work_id = strip_id_prefix(work_id)
 
         return self._clone_with({"cited_by": work_id})
 
     async def by_author(self, author_id: str) -> AsyncWorksResource:
         """Get works by a specific author."""
-        if "/" in author_id:
-            author_id = author_id.split("/")[-1]
+        author_id = strip_id_prefix(author_id)
 
         return self._clone_with({"authorships.author.id": author_id})
 
     async def by_concept(self, concept_id: str) -> AsyncWorksResource:
         """Filter works associated with a concept."""
 
-        if "/" in concept_id:
-            concept_id = concept_id.split("/")[-1]
+        concept_id = strip_id_prefix(concept_id)
 
         return self._clone_with({"concepts.id": concept_id})
 
     async def by_institution(self, institution_id: str) -> AsyncWorksResource:
         """Get works from a specific institution."""
-        if "/" in institution_id:
-            institution_id = institution_id.split("/")[-1]
+        institution_id = strip_id_prefix(institution_id)
 
         return self._clone_with({"authorships.institutions.id": institution_id})
 
     async def related_to(self, work_id: str) -> AsyncWorksResource:
         """Get works related to a specific work."""
 
-        if "/" in work_id:
-            work_id = work_id.split("/")[-1]
+        work_id = strip_id_prefix(work_id)
 
         return self._clone_with({"related_to": work_id})
 

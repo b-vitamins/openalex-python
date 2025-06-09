@@ -206,7 +206,7 @@ class AsyncRateLimiter:
 
     async def __aexit__(self, *args: Any) -> None:
         """Context manager exit."""
-        return
+        pass
 
 
 def rate_limited(
