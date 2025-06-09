@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, Self
+from typing import TYPE_CHECKING, Any, Generic, Self, TypeVar
 
 from pydantic import ValidationError
 from structlog import get_logger

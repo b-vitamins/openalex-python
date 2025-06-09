@@ -20,9 +20,13 @@ from .concept import Concept, ConceptAncestor, ConceptIds, RelatedConcept
 from .filters import (
     AuthorsFilter,
     BaseFilter,
+    ConceptsFilter,
+    FundersFilter,
     GroupBy,
     InstitutionsFilter,
+    PublishersFilter,
     SortOrder,
+    SourcesFilter,
     WorksFilter,
 )
 from .funder import Funder, FunderIds
@@ -78,6 +82,7 @@ __all__ = [
     "Concept",
     "ConceptAncestor",
     "ConceptIds",
+    "ConceptsFilter",
     "CountsByYear",
     "DehydratedAuthor",
     "DehydratedConcept",
@@ -89,6 +94,7 @@ __all__ = [
     # Funder models
     "Funder",
     "FunderIds",
+    "FundersFilter",
     "Geo",
     "Grant",
     "GroupBy",
@@ -114,6 +120,7 @@ __all__ = [
     # Publisher models
     "Publisher",
     "PublisherIds",
+    "PublishersFilter",
     "RelatedConcept",
     "Repository",
     "Role",
@@ -123,6 +130,7 @@ __all__ = [
     "Source",
     "SourceIds",
     "SourceType",
+    "SourcesFilter",
     "SummaryStats",
     "SustainableDevelopmentGoal",
     # Topic models
@@ -136,3 +144,4 @@ __all__ = [
     "WorkType",
     "WorksFilter",
 ]
+

@@ -28,9 +28,8 @@ Search:
 
 from __future__ import annotations
 
-from typing import Any, cast
-
 import sys
+from typing import Any, cast
 
 __version__ = "0.1.0"
 __author__ = "OpenAlex Python Contributors"

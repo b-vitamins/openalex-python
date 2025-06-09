@@ -5,11 +5,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from ..models import Author, AuthorsFilter, ListResult
-from ..utils import AsyncPaginator, Paginator
 from .base import AsyncBaseResource, BaseResource
 
 if TYPE_CHECKING:
     from ..client import AsyncOpenAlex, OpenAlex
+    from ..utils import AsyncPaginator, Paginator
 
 
 class AuthorsResource(BaseResource[Author, AuthorsFilter]):
@@ -48,7 +48,9 @@ class AuthorsResource(BaseResource[Author, AuthorsFilter]):
         return self._clone_with({"affiliations.institution.id": institution_id})
 
     def list(
-        self, filter: AuthorsFilter | dict[str, Any] | None = None, **params: Any
+        self,
+        filter: AuthorsFilter | dict[str, Any] | None = None,
+        **params: Any,
     ) -> ListResult[Author]:
         if filter is None and self._default_filter is not None:
             filter = self._default_filter
@@ -110,7 +112,9 @@ class AsyncAuthorsResource(AsyncBaseResource[Author, AuthorsFilter]):
         super().__init__(client)
         self._default_filter = default_filter
 
-    def _clone_with(self, filter_update: dict[str, Any]) -> AsyncAuthorsResource:
+    def _clone_with(
+        self, filter_update: dict[str, Any]
+    ) -> AsyncAuthorsResource:
         base_filter = self._default_filter or AuthorsFilter.model_validate({})
         current = base_filter.filter or {}
         if isinstance(current, str):
@@ -132,7 +136,9 @@ class AsyncAuthorsResource(AsyncBaseResource[Author, AuthorsFilter]):
         return self._clone_with({"affiliations.institution.id": institution_id})
 
     async def list(
-        self, filter: AuthorsFilter | dict[str, Any] | None = None, **params: Any
+        self,
+        filter: AuthorsFilter | dict[str, Any] | None = None,
+        **params: Any,
     ) -> ListResult[Author]:
         if filter is None and self._default_filter is not None:
             filter = self._default_filter
