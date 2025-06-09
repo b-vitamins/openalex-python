@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from pydantic import Field, HttpUrl
 
-from .base import CountsByYear, InternationalNames, OpenAlexEntity, SummaryStats
+from .base import CountsByYear, OpenAlexBase, OpenAlexEntity, SummaryStats
 
 
-class ConceptIds(OpenAlexEntity):
+class ConceptIds(OpenAlexBase):
     """External identifiers for a concept."""
 
     openalex: str | None = None
@@ -15,7 +15,7 @@ class ConceptIds(OpenAlexEntity):
     wikipedia: HttpUrl | None = None
     umls_cui: list[str] | None = None
     umls_aui: list[str] | None = None
-    mag: int | None = None
+    mag: str | None = None
 
 
 class ConceptAncestor(OpenAlexEntity):
@@ -28,7 +28,7 @@ class ConceptAncestor(OpenAlexEntity):
 class RelatedConcept(ConceptAncestor):
     """Related concept with similarity score."""
 
-    score: float | None = Field(None, ge=0, le=1)
+    score: float | None = Field(None, ge=0)
 
 
 class Concept(OpenAlexEntity):
@@ -55,7 +55,9 @@ class Concept(OpenAlexEntity):
         default_factory=list, description="Similar concepts"
     )
 
-    international: InternationalNames | None = None
+    international_display_name: dict[str, str] | None = Field(
+        default=None, alias="international_display_name"
+    )
 
     counts_by_year: list[CountsByYear] = Field(
         default_factory=list,
@@ -89,3 +91,21 @@ class Concept(OpenAlexEntity):
     def ancestor_names(self) -> list[str]:
         """Get names of all ancestors."""
         return [a.display_name for a in self.ancestors if a.display_name]
+
+    def works_in_year(self, year: int) -> int:
+        """Return number of works published in a specific year."""
+        for year_data in self.counts_by_year:
+            if year_data.year == year:
+                return year_data.works_count
+        return 0
+
+    def citations_in_year(self, year: int) -> int:
+        """Return citation count for a specific year."""
+        for year_data in self.counts_by_year:
+            if year_data.year == year:
+                return year_data.cited_by_count
+        return 0
+
+    def active_years(self) -> list[int]:
+        """Return list of years with publication activity."""
+        return sorted([y.year for y in self.counts_by_year if y.works_count > 0])
