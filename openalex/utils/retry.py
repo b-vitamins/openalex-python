@@ -26,6 +26,9 @@ if TYPE_CHECKING:
 
 logger = get_logger(__name__)
 
+JITTER_FACTOR = 0.25
+UNREACHABLE_MSG = "Unreachable"
+
 T = TypeVar("T")
 
 __all__ = [
@@ -117,8 +120,7 @@ def with_retry(
                 raise e.last_attempt.result() from e
             raise
 
-        msg = "Unreachable"
-        raise AssertionError(msg)
+        raise AssertionError(UNREACHABLE_MSG)
 
     return wrapper
 
@@ -163,8 +165,7 @@ def async_with_retry(
                 raise e.last_attempt.result() from e
             raise
 
-        msg = "Unreachable"
-        raise AssertionError(msg)
+        raise AssertionError(UNREACHABLE_MSG)
 
     return wrapper
 
@@ -197,8 +198,7 @@ class RetryHandler:
         wait_time = min(base_wait, self.config.max_wait)
 
         if self.config.jitter:
-            # Add jitter (±25%)
-            jitter = wait_time * 0.25
+            jitter = wait_time * JITTER_FACTOR
             wait_time += random.uniform(-jitter, jitter)
 
         return max(0, wait_time)

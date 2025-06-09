@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from ..models import Author, AuthorsFilter, ListResult
 from ..utils import ensure_prefix, strip_id_prefix
+from ..utils.pagination import MAX_PER_PAGE
 from .base import AsyncBaseResource, BaseResource
 
 __all__ = ["AsyncAuthorsResource", "AuthorsResource"]
@@ -71,7 +72,7 @@ class AuthorsResource(BaseResource[Author, AuthorsFilter]):
     def paginate(
         self,
         filter: AuthorsFilter | dict[str, Any] | None = None,
-        per_page: int = 200,
+        per_page: int = MAX_PER_PAGE,
         max_results: int | None = None,
         **params: Any,
     ) -> Paginator[Author]:
@@ -154,7 +155,7 @@ class AsyncAuthorsResource(AsyncBaseResource[Author, AuthorsFilter]):
     def paginate(
         self,
         filter: AuthorsFilter | dict[str, Any] | None = None,
-        per_page: int = 200,
+        per_page: int = MAX_PER_PAGE,
         max_results: int | None = None,
         **params: Any,
     ) -> AsyncPaginator[Author]:

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Self
 
 from ..models import ListResult, Work, WorksFilter
 from ..utils import ensure_prefix, strip_id_prefix
+from ..utils.pagination import MAX_PER_PAGE
 from .base import AsyncBaseResource, BaseResource
 
 __all__ = ["AsyncWorksResource", "WorksResource"]
@@ -189,7 +190,7 @@ class WorksResource(BaseResource[Work, WorksFilter]):
     def paginate(
         self,
         filter: WorksFilter | dict[str, Any] | None = None,
-        per_page: int = 200,
+        per_page: int = MAX_PER_PAGE,
         max_results: int | None = None,
         **params: Any,
     ) -> Paginator[Work]:
@@ -303,7 +304,7 @@ class AsyncWorksResource(AsyncBaseResource[Work, WorksFilter]):
     def paginate(
         self,
         filter: WorksFilter | dict[str, Any] | None = None,
-        per_page: int = 200,
+        per_page: int = MAX_PER_PAGE,
         max_results: int | None = None,
         **params: Any,
     ) -> AsyncPaginator[Work]:

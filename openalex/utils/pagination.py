@@ -21,6 +21,9 @@ if TYPE_CHECKING:
 
 logger = get_logger(__name__)
 
+MAX_PER_PAGE = 200
+DEFAULT_CONCURRENCY = 5
+
 T = TypeVar("T")
 
 
@@ -28,7 +31,7 @@ def _pad_results(results: list[T], per_page: int | None) -> list[T]:
     """Pad ``results`` to ``per_page`` length if necessary."""
     if per_page and results and len(results) < per_page:
         padding = per_page - len(results)
-        return results + [results[-1]] * padding
+        return results + results[-1:] * padding
     return results
 
 
@@ -39,7 +42,7 @@ class Paginator(Generic[T]):
         self,
         fetch_func: Callable[[dict[str, Any]], ListResult[T]],
         params: dict[str, Any] | None = None,
-        per_page: int = 200,
+        per_page: int = MAX_PER_PAGE,
         max_results: int | None = None,
     ) -> None:
         """Initialize paginator.
@@ -52,14 +55,15 @@ class Paginator(Generic[T]):
         """
         self.fetch_func = fetch_func
         self.params = params or {}
-        self.per_page = min(per_page, 200)
+        self.per_page = min(per_page, MAX_PER_PAGE)
         self.max_results = max_results
         self._total_fetched = 0
 
     def __iter__(self) -> Iterator[T]:
         """Iterate over all results."""
         page: int | None = 1
-        cursor = self.params.pop("cursor", None)
+        cursor = self.params.get("cursor")
+        base_params = {k: v for k, v in self.params.items() if k != "cursor"}
 
         while True:
             # Check if we've reached max results
@@ -67,7 +71,7 @@ class Paginator(Generic[T]):
                 break
 
             # Prepare parameters
-            params = self.params.copy()
+            params = base_params.copy()
             params["per-page"] = self.per_page
 
             if cursor:
@@ -109,11 +113,12 @@ class Paginator(Generic[T]):
     def pages(self) -> Iterator[ListResult[T]]:
         """Iterate over pages instead of individual results."""
         page: int | None = 1
-        cursor = self.params.pop("cursor", None)
+        cursor = self.params.get("cursor")
+        base_params = {k: v for k, v in self.params.items() if k != "cursor"}
 
         while True:
             # Prepare parameters
-            params = self.params.copy()
+            params = base_params.copy()
             params["per-page"] = self.per_page
 
             if cursor:
@@ -172,9 +177,9 @@ class AsyncPaginator(Generic[T]):
         self,
         fetch_func: Callable[[dict[str, Any]], Awaitable[ListResult[T]]],
         params: dict[str, Any] | None = None,
-        per_page: int = 200,
+        per_page: int = MAX_PER_PAGE,
         max_results: int | None = None,
-        concurrency: int = 5,
+        concurrency: int = DEFAULT_CONCURRENCY,
     ) -> None:
         """Initialize async paginator.
 
@@ -187,7 +192,7 @@ class AsyncPaginator(Generic[T]):
         """
         self.fetch_func = fetch_func
         self.params = params or {}
-        self.per_page = min(per_page, 200)
+        self.per_page = min(per_page, MAX_PER_PAGE)
         self.max_results = max_results
         self.concurrency = concurrency
         self._total_fetched = 0
@@ -195,7 +200,8 @@ class AsyncPaginator(Generic[T]):
     async def __aiter__(self) -> AsyncIterator[T]:
         """Iterate over all results asynchronously."""
         page: int | None = 1
-        cursor = self.params.pop("cursor", None)
+        cursor = self.params.get("cursor")
+        base_params = {k: v for k, v in self.params.items() if k != "cursor"}
 
         while True:
             # Check if we've reached max results
@@ -203,7 +209,7 @@ class AsyncPaginator(Generic[T]):
                 break
 
             # Prepare parameters
-            params = self.params.copy()
+            params = base_params.copy()
             params["per-page"] = self.per_page
 
             if cursor:
@@ -244,11 +250,12 @@ class AsyncPaginator(Generic[T]):
     async def pages(self) -> AsyncIterator[ListResult[T]]:
         """Iterate over pages instead of individual results."""
         page: int | None = 1
-        cursor = self.params.pop("cursor", None)
+        cursor = self.params.get("cursor")
+        base_params = {k: v for k, v in self.params.items() if k != "cursor"}
 
         while True:
             # Prepare parameters
-            params = self.params.copy()
+            params = base_params.copy()
             params["per-page"] = self.per_page
 
             if cursor:
@@ -314,7 +321,7 @@ class AsyncPaginator(Generic[T]):
         count = await self.count()
         total_pages = (count + self.per_page - 1) // self.per_page
 
-        if pages:
+        if pages is not None:
             total_pages = min(pages, total_pages)
 
         # Create tasks for all pages

@@ -41,6 +41,8 @@ from .resources import (
 )
 from .utils import AsyncRateLimiter, RateLimiter, RetryConfig, RetryHandler
 
+DEFAULT_RATE_LIMIT = 10.0
+
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Awaitable, Generator
 
@@ -58,7 +60,7 @@ class OpenAlex:
         email: str | None = None,
         api_key: str | None = None,
         retry_config: RetryConfig | None = None,
-        rate_limit: float = 10.0,
+        rate_limit: float = DEFAULT_RATE_LIMIT,
     ) -> None:
         """Initialize OpenAlex client.
 
@@ -329,7 +331,7 @@ class AsyncOpenAlex:
         email: str | None = None,
         api_key: str | None = None,
         retry_config: RetryConfig | None = None,
-        rate_limit: float = 10.0,
+        rate_limit: float = DEFAULT_RATE_LIMIT,
     ) -> None:
         """Initialize async OpenAlex client.
 
