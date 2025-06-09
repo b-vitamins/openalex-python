@@ -7,7 +7,13 @@ from typing import TYPE_CHECKING, Any, Generic, Self, TypeVar
 from pydantic import ValidationError
 from structlog import get_logger
 
-from ..constants import HTTP_METHOD_GET, OPENALEX_ID_PREFIX
+from ..constants import (
+    AUTOCOMPLETE_PATH,
+    HTTP_METHOD_GET,
+    OPENALEX_ID_PREFIX,
+    PARAM_Q,
+    RANDOM_PATH,
+)
 from ..exceptions import ValidationError as OpenAlexValidationError
 from ..exceptions import raise_for_status
 from ..models import BaseFilter, ListResult
@@ -224,7 +230,7 @@ class BaseResource(Generic[T, F]):
         Returns:
             Random entity
         """
-        url = self._build_url("random")
+        url = self._build_url(RANDOM_PATH)
         params = normalize_params(params)
         response = self.client._request(HTTP_METHOD_GET, url, params=params)  # noqa: SLF001
         raise_for_status(response)
@@ -245,8 +251,8 @@ class BaseResource(Generic[T, F]):
         Returns:
             Autocomplete results
         """
-        params["q"] = query
-        url = f"{self.client.base_url}/autocomplete/{self.endpoint}"
+        params[PARAM_Q] = query
+        url = f"{self.client.base_url}/{AUTOCOMPLETE_PATH}/{self.endpoint}"
         params = normalize_params(params)
         response = self.client._request(HTTP_METHOD_GET, url, params=params)  # noqa: SLF001
         raise_for_status(response)
@@ -402,7 +408,7 @@ class AsyncBaseResource(Generic[T, F]):
 
     async def random(self, **params: Any) -> T:
         """Get a random entity."""
-        url = self._build_url("random")
+        url = self._build_url(RANDOM_PATH)
         params = normalize_params(params)
         response = await self.client._request(  # noqa: SLF001
             HTTP_METHOD_GET, url, params=params
@@ -417,8 +423,8 @@ class AsyncBaseResource(Generic[T, F]):
         **params: Any,
     ) -> ListResult[Any]:
         """Autocomplete search."""
-        params["q"] = query
-        url = f"{self.client.base_url}/autocomplete/{self.endpoint}"
+        params[PARAM_Q] = query
+        url = f"{self.client.base_url}/{AUTOCOMPLETE_PATH}/{self.endpoint}"
         params = normalize_params(params)
         response = await self.client._request(  # noqa: SLF001
             HTTP_METHOD_GET, url, params=params

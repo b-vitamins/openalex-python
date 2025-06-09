@@ -127,7 +127,7 @@ class BaseFilter(BaseModel):
             if isinstance(value, bool):
                 filter_parts.append(f"{key}:{str(value).lower()}")
             elif isinstance(value, list | tuple | set):
-                if len(value) == 0:
+                if not value:
                     continue
                 values = "|".join(str(v) for v in value)
                 filter_parts.append(f"{key}:{values}")
