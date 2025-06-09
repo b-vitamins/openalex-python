@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, ClassVar
 
+import pytest
 from openalex.models import Author
 
 from .base import BaseResourceTest
@@ -320,3 +321,29 @@ class TestAuthorsResource(BaseResourceTest[Author]):
             }
         )
         assert result.meta.count == 1000
+
+    @pytest.mark.asyncio
+    async def test_async_by_mag(
+        self, async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
+    ) -> None:
+        mag_id = "2133337193"
+        entity_data = self.get_sample_entity()
+        httpx_mock.add_response(
+            url=f"https://api.openalex.org/authors/mag:{mag_id}?mailto=test%40example.com",
+            json=entity_data,
+        )
+        author = await async_client.authors.by_mag(mag_id)
+        assert author.id == entity_data["id"]
+
+    @pytest.mark.asyncio
+    async def test_async_by_orcid(
+        self, async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
+    ) -> None:
+        orcid = "0000-0003-4237-824X"
+        entity_data = self.get_sample_entity()
+        httpx_mock.add_response(
+            url=f"https://api.openalex.org/authors/https://orcid.org/{orcid}?mailto=test%40example.com",
+            json=entity_data,
+        )
+        author = await async_client.authors.by_orcid(orcid)
+        assert author.id == entity_data["id"]
