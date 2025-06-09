@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -123,7 +124,7 @@ def raise_for_status(response: httpx.Response) -> None:
     try:
         error_data = response.json()
         message = error_data.get("message", response.reason_phrase)
-    except Exception:
+    except (ValueError, json.JSONDecodeError):
         message = response.reason_phrase or f"HTTP {response.status_code}"
 
     if response.status_code == 401:

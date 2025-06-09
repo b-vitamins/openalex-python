@@ -260,12 +260,12 @@ __all__ = [
 # defaults at import time when tests are running so such optional responses are
 # allowed.
 try:
-    from pytest_httpx import _options as _httpx_options
+    from pytest_httpx import _options as _httpx_options  # type: ignore[import-not-found]
 
     if not getattr(_httpx_options, "_openalex_patched", False):
         _httpx_options._HTTPXMockOptions.__init__.__kwdefaults__[  # noqa: SLF001
             "assert_all_responses_were_requested"
         ] = False
         cast("Any", _httpx_options)._openalex_patched = True  # noqa: SLF001
-except Exception:
-    logger.debug("Failed to patch httpx mock options", exc_info=True)
+except Exception as exc:
+    logger.debug("Failed to patch httpx mock options", exc_info=exc)

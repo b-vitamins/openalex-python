@@ -87,7 +87,7 @@ class Funder(OpenAlexEntity):
                         new_time += f".{rest[0]}"
                     fixed = f"{date_part}T{new_time}"
                     return datetime.fromisoformat(fixed)
-                except Exception as exc:  # pragma: no cover - defensive
+                except ValueError as exc:  # pragma: no cover - defensive
                     msg = "Invalid datetime format"
                     raise ValueError(msg) from exc
         return v
