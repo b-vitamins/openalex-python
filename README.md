@@ -97,6 +97,14 @@ results = client.works.list(filter={
     "concepts.id": "C41008148",  # Computer Science
     "cited_by_count": ">100"
 })
+
+# Any valid API filter can be passed in the dictionary
+advanced = client.works.list(filter={
+    "best_open_version": "published",
+    "title_and_abstract.search": "machine learning",
+    "primary_location.source.is_in_doaj": True,
+    "has_orcid": True,
+})
 ```
 
 ### Pagination Options
