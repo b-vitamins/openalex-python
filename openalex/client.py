@@ -19,7 +19,14 @@ import httpx
 from structlog import get_logger
 
 from .config import OpenAlexConfig
-from .constants import DEFAULT_RATE_LIMIT, HTTP_METHOD_GET, REQUEST_FAILED_MSG
+from .constants import (
+    AUTOCOMPLETE_PATH,
+    DEFAULT_RATE_LIMIT,
+    HTTP_METHOD_GET,
+    PARAM_Q,
+    REQUEST_FAILED_MSG,
+    TEXT_PATH,
+)
 from .exceptions import NetworkError, TimeoutError
 from .models import AutocompleteResult, ListResult
 from .resources import (
@@ -230,12 +237,12 @@ class OpenAlex:
         Returns:
             Autocomplete results
         """
-        params["q"] = query
+        params[PARAM_Q] = query
 
         if entity_type:
-            url = f"{self.base_url}/autocomplete/{entity_type}"
+            url = f"{self.base_url}/{AUTOCOMPLETE_PATH}/{entity_type}"
         else:
-            url = f"{self.base_url}/autocomplete"
+            url = f"{self.base_url}/{AUTOCOMPLETE_PATH}"
 
         response = self._request(HTTP_METHOD_GET, url, params=params)
         response.raise_for_status()
@@ -272,7 +279,7 @@ class OpenAlex:
         if abstract is not None:
             params["abstract"] = abstract
 
-        url = f"{self.base_url}/text"
+        url = f"{self.base_url}/{TEXT_PATH}"
         if entity_type:
             url = f"{url}/{entity_type}"
 
@@ -477,12 +484,12 @@ class AsyncOpenAlex:
         Returns:
             Autocomplete results
         """
-        params["q"] = query
+        params[PARAM_Q] = query
 
         if entity_type:
-            url = f"{self.base_url}/autocomplete/{entity_type}"
+            url = f"{self.base_url}/{AUTOCOMPLETE_PATH}/{entity_type}"
         else:
-            url = f"{self.base_url}/autocomplete"
+            url = f"{self.base_url}/{AUTOCOMPLETE_PATH}"
 
         response = await self._request(HTTP_METHOD_GET, url, params=params)
         response.raise_for_status()
@@ -509,7 +516,7 @@ class AsyncOpenAlex:
         if abstract is not None:
             params["abstract"] = abstract
 
-        url = f"{self.base_url}/text"
+        url = f"{self.base_url}/{TEXT_PATH}"
         if entity_type:
             url = f"{url}/{entity_type}"
 
