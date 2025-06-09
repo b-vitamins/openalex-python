@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 from ..models import BaseFilter, Publisher
 from .base import AsyncBaseResource, BaseResource
 
+__all__ = ["AsyncPublishersResource", "PublishersResource"]
+
 if TYPE_CHECKING:
     from ..client import AsyncOpenAlex, OpenAlex
 

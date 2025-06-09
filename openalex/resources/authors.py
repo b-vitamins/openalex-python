@@ -8,6 +8,8 @@ from ..models import Author, AuthorsFilter, ListResult
 from ..utils import ensure_prefix, strip_id_prefix
 from .base import AsyncBaseResource, BaseResource
 
+__all__ = ["AsyncAuthorsResource", "AuthorsResource"]
+
 if TYPE_CHECKING:
     from ..client import AsyncOpenAlex, OpenAlex
     from ..utils import AsyncPaginator, Paginator

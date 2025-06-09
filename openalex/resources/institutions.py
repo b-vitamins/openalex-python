@@ -8,6 +8,8 @@ from ..models import Institution, InstitutionsFilter
 from ..utils import ensure_prefix
 from .base import AsyncBaseResource, BaseResource
 
+__all__ = ["AsyncInstitutionsResource", "InstitutionsResource"]
+
 if TYPE_CHECKING:
     from ..client import AsyncOpenAlex, OpenAlex
 

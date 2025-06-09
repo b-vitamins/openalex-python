@@ -8,6 +8,8 @@ from ..models import BaseFilter, Funder
 from ..utils import ensure_prefix
 from .base import AsyncBaseResource, BaseResource
 
+__all__ = ["AsyncFundersResource", "FundersResource"]
+
 if TYPE_CHECKING:
     from ..client import AsyncOpenAlex, OpenAlex
 

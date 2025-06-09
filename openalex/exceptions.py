@@ -117,7 +117,7 @@ class TimeoutError(NetworkError):
 
 
 def raise_for_status(response: httpx.Response) -> None:
-    """Raise appropriate exception for HTTP error status codes."""
+    """Raise an appropriate exception for the HTTP response."""
     if response.is_success:
         return
 
@@ -127,10 +127,6 @@ def raise_for_status(response: httpx.Response) -> None:
     except (ValueError, json.JSONDecodeError):
         message = response.reason_phrase or f"HTTP {response.status_code}"
 
-    if response.status_code == 401:
-        raise AuthenticationError(message, response=response)
-    if response.status_code == 404:
-        raise NotFoundError(message, response=response)
     if response.status_code == 429:
         retry_after = response.headers.get("Retry-After")
         raise RateLimitError(
@@ -138,15 +134,21 @@ def raise_for_status(response: httpx.Response) -> None:
             retry_after=int(retry_after) if retry_after else None,
             response=response,
         )
+
+    _exception_map = {
+        401: AuthenticationError,
+        404: NotFoundError,
+    }
+    exc_cls = _exception_map.get(response.status_code)
+    if exc_cls is not None:
+        raise exc_cls(message, response=response)
+
     if response.status_code >= 500:
-        msg = f"Server error: {message}"
+        server_msg = f"Server error: {message}"
         raise APIError(
-            msg,
+            server_msg,
             status_code=response.status_code,
             response=response,
         )
-    raise APIError(
-        message,
-        status_code=response.status_code,
-        response=response,
-    )
+
+    raise APIError(message, status_code=response.status_code, response=response)

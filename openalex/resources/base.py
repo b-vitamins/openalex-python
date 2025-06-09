@@ -21,6 +21,8 @@ if TYPE_CHECKING:
 
 logger = get_logger(__name__)
 
+__all__ = ["AsyncBaseResource", "BaseResource"]
+
 T = TypeVar("T")
 F = TypeVar("F", bound=BaseFilter)
 
@@ -39,7 +41,7 @@ class BaseResource(Generic[T, F]):
 
     def _build_url(self, path: str = "") -> str:
         """Build full URL for endpoint."""
-        base = f"{str(self.client.config.base_url).rstrip('/')}/{self.endpoint}"
+        base = f"{self.client.base_url}/{self.endpoint}"
         if path:
             return f"{base}/{path.lstrip('/')}"
         return base
@@ -250,7 +252,7 @@ class BaseResource(Generic[T, F]):
             Autocomplete results
         """
         params["q"] = query
-        url = f"{str(self.client.config.base_url).rstrip('/')}/autocomplete/{self.endpoint}"
+        url = f"{self.client.base_url}/autocomplete/{self.endpoint}"
         params = normalize_params(params)
         response = self.client._request("GET", url, params=params)  # noqa: SLF001
         raise_for_status(response)
@@ -271,7 +273,7 @@ class AsyncBaseResource(Generic[T, F]):
 
     def _build_url(self, path: str = "") -> str:
         """Build full URL for endpoint."""
-        base = f"{str(self.client.config.base_url).rstrip('/')}/{self.endpoint}"
+        base = f"{self.client.base_url}/{self.endpoint}"
         if path:
             return f"{base}/{path.lstrip('/')}"
         return base
@@ -422,7 +424,7 @@ class AsyncBaseResource(Generic[T, F]):
     ) -> ListResult[Any]:
         """Autocomplete search."""
         params["q"] = query
-        url = f"{str(self.client.config.base_url).rstrip('/')}/autocomplete/{self.endpoint}"
+        url = f"{self.client.base_url}/autocomplete/{self.endpoint}"
         params = normalize_params(params)
         response = await self.client._request("GET", url, params=params)  # noqa: SLF001
         raise_for_status(response)
