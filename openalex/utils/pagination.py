@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Final, Generic, TypeVar
 
 from structlog import get_logger
 
@@ -21,8 +21,8 @@ if TYPE_CHECKING:
 
 logger = get_logger(__name__)
 
-MAX_PER_PAGE = 200
-DEFAULT_CONCURRENCY = 5
+MAX_PER_PAGE: Final = 200
+DEFAULT_CONCURRENCY: Final = 5
 
 T = TypeVar("T")
 

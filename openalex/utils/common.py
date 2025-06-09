@@ -2,19 +2,24 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Final
 
 from ..constants import OPENALEX_ID_PREFIX
+from ..models import ListResult, Meta
 
 __all__ = [
     "OPENALEX_ID_PREFIX",
+    "empty_list_result",
     "ensure_prefix",
     "normalize_params",
     "strip_id_prefix",
 ]
 
 
-KEY_MAP = {"per_page": "per-page", "group_by": "group-by"}
+KEY_MAP: Final[dict[str, str]] = {
+    "per_page": "per-page",
+    "group_by": "group-by",
+}
 
 
 def normalize_params(params: dict[str, Any]) -> dict[str, Any]:
@@ -41,3 +46,18 @@ def ensure_prefix(value: str, prefix: str) -> str:
     if value.startswith(prefix):
         return value
     return f"{prefix}{value}"
+
+
+def empty_list_result() -> ListResult[Any]:
+    """Return an empty ``ListResult`` instance."""
+    return ListResult(
+        meta=Meta(
+            count=0,
+            db_response_time_ms=0,
+            page=1,
+            per_page=0,
+            groups_count=0,
+            next_cursor=None,
+        ),
+        results=[],
+    )

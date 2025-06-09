@@ -1,5 +1,9 @@
 """Common string and numeric constants for OpenAlex."""
 
+from __future__ import annotations
+
+from http import HTTPStatus
+
 OPENALEX_ID_PREFIX = "https://openalex.org/"
 ORCID_URL_PREFIX = "https://orcid.org/"
 DOI_URL_PREFIX = "https://doi.org/"
@@ -8,8 +12,20 @@ MAG_PREFIX = "mag:"
 
 MAX_SECONDS_IN_MINUTE = 59
 
+DEFAULT_RATE_LIMIT = 10.0
+
+HTTP_TOO_MANY_REQUESTS = HTTPStatus.TOO_MANY_REQUESTS
+HTTP_UNAUTHORIZED = HTTPStatus.UNAUTHORIZED
+HTTP_NOT_FOUND = HTTPStatus.NOT_FOUND
+HTTP_SERVER_ERROR_BOUNDARY = HTTPStatus.INTERNAL_SERVER_ERROR
+
 __all__ = [
+    "DEFAULT_RATE_LIMIT",
     "DOI_URL_PREFIX",
+    "HTTP_NOT_FOUND",
+    "HTTP_SERVER_ERROR_BOUNDARY",
+    "HTTP_TOO_MANY_REQUESTS",
+    "HTTP_UNAUTHORIZED",
     "MAG_PREFIX",
     "MAX_SECONDS_IN_MINUTE",
     "OPENALEX_ID_PREFIX",

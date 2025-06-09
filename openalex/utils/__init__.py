@@ -7,7 +7,12 @@ from ..constants import (
     ORCID_URL_PREFIX,
     PMID_PREFIX,
 )
-from .common import ensure_prefix, normalize_params, strip_id_prefix
+from .common import (
+    empty_list_result,
+    ensure_prefix,
+    normalize_params,
+    strip_id_prefix,
+)
 from .pagination import AsyncPaginator, Paginator
 from .rate_limit import (
     AsyncRateLimiter,
@@ -39,6 +44,7 @@ __all__ = [
     "SlidingWindowRateLimiter",
     "async_rate_limited",
     "async_with_retry",
+    "empty_list_result",
     "ensure_prefix",
     "is_retryable_error",
     "normalize_params",

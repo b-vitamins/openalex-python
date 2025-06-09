@@ -3,7 +3,14 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Final
+
+from .constants import (
+    HTTP_NOT_FOUND,
+    HTTP_SERVER_ERROR_BOUNDARY,
+    HTTP_TOO_MANY_REQUESTS,
+    HTTP_UNAUTHORIZED,
+)
 
 __all__ = [
     "APIError",
@@ -139,7 +146,7 @@ def raise_for_status(response: httpx.Response) -> None:
     except (ValueError, json.JSONDecodeError):
         message = response.reason_phrase or f"HTTP {response.status_code}"
 
-    if response.status_code == 429:
+    if response.status_code == HTTP_TOO_MANY_REQUESTS:
         retry_after = response.headers.get("Retry-After")
         raise RateLimitError(
             message,
@@ -147,15 +154,15 @@ def raise_for_status(response: httpx.Response) -> None:
             response=response,
         )
 
-    _exception_map = {
-        401: AuthenticationError,
-        404: NotFoundError,
+    _exception_map: Final[dict[int, type[APIError]]] = {
+        HTTP_UNAUTHORIZED: AuthenticationError,
+        HTTP_NOT_FOUND: NotFoundError,
     }
     exc_cls = _exception_map.get(response.status_code)
     if exc_cls is not None:
         raise exc_cls(message, response=response)
 
-    if response.status_code >= 500:
+    if response.status_code >= HTTP_SERVER_ERROR_BOUNDARY:
         server_msg = f"Server error: {message}"
         raise APIError(
             server_msg,

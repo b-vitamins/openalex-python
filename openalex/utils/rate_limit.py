@@ -6,11 +6,11 @@ import asyncio
 import time
 from collections import deque
 from threading import Lock
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, Final, TypeVar
 
 from structlog import get_logger
 
-DEFAULT_BUFFER = 0.1
+DEFAULT_BUFFER: Final = 0.1
 
 __all__ = [
     "AsyncRateLimiter",
