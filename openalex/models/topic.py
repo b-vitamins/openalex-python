@@ -18,11 +18,11 @@ from pydantic import (
 )
 
 from ..constants import MAX_SECONDS_IN_MINUTE
+from .base import OpenAlexBase, OpenAlexEntity, SummaryStats
 
 MALFORMED_DATETIME_REGEX = re.compile(
     r"(?P<prefix>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}):(?P<sec>\d{2})(?P<rest>.*)"
 )
-from .base import OpenAlexBase, OpenAlexEntity, SummaryStats
 
 
 class TopicHierarchy(OpenAlexEntity):

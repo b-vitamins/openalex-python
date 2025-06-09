@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Generic, Self, TypeVar
 from pydantic import ValidationError
 from structlog import get_logger
 
-from ..constants import OPENALEX_ID_PREFIX
+from ..constants import HTTP_METHOD_GET, OPENALEX_ID_PREFIX
 from ..exceptions import ValidationError as OpenAlexValidationError
 from ..exceptions import raise_for_status
 from ..models import BaseFilter, ListResult
@@ -119,7 +119,7 @@ class BaseResource(Generic[T, F]):
             id = id[len(OPENALEX_ID_PREFIX) :]
 
         url = self._build_url(id)
-        response = self.client._request("GET", url, params=params)  # noqa: SLF001
+        response = self.client._request(HTTP_METHOD_GET, url, params=params)  # noqa: SLF001
         raise_for_status(response)
 
         return self._parse_response(response.json())
@@ -143,7 +143,7 @@ class BaseResource(Generic[T, F]):
         params = normalize_params(params)
 
         url = self._build_url()
-        response = self.client._request("GET", url, params=params)  # noqa: SLF001
+        response = self.client._request(HTTP_METHOD_GET, url, params=params)  # noqa: SLF001
         raise_for_status(response)
 
         return self._parse_list_response(response.json())
@@ -203,7 +203,7 @@ class BaseResource(Generic[T, F]):
             all_params = {**params, **page_params}
             all_params = normalize_params(all_params)
             response = self.client._request(  # noqa: SLF001
-                "GET", url, params=all_params
+                HTTP_METHOD_GET, url, params=all_params
             )
             raise_for_status(response)
             return self._parse_list_response(response.json())
@@ -226,7 +226,7 @@ class BaseResource(Generic[T, F]):
         """
         url = self._build_url("random")
         params = normalize_params(params)
-        response = self.client._request("GET", url, params=params)  # noqa: SLF001
+        response = self.client._request(HTTP_METHOD_GET, url, params=params)  # noqa: SLF001
         raise_for_status(response)
 
         return self._parse_response(response.json())
@@ -248,7 +248,7 @@ class BaseResource(Generic[T, F]):
         params["q"] = query
         url = f"{self.client.base_url}/autocomplete/{self.endpoint}"
         params = normalize_params(params)
-        response = self.client._request("GET", url, params=params)  # noqa: SLF001
+        response = self.client._request(HTTP_METHOD_GET, url, params=params)  # noqa: SLF001
         raise_for_status(response)
 
         return self._parse_list_response(response.json())
@@ -334,7 +334,9 @@ class AsyncBaseResource(Generic[T, F]):
             id = id[len(OPENALEX_ID_PREFIX) :]
 
         url = self._build_url(id)
-        response = await self.client._request("GET", url, params=params)  # noqa: SLF001
+        response = await self.client._request(  # noqa: SLF001
+            HTTP_METHOD_GET, url, params=params
+        )
         raise_for_status(response)
 
         return self._parse_response(response.json())
@@ -350,7 +352,9 @@ class AsyncBaseResource(Generic[T, F]):
         params = normalize_params(params)
 
         url = self._build_url()
-        response = await self.client._request("GET", url, params=params)  # noqa: SLF001
+        response = await self.client._request(  # noqa: SLF001
+            HTTP_METHOD_GET, url, params=params
+        )
         raise_for_status(response)
 
         return self._parse_list_response(response.json())
@@ -384,7 +388,7 @@ class AsyncBaseResource(Generic[T, F]):
             all_params = {**params, **page_params}
             all_params = normalize_params(all_params)
             response = await self.client._request(  # noqa: SLF001
-                "GET", url, params=all_params
+                HTTP_METHOD_GET, url, params=all_params
             )
             raise_for_status(response)
             return self._parse_list_response(response.json())
@@ -400,7 +404,9 @@ class AsyncBaseResource(Generic[T, F]):
         """Get a random entity."""
         url = self._build_url("random")
         params = normalize_params(params)
-        response = await self.client._request("GET", url, params=params)  # noqa: SLF001
+        response = await self.client._request(  # noqa: SLF001
+            HTTP_METHOD_GET, url, params=params
+        )
         raise_for_status(response)
 
         return self._parse_response(response.json())
@@ -414,7 +420,9 @@ class AsyncBaseResource(Generic[T, F]):
         params["q"] = query
         url = f"{self.client.base_url}/autocomplete/{self.endpoint}"
         params = normalize_params(params)
-        response = await self.client._request("GET", url, params=params)  # noqa: SLF001
+        response = await self.client._request(  # noqa: SLF001
+            HTTP_METHOD_GET, url, params=params
+        )
         raise_for_status(response)
 
         return self._parse_list_response(response.json())
