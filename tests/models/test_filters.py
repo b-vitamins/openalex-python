@@ -174,6 +174,15 @@ class TestBaseFilter:
         # Should only have default page and per_page
         assert params == {"page": 1, "per-page": 25}
 
+    def test_none_and_no_defaults(self) -> None:
+        """Explicit None values and skipping defaults."""
+        filter = BaseFilter(filter=None, select=None)
+        assert filter.to_params(include_defaults=False) == {}
+
+        # Explicit string select should pass validation branch
+        filter2 = BaseFilter(select="id")
+        assert filter2.to_params()["select"] == "id"
+
 
 class TestWorksFilter:
     """Test WorksFilter functionality."""
@@ -430,6 +439,37 @@ class TestWorksFilter:
         assert "type:article" in filter3.to_params()["filter"]
         assert "publication_year:2023" in filter3.to_params()["filter"]
 
+    def test_add_filter_string_start(self) -> None:
+        """Starting with a raw string filter then chaining."""
+        wf = WorksFilter(filter="foo").with_doi("10/1")
+        assert "raw:foo" in wf.to_params()["filter"]
+
+    def test_works_filter_str_branches(self) -> None:
+        """Ensure string filters remain when adding range helpers."""
+        wf = WorksFilter(filter="raw")
+        wf = wf.with_publication_date_range(date(2020, 1, 1), None)
+        wf = wf.with_created_date_range(None, date(2021, 1, 1))
+        wf = wf.with_oa_status("gold")
+        wf = wf.with_primary_location_license("cc-by").with_topics_id("T1")
+        wf = wf.with_authorships_institutions_ror("https://ror.org/abcd")
+        wf = wf.with_authorships_institutions_country_code("US")
+        wf = wf.with_authorships_institutions_type("education")
+        wf = wf.with_corresponding_institution_id("I1")
+        filter_str = wf.to_params()["filter"]
+        assert "raw:raw" in filter_str
+        assert "oa_status:gold" in filter_str
+        assert "from_publication_date:2020-01-01" in filter_str
+        assert "to_created_date:2021-01-01" in filter_str
+        assert "authorships.institutions.ror:https://ror.org/abcd" in filter_str
+        assert "authorships.institutions.country_code:US" in filter_str
+        assert "authorships.institutions.type:education" in filter_str
+        assert "corresponding_institution_ids:I1" in filter_str
+        assert "primary_location.license:cc-by" in filter_str
+        assert "topics.id:T1" in filter_str
+
+        wf2 = WorksFilter(filter="bar").with_created_date_range(date(2022, 1, 1))
+        assert "raw:bar" in wf2.to_params()["filter"]
+
 
 class TestAuthorsFilter:
     """Test AuthorsFilter functionality."""
@@ -497,6 +537,30 @@ class TestAuthorsFilter:
         with pytest.raises(ValidationError):
             AuthorsFilter(sort="invalid_field:desc")
 
+    def test_authors_filter_branches(self) -> None:
+        """Range helpers handle None values correctly."""
+        base = AuthorsFilter(filter="foo")
+
+        f1 = base.with_works_count_range(min_count=5, max_count=None)
+        assert "works_count:>4" in f1.to_params()["filter"]
+
+        f2 = base.with_works_count_range(min_count=None, max_count=8)
+        assert "works_count:<9" in f2.to_params()["filter"]
+
+        f3 = base.with_works_count_range(None, None)
+        assert "works_count" not in f3.to_params()["filter"]
+
+        c1 = base.with_cited_by_count_range(min_count=1, max_count=3)
+        assert "cited_by_count:1-3" in c1.to_params()["filter"]
+
+        c2 = base.with_cited_by_count_range(min_count=None, max_count=10)
+        assert "cited_by_count:<11" in c2.to_params()["filter"]
+
+        c3 = base.with_cited_by_count_range(None, None)
+        assert "cited_by_count" not in c3.to_params()["filter"]
+
+        assert "x_concepts.id:C1" in base.with_x_concepts_id("C1").to_params()["filter"]
+
 
 class TestInstitutionsFilter:
     """Test InstitutionsFilter functionality."""
@@ -518,6 +582,23 @@ class TestInstitutionsFilter:
         assert "country_code:US|GB|DE" in filter_str
         assert "type:education|facility" in filter_str
         assert "works_count:>999" in filter_str
+
+    def test_concepts_filter_branches(self) -> None:
+        """Range helper edge cases."""
+        base = ConceptsFilter(filter="foo").with_level(1)
+        assert "level:1" in base.to_params()["filter"]
+
+        f1 = base.with_works_count_range(2, 4)
+        assert "works_count:2-4" in f1.to_params()["filter"]
+
+        f2 = base.with_works_count_range(min_count=1, max_count=None)
+        assert "works_count:>0" in f2.to_params()["filter"]
+
+        f3 = base.with_works_count_range(None, 5)
+        assert "works_count:<6" in f3.to_params()["filter"]
+
+        f4 = ConceptsFilter(filter="foo").with_works_count_range(None, None)
+        assert "works_count" not in f4.to_params()["filter"]
 
     def test_institutions_filter_works_count_range_variants(self) -> None:
         """Works count range with only min or max."""
@@ -546,6 +627,23 @@ class TestInstitutionsFilter:
         for sort in valid_sorts:
             filter = InstitutionsFilter(sort=sort)
             assert filter.sort == sort
+
+    def test_institutions_filter_branches(self) -> None:
+        """Additional range and basic branches."""
+        base = InstitutionsFilter(filter="foo")
+        f1 = base.with_country_code("US").with_type("education")
+        flt = f1.to_params()["filter"]
+        assert "country_code:US" in flt
+        assert "type:education" in flt
+
+        f2 = base.with_works_count_range(1, 3)
+        assert "works_count:1-3" in f2.to_params()["filter"]
+
+        f3 = base.with_works_count_range(None, 4)
+        assert "works_count:<5" in f3.to_params()["filter"]
+
+        f4 = base.with_works_count_range(None, None)
+        assert "works_count" not in f4.to_params()["filter"]
 
 
 class TestSourcesFilter:
@@ -590,6 +688,15 @@ class TestSourcesFilter:
         f_none = base.with_apc_usd_range(None, None)
         assert f_none is base
 
+    def test_sources_filter_branches(self) -> None:
+        """Additional type and APC branches."""
+        sf = SourcesFilter(filter="foo")
+        sf = sf.with_type("journal")
+        sf = sf.with_apc_usd_range(None, None)
+        assert sf is sf
+        sf = sf.with_apc_usd_range(100, 200)
+        assert "apc_usd:100-200" in sf.to_params()["filter"]
+
 
 class TestConceptsFilter:
     """Test ConceptsFilter functionality."""
@@ -630,6 +737,12 @@ class TestPublishersFilter:
         assert "parent_publisher:P4310319965" in filter_str
         assert "hierarchy_level:0" in filter_str
 
+    def test_publishers_filter_branches(self) -> None:
+        """Single country code branch."""
+        pf = PublishersFilter(filter="foo").with_country_codes("US")
+        params = pf.to_params()
+        assert "country_codes:US" in params["filter"]
+
 
 class TestFundersFilter:
     """Test FundersFilter functionality."""
@@ -663,6 +776,24 @@ class TestFundersFilter:
 
         w_max = FundersFilter().with_works_count_range(None, 75)
         assert "works_count:<76" in w_max.to_params()["filter"]
+
+    def test_funders_filter_branches(self) -> None:
+        """Extra range handling starting from string filter."""
+        base = FundersFilter(filter="foo")
+        f1 = base.with_grants_count_range(3, 6)
+        assert "grants_count:3-6" in f1.to_params()["filter"]
+
+        f2 = base.with_grants_count_range(None, None)
+        assert "grants_count" not in f2.to_params()["filter"]
+
+        w1 = base.with_works_count_range(1, 2)
+        assert "works_count:1-2" in w1.to_params()["filter"]
+
+        w2 = base.with_works_count_range(min_count=None, max_count=4)
+        assert "works_count:<5" in w2.to_params()["filter"]
+
+        w3 = base.with_works_count_range(None, None)
+        assert "works_count" not in w3.to_params()["filter"]
 
 
 class TestGroupBy:
