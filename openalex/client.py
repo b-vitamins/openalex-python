@@ -17,7 +17,7 @@ import httpx
 from structlog import get_logger
 
 from .config import OpenAlexConfig
-from .constants import DEFAULT_RATE_LIMIT
+from .constants import DEFAULT_RATE_LIMIT, HTTP_METHOD_GET, REQUEST_FAILED_MSG
 from .exceptions import NetworkError, TimeoutError
 from .models import AutocompleteResult, ListResult
 from .resources import (
@@ -198,8 +198,7 @@ class OpenAlex:
         if last_error:
             raise last_error
 
-        msg = "Request failed after all retries"
-        raise NetworkError(msg)
+        raise NetworkError(REQUEST_FAILED_MSG)
 
     def autocomplete(
         self,
@@ -224,7 +223,7 @@ class OpenAlex:
         else:
             url = f"{self.base_url}/autocomplete"
 
-        response = self._request("GET", url, params=params)
+        response = self._request(HTTP_METHOD_GET, url, params=params)
         response.raise_for_status()
 
         data = response.json()
@@ -263,7 +262,7 @@ class OpenAlex:
         if entity_type:
             url = f"{url}/{entity_type}"
 
-        response = self._request("GET", url, params=params)
+        response = self._request(HTTP_METHOD_GET, url, params=params)
         response.raise_for_status()
 
         return cast("dict[str, Any]", response.json())
@@ -454,8 +453,7 @@ class AsyncOpenAlex:
         if last_error:
             raise last_error
 
-        msg = "Request failed after all retries"
-        raise NetworkError(msg)
+        raise NetworkError(REQUEST_FAILED_MSG)
 
     async def autocomplete(
         self,
@@ -480,7 +478,7 @@ class AsyncOpenAlex:
         else:
             url = f"{self.base_url}/autocomplete"
 
-        response = await self._request("GET", url, params=params)
+        response = await self._request(HTTP_METHOD_GET, url, params=params)
         response.raise_for_status()
 
         data = response.json()
@@ -509,7 +507,7 @@ class AsyncOpenAlex:
         if entity_type:
             url = f"{url}/{entity_type}"
 
-        response = await self._request("GET", url, params=params)
+        response = await self._request(HTTP_METHOD_GET, url, params=params)
         response.raise_for_status()
 
         return cast("dict[str, Any]", response.json())

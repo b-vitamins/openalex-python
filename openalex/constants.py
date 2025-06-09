@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from http import HTTPStatus
 
+from pydantic import HttpUrl
+
 OPENALEX_ID_PREFIX = "https://openalex.org/"
 ORCID_URL_PREFIX = "https://orcid.org/"
 DOI_URL_PREFIX = "https://doi.org/"
@@ -13,6 +15,16 @@ MAG_PREFIX = "mag:"
 MAX_SECONDS_IN_MINUTE = 59
 
 DEFAULT_RATE_LIMIT = 10.0
+DEFAULT_TIMEOUT = 30.0
+DEFAULT_PER_PAGE = 200
+DEFAULT_CACHE_TTL = 3600
+REQUEST_FAILED_MSG = "Request failed after all retries"
+DEFAULT_BASE_URL = HttpUrl("https://api.openalex.org")
+HTTP_METHOD_GET = "GET"
+HEADER_ACCEPT = "Accept"
+HEADER_ACCEPT_ENCODING = "Accept-Encoding"
+HEADER_AUTHORIZATION = "Authorization"
+HEADER_USER_AGENT = "User-Agent"
 
 HTTP_TOO_MANY_REQUESTS = HTTPStatus.TOO_MANY_REQUESTS
 HTTP_UNAUTHORIZED = HTTPStatus.UNAUTHORIZED
@@ -20,8 +32,17 @@ HTTP_NOT_FOUND = HTTPStatus.NOT_FOUND
 HTTP_SERVER_ERROR_BOUNDARY = HTTPStatus.INTERNAL_SERVER_ERROR
 
 __all__ = [
+    "DEFAULT_BASE_URL",
+    "DEFAULT_CACHE_TTL",
+    "DEFAULT_PER_PAGE",
     "DEFAULT_RATE_LIMIT",
+    "DEFAULT_TIMEOUT",
     "DOI_URL_PREFIX",
+    "HEADER_ACCEPT",
+    "HEADER_ACCEPT_ENCODING",
+    "HEADER_AUTHORIZATION",
+    "HEADER_USER_AGENT",
+    "HTTP_METHOD_GET",
     "HTTP_NOT_FOUND",
     "HTTP_SERVER_ERROR_BOUNDARY",
     "HTTP_TOO_MANY_REQUESTS",
@@ -31,4 +52,5 @@ __all__ = [
     "OPENALEX_ID_PREFIX",
     "ORCID_URL_PREFIX",
     "PMID_PREFIX",
+    "REQUEST_FAILED_MSG",
 ]

@@ -32,6 +32,7 @@ class AuthorsResource(BaseResource[Author, AuthorsFilter]):
         self._default_filter = default_filter
 
     def _clone_with(self, filter_update: dict[str, Any]) -> AuthorsResource:
+        """Return a new resource with ``filter_update`` merged."""
         base_filter = self._default_filter or AuthorsFilter.model_validate({})
         current = base_filter.filter or {}
         if isinstance(current, str):
@@ -115,6 +116,7 @@ class AsyncAuthorsResource(AsyncBaseResource[Author, AuthorsFilter]):
     def _clone_with(
         self, filter_update: dict[str, Any]
     ) -> AsyncAuthorsResource:
+        """Return a new async resource with ``filter_update`` merged."""
         base_filter = self._default_filter or AuthorsFilter.model_validate({})
         current = base_filter.filter or {}
         if isinstance(current, str):

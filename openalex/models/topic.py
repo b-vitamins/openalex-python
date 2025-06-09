@@ -18,6 +18,10 @@ from pydantic import (
 )
 
 from ..constants import MAX_SECONDS_IN_MINUTE
+
+MALFORMED_DATETIME_REGEX = re.compile(
+    r"(?P<prefix>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}):(?P<sec>\d{2})(?P<rest>.*)"
+)
 from .base import OpenAlexBase, OpenAlexEntity, SummaryStats
 
 
@@ -99,10 +103,7 @@ class Topic(OpenAlexEntity):
             try:
                 return cast("datetime", parser.parse(v))
             except (ValueError, TypeError):
-                match = re.match(
-                    r"(?P<prefix>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}):(?P<sec>\d{2})(?P<rest>.*)",
-                    v,
-                )
+                match = MALFORMED_DATETIME_REGEX.match(v)
                 if match:
                     sec = int(match.group("sec"))
                     sec = min(sec, MAX_SECONDS_IN_MINUTE)
