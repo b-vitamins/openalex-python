@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import contextlib
 from typing import TYPE_CHECKING, Any, Self
 
 from ..models import ListResult, Work, WorksFilter
@@ -52,8 +51,6 @@ class WorksResource(BaseResource[Work, WorksFilter]):
         """
 
         if not filter_params:
-            with contextlib.suppress(Exception):
-                self.client._request("GET", self._build_url())  # noqa: SLF001
             return self.filter_class.model_validate({})
 
         known_fields = set(self.filter_class.model_fields)
@@ -157,7 +154,7 @@ class WorksResource(BaseResource[Work, WorksFilter]):
 
     def open_access(
         self,
-        is_oa: bool = True,  # noqa: FBT001, FBT002
+        is_oa: bool = True,  # noqa: FBT001,FBT002
     ) -> WorksResource:
         """Filter works by open access status.
 
@@ -279,7 +276,7 @@ class AsyncWorksResource(AsyncBaseResource[Work, WorksFilter]):
 
     async def open_access(
         self,
-        is_oa: bool = True,  # noqa: FBT001, FBT002
+        is_oa: bool = True,  # noqa: FBT001,FBT002
     ) -> AsyncWorksResource:
         """Filter works by open access status."""
         return self._clone_with({"is_oa": is_oa})

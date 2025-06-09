@@ -74,6 +74,34 @@ class BaseResource(Generic[T, F]):
                 value=data,
             ) from e
 
+    def _apply_filter_params(
+        self, params: dict[str, Any], filter: F | dict[str, Any] | None
+    ) -> dict[str, Any]:
+        """Merge filter information into ``params``."""
+        if filter is None:
+            return params
+
+        if isinstance(filter, BaseFilter):
+            params.update(filter.to_params(include_defaults=False))
+            return params
+
+        known_fields = set(self.filter_class.model_fields)
+        filter_kwargs: dict[str, Any] = {}
+        raw_filters: dict[str, Any] = {}
+        for key, value in filter.items():
+            if key in known_fields:
+                filter_kwargs[key] = value
+            else:
+                raw_filters[key] = value
+
+        if raw_filters:
+            filter_kwargs["filter"] = raw_filters
+
+        filter_obj = self.filter_class(**filter_kwargs)
+        params.update(filter_obj.to_params(include_defaults=False))
+
+        return params
+
     def get(self, id: str, **params: Any) -> T:
         """Get a single entity by ID.
 
@@ -86,7 +114,7 @@ class BaseResource(Generic[T, F]):
         """
         # Remove OpenAlex prefix if present but keep full IDs like ORCID/ROR
         if id.startswith("https://openalex.org/"):
-            id = id.split("/")[-1]
+            id = id.rsplit("/", 1)[-1]
 
         url = self._build_url(id)
         response = self.client._request("GET", url, params=params)  # noqa: SLF001
@@ -108,25 +136,7 @@ class BaseResource(Generic[T, F]):
         Returns:
             List result with metadata
         """
-        # Handle filter parameter
-        if filter is not None:
-            if isinstance(filter, BaseFilter):
-                params.update(filter.to_params(include_defaults=False))
-            elif isinstance(filter, dict):
-                known_fields = set(self.filter_class.model_fields)
-                filter_kwargs: dict[str, Any] = {}
-                raw_filters: dict[str, Any] = {}
-                for k, v in filter.items():
-                    if k in known_fields:
-                        filter_kwargs[k] = v
-                    else:
-                        raw_filters[k] = v
-
-                if raw_filters:
-                    filter_kwargs["filter"] = raw_filters
-
-                filter_obj = self.filter_class(**filter_kwargs)
-                params.update(filter_obj.to_params(include_defaults=False))
+        params = self._apply_filter_params(params, filter)
 
         params = normalize_params(params)
 
@@ -184,25 +194,7 @@ class BaseResource(Generic[T, F]):
         Returns:
             Paginator instance
         """
-        # Prepare parameters
-        if filter is not None:
-            if isinstance(filter, BaseFilter):
-                params.update(filter.to_params(include_defaults=False))
-            elif isinstance(filter, dict):
-                known_fields = set(self.filter_class.model_fields)
-                filter_kwargs: dict[str, Any] = {}
-                raw_filters: dict[str, Any] = {}
-                for k, v in filter.items():
-                    if k in known_fields:
-                        filter_kwargs[k] = v
-                    else:
-                        raw_filters[k] = v
-
-                if raw_filters:
-                    filter_kwargs["filter"] = raw_filters
-
-                filter_obj = self.filter_class(**filter_kwargs)
-                params.update(filter_obj.to_params(include_defaults=False))
+        params = self._apply_filter_params(params, filter)
 
         def fetch_page(page_params: dict[str, Any]) -> ListResult[T]:
             url = self._build_url()
@@ -306,10 +298,38 @@ class AsyncBaseResource(Generic[T, F]):
                 value=data,
             ) from e
 
+    def _apply_filter_params(
+        self, params: dict[str, Any], filter: F | dict[str, Any] | None
+    ) -> dict[str, Any]:
+        """Merge filter information into ``params``."""
+        if filter is None:
+            return params
+
+        if isinstance(filter, BaseFilter):
+            params.update(filter.to_params(include_defaults=False))
+            return params
+
+        known_fields = set(self.filter_class.model_fields)
+        filter_kwargs: dict[str, Any] = {}
+        raw_filters: dict[str, Any] = {}
+        for key, value in filter.items():
+            if key in known_fields:
+                filter_kwargs[key] = value
+            else:
+                raw_filters[key] = value
+
+        if raw_filters:
+            filter_kwargs["filter"] = raw_filters
+
+        filter_obj = self.filter_class(**filter_kwargs)
+        params.update(filter_obj.to_params(include_defaults=False))
+
+        return params
+
     async def get(self, id: str, **params: Any) -> T:
         """Get a single entity by ID."""
         if id.startswith("https://openalex.org/"):
-            id = id.split("/")[-1]
+            id = id.rsplit("/", 1)[-1]
 
         url = self._build_url(id)
         response = await self.client._request("GET", url, params=params)  # noqa: SLF001
@@ -323,24 +343,7 @@ class AsyncBaseResource(Generic[T, F]):
         **params: Any,
     ) -> ListResult[T]:
         """List entities with optional filtering."""
-        if filter is not None:
-            if isinstance(filter, BaseFilter):
-                params.update(filter.to_params(include_defaults=False))
-            elif isinstance(filter, dict):
-                known_fields = set(self.filter_class.model_fields)
-                filter_kwargs: dict[str, Any] = {}
-                raw_filters: dict[str, Any] = {}
-                for k, v in filter.items():
-                    if k in known_fields:
-                        filter_kwargs[k] = v
-                    else:
-                        raw_filters[k] = v
-
-                if raw_filters:
-                    filter_kwargs["filter"] = raw_filters
-
-                filter_obj = self.filter_class(**filter_kwargs)
-                params.update(filter_obj.to_params(include_defaults=False))
+        params = self._apply_filter_params(params, filter)
 
         params = normalize_params(params)
 
@@ -372,24 +375,7 @@ class AsyncBaseResource(Generic[T, F]):
         **params: Any,
     ) -> AsyncPaginator[T]:
         """Create an async paginator."""
-        if filter is not None:
-            if isinstance(filter, BaseFilter):
-                params.update(filter.to_params(include_defaults=False))
-            elif isinstance(filter, dict):
-                known_fields = set(self.filter_class.model_fields)
-                filter_kwargs: dict[str, Any] = {}
-                raw_filters: dict[str, Any] = {}
-                for k, v in filter.items():
-                    if k in known_fields:
-                        filter_kwargs[k] = v
-                    else:
-                        raw_filters[k] = v
-
-                if raw_filters:
-                    filter_kwargs["filter"] = raw_filters
-
-                filter_obj = self.filter_class(**filter_kwargs)
-                params.update(filter_obj.to_params(include_defaults=False))
+        params = self._apply_filter_params(params, filter)
 
         async def fetch_page(page_params: dict[str, Any]) -> ListResult[T]:
             url = self._build_url()

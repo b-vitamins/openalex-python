@@ -27,8 +27,8 @@ T = TypeVar("T")
 def _pad_results(results: list[T], per_page: int | None) -> list[T]:
     """Pad ``results`` to ``per_page`` length if necessary."""
     if per_page and results and len(results) < per_page:
-        missing = per_page - len(results)
-        return results + [results[-1]] * missing
+        padding = per_page - len(results)
+        return results + [results[-1]] * padding
     return results
 
 
@@ -100,7 +100,7 @@ class Paginator(Generic[T]):
             if result.meta.next_cursor:
                 cursor = result.meta.next_cursor
                 page = None  # Use cursor pagination
-            elif page and page * self.per_page < result.meta.count:
+            elif page is not None and page * self.per_page < result.meta.count:
                 page += 1
             else:
                 # No more results
@@ -139,7 +139,7 @@ class Paginator(Generic[T]):
             if result.meta.next_cursor:
                 cursor = result.meta.next_cursor
                 page = None
-            elif page and page * self.per_page < result.meta.count:
+            elif page is not None and page * self.per_page < result.meta.count:
                 page += 1
             else:
                 break
@@ -236,7 +236,7 @@ class AsyncPaginator(Generic[T]):
             if result.meta.next_cursor:
                 cursor = result.meta.next_cursor
                 page = None
-            elif page and page * self.per_page < result.meta.count:
+            elif page is not None and page * self.per_page < result.meta.count:
                 page += 1
             else:
                 break
@@ -274,7 +274,7 @@ class AsyncPaginator(Generic[T]):
             if result.meta.next_cursor:
                 cursor = result.meta.next_cursor
                 page = None
-            elif page and page * self.per_page < result.meta.count:
+            elif page is not None and page * self.per_page < result.meta.count:
                 page += 1
             else:
                 break

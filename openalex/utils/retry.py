@@ -117,8 +117,8 @@ def with_retry(
                 raise e.last_attempt.result() from e
             raise
 
-        _msg = "Unreachable"
-        raise AssertionError(_msg)
+        msg = "Unreachable"
+        raise AssertionError(msg)
 
     return wrapper
 
@@ -163,8 +163,8 @@ def async_with_retry(
                 raise e.last_attempt.result() from e
             raise
 
-        _msg = "Unreachable"
-        raise AssertionError(_msg)
+        msg = "Unreachable"
+        raise AssertionError(msg)
 
     return wrapper
 
