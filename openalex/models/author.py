@@ -133,7 +133,9 @@ class Author(OpenAlexEntity):
             return []
 
         # Determine most recent year across all affiliations
-        max_year = max((max(a.years) for a in self.affiliations if a.years), default=None)
+        max_year = max(
+            (max(a.years) for a in self.affiliations if a.years), default=None
+        )
         if max_year is None:
             return []
 

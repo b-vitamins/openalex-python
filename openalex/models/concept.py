@@ -108,4 +108,6 @@ class Concept(OpenAlexEntity):
 
     def active_years(self) -> list[int]:
         """Return list of years with publication activity."""
-        return sorted([y.year for y in self.counts_by_year if y.works_count > 0])
+        return sorted(
+            [y.year for y in self.counts_by_year if y.works_count > 0]
+        )

@@ -215,10 +215,10 @@ class TestWorksFilter:
     def test_works_filter_open_access(self) -> None:
         """Test open access filters."""
         # Test all OA options
-        filter_true = WorksFilter().with_open_access(True)
+        filter_true = WorksFilter().with_open_access(is_oa=True)
         assert "is_oa:true" in filter_true.to_params()["filter"]
 
-        filter_false = WorksFilter().with_open_access(False)
+        filter_false = WorksFilter().with_open_access(is_oa=False)
         assert "is_oa:false" in filter_false.to_params()["filter"]
 
         filter_status = WorksFilter().with_oa_status(["gold", "green"])
@@ -318,11 +318,11 @@ class TestWorksFilter:
         """Test boolean flag filters."""
         filter = (
             WorksFilter()
-            .with_is_retracted(True)
-            .with_is_paratext(False)
-            .with_has_fulltext(True)
-            .with_has_abstract(True)
-            .with_has_doi(True)
+            .with_is_retracted(is_retracted=True)
+            .with_is_paratext(is_paratext=False)
+            .with_has_fulltext(is_fulltext=True)
+            .with_has_abstract(has_abstract=True)
+            .with_has_doi(has_doi=True)
         )
 
         params = filter.to_params()
@@ -340,7 +340,7 @@ class TestWorksFilter:
             WorksFilter()
             .with_grants_funder("F4320306076")
             .with_grants_award_id("DMR-9521353")
-            .with_apc_paid(True)
+            .with_apc_paid(apc_paid=True)
         )
 
         params = filter.to_params()
@@ -363,7 +363,7 @@ class TestWorksFilter:
             WorksFilter()
             .with_publication_year([2020, 2021, 2022])
             .with_type(["article", "preprint"])
-            .with_open_access(True)
+            .with_open_access(is_oa=True)
             .with_institutions_country_code(["US", "GB"])
             .with_cited_by_count_range(10, None)  # Min 10, no max
             .with_primary_location_license(["cc-by", "cc-by-sa"])
@@ -550,8 +550,8 @@ class TestSourcesFilter:
             .with_issn("0031-9007")
             .with_publisher("P4310319965")
             .with_type(["journal", "repository"])
-            .with_is_oa(True)
-            .with_is_in_doaj(True)
+            .with_is_oa(is_oa=True)
+            .with_is_in_doaj(is_in_doaj=True)
         )
 
         params = filter.to_params()
@@ -739,14 +739,14 @@ class TestFilterEdgeCases:
             WorksFilter()
             .with_publication_year([2020, 2021, 2022, 2023])
             .with_type("article")
-            .with_open_access(True)
+            .with_open_access(is_oa=True)
             .with_primary_location_source("S48139910")
             .with_authorships_institutions_country_code(
                 ["US", "GB", "DE", "FR"]
             )
             .with_cited_by_count_range(5, None)
-            .with_has_doi(True)
-            .with_language("en")
+            .with_has_doi(has_doi=True)
+            .with_language(language="en")
         )
 
         # Add search and sorting

@@ -144,4 +144,3 @@ __all__ = [
     "WorkType",
     "WorksFilter",
 ]
-
