@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from pydantic import Field, HttpUrl
 
-from .base import CountsByYear, OpenAlexEntity, Role, SummaryStats
+from .base import CountsByYear, OpenAlexBase, OpenAlexEntity, Role, SummaryStats
 
 
-class PublisherIds(OpenAlexEntity):
+class PublisherIds(OpenAlexBase):
     """External identifiers for a publisher."""
 
     openalex: str | None = None
@@ -26,8 +26,10 @@ class Publisher(OpenAlexEntity):
         default_factory=list, description="Countries of operation"
     )
 
-    hierarchy_level: int | None = Field(
-        None, description="Level in publisher hierarchy"
+    hierarchy_level: int = Field(
+        0,
+        ge=0,
+        description="Level in publisher hierarchy",
     )
 
     parent_publisher: str | None = Field(
@@ -79,3 +81,21 @@ class Publisher(OpenAlexEntity):
     def has_parent(self) -> bool:
         """Check if publisher has a parent."""
         return self.parent_publisher is not None
+
+    def works_in_year(self, year: int) -> int:
+        """Return works count for a given year."""
+        for year_data in self.counts_by_year:
+            if year_data.year == year:
+                return year_data.works_count
+        return 0
+
+    def citations_in_year(self, year: int) -> int:
+        """Return citation count for a given year."""
+        for year_data in self.counts_by_year:
+            if year_data.year == year:
+                return year_data.cited_by_count
+        return 0
+
+    def active_years(self) -> list[int]:
+        """Return list of years with publications."""
+        return sorted([y.year for y in self.counts_by_year if y.works_count > 0])
