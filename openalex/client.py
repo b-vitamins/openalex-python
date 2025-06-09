@@ -13,6 +13,8 @@ __all__ = [
     "client",
 ]
 
+from typing import Final
+
 import httpx
 from structlog import get_logger
 
@@ -54,6 +56,18 @@ if TYPE_CHECKING:
     from .resources.base import BaseResource
 
 logger = get_logger(__name__)
+
+SEARCH_ALL_RESOURCES: Final[list[tuple[str, str]]] = [
+    ("works", "works"),
+    ("authors", "authors"),
+    ("institutions", "institutions"),
+    ("sources", "sources"),
+    ("concepts", "concepts"),
+    ("topics", "topics"),
+    ("publishers", "publishers"),
+    ("funders", "funders"),
+    ("keywords", "keywords"),
+]
 
 
 class OpenAlex:
@@ -284,15 +298,7 @@ class OpenAlex:
         results: dict[str, ListResult[Any]] = {}
 
         entity_types: list[tuple[str, BaseResource[Any, Any]]] = [
-            ("works", self.works),
-            ("authors", self.authors),
-            ("institutions", self.institutions),
-            ("sources", self.sources),
-            ("concepts", self.concepts),
-            ("topics", self.topics),
-            ("publishers", self.publishers),
-            ("funders", self.funders),
-            ("keywords", self.keywords),
+            (name, getattr(self, attr)) for name, attr in SEARCH_ALL_RESOURCES
         ]
 
         for entity_type, resource in entity_types:
@@ -528,15 +534,8 @@ class AsyncOpenAlex:
         """
         # Create search tasks
         tasks: dict[str, Awaitable[ListResult[Any]]] = {
-            "works": self.works.search(query, **params),
-            "authors": self.authors.search(query, **params),
-            "institutions": self.institutions.search(query, **params),
-            "sources": self.sources.search(query, **params),
-            "concepts": self.concepts.search(query, **params),
-            "topics": self.topics.search(query, **params),
-            "publishers": self.publishers.search(query, **params),
-            "funders": self.funders.search(query, **params),
-            "keywords": self.keywords.search(query, **params),
+            name: getattr(self, attr).search(query, **params)
+            for name, attr in SEARCH_ALL_RESOURCES
         }
 
         results: dict[str, ListResult[Any]] = {}
