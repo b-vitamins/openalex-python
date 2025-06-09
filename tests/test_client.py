@@ -112,6 +112,21 @@ class TestOpenAlexClient:
         assert "authors" in results
         assert len(results["works"].results) == 1
 
+    def test_text_aboutness(
+        self,
+        client: OpenAlex,
+        httpx_mock: HTTPXMock,
+    ) -> None:
+        """Test tagging free text."""
+        aboutness = {"meta": {"title": "foo"}, "topics": []}
+        httpx_mock.add_response(
+            url="https://api.openalex.org/text?mailto=test%40example.com&title=foo",
+            json=aboutness,
+        )
+
+        result = client.text_aboutness(title="foo")
+        assert result["meta"]["title"] == "foo"
+
     def test_rate_limit_error(
         self,
         client: OpenAlex,
@@ -178,6 +193,20 @@ class TestAsyncOpenAlexClient:
             results = await client.autocomplete("machine learning")
             assert len(results.results) == 2
             assert results.results[0].entity_type == "work"
+
+    @pytest.mark.asyncio
+    async def test_async_text_aboutness(
+        self,
+        httpx_mock: HTTPXMock,
+    ) -> None:
+        aboutness = {"meta": {"title": "bar"}, "topics": []}
+        httpx_mock.add_response(
+            url="https://api.openalex.org/text?mailto=test%40example.com&title=bar",
+            json=aboutness,
+        )
+        async with AsyncOpenAlex(email="test@example.com") as client:
+            result = await client.text_aboutness(title="bar")
+            assert result["meta"]["title"] == "bar"
 
     @pytest.mark.asyncio
     async def test_search_all(
@@ -295,6 +324,20 @@ def test_request_retry(
     assert resp.status_code == 200
     assert calls["attempts"] == 2
     assert calls["wait_sync"]
+
+
+def test_request_non_retryable(
+    monkeypatch: pytest.MonkeyPatch, client: OpenAlex
+) -> None:
+    """Non-retryable errors are raised immediately."""
+    def fake_request(method: str, url: str, params=None, **kwargs):
+        raise ValueError("boom")
+
+    monkeypatch.setattr(client._client, "request", fake_request)
+    monkeypatch.setattr(client.retry_handler, "should_retry", lambda e, a: False)
+
+    with pytest.raises(ValueError):
+        client._request("GET", "https://api.openalex.org/test")
 
 
 def test_search_all_error(
