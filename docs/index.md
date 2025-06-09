@@ -22,3 +22,8 @@ Short examples showing how to accomplish common tasks with the Python client.
 - [Filter publishers](filter-publishers.md)
 - [Search publishers](search-publishers.md)
 - [Group publishers](group-publishers.md)
+- [Get a single institution](get-a-single-institution.md)
+- [Get lists of institutions](get-lists-of-institutions.md)
+- [Filter institutions](filter-institutions.md)
+- [Search institutions](search-institutions.md)
+- [Group institutions](group-institutions.md)
