@@ -4,6 +4,12 @@ from __future__ import annotations
 
 from typing import Any
 
+__all__ = [
+    "ensure_prefix",
+    "normalize_params",
+    "strip_id_prefix",
+]
+
 
 def normalize_params(params: dict[str, Any]) -> dict[str, Any]:
     """Normalize parameter keys and values for API requests."""
@@ -25,3 +31,10 @@ def strip_id_prefix(value: str) -> str:
     if "/" in value:
         return value.split("/")[-1]
     return value
+
+
+def ensure_prefix(value: str, prefix: str) -> str:
+    """Return ``value`` with ``prefix`` if missing."""
+    if value.startswith(prefix):
+        return value
+    return f"{prefix}{value}"

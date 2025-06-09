@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import random
+import time
 from typing import TYPE_CHECKING, Any, TypeVar
 
 from structlog import get_logger
@@ -25,6 +26,14 @@ if TYPE_CHECKING:
 logger = get_logger(__name__)
 
 T = TypeVar("T")
+
+__all__ = [
+    "RetryConfig",
+    "RetryHandler",
+    "async_with_retry",
+    "is_retryable_error",
+    "with_retry",
+]
 
 
 def is_retryable_error(error: BaseException) -> bool:
@@ -217,7 +226,5 @@ class RetryHandler:
 
     def wait_sync(self, seconds: float) -> None:
         """Synchronous wait for specified seconds."""
-        import time
-
         logger.debug("Waiting %.2f seconds before retry", seconds)
         time.sleep(seconds)

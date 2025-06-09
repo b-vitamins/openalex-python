@@ -6,7 +6,7 @@ import contextlib
 from typing import TYPE_CHECKING, Any, Self
 
 from ..models import ListResult, Work, WorksFilter
-from ..utils import strip_id_prefix
+from ..utils import ensure_prefix, strip_id_prefix
 from .base import AsyncBaseResource, BaseResource
 
 if TYPE_CHECKING:
@@ -31,16 +31,12 @@ class WorksResource(BaseResource[Work, WorksFilter]):
     def by_doi(self, doi: str) -> Work:
         """Retrieve a work by DOI."""
 
-        if not doi.startswith("https://doi.org/"):
-            doi = f"https://doi.org/{doi}"
-        return self.get(doi)
+        return self.get(ensure_prefix(doi, "https://doi.org/"))
 
     def by_pmid(self, pmid: str) -> Work:
         """Retrieve a work by PubMed ID."""
 
-        if not str(pmid).startswith("pmid:"):
-            pmid = f"pmid:{pmid}"
-        return self.get(pmid)
+        return self.get(ensure_prefix(str(pmid), "pmid:"))
 
     def filter(self, **filter_params: Any) -> Self | WorksFilter:
         """Add filter parameters or return a ``WorksFilter`` builder.
@@ -225,16 +221,12 @@ class AsyncWorksResource(AsyncBaseResource[Work, WorksFilter]):
     async def by_doi(self, doi: str) -> Work:
         """Retrieve a work by DOI."""
 
-        if not doi.startswith("https://doi.org/"):
-            doi = f"https://doi.org/{doi}"
-        return await self.get(doi)
+        return await self.get(ensure_prefix(doi, "https://doi.org/"))
 
     async def by_pmid(self, pmid: str) -> Work:
         """Retrieve a work by PubMed ID."""
 
-        if not str(pmid).startswith("pmid:"):
-            pmid = f"pmid:{pmid}"
-        return await self.get(pmid)
+        return await self.get(ensure_prefix(str(pmid), "pmid:"))
 
     def _clone_with(self, filter_update: dict[str, Any]) -> Self:
         base_filter = self._default_filter or WorksFilter.model_validate({})

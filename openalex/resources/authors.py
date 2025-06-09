@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from ..models import Author, AuthorsFilter, ListResult
-from ..utils import strip_id_prefix
+from ..utils import ensure_prefix, strip_id_prefix
 from .base import AsyncBaseResource, BaseResource
 
 if TYPE_CHECKING:
@@ -91,11 +91,7 @@ class AuthorsResource(BaseResource[Author, AuthorsFilter]):
         Returns:
             Author instance
         """
-        # Ensure ORCID is properly formatted
-        if not orcid.startswith("https://orcid.org/"):
-            orcid = f"https://orcid.org/{orcid}"
-
-        return self.get(orcid)
+        return self.get(ensure_prefix(orcid, "https://orcid.org/"))
 
 
 class AsyncAuthorsResource(AsyncBaseResource[Author, AuthorsFilter]):
@@ -178,8 +174,4 @@ class AsyncAuthorsResource(AsyncBaseResource[Author, AuthorsFilter]):
         Returns:
             Author instance
         """
-        # Ensure ORCID is properly formatted
-        if not orcid.startswith("https://orcid.org/"):
-            orcid = f"https://orcid.org/{orcid}"
-
-        return await self.get(orcid)
+        return await self.get(ensure_prefix(orcid, "https://orcid.org/"))
