@@ -475,3 +475,14 @@ class TestAuthor:
         assert isinstance(author.updated_date, datetime)
         assert author.updated_date.year == 2024
         assert author.updated_date.month == 12
+
+    def test_most_cited_and_concept_names(
+        self, comprehensive_author_data: dict[str, Any]
+    ) -> None:
+        author = Author(**comprehensive_author_data)
+        assert author.most_cited_work_count == 7234
+        assert "Physics" in author.concept_names()
+
+        empty = Author(id="A0", display_name="Empty", counts_by_year=[], x_concepts=[])
+        assert empty.most_cited_work_count == 0
+        assert empty.concept_names() == []

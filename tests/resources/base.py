@@ -431,3 +431,46 @@ class BaseResourceTest(Generic[T]):
             results.append(item)
 
         assert len(results) == 10
+
+    @pytest.mark.asyncio
+    async def test_async_random(
+        self, async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
+    ) -> None:
+        entity_data = self.get_sample_entity()
+        httpx_mock.add_response(
+            url=f"https://api.openalex.org/{self.resource_name}/random?mailto=test%40example.com",
+            json=entity_data,
+        )
+        resource = self.get_async_resource(async_client)
+        entity = await resource.random()
+        assert isinstance(entity, self.entity_class)
+
+    @pytest.mark.asyncio
+    async def test_async_autocomplete(
+        self, async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
+    ) -> None:
+        autocomplete_response = {
+            "meta": {
+                "count": 3,
+                "db_response_time_ms": 1,
+                "page": 1,
+                "per_page": 5,
+            },
+            "results": [
+                {
+                    "id": self.sample_id,
+                    "display_name": "Test Result",
+                    "entity_type": self.resource_name.rstrip("s"),
+                    "cited_by_count": 1,
+                    "works_count": 1,
+                }
+            ],
+        }
+        httpx_mock.add_response(
+            url=f"https://api.openalex.org/autocomplete/{self.resource_name}?q=test&mailto=test%40example.com",
+            json=autocomplete_response,
+        )
+        resource = self.get_async_resource(async_client)
+        result = await resource.autocomplete("test")
+        assert result.meta.count == 3
+        assert len(result.results) == 1
