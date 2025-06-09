@@ -8,9 +8,10 @@ import httpx
 import pytest
 
 from openalex import AsyncOpenAlex, OpenAlex, OpenAlexConfig
-from openalex.exceptions import NotFoundError, RateLimitError
+from openalex.exceptions import NetworkError, NotFoundError, RateLimitError
 from openalex.models import ListResult, Meta
 from openalex.resources.base import AsyncBaseResource, BaseResource
+from openalex.utils import RetryConfig, RetryHandler
 
 if TYPE_CHECKING:
     from pytest_httpx import HTTPXMock
@@ -449,3 +450,71 @@ async def test_async_search_all_error(
     assert results["authors"].meta.count == 0
     assert results["works"].meta.count == 1
     await client.close()
+
+
+def test_text_aboutness_with_abstract_and_type(client: OpenAlex, httpx_mock: HTTPXMock) -> None:
+    aboutness = {"meta": {"title": "foo"}}
+    httpx_mock.add_response(
+        url="https://api.openalex.org/text/works?mailto=test%40example.com&title=foo&abstract=bar",
+        json=aboutness,
+    )
+    result = client.text_aboutness(title="foo", abstract="bar", entity_type="works")
+    assert result["meta"]["title"] == "foo"
+
+
+def test_request_all_fail(monkeypatch: pytest.MonkeyPatch, client: OpenAlex) -> None:
+    calls = {"attempts": 0}
+
+    def fake_request(method: str, url: str, params=None, **kwargs):
+        calls["attempts"] += 1
+        msg = "boom"
+        raise httpx.NetworkError(msg)
+
+    monkeypatch.setattr(client._client, "request", fake_request)
+    monkeypatch.setattr(client.retry_handler, "get_wait_time", lambda e, a: 0)
+    monkeypatch.setattr(client.retry_handler, "wait_sync", lambda s: None)
+    client.retry_config = RetryConfig(max_attempts=2, initial_wait=0)
+    client.retry_handler = RetryHandler(client.retry_config)
+    with pytest.raises(NetworkError):
+        client._request("GET", "https://api.openalex.org/test")
+    assert calls["attempts"] == 2
+
+
+
+@pytest.mark.asyncio
+async def test_async_text_aboutness_with_abstract_and_type(httpx_mock: HTTPXMock, config: OpenAlexConfig) -> None:
+    aboutness = {"meta": {"title": "foo"}}
+    httpx_mock.add_response(
+        url="https://api.openalex.org/text/works?mailto=test%40example.com&title=foo&abstract=bar",
+        json=aboutness,
+    )
+    async with AsyncOpenAlex(config=config) as client:
+        result = await client.text_aboutness(title="foo", abstract="bar", entity_type="works")
+        assert result["meta"]["title"] == "foo"
+
+
+@pytest.mark.asyncio
+async def test_async_request_all_fail(monkeypatch: pytest.MonkeyPatch, config: OpenAlexConfig) -> None:
+    client = AsyncOpenAlex(config=config)
+    calls = {"attempts": 0}
+
+    async def fake_request(method: str, url: str, params=None, **kwargs):
+        calls["attempts"] += 1
+        msg = "boom"
+        raise httpx.NetworkError(msg)
+
+    monkeypatch.setattr(client._client, "request", fake_request)
+    async def acquire_zero():
+        return 0
+    monkeypatch.setattr(client.rate_limiter, "acquire", acquire_zero)
+    async def fake_wait(seconds: float) -> None:
+        return None
+    monkeypatch.setattr(client.retry_handler, "wait", fake_wait)
+    monkeypatch.setattr(client.retry_handler, "get_wait_time", lambda e, a: 0)
+    client.retry_config = RetryConfig(max_attempts=2, initial_wait=0)
+    client.retry_handler = RetryHandler(client.retry_config)
+    with pytest.raises(NetworkError):
+        await client._request("GET", "https://api.openalex.org/test")
+    assert calls["attempts"] == 2
+    await client.close()
+

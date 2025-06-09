@@ -5,8 +5,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, ClassVar
 
 import pytest
+
 from openalex.models import Author, AuthorsFilter
-from openalex.resources import AuthorsResource, AsyncAuthorsResource
+from openalex.resources import AsyncAuthorsResource, AuthorsResource
 
 from .base import BaseResourceTest
 
@@ -381,3 +382,16 @@ class TestAuthorsResource(BaseResourceTest[Author]):
         new_res = await resource.by_institution("I123")
         result = await new_res.list()
         assert result.meta.count == 100
+
+
+def test_filter_builder_authors(client: OpenAlex) -> None:
+    filt = client.authors.filter(page=2)
+    assert isinstance(filt, AuthorsFilter)
+    assert filt.page == 2
+
+@pytest.mark.asyncio
+async def test_async_filter_builder_authors(async_client: AsyncOpenAlex) -> None:
+    filt = async_client.authors.filter(page=2)
+    assert isinstance(filt, AuthorsFilter)
+    assert filt.page == 2
+

@@ -8,10 +8,10 @@ from typing import TYPE_CHECKING, Any, ClassVar
 import pytest
 
 from openalex import OpenAlex
+from openalex.exceptions import ValidationError
 from openalex.models import Work, WorksFilter
 from openalex.models import work as legacy
 from openalex.resources import WorksResource
-from openalex.exceptions import ValidationError
 
 from .base import BaseResourceTest
 
@@ -599,3 +599,28 @@ def test_parse_list_response_error(client: OpenAlex) -> None:
     bad_data = {"meta": {"foo": "bar"}, "results": [{"bad": "data"}]}
     with pytest.raises(ValidationError):
         resource._parse_list_response(bad_data)
+
+@pytest.mark.asyncio
+async def test_async_apply_filter_params(async_client: AsyncOpenAlex, httpx_mock: HTTPXMock) -> None:
+    data = TestWorksResource().get_list_response(count=1)
+    httpx_mock.add_response(
+        url="https://api.openalex.org/works?filter=is_oa%3Atrue&page=2&mailto=test%40example.com",
+        json=data,
+    )
+    result = await async_client.works.list(filter={"is_oa": True, "page": 2})
+    assert result.meta.count == 1
+
+
+@pytest.mark.asyncio
+async def test_async_parse_list_response_error(async_client: AsyncOpenAlex) -> None:
+    resource = async_client.works
+    bad_data = {"meta": {"foo": "bar"}, "results": [{"bad": "data"}]}
+    with pytest.raises(ValidationError):
+        resource._parse_list_response(bad_data)
+
+@pytest.mark.asyncio
+async def test_async_filter_builder(async_client: AsyncOpenAlex) -> None:
+    filt = async_client.works.filter(page=3)
+    assert isinstance(filt, WorksFilter)
+    assert filt.page == 3
+
