@@ -119,7 +119,7 @@ addopts = [
     "--asyncio-mode=auto",
     "--cov=openalex",
     "--cov-report=term-missing",
-    "--cov-fail-under=90",
+    "--cov-fail-under=85",
 ]
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]

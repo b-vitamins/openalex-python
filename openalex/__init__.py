@@ -266,17 +266,3 @@ __all__ = [
     "with_retry",
 ]
 
-# Mark all source files as executed when running tests to satisfy coverage
-if "pytest" in sys.modules:
-    import pathlib
-
-    package_dir = pathlib.Path(__file__).parent
-    for path in package_dir.rglob("*.py"):
-        if path.name == "__init__.py":
-            continue
-        try:
-            lines = path.read_text().splitlines()
-        except OSError:
-            continue
-        dummy = "\n".join("pass" for _ in lines)
-        exec(compile(dummy, str(path), "exec"), {})
