@@ -395,3 +395,63 @@ async def test_async_filter_builder_authors(async_client: AsyncOpenAlex) -> None
     assert isinstance(filt, AuthorsFilter)
     assert filt.page == 2
 
+
+def test_default_filter_usage(
+    client: OpenAlex, httpx_mock: HTTPXMock, mock_list_response: dict[str, Any]
+) -> None:
+    """Ensure the default filter is applied when none is provided."""
+    default = AuthorsFilter(filter="is_oa:true")
+    resource = AuthorsResource(client, default_filter=default)
+    httpx_mock.add_response(
+        url="https://api.openalex.org/authors?filter=is_oa%3Atrue&mailto=test%40example.com",
+        json=mock_list_response,
+    )
+    assert resource.list().meta.count == 100
+
+    httpx_mock.add_response(
+        url="https://api.openalex.org/authors?search=query&filter=is_oa%3Atrue&mailto=test%40example.com",
+        json=mock_list_response,
+    )
+    assert resource.search("query").meta.count == 100
+
+    httpx_mock.add_response(
+        url="https://api.openalex.org/authors?filter=is_oa%3Atrue&page=1&per-page=1&mailto=test%40example.com",
+        json=mock_list_response,
+    )
+    paginator = resource.paginate(per_page=1, max_results=1)
+    assert len(paginator.all()) == 1
+
+
+@pytest.mark.asyncio
+async def test_async_default_filter_usage(
+    async_client: AsyncOpenAlex,
+    httpx_mock: HTTPXMock,
+    mock_list_response: dict[str, Any],
+) -> None:
+    """Async resource should also honor the default filter."""
+    default = AuthorsFilter(filter="is_oa:true")
+    resource = AsyncAuthorsResource(async_client, default_filter=default)
+    httpx_mock.add_response(
+        url="https://api.openalex.org/authors?filter=is_oa%3Atrue&mailto=test%40example.com",
+        json=mock_list_response,
+    )
+    result = await resource.list()
+    assert result.meta.count == 100
+
+    httpx_mock.add_response(
+        url="https://api.openalex.org/authors?search=query&filter=is_oa%3Atrue&mailto=test%40example.com",
+        json=mock_list_response,
+    )
+    result = await resource.search("query")
+    assert result.meta.count == 100
+
+    httpx_mock.add_response(
+        url="https://api.openalex.org/authors?filter=is_oa%3Atrue&page=1&per-page=1&mailto=test%40example.com",
+        json=mock_list_response,
+    )
+    paginator = resource.paginate(per_page=1, max_results=1)
+    results = []
+    async for item in paginator:
+        results.append(item)
+    assert len(results) == 1
+

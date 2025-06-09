@@ -519,6 +519,14 @@ class TestInstitutionsFilter:
         assert "type:education|facility" in filter_str
         assert "works_count:>999" in filter_str
 
+    def test_institutions_filter_works_count_range_variants(self) -> None:
+        """Works count range with only min or max."""
+        f_min = InstitutionsFilter().with_works_count_range(10, None)
+        assert "works_count:>9" in f_min.to_params()["filter"]
+
+        f_max = InstitutionsFilter().with_works_count_range(None, 20)
+        assert "works_count:<21" in f_max.to_params()["filter"]
+
     def test_institutions_filter_concepts(self) -> None:
         """Test institution concept filter."""
         filter = InstitutionsFilter().with_x_concepts_id("C121332964")
@@ -569,6 +577,18 @@ class TestSourcesFilter:
 
         params = filter.to_params()
         assert "apc_usd:0-5000" in params["filter"]
+
+    def test_sources_filter_apc_min_max_only(self) -> None:
+        """APC filter with only min or max values."""
+        f_min = SourcesFilter().with_apc_usd_range(100, None)
+        assert "apc_usd:>99" in f_min.to_params()["filter"]
+
+        f_max = SourcesFilter().with_apc_usd_range(None, 200)
+        assert "apc_usd:<201" in f_max.to_params()["filter"]
+
+        base = SourcesFilter()
+        f_none = base.with_apc_usd_range(None, None)
+        assert f_none is base
 
 
 class TestConceptsFilter:
@@ -630,6 +650,20 @@ class TestFundersFilter:
         assert "grants_count:1000-10000" in filter_str
         assert "works_count:>9999" in filter_str
 
+    def test_funders_filter_range_variants(self) -> None:
+        """Test min-only and max-only ranges."""
+        f_min = FundersFilter().with_grants_count_range(100, None)
+        assert "grants_count:>99" in f_min.to_params()["filter"]
+
+        f_max = FundersFilter().with_grants_count_range(None, 200)
+        assert "grants_count:<201" in f_max.to_params()["filter"]
+
+        w_min = FundersFilter().with_works_count_range(50, None)
+        assert "works_count:>49" in w_min.to_params()["filter"]
+
+        w_max = FundersFilter().with_works_count_range(None, 75)
+        assert "works_count:<76" in w_max.to_params()["filter"]
+
 
 class TestGroupBy:
     """Test GroupBy enum."""
@@ -689,6 +723,9 @@ class TestFilterEdgeCases:
 
         f3 = filter.with_cited_by_count_range(None, 200)  # Max only
         assert "cited_by_count:<201" in f3.to_params()["filter"]
+
+        f4 = filter.with_cited_by_count_range(None, None)
+        assert f4 is filter
 
     def test_filter_special_values(self) -> None:
         """Test filters with special values."""

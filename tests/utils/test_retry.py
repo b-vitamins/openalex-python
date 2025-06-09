@@ -129,6 +129,44 @@ async def test_async_with_retry_failure(monkeypatch: pytest.MonkeyPatch) -> None
     assert len(attempts) == 2
 
 
+def test_with_retry_default_config(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Ensure default config is used when none is provided."""
+    attempts: list[int] = []
+
+    def func() -> str:
+        attempts.append(1)
+        if len(attempts) < 2:
+            raise RateLimitError(retry_after=0)
+        return "ok"
+
+    monkeypatch.setattr(time, "sleep", lambda _: None)
+    wrapped = with_retry(func)
+    assert wrapped() == "ok"
+    assert len(attempts) == 2
+
+
+@pytest.mark.asyncio
+async def test_async_with_retry_default_config(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Async version uses default config when not provided."""
+    attempts: list[int] = []
+
+    async def func() -> str:
+        attempts.append(1)
+        if len(attempts) < 2:
+            raise RateLimitError(retry_after=0)
+        return "ok"
+
+    async def fake_sleep(_: float) -> None:
+        return None
+
+    monkeypatch.setattr(asyncio, "sleep", fake_sleep)
+    wrapped = async_with_retry(func)
+    assert await wrapped() == "ok"
+    assert len(attempts) == 2
+
+
 def test_retry_handler_get_wait_time(monkeypatch: pytest.MonkeyPatch) -> None:
     handler = RetryHandler(RetryConfig(jitter=False))
     err = RateLimitError(retry_after=5)
