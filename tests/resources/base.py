@@ -474,3 +474,20 @@ class BaseResourceTest(Generic[T]):
         result = await resource.autocomplete("test")
         assert result.meta.count == 3
         assert len(result.results) == 1
+
+    @pytest.mark.asyncio
+    async def test_async_get_with_full_url(
+        self,
+        async_client: AsyncOpenAlex,
+        httpx_mock: HTTPXMock,
+    ) -> None:
+        entity_data = self.get_sample_entity()
+        full_url = f"https://openalex.org/{self.sample_id}"
+        httpx_mock.add_response(
+            url=f"https://api.openalex.org/{self.resource_name}/{self.sample_id}?mailto=test%40example.com",
+            json=entity_data,
+        )
+        resource = self.get_async_resource(async_client)
+        entity = await resource.get(full_url)
+        assert entity.id == entity_data["id"]
+
