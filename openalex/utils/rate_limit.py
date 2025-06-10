@@ -93,23 +93,14 @@ class RateLimiter:
 
             return wait_time
 
-    def try_acquire(self, amount: int = 1) -> bool:
-        """Try to acquire tokens without blocking.
-
-        Args:
-            amount: Number of tokens to acquire
-
-        Returns:
-            True if tokens were acquired, False otherwise
-        """
+    def try_acquire(self, tokens: int = 1) -> bool:
+        """Attempt to acquire ``tokens`` without blocking."""
         with self.lock:
             self._refill_tokens()
-
-            if self.tokens >= amount:
-                self.tokens -= amount
-                return True
-
-            return False
+            if self.tokens < tokens:
+                return False
+            self.tokens -= tokens
+            return True
 
     def __repr__(self) -> str:  # pragma: no cover - debugging aid
         return f"<RateLimiter rate={self.rate} burst={self.burst}>"
@@ -122,7 +113,7 @@ class RateLimiter:
         return self
 
     def __exit__(self, *args: Any) -> None:
-        """Context manager exit."""
+        """Exit the context manager."""
         return
 
 
@@ -190,12 +181,10 @@ class SlidingWindowRateLimiter:
         """
         with self.lock:
             self._clean_window()
-
-            if len(self.requests) < self.max_requests:
-                self.requests.append(time.monotonic())
-                return True
-
-            return False
+            if len(self.requests) >= self.max_requests:
+                return False
+            self.requests.append(time.monotonic())
+            return True
 
     def __repr__(self) -> str:  # pragma: no cover - debugging aid
         return f"<SlidingWindowRateLimiter max={self.max_requests} window={self.window_seconds}>"
@@ -270,7 +259,7 @@ class AsyncRateLimiter:
         return self
 
     async def __aexit__(self, *args: Any) -> None:
-        """Context manager exit."""
+        """Exit the async context manager."""
         return
 
 
