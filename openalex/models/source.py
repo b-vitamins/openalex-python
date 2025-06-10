@@ -209,6 +209,6 @@ class Source(OpenAlexEntity):
         )
 
 
-from .work import DehydratedConcept  # noqa: E402,TCH001
+from .work import DehydratedConcept  # noqa: E402,TC001
 
 Source.model_rebuild()

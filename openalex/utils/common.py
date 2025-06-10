@@ -22,18 +22,18 @@ def strip_id_prefix(value: str, prefix: str = OPENALEX_ID_PREFIX) -> str:
     return trimmed.rsplit("/", 1)[-1]
 
 
-def is_openalex_id(value: str) -> bool:
-    """Return ``True`` if the value looks like an OpenAlex ID."""
-    return value.startswith(OPENALEX_ID_PREFIX)
+def is_openalex_id(value: str, prefix: str = OPENALEX_ID_PREFIX) -> bool:
+    """Return ``True`` if ``value`` looks like an OpenAlex ID."""
+    return isinstance(value, str) and value.startswith(prefix)
 
 
 def ensure_prefix(value: str, prefix: str) -> str:
-    """Return ``value`` with ``prefix`` if missing."""
+    """Ensure ``value`` starts with ``prefix``."""
     return value if value.startswith(prefix) else f"{prefix}{value}"
 
 
 def empty_list_result() -> ListResult[Any]:
-    """Return an empty ``ListResult`` instance."""
+    """Return an empty ``ListResult`` instance with ``Meta`` stub."""
     return ListResult(
         meta=Meta(
             count=0,

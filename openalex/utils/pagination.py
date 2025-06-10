@@ -37,7 +37,12 @@ T = TypeVar("T")
 
 
 def _pad_results(results: list[T], per_page: int | None) -> list[T]:
-    """Pad ``results`` to ``per_page`` length if necessary."""
+    """Pad ``results`` to ``per_page`` length if necessary.
+
+    When the API returns fewer items than requested, the last item is
+    duplicated to maintain a consistent list length. This ensures that
+    consumers relying on a fixed page size behave consistently.
+    """
     if per_page and results and len(results) < per_page:
         padding = per_page - len(results)
         return results + results[-1:] * padding

@@ -119,7 +119,11 @@ def serialize_params(params: dict[str, Any]) -> dict[str, str]:
 
 # Update existing normalize_params if it exists
 def normalize_params(params: dict[str, Any]) -> dict[str, Any]:
-    """Normalize parameters for API requests."""
+    """Normalize parameters for API requests.
+
+    Converts Pythonic parameter names to their API equivalents and drops
+    ``None`` values before serialization.
+    """
     # Remove None values
     cleaned = {k: v for k, v in params.items() if v is not None}
 

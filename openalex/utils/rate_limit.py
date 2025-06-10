@@ -59,8 +59,8 @@ class RateLimiter:
         self.last_update = time.monotonic()
         self.lock = Lock()
 
-    def _update_tokens(self) -> None:
-        """Update available tokens based on elapsed time."""
+    def _refill_tokens(self) -> None:
+        """Refill tokens based on elapsed time."""
         now = time.monotonic()
         elapsed = now - self.last_update
 
@@ -78,7 +78,7 @@ class RateLimiter:
             Wait time in seconds (0 if tokens were available)
         """
         with self.lock:
-            self._update_tokens()
+            self._refill_tokens()
 
             if self.tokens >= tokens:
                 self.tokens -= tokens
@@ -103,7 +103,7 @@ class RateLimiter:
             True if tokens were acquired, False otherwise
         """
         with self.lock:
-            self._update_tokens()
+            self._refill_tokens()
 
             if self.tokens >= amount:
                 self.tokens -= amount
@@ -239,8 +239,8 @@ class AsyncRateLimiter:
         self.last_update = time.monotonic()
         self.lock = asyncio.Lock()
 
-    async def _update_tokens(self) -> None:
-        """Update available tokens based on elapsed time."""
+    async def _refill_tokens(self) -> None:
+        """Refill tokens based on elapsed time."""
         now = time.monotonic()
         elapsed = now - self.last_update
 
@@ -250,7 +250,7 @@ class AsyncRateLimiter:
     async def acquire(self, tokens: int = 1) -> float:
         """Acquire tokens, blocking if necessary."""
         async with self.lock:
-            await self._update_tokens()
+            await self._refill_tokens()
 
             if self.tokens >= tokens:
                 self.tokens -= tokens

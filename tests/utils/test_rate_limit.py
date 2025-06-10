@@ -22,7 +22,7 @@ def test_rate_limiter(monkeypatch: pytest.MonkeyPatch) -> None:
     assert not limiter.try_acquire()
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_rate_limiter() -> None:
     limiter = AsyncRateLimiter(rate=1, burst=1, buffer=0)
     assert await limiter.acquire() == 0
@@ -48,7 +48,7 @@ def test_rate_limited_decorator(monkeypatch: pytest.MonkeyPatch) -> None:
     assert calls[0] > 0
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_rate_limited_decorator(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -106,7 +106,7 @@ def test_sliding_window_rate_limiter_clean(
     assert wait_after == 0.0
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_rate_limiter_context(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
