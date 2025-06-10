@@ -8,6 +8,13 @@ from urllib.parse import quote_plus
 from ..query import _LogicalExpression, or_
 from .common import KEY_MAP
 
+__all__ = [
+    "flatten_filter_dict",
+    "normalize_params",
+    "serialize_filter_value",
+    "serialize_params",
+]
+
 
 def serialize_filter_value(value: Any) -> str:
     """Serialize a filter value for the API.
@@ -58,22 +65,18 @@ def flatten_filter_dict(
     if not filters:
         return ""
 
-    # Handle or_ dictionaries with OR logic
     if isinstance(filters, or_):
         logical = "|"
 
-    parts = []
-
+    parts: list[str] = []
     for key, value in filters.items():
         full_key = f"{prefix}.{key}" if prefix else key
 
         if isinstance(value, dict) and not isinstance(value, or_):
-            # Nested dictionary - recurse
             nested = flatten_filter_dict(value, full_key, ",")
             if nested:
                 parts.append(nested)
         else:
-            # Terminal value - serialize it
             serialized = serialize_filter_value(value)
             parts.append(f"{full_key}:{serialized}")
 
@@ -119,9 +122,4 @@ def normalize_params(params: dict[str, Any]) -> dict[str, Any]:
     # Serialize complex structures
     serialized = serialize_params(cleaned)
 
-    normalized: dict[str, Any] = {}
-    for key, value in serialized.items():
-        new_key = KEY_MAP.get(key, key)
-        normalized[new_key] = value
-
-    return normalized
+    return {KEY_MAP.get(k, k): v for k, v in serialized.items()}

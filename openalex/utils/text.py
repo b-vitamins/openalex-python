@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+__all__ = ["invert_abstract"]
+
 
 def invert_abstract(inverted_index: dict[str, list[int]] | None) -> str | None:
     """Convert inverted abstract index to plaintext.
@@ -15,12 +17,10 @@ def invert_abstract(inverted_index: dict[str, list[int]] | None) -> str | None:
     if not inverted_index:
         return None
 
-    word_positions: list[tuple[str, int]] = []
-    for word, positions in inverted_index.items():
-        for pos in positions:
-            word_positions.append((word, pos))
-
-    word_positions.sort(key=lambda x: x[1])
-    words = [word for word, _ in word_positions]
-
-    return " ".join(words)
+    word_positions = [
+        (word, pos)
+        for word, positions in inverted_index.items()
+        for pos in positions
+    ]
+    word_positions.sort(key=lambda item: item[1])
+    return " ".join(word for word, _ in word_positions)
