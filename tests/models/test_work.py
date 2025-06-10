@@ -1303,3 +1303,19 @@ def test_work_filter_string_operations() -> None:
     assert inf.filter["raw"] == "start"
     assert inf.filter["country_code"] == ["US"]
     assert inf.filter["type"] == ["education"]
+
+
+def test_work_abstract_property_simple() -> None:
+    work = Work(
+        id="W123",
+        title="Test",
+        display_name="Test",
+        abstract_inverted_index={
+            "Machine": [0, 5],
+            "learning": [1, 6],
+            "is": [2],
+            "great": [3],
+            "for": [4],
+        },
+    )
+    assert work.abstract == "Machine learning is great for Machine learning"
