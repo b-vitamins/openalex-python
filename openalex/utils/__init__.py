@@ -7,13 +7,9 @@ from ..constants import (
     ORCID_URL_PREFIX,
     PMID_PREFIX,
 )
-from .common import (
-    empty_list_result,
-    ensure_prefix,
-    normalize_params,
-    strip_id_prefix,
-)
+from .common import empty_list_result, ensure_prefix, strip_id_prefix
 from .pagination import AsyncPaginator, Paginator
+from .params import normalize_params
 from .rate_limit import (
     AsyncRateLimiter,
     RateLimiter,
