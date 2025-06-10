@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Final
 from urllib.parse import quote_plus
 
 from ..query import _LogicalExpression, or_
-from .common import KEY_MAP
+
+KEY_MAP: Final[dict[str, str]] = {
+    "per_page": "per-page",
+    "group_by": "group-by",
+}
 
 __all__ = [
     "flatten_filter_dict",
