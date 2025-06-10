@@ -15,7 +15,7 @@ from openalex.models import (
 class TestInstitution:
     """Test Institution model with comprehensive realistic fixtures."""
 
-    @pytest.fixture()
+    @pytest.fixture
     def comprehensive_institution_data(self) -> dict[str, Any]:
         """Comprehensive institution data based on real OpenAlex API response."""
         return {
@@ -231,7 +231,7 @@ class TestInstitution:
             "updated_date": "2024-12-16T09:53:16.081181",
         }
 
-    @pytest.fixture()
+    @pytest.fixture
     def company_institution_data(self) -> dict[str, Any]:
         """Company institution data."""
         return {
@@ -269,7 +269,7 @@ class TestInstitution:
             "repositories": [],
         }
 
-    @pytest.fixture()
+    @pytest.fixture
     def hierarchical_institution_data(self) -> dict[str, Any]:
         """Institution with complex hierarchy."""
         return {

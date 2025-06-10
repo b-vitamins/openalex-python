@@ -323,7 +323,7 @@ class TestAuthorsResource(BaseResourceTest[Author]):
         )
         assert result.meta.count == 1000
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_async_by_mag(
         self, async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
     ) -> None:
@@ -336,7 +336,7 @@ class TestAuthorsResource(BaseResourceTest[Author]):
         author = await async_client.authors.by_mag(mag_id)
         assert author.id == entity_data["id"]
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_async_by_orcid(
         self, async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
     ) -> None:
@@ -365,7 +365,7 @@ class TestAuthorsResource(BaseResourceTest[Author]):
         result = resource.by_institution("I123").list()
         assert result.meta.count == 100
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_async_clone_with_raw_filter(
         self,
         async_client: AsyncOpenAlex,
@@ -389,7 +389,7 @@ def test_filter_builder_authors(client: OpenAlex) -> None:
     assert filt.page == 2
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_filter_builder_authors(
     async_client: AsyncOpenAlex,
 ) -> None:
@@ -424,7 +424,7 @@ def test_default_filter_usage(
     assert len(paginator.all()) == 1
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_default_filter_usage(
     async_client: AsyncOpenAlex,
     httpx_mock: HTTPXMock,

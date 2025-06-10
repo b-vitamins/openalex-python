@@ -169,7 +169,7 @@ class TestOpenAlexClient:
 class TestAsyncOpenAlexClient:
     """Test asynchronous OpenAlex client."""
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_initialization(self) -> None:
         """Test async client initialization."""
         client = AsyncOpenAlex(email="test@example.com")
@@ -178,13 +178,13 @@ class TestAsyncOpenAlexClient:
         assert client.authors is not None
         await client.close()
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_context_manager(self) -> None:
         """Test async client as context manager."""
         async with AsyncOpenAlex(email="test@example.com") as client:
             assert client.config.email == "test@example.com"
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_autocomplete(
         self,
         httpx_mock: HTTPXMock,
@@ -201,7 +201,7 @@ class TestAsyncOpenAlexClient:
             assert len(results.results) == 2
             assert results.results[0].entity_type == "work"
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_async_text_aboutness(
         self,
         httpx_mock: HTTPXMock,
@@ -215,7 +215,7 @@ class TestAsyncOpenAlexClient:
             result = await client.text_aboutness(title="bar")
             assert result["meta"]["title"] == "bar"
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_search_all(
         self,
         httpx_mock: HTTPXMock,
@@ -268,7 +268,7 @@ class TestClientHelpers:
                 work.title == "Generalized Gradient Approximation Made Simple"
             )
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_async_client_helper(
         self,
         httpx_mock: HTTPXMock,
@@ -289,7 +289,7 @@ class TestClientHelpers:
             )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_client_api_key_override(config: OpenAlexConfig) -> None:
     client = AsyncOpenAlex(config=config, api_key="abc")
     try:
@@ -382,7 +382,7 @@ def test_search_all_error(
     assert res["works"].meta.count == 1
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_request_retry(
     monkeypatch: pytest.MonkeyPatch, config: OpenAlexConfig
 ) -> None:
@@ -413,7 +413,7 @@ async def test_async_request_retry(
     await client.close()
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_autocomplete_entity(
     httpx_mock: HTTPXMock,
     config: OpenAlexConfig,
@@ -428,7 +428,7 @@ async def test_async_autocomplete_entity(
         assert len(res.results) == 2
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_search_all_error(
     monkeypatch: pytest.MonkeyPatch, config: OpenAlexConfig
 ) -> None:
@@ -496,7 +496,7 @@ def test_request_all_fail(
     assert calls["attempts"] == 2
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_text_aboutness_with_abstract_and_type(
     httpx_mock: HTTPXMock, config: OpenAlexConfig
 ) -> None:
@@ -512,7 +512,7 @@ async def test_async_text_aboutness_with_abstract_and_type(
         assert result["meta"]["title"] == "foo"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_request_all_fail(
     monkeypatch: pytest.MonkeyPatch, config: OpenAlexConfig
 ) -> None:
@@ -553,7 +553,7 @@ def test_request_zero_attempts(config: OpenAlexConfig) -> None:
         client._request("GET", "https://api.openalex.org/test")
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_request_sleep(
     monkeypatch: pytest.MonkeyPatch, config: OpenAlexConfig
 ) -> None:
@@ -580,7 +580,7 @@ async def test_async_request_sleep(
     await client.close()
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_request_timeout(
     monkeypatch: pytest.MonkeyPatch, config: OpenAlexConfig
 ) -> None:
@@ -605,7 +605,7 @@ async def test_async_request_timeout(
     await client.close()
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_request_generic_error(
     monkeypatch: pytest.MonkeyPatch, config: OpenAlexConfig
 ) -> None:
@@ -630,7 +630,7 @@ async def test_async_request_generic_error(
     await client.close()
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_request_no_attempts(config: OpenAlexConfig) -> None:
     """Async client should raise NetworkError when attempts are zero."""
     client = AsyncOpenAlex(

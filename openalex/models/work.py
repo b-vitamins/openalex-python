@@ -500,8 +500,8 @@ class InstitutionsFilter(BaseFilter):
         return self.model_copy(update={"filter": current_filter})
 
 
-from .institution import InstitutionType  # noqa: E402,TCH001
-from .topic import TopicHierarchy  # noqa: E402,TCH001
+from .institution import InstitutionType  # noqa: E402,TC001
+from .topic import TopicHierarchy  # noqa: E402,TC001
 
 DehydratedTopic.model_rebuild()
 DehydratedInstitution.model_rebuild()
