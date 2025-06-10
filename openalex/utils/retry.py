@@ -41,17 +41,11 @@ __all__ = [
 
 
 def is_retryable_error(error: BaseException) -> bool:
-    """Check if an error is retryable."""
-    if isinstance(error, RateLimitError):
+    """Return ``True`` if ``error`` should trigger a retry."""
+    if isinstance(error, RateLimitError | NetworkError | TimeoutError):
         return True
-
-    if isinstance(error, NetworkError | TimeoutError):
-        return True
-
     if isinstance(error, APIError):
-        # Retry on server errors
         return error.status_code is not None and error.status_code >= 500
-
     return False
 
 
@@ -66,17 +60,19 @@ class RetryConfig:
     jitter: bool = True
 
     def get_wait_strategy(self) -> Any:
-        """Get tenacity wait strategy."""
-        if self.jitter:
-            return wait_exponential_jitter(
+        """Return the appropriate tenacity wait strategy."""
+        return (
+            wait_exponential_jitter(
                 initial=self.initial_wait,
                 max=self.max_wait,
                 exp_base=self.exponential_base,
             )
-        return wait_exponential(
-            multiplier=self.initial_wait,
-            max=self.max_wait,
-            exp_base=self.exponential_base,
+            if self.jitter
+            else wait_exponential(
+                multiplier=self.initial_wait,
+                max=self.max_wait,
+                exp_base=self.exponential_base,
+            )
         )
 
 
