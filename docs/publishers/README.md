@@ -2,7 +2,7 @@
 description: Companies and organizations that distribute works
 ---
 
-# \ud83c\udfe2 Publishers
+# Publishers
 
 Publishers are companies and organizations that distribute journal articles, books, and theses. OpenAlex indexes about 10,000 publishers. You can access publishers in the Python client like this:
 

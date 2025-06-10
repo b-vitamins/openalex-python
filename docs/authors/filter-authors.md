@@ -15,7 +15,7 @@ print(f"Total authors with ORCID: {results.meta.count:,}")  # e.g., 12,345,678
 print(f"Showing first {len(results.results)} authors")  # 25
 ```
 
-\ud83d\udca1 Remember: `.filter()` builds the query, `.get()` executes it and returns one page of results.
+Remember: `.filter()` builds the query, `.get()` executes it and returns one page of results.
 
 ## Understanding filters vs. results
 

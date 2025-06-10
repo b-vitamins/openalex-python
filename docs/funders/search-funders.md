@@ -38,7 +38,7 @@ science_results = Funders().search("science foundation").get()
 # Finds "National Science Foundation", "Swiss National Science Foundation", etc.
 ```
 
-💡 Read more about search relevance, stemming, and boolean searches in the [search documentation](../../how-to-use-the-api/get-lists-of-entities/search-entities.md).
+Read more about search relevance, stemming, and boolean searches in the [search documentation](../../how-to-use-the-api/get-lists-of-entities/search-entities.md).
 
 ## Search a specific field
 

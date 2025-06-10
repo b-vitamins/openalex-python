@@ -2,7 +2,7 @@
 description: Journal articles, books, datasets, and theses
 ---
 
-# \ud83d\udcc4 Works
+# Works
 
 Works are scholarly documents like journal articles, books, datasets, and theses. OpenAlex indexes over 240M works, with about 50,000 added daily. You can access works in the OpenAlex Python client like this:
 

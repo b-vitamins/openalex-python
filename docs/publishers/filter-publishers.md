@@ -19,7 +19,7 @@ for pub in results.results[:5]:
     print(f"- {pub.display_name}")
 ```
 
-\ud83d\udca1 Remember: `.filter()` builds the query, `.get()` executes it and returns one page of results.
+Remember: `.filter()` builds the query, `.get()` executes it and returns one page of results.
 
 ## Publishers attribute filters
 

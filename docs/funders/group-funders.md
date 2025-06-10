@@ -18,7 +18,7 @@ for group in country_stats.group_by[:20]:
     print(f"  {group.key}: {group.count:,} funders")
 ```
 
-💡 **Key point**: `group_by()` returns COUNTS, not the actual funders. This is efficient for analytics.
+**Key point**: `group_by()` returns COUNTS, not the actual funders. This is efficient for analytics.
 
 ## Understanding group_by results
 

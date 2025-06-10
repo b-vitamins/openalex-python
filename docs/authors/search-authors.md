@@ -34,7 +34,7 @@ tarrago2 = Authors().search("David Tarrag\u00f3").get()
 # When searching with diacritics, those versions are prioritized
 ```
 
-\ud83d\udca1 Read more about search relevance, stemming, and boolean searches in the [search documentation](../../how-to-use-the-api/get-lists-of-entities/search-entities.md).
+Read more about search relevance, stemming, and boolean searches in the [search documentation](../../how-to-use-the-api/get-lists-of-entities/search-entities.md).
 
 ## Search a specific field
 

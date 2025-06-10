@@ -36,7 +36,7 @@ for author in multiple_authors.results:
     print(f"- {author.display_name} ({author.works_count} works)")
 ```
 
-\ud83d\udca1 Authors are also available via an alias: `People()` works the same as `Authors()`
+Authors are also available via an alias: `People()` works the same as `Authors()`
 
 ## External IDs
 

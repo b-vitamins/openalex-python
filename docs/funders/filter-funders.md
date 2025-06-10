@@ -20,7 +20,7 @@ for funder in results.results[:5]:
     print(f"  Grants: {funder.grants_count:,}")
 ```
 
-💡 Remember: `.filter()` builds the query, `.get()` executes it and returns one page of results.
+Remember: `.filter()` builds the query, `.get()` executes it and returns one page of results.
 
 ## Funders attribute filters
 

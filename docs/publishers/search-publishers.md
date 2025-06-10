@@ -33,7 +33,7 @@ elsevier_results = Publishers().search("elsevier").get()
 # - Publishers with "\u0627\u0644\u0633\u0641\u06cc\u0631" (Arabic for Elsevier) in alternate_titles
 ```
 
-\ud83d\udca1 Read more about search relevance, stemming, and boolean searches in the [search documentation](../../how-to-use-the-api/get-lists-of-entities/search-entities.md).
+Read more about search relevance, stemming, and boolean searches in the [search documentation](../../how-to-use-the-api/get-lists-of-entities/search-entities.md).
 
 ## Search a specific field
 

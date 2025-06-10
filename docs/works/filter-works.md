@@ -15,7 +15,7 @@ print(f"Total works from 2020: {results.meta.count:,}")  # e.g., 4,567,890
 print(f"Showing first {len(results.results)} works")  # 25
 ```
 
-\ud83d\udca1 Remember: `.filter()` builds the query, `.get()` executes it and returns one page of results.
+Remember: `.filter()` builds the query, `.get()` executes it and returns one page of results.
 
 ## Understanding filters vs. results
 
