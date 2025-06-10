@@ -1,11 +1,11 @@
-"""Fluent query builder for OpenAlex resources."""
+"""Fluent query builder for OpenAlex."""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 if TYPE_CHECKING:  # pragma: no cover - for type checking only
-    from .resources.base import BaseResource
+    from .entities import BaseEntity
 
 from .models import BaseFilter, ListResult
 from .utils.pagination import MAX_PER_PAGE, Paginator
@@ -53,10 +53,10 @@ class Query(Generic[T, F]):
 
     def __init__(
         self,
-        resource: BaseResource[T, F],
+        entity: BaseEntity[T, F],
         params: dict[str, Any] | None = None,
     ) -> None:
-        self.resource = resource
+        self.entity = entity
         self.params: dict[str, Any] = params or {}
 
     def __getitem__(self, record_id: str | list[str]) -> T | ListResult[T]:
@@ -65,7 +65,7 @@ class Query(Generic[T, F]):
             return self.filter(openalex_id=record_id).get(
                 per_page=len(record_id)
             )
-        return self.resource.get(record_id)
+        return self.entity.get(record_id)
 
     # internal helper
     def _clone(self, **updates: Any) -> Query[T, F]:
@@ -84,7 +84,7 @@ class Query(Generic[T, F]):
                     new_params[key] = value
             else:
                 new_params[key] = value
-        return Query(self.resource, new_params)
+        return Query(self.entity, new_params)
 
     def _merge_filter_dict(
         self,
@@ -167,7 +167,7 @@ class Query(Generic[T, F]):
         """Execute query and return results (alias for list())."""
         params = {**self.params, **kwargs}
         filter_param = params.pop("filter", None)
-        return self.resource.list(filter=filter_param, **params)
+        return self.entity.list(filter=filter_param, **params)
 
     def list(self, **kwargs: Any) -> ListResult[T]:
         """Alias for :meth:`get`."""
@@ -182,7 +182,7 @@ class Query(Generic[T, F]):
         """Return a paginator for this query."""
         params = {**self.params, **kwargs}
         filter_param = params.pop("filter", None)
-        return self.resource.paginate(
+        return self.entity.paginate(
             filter=filter_param,
             per_page=per_page,
             max_results=max_results,
@@ -196,11 +196,11 @@ class Query(Generic[T, F]):
 
     def random(self) -> T:
         """Get a random entity."""
-        return self.resource.random()
+        return self.entity.random()
 
     def autocomplete(self, query: str, **kwargs: Any) -> ListResult[Any]:
         """Autocomplete search."""
-        return self.resource.autocomplete(query, **kwargs)
+        return self.entity.autocomplete(query, **kwargs)
 
     def __repr__(self) -> str:
         """String representation of query."""
@@ -216,4 +216,4 @@ class Query(Generic[T, F]):
             parts.append(f"select={self.params['select']}")
 
         params_str = ", ".join(parts) if parts else "no filters"
-        return f"<Query({self.resource.__class__.__name__}) {params_str}>"
+        return f"<Query({self.entity.__class__.__name__}) {params_str}>"

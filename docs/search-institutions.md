@@ -1,12 +1,12 @@
 # Search institutions
 
-Use `client.institutions.search()` to find institutions by name.
+Use `institutions.search()` to find institutions by name.
 
 ```python
-from openalex import OpenAlex
+from openalex import Institutions
 
-client = OpenAlex()
-results = client.institutions.search("san diego state university")
+institutions = Institutions()
+results = institutions.search("san diego state university")
 print(results.results[0].display_name)
 ```
 
@@ -15,7 +15,7 @@ print(results.results[0].display_name)
 Searching can also be done via filters:
 
 ```python
-results = client.institutions.list(filter={"display_name.search": "florida"})
+results = institutions.list(filter={"display_name.search": "florida"})
 ```
 
 | Search filter | Field |
@@ -27,7 +27,7 @@ results = client.institutions.list(filter={"display_name.search": "florida"})
 Quickly suggest institutions for a typeahead field:
 
 ```python
-suggestions = client.institutions.autocomplete("harv")
+suggestions = institutions.autocomplete("harv")
 ```
 
 Each suggestion includes the location as a hint.

@@ -1,12 +1,12 @@
 # Get lists of sources
 
-Use `client.sources.list()` to retrieve batches of journals, repositories, and other sources.
+Use `sources.list()` to retrieve batches of journals, repositories, and other sources.
 
 ```python
-from openalex import OpenAlex
+from openalex import Sources
 
-client = OpenAlex()
-results = client.sources.list()
+sources = Sources()
+results = sources.list()
 print(results.meta.count)
 ```
 
@@ -16,10 +16,10 @@ Control pagination and ordering just like other endpoints:
 
 ```python
 # second page with 50 results
-page2 = client.sources.list(per_page=50, page=2)
+page2 = sources.list(per_page=50, page=2)
 
 # order by cited-by count descending
-sorted_sources = client.sources.list(sort="cited_by_count:desc")
+sorted_sources = sources.list(sort="cited_by_count:desc")
 ```
 
 ## Sample sources
@@ -27,7 +27,7 @@ sorted_sources = client.sources.list(sort="cited_by_count:desc")
 Request a random sample of sources:
 
 ```python
-sample = client.sources.list(sample=10)
+sample = sources.list(sample=10)
 ```
 
 ## Select fields
@@ -35,7 +35,7 @@ sample = client.sources.list(sample=10)
 Limit the fields returned for each source:
 
 ```python
-minimal = client.sources.list(select=["id", "display_name", "issn"])
+minimal = sources.list(select=["id", "display_name", "issn"])
 ```
 
 Filtering and searching are covered in their own guides.

@@ -3,10 +3,10 @@
 Summarise publishers with `group_by` on a chosen attribute.
 
 ```python
-from openalex import OpenAlex
+from openalex import Publishers
 
-client = OpenAlex()
-result = client.publishers.list(group_by="country_codes")
+publishers = Publishers()
+result = publishers.list(group_by="country_codes")
 for group in result.group_by:
     print(group.key, group.count)
 ```
@@ -14,6 +14,6 @@ for group in result.group_by:
 You can chain filters and grouping using the query builder:
 
 ```python
-query = client.publishers.query().filter(hierarchy_level=0).group_by("country_codes")
+query = publishers.query().filter(hierarchy_level=0).group_by("country_codes")
 result = query.list()
 ```

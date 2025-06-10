@@ -1,46 +1,52 @@
-"""Convenience entity classes for PyAlex-style direct access."""
+"""Direct entity access for PyAlex-style interface."""
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
+if TYPE_CHECKING:  # pragma: no cover
+    import builtins
+
+from pydantic import ValidationError
+
+from .api import get_connection
+from .constants import (
+    AUTOCOMPLETE_PATH,
+    HTTP_METHOD_GET,
+    OPENALEX_ID_PREFIX,
+    PARAM_Q,
+    RANDOM_PATH,
+)
+from .exceptions import raise_for_status
 from .models import (
     Author,
-    AuthorsFilter,
     BaseFilter,
     Concept,
     Funder,
     Institution,
-    InstitutionsFilter,
     Keyword,
+    ListResult,
     Publisher,
     Source,
     Topic,
     Work,
-    WorksFilter,
 )
+from .utils import Paginator, strip_id_prefix
+from .utils.params import normalize_params
 
-if TYPE_CHECKING:  # pragma: no cover - for type checking only
-    from .models import ListResult
-
-if TYPE_CHECKING:  # pragma: no cover - for type checking only
-    from .query import Query
-    from .resources.base import AsyncBaseResource, BaseResource
-    from .utils import Paginator
-
-from .client import AsyncOpenAlex, OpenAlex
-
-if TYPE_CHECKING:  # pragma: no cover - for type checking only
+if TYPE_CHECKING:  # pragma: no cover
     from .config import OpenAlexConfig
+    from .query import Query
 
 T = TypeVar("T")
 F = TypeVar("F", bound="BaseFilter")
 
 
 class BaseEntity(Generic[T, F]):
-    """Base class for entity convenience wrappers."""
+    """Base class for entity direct access."""
 
-    resource_name: str = ""
+    endpoint: str = ""
+    model_class: type[T] = None  # type: ignore
 
     def __init__(
         self,
@@ -48,202 +54,208 @@ class BaseEntity(Generic[T, F]):
         api_key: str | None = None,
         config: OpenAlexConfig | None = None,
     ) -> None:
-        """Initialize entity with optional configuration."""
+        from .config import OpenAlexConfig
+
+        if config is None:
+            config = OpenAlexConfig()
+        if email is not None:
+            config = config.model_copy(update={"email": email})
+        if api_key is not None:
+            config = config.model_copy(update={"api_key": api_key})
+
         self._config = config
-        self._email = email
-        self._api_key = api_key
-        self._client: OpenAlex | None = None
-        self._async_client: AsyncOpenAlex | None = None
+        self._connection = get_connection(config)
 
     def __repr__(self) -> str:
-        """String representation of entity."""
         config_parts = []
-        if self._email:
-            config_parts.append(f"email='{self._email}'")
-        if self._api_key:
+        if self._config.email:
+            config_parts.append(f"email='{self._config.email}'")
+        if self._config.api_key:
             config_parts.append("api_key='***'")
+        cfg = f"({', '.join(config_parts)})" if config_parts else ""
+        return f"<{self.__class__.__name__}{cfg}>"
 
-        config_str = f"({', '.join(config_parts)})" if config_parts else ""
-        return f"<{self.__class__.__name__}{config_str}>"
+    def _build_url(self, path: str = "") -> str:
+        base = f"{self._connection.base_url}/{self.endpoint}"
+        if path:
+            return f"{base}/{path.lstrip('/')}"
+        return base
 
-    @property
-    def _sync_client(self) -> OpenAlex:
-        """Get or create sync client."""
-        if self._client is None:
-            self._client = OpenAlex(
-                config=self._config,
-                email=self._email,
-                api_key=self._api_key,
-            )
-        return self._client
+    def _parse_response(self, data: dict[str, Any]) -> T:
+        try:
+            return self.model_class(**data)
+        except ValidationError:
+            return self.model_class.model_construct(**data)  # type: ignore
 
-    @property
-    def _get_async_client(self) -> AsyncOpenAlex:
-        """Get or create async client."""
-        if self._async_client is None:
-            self._async_client = AsyncOpenAlex(
-                config=self._config,
-                email=self._email,
-                api_key=self._api_key,
-            )
-        return self._async_client
-
-    @property
-    def _resource(self) -> BaseResource[T, F]:
-        """Get the sync resource."""
-        return cast(
-            "BaseResource[T, F]", getattr(self._sync_client, self.resource_name)
+    def _parse_list_response(self, data: dict[str, Any]) -> ListResult[T]:
+        results = [self._parse_response(it) for it in data.get("results", [])]
+        return ListResult[T](
+            meta=data.get("meta", {}),
+            results=results,
+            group_by=data.get("group_by"),
         )
 
-    @property
-    def _async_resource(self) -> AsyncBaseResource[T, F]:
-        """Get the async resource."""
-        return cast(
-            "AsyncBaseResource[T, F]",
-            getattr(self._get_async_client, self.resource_name),
-        )
+    def query(self, **filter_params: Any) -> Query[T, F]:
+        from .query import Query
+
+        params: dict[str, Any] = {}
+        if filter_params:
+            params["filter"] = filter_params
+        return Query(self, params)
 
     def __getitem__(self, record_id: str | list[str]) -> T | ListResult[T]:
-        """Get entity by ID or list of IDs."""
         return self.query()[record_id]
 
-    def query(self) -> Query[T, F]:
-        """Create a query builder."""
-        return self._resource.query()
+    def get(self, id: str | None = None, **params: Any) -> T | ListResult[T]:
+        if id is not None:
+            if id.startswith(OPENALEX_ID_PREFIX):
+                id = id[len(OPENALEX_ID_PREFIX) :]
+            url = self._build_url(id)
+            response = self._connection.request(
+                HTTP_METHOD_GET, url, params=params
+            )
+            raise_for_status(response)
+            return self._parse_response(response.json())
+        return self.query().get(**params)
+
+    def list(
+        self, filter: dict[str, Any] | None = None, **params: Any
+    ) -> ListResult[T]:
+        if filter:
+            params["filter"] = filter
+        params = normalize_params(params)
+        url = self._build_url()
+        response = self._connection.request(HTTP_METHOD_GET, url, params=params)
+        raise_for_status(response)
+        return self._parse_list_response(response.json())
+
+    def search(
+        self, query: str, filter: dict[str, Any] | None = None, **params: Any
+    ) -> ListResult[T]:
+        params["search"] = query
+        return self.list(filter=filter, **params)
+
+    def random(self, **params: Any) -> T:
+        url = self._build_url(RANDOM_PATH)
+        params = normalize_params(params)
+        response = self._connection.request(HTTP_METHOD_GET, url, params=params)
+        raise_for_status(response)
+        return self._parse_response(response.json())
+
+    def autocomplete(self, query: str, **params: Any) -> ListResult[Any]:
+        params[PARAM_Q] = query
+        url = f"{self._connection.base_url}/{AUTOCOMPLETE_PATH}/{self.endpoint}"
+        params = normalize_params(params)
+        response = self._connection.request(HTTP_METHOD_GET, url, params=params)
+        raise_for_status(response)
+        return self._parse_list_response(response.json())
+
+    def paginate(
+        self, filter: dict[str, Any] | None = None, **kwargs: Any
+    ) -> Paginator[T]:
+        if filter:
+            kwargs["filter"] = filter
+
+        def fetch_page(page_params: dict[str, Any]) -> ListResult[T]:
+            all_params = {**kwargs, **page_params}
+            return self.list(**all_params)
+
+        return Paginator(
+            fetch_func=fetch_page,
+            params=kwargs,
+            per_page=kwargs.get("per_page", 25),
+            max_results=kwargs.get("max_results"),
+        )
 
     def filter(self, **kwargs: Any) -> Query[T, F]:
-        """Create query with filters."""
         return self.query().filter(**kwargs)
 
     def filter_or(self, **kwargs: Any) -> Query[T, F]:
-        """Create query with OR filters."""
         return self.query().filter_or(**kwargs)
 
     def filter_not(self, **kwargs: Any) -> Query[T, F]:
-        """Create query with NOT filters."""
         return self.query().filter_not(**kwargs)
 
     def filter_gt(self, **kwargs: Any) -> Query[T, F]:
-        """Create query with greater than filters."""
         return self.query().filter_gt(**kwargs)
 
     def filter_lt(self, **kwargs: Any) -> Query[T, F]:
-        """Create query with less than filters."""
         return self.query().filter_lt(**kwargs)
 
-    def search(self, query: str) -> Query[T, F]:
-        """Create query with search."""
-        return self.query().search(query)
-
     def search_filter(self, **kwargs: Any) -> Query[T, F]:
-        """Create query with search filters."""
         return self.query().search_filter(**kwargs)
 
     def sort(self, **kwargs: str) -> Query[T, F]:
-        """Create query with sorting."""
         return self.query().sort(**kwargs)
 
-    def select(self, fields: list[str] | str) -> Query[T, F]:
-        """Create query with field selection."""
+    def select(self, fields: builtins.list[str] | str) -> Query[T, F]:
         return self.query().select(fields)
 
     def sample(self, n: int, seed: int | None = None) -> Query[T, F]:
-        """Create query with sampling."""
         return self.query().sample(n, seed)
 
     def group_by(self, key: str) -> Query[T, F]:
-        """Create query with grouping."""
         return self.query().group_by(key)
 
-    def get(self, id: str | None = None, **params: Any) -> T | ListResult[T]:
-        """Get a single entity by ID or list entities."""
-        if id is not None:
-            return self._resource.get(id, **params)
-        return self.query().get(**params)
-
-    def list(self, **params: Any) -> ListResult[T]:
-        """List entities."""
-        return self.query().list(**params)
-
     def count(self) -> int:
-        """Get count of all entities."""
         return self.query().count()
 
-    def random(self) -> T:
-        """Get a random entity."""
-        return self._resource.random()
 
-    def autocomplete(self, query: str, **params: Any) -> ListResult[Any]:
-        """Autocomplete search."""
-        return self._resource.autocomplete(query, **params)
+class Works(BaseEntity[Work, BaseFilter]):
+    endpoint = "works"
+    model_class = Work
 
-    def paginate(self, **kwargs: Any) -> Paginator[T]:
-        """Create paginator."""
-        return self.query().paginate(**kwargs)
+    def ngrams(self, work_id: str, **params: Any) -> ListResult[Any]:
+        from .models.work import Ngram
 
-    async def __aenter__(self) -> BaseEntity[T, F]:
-        """Async context manager entry."""
-        await self._get_async_client.__aenter__()
-        return self
-
-    async def __aexit__(self, *args: Any) -> None:
-        """Async context manager exit."""
-        if self._async_client:
-            await self._async_client.__aexit__(*args)
+        work_id = strip_id_prefix(work_id)
+        url = self._build_url(f"{work_id}/ngrams")
+        params = normalize_params(params)
+        response = self._connection.request(HTTP_METHOD_GET, url, params=params)
+        raise_for_status(response)
+        data = response.json()
+        results = [Ngram(**item) for item in data.get("ngrams", [])]
+        return ListResult[Ngram](meta=data.get("meta", {}), results=results)
 
 
-class Works(BaseEntity[Work, WorksFilter]):
-    """Convenience class for Works resource."""
-
-    resource_name = "works"
-
-
-class Authors(BaseEntity[Author, AuthorsFilter]):
-    """Convenience class for Authors resource."""
-
-    resource_name = "authors"
+class Authors(BaseEntity[Author, BaseFilter]):
+    endpoint = "authors"
+    model_class = Author
 
 
-class Institutions(BaseEntity[Institution, InstitutionsFilter]):
-    """Convenience class for Institutions resource."""
-
-    resource_name = "institutions"
+class Institutions(BaseEntity[Institution, BaseFilter]):
+    endpoint = "institutions"
+    model_class = Institution
 
 
 class Sources(BaseEntity[Source, BaseFilter]):
-    """Convenience class for Sources resource."""
-
-    resource_name = "sources"
+    endpoint = "sources"
+    model_class = Source
 
 
 class Topics(BaseEntity[Topic, BaseFilter]):
-    """Convenience class for Topics resource."""
-
-    resource_name = "topics"
+    endpoint = "topics"
+    model_class = Topic
 
 
 class Publishers(BaseEntity[Publisher, BaseFilter]):
-    """Convenience class for Publishers resource."""
-
-    resource_name = "publishers"
+    endpoint = "publishers"
+    model_class = Publisher
 
 
 class Funders(BaseEntity[Funder, BaseFilter]):
-    """Convenience class for Funders resource."""
-
-    resource_name = "funders"
+    endpoint = "funders"
+    model_class = Funder
 
 
 class Keywords(BaseEntity[Keyword, BaseFilter]):
-    """Convenience class for Keywords resource."""
-
-    resource_name = "keywords"
+    endpoint = "keywords"
+    model_class = Keyword
 
 
 class Concepts(BaseEntity[Concept, BaseFilter]):
-    """Convenience class for Concepts resource (deprecated)."""
-
-    resource_name = "concepts"
+    endpoint = "concepts"
+    model_class = Concept
 
 
 People = Authors

@@ -1,12 +1,12 @@
 # Search funders
 
-Use `client.funders.search()` to look up funders by name or description.
+Use `funders.search()` to look up funders by name or description.
 
 ```python
-from openalex import OpenAlex
+from openalex import Funders
 
-client = OpenAlex()
-results = client.funders.search("health")
+funders = Funders()
+results = funders.search("health")
 print(results.results[0].display_name)
 ```
 
@@ -15,7 +15,7 @@ print(results.results[0].display_name)
 Field-limited search works via filters:
 
 ```python
-results = client.funders.list(filter={"display_name.search": "florida"})
+results = funders.list(filter={"display_name.search": "florida"})
 ```
 
 | Search filter | Field |
@@ -28,5 +28,5 @@ results = client.funders.list(filter={"display_name.search": "florida"})
 Get quick suggestions for a typeahead control:
 
 ```python
-suggestions = client.funders.autocomplete("national sci")
+suggestions = funders.autocomplete("national sci")
 ```

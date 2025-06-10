@@ -4,7 +4,6 @@ A Python client for the [OpenAlex API](https://docs.openalex.org/).
 
 ## Features
 
-- **Async Support** - Both synchronous and asynchronous clients
 - **Type Safety** - Type annotations with Pydantic v2 models
 - **Performance** - Built on httpx and orjson
 - **Automatic Retries** - Configurable retry logic with exponential backoff
@@ -28,53 +27,31 @@ poetry add openalex
 ## Quick Start
 
 ```python
-from openalex import OpenAlex
-
-# Initialize the client
-client = OpenAlex(email="your-email@example.com")  # Email for polite pool
+from openalex import Works
 
 # Get a specific work
-work = client.works.get("W2741809807")
+work = Works()["W2741809807"]
 print(f"{work.title} - {work.cited_by_count} citations")
 
 # Search for works
-results = client.works.search("machine learning")
+results = Works().search("machine learning")
 for work in results.results[:5]:
     print(f"{work.title} ({work.publication_year})")
 
 # Filter works
-recent_ml_papers = client.works.filter(
-    search="deep learning",
+recent_ml_papers = Works().list(
     filter={
+        "search": "deep learning",
         "publication_year": [2022, 2023, 2024],
         "is_oa": True,
-        "type": "article"
+        "type": "article",
     }
-).list()
+)
 
 # Pagination - iterate through all results
-for work in client.works.paginate(filter={"is_oa": True}):
+for work in Works().paginate(filter={"is_oa": True}):
     if work.cited_by_count > 100:
         print(work.title)
-```
-
-## Async Support
-
-```python
-import asyncio
-from openalex import AsyncOpenAlex
-
-async def main():
-    async with AsyncOpenAlex(email="your-email@example.com") as client:
-        # Async operations
-        work = await client.works.get("W2741809807")
-        print(work.title)
-        
-        # Concurrent searches
-        results = await client.search_all("quantum computing")
-        print(f"Found {results['works'].meta.count} works")
-
-asyncio.run(main())
 ```
 
 ## Advanced Usage

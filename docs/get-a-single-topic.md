@@ -3,10 +3,10 @@
 Retrieve a topic record by its OpenAlex ID.
 
 ```python
-from openalex import OpenAlex
+from openalex import Topics
 
-client = OpenAlex()
-topic = client.topics.get("T11636")
+topics = Topics()
+topic = topics.get("T11636")
 print(topic.display_name)
 ```
 
@@ -14,8 +14,8 @@ Use `.select` or the `select` parameter to request only certain fields:
 
 ```python
 # inline select
-brief = client.topics.get("T11636", select=["id", "display_name"])
+brief = topics.get("T11636", select=["id", "display_name"])
 
 # chain after fetching
-brief = client.topics.get("T11636").select(["id", "display_name"])
+brief = topics.get("T11636").select(["id", "display_name"])
 ```

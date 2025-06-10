@@ -1,12 +1,12 @@
 # Get lists of funders
 
-Retrieve batches of funders using `client.funders.list()`.
+Retrieve batches of funders using `funders.list()`.
 
 ```python
-from openalex import OpenAlex
+from openalex import Funders
 
-client = OpenAlex()
-response = client.funders.list()
+funders = Funders()
+response = funders.list()
 print(response.meta.count)
 ```
 
@@ -16,10 +16,10 @@ Control pagination and ordering with parameters:
 
 ```python
 # second page with 50 results
-page2 = client.funders.list(per_page=50, page=2)
+page2 = funders.list(per_page=50, page=2)
 
 # sort by display name descending
-sorted_funders = client.funders.list(sort="display_name:desc")
+sorted_funders = funders.list(sort="display_name:desc")
 ```
 
 ## Sample funders
@@ -27,7 +27,7 @@ sorted_funders = client.funders.list(sort="display_name:desc")
 Retrieve a random sample:
 
 ```python
-sample = client.funders.list(sample=10)
+sample = funders.list(sample=10)
 ```
 
 ## Select fields
@@ -35,7 +35,7 @@ sample = client.funders.list(sample=10)
 Return only specific fields from each record:
 
 ```python
-minimal = client.funders.list(select=["id", "display_name", "alternate_titles"])
+minimal = funders.list(select=["id", "display_name", "alternate_titles"])
 ```
 
 Use filtering and searching to further narrow results.

@@ -3,10 +3,10 @@
 Aggregate authors using the `group_by` parameter.
 
 ```python
-from openalex import OpenAlex
+from openalex import Authors
 
-client = OpenAlex()
-results = client.authors.list(group_by="last_known_institution.continent")
+authors = Authors()
+results = authors.list(group_by="last_known_institution.continent")
 for group in results.group_by:
     print(group.key, group.count)
 ```
@@ -15,7 +15,7 @@ Grouping can be combined with other query builder options:
 
 ```python
 query = (
-    client.authors.query()
+    authors.query()
     .filter(has_orcid=True)
     .group_by("last_known_institution.continent")
 )

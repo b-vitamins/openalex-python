@@ -3,13 +3,13 @@
 > **Warning**
 > Concepts are deprecated in favor of Topics. Use them only if you rely on the legacy taxonomy.
 
-List concepts via `client.concepts.list()`.
+List concepts via `concepts.list()`.
 
 ```python
-from openalex import OpenAlex
+from openalex import Concepts
 
-client = OpenAlex()
-result = client.concepts.list()
+concepts = Concepts()
+result = concepts.list()
 print(result.meta.count)
 ```
 
@@ -18,8 +18,8 @@ print(result.meta.count)
 Adjust paging and ordering just like other resources:
 
 ```python
-second = client.concepts.list(per_page=50, page=2)
-sorted_concepts = client.concepts.list(sort="cited_by_count:desc")
+second = concepts.list(per_page=50, page=2)
+sorted_concepts = concepts.list(sort="cited_by_count:desc")
 ```
 
 ## Sample concepts
@@ -27,7 +27,7 @@ sorted_concepts = client.concepts.list(sort="cited_by_count:desc")
 Retrieve a random sample:
 
 ```python
-sample = client.concepts.list(sample=10)
+sample = concepts.list(sample=10)
 ```
 
 ## Select fields
@@ -35,5 +35,5 @@ sample = client.concepts.list(sample=10)
 Return only specific fields:
 
 ```python
-mini = client.concepts.list(select=["id", "display_name", "description"])
+mini = concepts.list(select=["id", "display_name", "description"])
 ```

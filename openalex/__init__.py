@@ -1,48 +1,15 @@
-"""OpenAlex Python Client - A Python client for the OpenAlex API.
-
-Basic usage:
-    >>> from openalex import OpenAlex
-    >>> client = OpenAlex(email="you@example.com")
-    >>> work = client.works.get("W2741809807")
-    >>> print(work.title)
-
-Async usage:
-    >>> import asyncio
-    >>> from openalex import AsyncOpenAlex
-    >>>
-    >>> async def get_work():
-    ...     async with AsyncOpenAlex(email="you@example.com") as client:
-    ...         return await client.works.get("W2741809807")
-    >>>
-    >>> work = asyncio.run(get_work())
-
-Pagination:
-    >>> for work in client.works.paginate(filter={"is_oa": True}):
-    ...     print(work.title)
-
-Search:
-    >>> results = client.works.search("machine learning")
-    >>> for work in results.results:
-    ...     print(f"{work.title} - {work.cited_by_count} citations")
-"""
+"""PyAlex - A Python library for OpenAlex."""
 
 from __future__ import annotations
 
-from importlib import import_module
-from typing import Any, cast
-
 from structlog import get_logger
-
-logger = get_logger(__name__)
 
 __version__ = "0.1.0"
 __author__ = "OpenAlex Python Contributors"
 __license__ = "MIT"
 
-
-from .client import AsyncOpenAlex, OpenAlex, async_client, client  # noqa: E402
-from .config import OpenAlexConfig  # noqa: E402
-from .entities import (  # noqa: E402
+from .config import OpenAlexConfig
+from .entities import (
     Authors,
     Concepts,
     Funders,
@@ -55,7 +22,7 @@ from .entities import (  # noqa: E402
     Topics,
     Works,
 )
-from .exceptions import (  # noqa: E402
+from .exceptions import (
     APIError,
     AuthenticationError,
     NetworkError,
@@ -65,26 +32,17 @@ from .exceptions import (  # noqa: E402
     TimeoutError,
     ValidationError,
 )
-from .models import (  # noqa: E402
-    # Work models
+from .models import (
     APC,
-    # Source models
     APCPrice,
-    # Institution models
     AssociatedInstitution,
-    # Author models
     Author,
     AuthorAffiliation,
     AuthorIds,
-    # Filters
-    AuthorsFilter,
-    Authorship,
-    # Base models
     AutocompleteResult,
     BaseFilter,
     Biblio,
     CitationNormalizedPercentile,
-    # Concept models
     Concept,
     ConceptAncestor,
     ConceptIds,
@@ -96,7 +54,6 @@ from .models import (  # noqa: E402
     DehydratedSource,
     DehydratedTopic,
     EntityType,
-    # Funder models
     Funder,
     FunderIds,
     Geo,
@@ -105,10 +62,10 @@ from .models import (  # noqa: E402
     GroupByResult,
     Institution,
     InstitutionIds,
-    InstitutionsFilter,
+    InstitutionTopic,
+    InstitutionTopicShare,
     InstitutionType,
     InternationalNames,
-    # Keyword models
     Keyword,
     KeywordTag,
     ListResult,
@@ -119,7 +76,6 @@ from .models import (  # noqa: E402
     OpenAccessStatus,
     OpenAlexBase,
     OpenAlexEntity,
-    # Publisher models
     Publisher,
     PublisherIds,
     RelatedConcept,
@@ -132,56 +88,37 @@ from .models import (  # noqa: E402
     SourceType,
     SummaryStats,
     SustainableDevelopmentGoal,
-    # Topic models
     Topic,
     TopicHierarchy,
     TopicIds,
     TopicLevel,
     Work,
     WorkIds,
-    WorksFilter,
     WorkType,
 )
-from .query import Query, gt_, lt_, not_, or_  # noqa: E402
-from .utils import (  # noqa: E402
-    AsyncPaginator,
-    AsyncRateLimiter,
-    Paginator,
-    RateLimiter,
-    RetryConfig,
-    RetryHandler,
-    SlidingWindowRateLimiter,
-    async_rate_limited,
-    async_with_retry,
-    is_retryable_error,
-    rate_limited,
-    with_retry,
-)
+from .query import Query, gt_, lt_, not_, or_
+from .utils import invert_abstract
 
-__all__ = [  # noqa: RUF022
+logger = get_logger(__name__)
+
+__all__ = [
     "APC",
     "APCPrice",
     "APIError",
     "AssociatedInstitution",
-    "AsyncOpenAlex",
-    "AsyncPaginator",
-    "AsyncRateLimiter",
     "AuthenticationError",
-    # Author models
     "Author",
     "AuthorAffiliation",
     "AuthorIds",
-    "AuthorsFilter",
-    "Authorship",
+    "Authors",
     "AutocompleteResult",
-    # Filters
     "BaseFilter",
     "Biblio",
     "CitationNormalizedPercentile",
-    # Concept models
     "Concept",
     "ConceptAncestor",
     "ConceptIds",
+    "Concepts",
     "CountsByYear",
     "DehydratedAuthor",
     "DehydratedConcept",
@@ -190,22 +127,24 @@ __all__ = [  # noqa: RUF022
     "DehydratedSource",
     "DehydratedTopic",
     "EntityType",
-    # Funder models
     "Funder",
     "FunderIds",
+    "Funders",
     "Geo",
     "Grant",
     "GroupBy",
     "GroupByResult",
-    # Institution models
     "Institution",
     "InstitutionIds",
+    "InstitutionTopic",
+    "InstitutionTopicShare",
     "InstitutionType",
-    "InstitutionsFilter",
+    "Institutions",
     "InternationalNames",
-    # Keyword models
+    "Journals",
     "Keyword",
     "KeywordTag",
+    "Keywords",
     "ListResult",
     "Location",
     "MeshTag",
@@ -214,92 +153,44 @@ __all__ = [  # noqa: RUF022
     "NotFoundError",
     "OpenAccess",
     "OpenAccessStatus",
-    "Query",
-    "or_",
-    "not_",
-    "gt_",
-    "lt_",
-    # Client classes
-    "OpenAlex",
-    # Base models
     "OpenAlexBase",
-    # Configuration
     "OpenAlexConfig",
     "OpenAlexEntity",
-    # Exceptions
     "OpenAlexError",
-    # Utils
-    "Paginator",
-    # Publisher models
+    "People",
     "Publisher",
     "PublisherIds",
+    "Publishers",
+    "Query",
     "RateLimitError",
-    "RateLimiter",
     "RelatedConcept",
     "Repository",
-    "RetryConfig",
-    "RetryHandler",
     "Role",
-    "SlidingWindowRateLimiter",
     "Society",
     "SortOrder",
-    # Source models
     "Source",
     "SourceIds",
     "SourceType",
+    "Sources",
     "SummaryStats",
     "SustainableDevelopmentGoal",
     "TimeoutError",
-    # Topic models
     "Topic",
     "TopicHierarchy",
     "TopicIds",
     "TopicLevel",
+    "Topics",
     "ValidationError",
-    # Work models
     "Work",
     "WorkIds",
     "WorkType",
-    "WorksFilter",
+    "Works",
     "__author__",
     "__license__",
-    # Version info
     "__version__",
-    "async_client",
-    "async_rate_limited",
-    "async_with_retry",
-    "client",
-    "is_retryable_error",
-    "rate_limited",
-    "with_retry",
-    # Entity classes
-    "Works",
-    "Authors",
-    "Institutions",
-    "Sources",
-    "Topics",
-    "Publishers",
-    "Funders",
-    "Keywords",
-    "Concepts",
-    # Aliases
-    "People",
-    "Journals",
+    "gt_",
+    "invert_abstract",
+    "lt_",
+    "not_",
+    "or_",
 ]
-
-# When running under pytest with ``pytest-httpx`` installed, placeholder tests
-# may register mocked responses that are never requested. By default the
-# ``httpx_mock`` fixture fails when unused responses remain. Adjust the
-# defaults at import time when tests are running so such optional responses are
-# allowed.
-try:
-    _pytest_httpx = import_module("pytest_httpx")
-    _httpx_options = _pytest_httpx._options  # noqa: SLF001
-
-    if not getattr(_httpx_options, "_openalex_patched", False):
-        _httpx_options._HTTPXMockOptions.__init__.__kwdefaults__[  # noqa: SLF001
-            "assert_all_responses_were_requested"
-        ] = False
-        cast("Any", _httpx_options)._openalex_patched = True  # noqa: SLF001
-except Exception as exc:  # pragma: no cover - optional
-    logger.debug("Failed to patch httpx mock options", exc_info=exc)

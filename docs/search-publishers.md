@@ -1,12 +1,12 @@
 # Search publishers
 
-Look up publishers by name with `client.publishers.search()`.
+Look up publishers by name with `publishers.search()`.
 
 ```python
-from openalex import OpenAlex
+from openalex import Publishers
 
-client = OpenAlex()
-results = client.publishers.search("springer")
+publishers = Publishers()
+results = publishers.search("springer")
 print(results.results[0].display_name)
 ```
 
@@ -15,7 +15,7 @@ print(results.results[0].display_name)
 Search can also be used as a filter by appending `.search` to a field name:
 
 ```python
-results = client.publishers.list(filter={"display_name.search": "elsevier"})
+results = publishers.list(filter={"display_name.search": "elsevier"})
 ```
 
 ## Autocomplete publishers
@@ -23,5 +23,5 @@ results = client.publishers.list(filter={"display_name.search": "elsevier"})
 Get quick suggestions as a user types:
 
 ```python
-suggestions = client.publishers.autocomplete("els")
+suggestions = publishers.autocomplete("els")
 ```

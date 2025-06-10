@@ -3,10 +3,10 @@
 Fetch a funder record by its OpenAlex identifier.
 
 ```python
-from openalex import OpenAlex
+from openalex import Funders
 
-client = OpenAlex()
-funder = client.funders.get("F4320332161")
+funders = Funders()
+funder = funders.get("F4320332161")
 print(funder.display_name)
 ```
 
@@ -14,7 +14,7 @@ Multiple IDs can be requested in one call:
 
 ```python
 ids = ["F4320332161", "F4320321001"]
-funders = client.funders.list(filter={"id": ids})
+funders = funders.list(filter={"id": ids})
 ```
 
 ## External IDs
@@ -22,8 +22,8 @@ funders = client.funders.list(filter={"id": ids})
 Funders can also be looked up by identifiers such as ROR or Wikidata.
 
 ```python
-funder = client.funders.by_ror("021nxhr62")
-funder = client.funders.get("wikidata:Q390551")
+funder = funders.by_ror("021nxhr62")
+funder = funders.get("wikidata:Q390551")
 ```
 
 ### Select fields
@@ -31,7 +31,7 @@ funder = client.funders.get("wikidata:Q390551")
 Only request the fields you need using `select` or by chaining `.select`:
 
 ```python
-funder = client.funders.get("F4320332161", select=["id", "display_name"])
+funder = funders.get("F4320332161", select=["id", "display_name"])
 
-funder = client.funders.get("F4320332161").select(["id", "display_name"])
+funder = funders.get("F4320332161").select(["id", "display_name"])
 ```
