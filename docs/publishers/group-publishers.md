@@ -18,7 +18,7 @@ for group in country_stats.group_by[:10]:  # Top 10 countries
     print(f"  {group.key}: {group.count:,} publishers")
 ```
 
-\ud83d\udca1 **Key point**: `group_by()` returns COUNTS, not the actual publishers. This is efficient for analytics.
+**Key point**: `group_by()` returns COUNTS, not the actual publishers. This is efficient for analytics.
 
 ## Understanding group_by results
 

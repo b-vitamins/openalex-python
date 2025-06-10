@@ -19,7 +19,7 @@ for inst in results.results[:5]:
     print(f"- {inst.display_name} ({inst.type})")
 ```
 
-💡 Remember: `.filter()` builds the query, `.get()` executes it and returns one page of results.
+Remember: `.filter()` builds the query, `.get()` executes it and returns one page of results.
 
 ## Institutions attribute filters
 

@@ -20,7 +20,7 @@ for topic in results.results[:5]:
     print(f"  Works: {topic.works_count:,}")
 ```
 
-💡 Remember: `.filter()` builds the query, `.get()` executes it and returns one page of results.
+Remember: `.filter()` builds the query, `.get()` executes it and returns one page of results.
 
 ## Topics attribute filters
 

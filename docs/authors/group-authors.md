@@ -20,7 +20,7 @@ for group in continent_stats.group_by:
     print(f"    ({percentage:.1f}% of all authors)")
 ```
 
-\ud83d\udca1 **Key point**: `group_by()` returns COUNTS, not the actual authors. This is much more efficient than trying to fetch millions of author records!
+**Key point**: `group_by()` returns COUNTS, not the actual authors. This is much more efficient than trying to fetch millions of author records!
 
 ## Understanding group_by results
 

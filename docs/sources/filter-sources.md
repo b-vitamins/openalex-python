@@ -19,7 +19,7 @@ for source in results.results[:5]:
     print(f"- {source.display_name}: {source.issn_l}")
 ```
 
-💡 Remember: `.filter()` builds the query, `.get()` executes it and returns one page of results.
+Remember: `.filter()` builds the query, `.get()` executes it and returns one page of results.
 
 ## Sources attribute filters
 

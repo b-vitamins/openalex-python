@@ -22,7 +22,7 @@ for i, work in enumerate(results.results[:5], 1):
 
 Fulltext search is available for a subset of works, see `Work.has_fulltext` for more details.
 
-\ud83d\udca1 Search uses relevance ranking, stemming (e.g., "running" matches "run"), and removes common words.
+Search uses relevance ranking, stemming (e.g., "running" matches "run"), and removes common words.
 
 ## Search a specific field
 

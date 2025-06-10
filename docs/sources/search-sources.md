@@ -39,7 +39,7 @@ plos_results = Sources().search("PLoS").get()
 # Finds "PLOS ONE", "PLOS Biology", etc.
 ```
 
-💡 Read more about search relevance, stemming, and boolean searches in the [search documentation](../../how-to-use-the-api/get-lists-of-entities/search-entities.md).
+Read more about search relevance, stemming, and boolean searches in the [search documentation](../../how-to-use-the-api/get-lists-of-entities/search-entities.md).
 
 ## Search a specific field
 

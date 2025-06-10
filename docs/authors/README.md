@@ -2,7 +2,7 @@
 description: People who create works
 ---
 
-# \ud83d\udc69 Authors
+# Authors
 
 Authors are people who create works. You can access authors in the OpenAlex Python client like this:
 

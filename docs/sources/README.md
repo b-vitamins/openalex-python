@@ -2,7 +2,7 @@
 description: Journals and repositories that host works
 ---
 
-# 📚 Sources
+# Sources
 
 Sources are where works are hosted. OpenAlex indexes about 249,000 sources. There are several types, including journals, conferences, preprint repositories, and institutional repositories.
 

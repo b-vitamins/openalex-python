@@ -23,7 +23,7 @@ for group in level_stats.group_by:
     print(f"  Level {group.key}: {group.count:,} concepts")
 ```
 
-💡 **Key point**: `group_by()` returns COUNTS, not the actual concepts. This is efficient for analytics.
+**Key point**: `group_by()` returns COUNTS, not the actual concepts. This is efficient for analytics.
 
 ## Understanding group_by results
 

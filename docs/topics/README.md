@@ -2,7 +2,7 @@
 description: Topics assigned to works
 ---
 
-# \ud83d\udca1 Topics
+# Topics
 
 Works in OpenAlex are tagged with Topics using an automated system that takes into account the available information about the work, including title, abstract, source (journal) name, and citations. There are around 4,500 Topics. Works are assigned topics using a model that assigns scores for each topic for a work. The highest-scoring topic is that work's [`primary_topic`](../works/work-object/#primary_topic). We also provide additional highly ranked topics for works, in [Work.topics](../works/work-object/README.md#topics).
 

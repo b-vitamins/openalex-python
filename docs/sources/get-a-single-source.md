@@ -39,7 +39,7 @@ for src in multiple_sources.results:
     print(f"  Open Access: {src.is_oa}")
 ```
 
-💡 **Tip**: Sources are also available via an alias:
+**Tip**: Sources are also available via an alias:
 ```python
 from openalex import Journals
 journals = Journals()  # Same as Sources()

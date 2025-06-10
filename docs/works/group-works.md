@@ -30,7 +30,7 @@ Open Access statistics for all works in OpenAlex:
   closed: 197,456,789 works (80.5% of all works)
 ```
 
-\ud83d\udca1 **Key point**: `group_by()` returns COUNTS, not the actual works. This is much more efficient than trying to fetch millions of works!
+**Key point**: `group_by()` returns COUNTS, not the actual works. This is much more efficient than trying to fetch millions of works!
 
 ## Understanding group_by results
 

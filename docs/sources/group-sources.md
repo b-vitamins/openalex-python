@@ -18,7 +18,7 @@ for group in publisher_stats.group_by[:20]:
     print(f"  {group.key}: {group.count:,} sources")
 ```
 
-💡 **Key point**: `group_by()` returns COUNTS, not the actual sources. This is efficient for analytics.
+**Key point**: `group_by()` returns COUNTS, not the actual sources. This is efficient for analytics.
 
 ## Understanding group_by results
 

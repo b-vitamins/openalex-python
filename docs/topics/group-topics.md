@@ -18,7 +18,7 @@ for group in domain_stats.group_by:
     print(f"  Domain {group.key}: {group.count:,} topics")
 ```
 
-💡 **Key point**: `group_by()` returns COUNTS, not the actual topics. This is efficient for analytics.
+**Key point**: `group_by()` returns COUNTS, not the actual topics. This is efficient for analytics.
 
 ## Understanding group_by results
 

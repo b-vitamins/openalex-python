@@ -25,7 +25,7 @@ for concept in results.results[:5]:
     print(f"  Works: {concept.works_count:,}")
 ```
 
-💡 Remember: `.filter()` builds the query, `.get()` executes it and returns one page of results.
+Remember: `.filter()` builds the query, `.get()` executes it and returns one page of results.
 
 ## Concepts attribute filters
 
