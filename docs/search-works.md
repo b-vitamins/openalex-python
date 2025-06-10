@@ -1,57 +1,79 @@
 # Search works
 
-Use `works.search()` to query titles, abstracts, and full text.
+Search across titles, abstracts, and full text:
 
 ```python
 from openalex import Works
 
-works = Works()
-results = works.search("dna")
-print(results.results[0].display_name)
+# Basic search
+results = Works().search("climate change").get()
+
+# Search with filters
+recent_climate_papers = (
+    Works()
+    .search("climate change")
+    .filter(publication_year=[2022, 2023])
+    .filter(is_oa=True)
+    .get()
+)
 ```
 
-Full text search only applies to works where `has_fulltext` is true.
+## Field-Specific Search
 
-See the [OpenAlex documentation](https://docs.openalex.org/api-entities/works/search-works) for details on how search ranking works and more advanced options.
-
-## Search a specific field
-
-Append `.search` to a filter key to limit searching to that field:
+Use `search_filter()` to search within specific fields:
 
 ```python
-works = works.list(filter={"title.search": "cubist"})
+# Search in title only
+title_matches = (
+    Works()
+    .search_filter(title="quantum computing")
+    .get()
+)
+
+# Search in abstract
+abstract_matches = (
+    Works()
+    .search_filter(abstract="machine learning")
+    .get()
+)
+
+# Multiple field searches
+specific_papers = (
+    Works()
+    .search_filter(
+        title="neural networks",
+        abstract="classification"
+    )
+    .get()
+)
 ```
 
-Fields that accept `.search` include `abstract`, `display_name` (alias `title`), `fulltext`, `raw_affiliation_strings`, and `title_and_abstract`. You can also use `default.search`, which behaves the same as the `search` parameter.
-
-| Search filter | Field that is searched |
-| --- | --- |
-| `abstract.search` | `abstract_inverted_index` |
-| `display_name.search` | `display_name` |
-| `fulltext.search` | fulltext via n-grams |
-| `raw_affiliation_strings.search` | `authorships.raw_affiliation_strings` |
-| `title.search` | `display_name` |
-| `title_and_abstract.search` | `display_name` and `abstract_inverted_index` |
-
-These searches apply stemming and stop-word removal. See the API docs if you need to disable this behaviour.
-
-### Searching by related entity names
-
-To search works by a related entity like an author or institution, first lookup that entity and then filter works by its ID:
+## Advanced Search
 
 ```python
-from openalex import Institutions
-
-nyu = Institutions().search("nyu").results[0]
-works = works.list(filter={"institutions.id": nyu.id})
+# Combine search with complex filters
+results = (
+    Works()
+    .search("artificial intelligence")
+    .filter(
+        publication_year=2023,
+        is_oa=True,
+        type="article"
+    )
+    .filter_gt(cited_by_count=5)
+    .sort(cited_by_count="desc")
+    .get()
+)
 ```
 
-## Autocomplete works
+## Autocomplete
 
-`works.autocomplete()` provides typeahead suggestions:
+Get suggestions for typeahead:
 
 ```python
-suggestions = works.autocomplete("tigers")
+suggestions = Works().autocomplete("quan")
+for suggestion in suggestions.results:
+    print(suggestion.display_name)
 ```
 
-Each suggestion includes the title and a hint containing the authors.
+See the [OpenAlex documentation](https://docs.openalex.org/api-entities/works/search-works) for more details on search behavior.

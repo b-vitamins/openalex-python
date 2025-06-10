@@ -9,16 +9,11 @@ funders = Funders()
 canadian = funders.list(filter={"country_code": "ca"})
 ```
 
-Combine multiple filters or use the `FundersFilter` helper:
+Combine multiple filters using a dictionary:
 
 ```python
 params = {"country_code": "us", "is_global_south": False}
 results = funders.list(filter=params)
-
-from openalex import FundersFilter
-
-filt = FundersFilter().with_country_code("us").with_grants_count_range(min_count=100)
-results = funders.list(filter=filt)
 ```
 
 Attribute filters include fields like `works_count`, `cited_by_count`, and `grants_count`.

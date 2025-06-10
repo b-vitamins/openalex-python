@@ -10,18 +10,11 @@ publishers = Publishers()
 publishers = publishers.list(filter={"hierarchy_level": 0})
 ```
 
-Combine several filters with a dictionary or the `PublishersFilter` helper:
+Combine several filters with a dictionary:
 
 ```python
 params = {"country_codes": "US", "hierarchy_level": 0}
 results = publishers.list(filter=params)
-
-filt = (
-    PublishersFilter()
-    .with_country_codes("US")
-    .with_hierarchy_level(0)
-)
-results = publishers.list(filter=filt)
 ```
 
 Other useful fields include `parent_publisher`, ranges on `works_count`, and text search using `display_name.search`.

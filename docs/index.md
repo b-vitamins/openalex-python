@@ -1,44 +1,72 @@
 # OpenAlex Python Client Documentation
 
-Short examples showing how to accomplish common tasks with the Python client.
+A modern Python client for OpenAlex with a fluent, chainable interface and full type annotations.
 
-- [Get a single work](get-a-single-work.md)
-- [Get lists of works](get-lists-of-works.md)
-- [Filter works](filter-works.md)
-- [Search works](search-works.md)
-- [Group works](group-works.md)
-- [Get a single author](get-a-single-author.md)
-- [Get lists of authors](get-lists-of-authors.md)
-- [Filter authors](filter-authors.md)
-- [Search authors](search-authors.md)
-- [Group authors](group-authors.md)
-- [Get a single source](get-a-single-source.md)
-- [Get lists of sources](get-lists-of-sources.md)
-- [Filter sources](filter-sources.md)
-- [Search sources](search-sources.md)
-- [Group sources](group-sources.md)
-- [Get a single publisher](get-a-single-publisher.md)
-- [Get lists of publishers](get-lists-of-publishers.md)
-- [Filter publishers](filter-publishers.md)
-- [Search publishers](search-publishers.md)
-- [Group publishers](group-publishers.md)
-- [Get a single institution](get-a-single-institution.md)
-- [Get lists of institutions](get-lists-of-institutions.md)
-- [Filter institutions](filter-institutions.md)
-- [Search institutions](search-institutions.md)
-- [Group institutions](group-institutions.md)
-- [Get a single funder](get-a-single-funder.md)
-- [Get lists of funders](get-lists-of-funders.md)
-- [Filter funders](filter-funders.md)
-- [Search funders](search-funders.md)
-- [Group funders](group-funders.md)
-- [Get a single topic](get-a-single-topic.md)
-- [Get lists of topics](get-lists-of-topics.md)
-- [Filter topics](filter-topics.md)
-- [Search topics](search-topics.md)
-- [Group topics](group-topics.md)
-- [Get a single concept](get-a-single-concept.md)
-- [Get lists of concepts](get-lists-of-concepts.md)
-- [Filter concepts](filter-concepts.md)
-- [Search concepts](search-concepts.md)
-- [Group concepts](group-concepts.md)
+## Quick Start
+
+```python
+from openalex import Works, Authors
+
+# Get a work by ID
+work = Works()["W2741809807"]
+
+# Search and filter
+papers = (
+    Works()
+    .search("climate change")
+    .filter(publication_year=2023, is_oa=True)
+    .get()
+)
+
+# Complex queries
+results = (
+    Works()
+    .filter_gt(cited_by_count=10)
+    .filter_not(type="retracted")
+    .sort(publication_year="desc")
+    .get()
+)
+```
+
+## Available Entities
+
+Each entity supports the same fluent interface:
+
+- [Works](get-a-single-work.md) - Academic papers, books, datasets
+- [Authors](get-a-single-author.md) - Researchers
+- [Institutions](get-a-single-institution.md) - Universities and organizations
+- [Sources](get-a-single-source.md) - Journals and repositories
+- [Topics](get-a-single-topic.md) - Research topics
+- [Publishers](get-a-single-publisher.md) - Academic publishers
+- [Funders](get-a-single-funder.md) - Funding organizations
+- [Concepts](get-a-single-concept.md) - Research concepts (deprecated)
+
+## Common Operations
+
+- **Get by ID**: `Works()["W123"]`
+- **Filter**: `.filter(is_oa=True)`
+- **Search**: `.search("quantum")`
+- **Sort**: `.sort(cited_by_count="desc")`
+- **Select fields**: `.select(["id", "title"])`
+- **Paginate**: `.paginate()`
+- **Group by**: `.group_by("oa_status")`
+
+## Logical Operations
+
+- **OR**: `.filter_or(type="article", type="preprint")`
+- **NOT**: `.filter_not(is_retracted=True)`
+- **Greater than**: `.filter_gt(cited_by_count=100)`
+- **Less than**: `.filter_lt(publication_year=2020)`
+
+## Configuration
+
+```python
+from openalex import Works, OpenAlexConfig
+
+config = OpenAlexConfig(
+    email="your-email@example.com",  # For polite pool
+    api_key="your-api-key",  # For premium access
+)
+
+works = Works(config=config)
+```

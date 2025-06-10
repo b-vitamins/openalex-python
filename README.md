@@ -1,16 +1,14 @@
 # OpenAlex Python Client
 
-A Python client for the [OpenAlex API](https://docs.openalex.org/).
+A modern Python client for the [OpenAlex](https://openalex.org) API with full type annotations and a fluent interface.
 
 ## Features
 
-- **Type Safety** - Type annotations with Pydantic v2 models
-- **Performance** - Built on httpx and orjson
-- **Automatic Retries** - Configurable retry logic with exponential backoff
-- **Rate Limiting** - Respects API rate limits automatically
-- **Pagination** - Iterate through large result sets
-- **Error Handling** - Exception types for different errors
-- **Zero Config** - Sensible defaults, optional configuration
+- **Fluent, chainable interface** inspired by PyAlex
+- **Fully typed** with comprehensive Pydantic models
+- **Autocomplete support** in IDEs
+- **Automatic retries** and rate limiting
+- **Pagination** helpers for large result sets
 
 ## Installation
 
@@ -18,204 +16,131 @@ A Python client for the [OpenAlex API](https://docs.openalex.org/).
 pip install openalex
 ```
 
-Or with Poetry:
-
-```bash
-poetry add openalex
-```
-
 ## Quick Start
 
 ```python
-from openalex import Works
+from openalex import Works, Authors
 
-# Get a specific work
+# Get a single work
 work = Works()["W2741809807"]
-print(f"{work.title} - {work.cited_by_count} citations")
+print(work.title)
+print(work.abstract)  # Automatically converts inverted index
 
 # Search for works
-results = Works().search("machine learning")
-for work in results.results[:5]:
-    print(f"{work.title} ({work.publication_year})")
-
-# Filter works
-recent_ml_papers = Works().list(
-    filter={
-        "search": "deep learning",
-        "publication_year": [2022, 2023, 2024],
-        "is_oa": True,
-        "type": "article",
-    }
+quantum_papers = (
+    Works()
+    .search("quantum computing")
+    .filter(publication_year=2023, is_oa=True)
+    .get()
 )
 
-# Pagination - iterate through all results
-for work in Works().paginate(filter={"is_oa": True}):
-    if work.cited_by_count > 100:
-        print(work.title)
-```
+for paper in quantum_papers.results:
+    print(f"{paper.title} - {paper.cited_by_count} citations")
 
-## Advanced Usage
+# Complex queries with logical operators
+recent_papers = (
+    Works()
+    .filter_gt(cited_by_count=10)
+    .filter_lt(publication_year=2024)
+    .filter_not(type="retracted")
+    .sort(cited_by_count="desc")
+    .get()
+)
 
-### Working with Filters
+# Get authors by ORCID
+author = Authors()["https://orcid.org/0000-0002-1234-5678"]
 
-```python
-# Create a filter object for reuse
-ml_filter = client.works.filter()
-    .with_publication_year([2020, 2021, 2022])
-    .with_type("article") 
-    .with_open_access(True)
-
-# Use the filter
-results = client.works.list(filter=ml_filter)
-
-# Or use dict-based filtering
-results = client.works.list(filter={
-    "authorships.author.id": "A123456789",
-    "concepts.id": "C41008148",  # Computer Science
-    "cited_by_count": ">100"
-})
-
-# Any valid API filter can be passed in the dictionary
-advanced = client.works.list(filter={
-    "best_open_version": "published",
-    "title_and_abstract.search": "machine learning",
-    "primary_location.source.is_in_doaj": True,
-    "has_orcid": True,
-})
-```
-
-### Pagination Options
-
-```python
-# Basic pagination
-for work in client.works.paginate():
-    print(work.title)
-    
-# Control page size and limit total results
-for work in client.works.paginate(per_page=100, max_results=1000):
+# Pagination
+for work in Works().filter(authorships={"author": {"id": author.id}}).paginate():
     process_work(work)
-
-# Get all results as a list (be careful with large datasets!)
-all_works = client.works.paginate(filter={"is_oa": True}).all()
-
-# Iterate by pages instead of individual items
-for page in client.works.paginate().pages():
-    print(f"Processing {len(page.results)} works")
-    for work in page.results:
-        process_work(work)
 ```
 
-### Entity Relationships
+## Configuration
+
+Set your email for the polite pool and get faster response times:
 
 ```python
-# Get works by a specific author
-author = client.authors.get("A123456789")
-author_works = client.works.by_author(author.id).paginate()
+from openalex import Works, OpenAlexConfig
 
-# Get works from an institution
-institution = client.institutions.get("I123456789")
-inst_works = client.works.by_institution(institution.id).list()
-
-# Get authors who cite a specific work
-work = client.works.get("W2741809807")
-citing_works = client.works.cited_by(work.id).paginate()
+config = OpenAlexConfig(email="your-email@example.com")
+works = Works(config=config)
 ```
 
-### Autocomplete
+## Examples
+
+### Search and Filter
 
 ```python
-# Autocomplete across all entity types
-suggestions = client.autocomplete("einstein")
-for result in suggestions.results:
-    print(f"{result.display_name} ({result.entity_type})")
-
-# Autocomplete for specific entity type
-author_suggestions = client.authors.autocomplete("einstein")
-```
-
-### Custom Configuration
-
-```python
-from openalex import OpenAlex, OpenAlexConfig, RetryConfig
-
-# Custom configuration
-config = OpenAlexConfig(
-    email="your-email@example.com",
-    api_key="your-premium-key",  # For premium access
-    retry_count=5,
-    timeout=60.0,
-    per_page=200,
+# Search with field-specific filters
+results = (
+    Works()
+    .search_filter(title="climate change", abstract="temperature")
+    .filter(publication_year=[2020, 2021, 2022])
+    .get()
 )
 
-# Custom retry logic
-retry_config = RetryConfig(
-    max_attempts=5,
-    initial_wait=2.0,
-    max_wait=120.0,
-)
+# OR operations
+open_papers = Works().filter_or(
+    is_oa=True,
+    best_open_version="publishedVersion"
+).get()
 
-client = OpenAlex(
-    config=config,
-    retry_config=retry_config,
-    rate_limit=50.0,  # Requests per second
+# Complex nested filters
+ml_papers = Works().filter(
+    topics={"id": "T10159"},  # Machine Learning
+    authorships={
+        "institutions": {
+            "country_code": ["US", "UK", "CA"]
+        }
+    }
+).get()
+```
+
+### Group and Aggregate
+
+```python
+# Group by open access status
+grouped = Works().filter(publication_year=2023).group_by("oa_status").get()
+
+for group in grouped.group_by:
+    print(f"{group.key}: {group.count} papers")
+```
+
+### Select Specific Fields
+
+```python
+# Get only essential fields for performance
+papers = (
+    Works()
+    .filter(journal="Nature")
+    .select(["id", "title", "doi", "publication_date"])
+    .get(per_page=200)
 )
 ```
 
-## Available Resources
+## Available Entities
 
-- **Works** - Scholarly works (papers, books, datasets, etc.)
-- **Authors** - Researchers and their publication history
-- **Institutions** - Universities, research institutes, companies
-- **Sources** - Journals, conferences, repositories
-- **Concepts** - Research topics and fields (deprecated but still available)
-- **Topics** - New hierarchical topic classification
-- **Publishers** - Academic publishers and their portfolios
-- **Funders** - Research funding organizations
-- **Keywords** - Keywords extracted from works
-
-Each resource supports:
-- `.get(id)` - Get a single entity
-- `.list(filter)` - List entities with optional filtering
-- `.search(query)` - Full-text search
-- `.filter(**params)` - Build filter objects
-- `.paginate()` - Iterate through all results
-- `.random()` - Get a random entity
-- `.autocomplete(query)` - Autocomplete suggestions
+- `Works()` - Scholarly works (papers, books, datasets)
+- `Authors()` - Researchers and their publications
+- `Institutions()` - Universities and research organizations
+- `Sources()` - Journals, conferences, repositories
+- `Topics()` - Research topics and fields
+- `Publishers()` - Academic publishers
+- `Funders()` - Research funding organizations
+- `Keywords()` - Keywords from works
+- `Concepts()` - Research concepts (deprecated)
 
 ## Error Handling
 
 ```python
-from openalex import OpenAlex, NotFoundError, RateLimitError
-
-client = OpenAlex()
+from openalex import Works, NotFoundError
 
 try:
-    work = client.works.get("W99999999")
+    work = Works()["W99999999"]
 except NotFoundError as e:
     print(f"Work not found: {e.message}")
-except RateLimitError as e:
-    print(f"Rate limit hit. Retry after {e.retry_after} seconds")
 ```
-
-## Performance Tips
-
-1. **Use pagination** for large result sets instead of increasing `per_page`
-2. **Enable caching** for frequently accessed data
-3. **Use field selection** to reduce response size:
-   ```python
-   client.works.list(select=["id", "title", "cited_by_count"])
-   ```
-4. **Batch operations** with async client for concurrent requests
-5. **Set appropriate timeouts** for your use case
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-Thanks to the [OpenAlex team](https://openalex.org/) for providing this free scholarly data API.
+MIT

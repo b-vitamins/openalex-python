@@ -16,15 +16,6 @@ params = {"country_code": "us", "type": "education"}
 results = institutions.list(filter=params)
 ```
 
-A fluent `InstitutionsFilter` is also available:
-
-```python
-from openalex import InstitutionsFilter
-
-filt = InstitutionsFilter().with_country_code("us").with_type("education")
-results = institutions.list(filter=filt)
-```
-
 Other attribute filters include `ror`, `works_count`, and `cited_by_count`.
 
 Convenience filters provide shortcuts for common operations, for example:
