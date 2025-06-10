@@ -15,7 +15,7 @@ from openalex.models import (
 class TestConcept:
     """Test Concept model with comprehensive realistic fixtures."""
 
-    @pytest.fixture
+    @pytest.fixture()
     def comprehensive_concept_data(self) -> dict[str, Any]:
         """Comprehensive concept data based on real OpenAlex API response."""
         return {
@@ -139,7 +139,7 @@ class TestConcept:
             "updated_date": "2024-12-16T11:23:45.678901",
         }
 
-    @pytest.fixture
+    @pytest.fixture()
     def hierarchical_concept_data(self) -> dict[str, Any]:
         """Concept with complex hierarchy."""
         return {
@@ -183,7 +183,7 @@ class TestConcept:
             ],
         }
 
-    @pytest.fixture
+    @pytest.fixture()
     def deep_hierarchy_concept_data(self) -> dict[str, Any]:
         """Concept at level 5 with full ancestry."""
         return {

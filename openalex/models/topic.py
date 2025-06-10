@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from datetime import datetime
 from enum import IntEnum
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 __all__ = ["Topic", "TopicHierarchy", "TopicIds", "TopicLevel"]
 
@@ -18,6 +18,9 @@ from pydantic import (
 )
 
 from ..constants import MAX_SECONDS_IN_MINUTE
+
+if TYPE_CHECKING:
+    from .work import DehydratedTopic
 from .base import OpenAlexBase, OpenAlexEntity, SummaryStats
 
 MALFORMED_DATETIME_REGEX = re.compile(
@@ -160,6 +163,6 @@ class Topic(OpenAlexEntity):
         }
 
 
-from .work import DehydratedTopic  # noqa: E402,TC001
+from .work import DehydratedTopic  # noqa: E402,TCH001
 
 Topic.model_rebuild()

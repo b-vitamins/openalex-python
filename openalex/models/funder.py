@@ -85,7 +85,7 @@ class Funder(OpenAlexEntity):
                 try:
                     date_part, time_part = v.split("T")
                     time_str, *rest = time_part.split(".")
-                    hour, minute, second = [int(x) for x in time_str.split(":")]
+                    hour, minute, second = (int(x) for x in time_str.split(":"))
                     minute += second // SECONDS_PER_MINUTE
                     second %= SECONDS_PER_MINUTE
                     hour += minute // MINUTES_PER_HOUR

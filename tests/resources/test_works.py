@@ -517,7 +517,7 @@ def test_clone_with_merges_default_filter(client: OpenAlex) -> None:
     assert new_res._default_filter.filter["authorships.author.id"] == "A123"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_async_by_doi(
     async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
 ) -> None:
@@ -531,7 +531,7 @@ async def test_async_by_doi(
     assert work.id == entity_data["id"]
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_async_by_pmid(
     async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
 ) -> None:
@@ -545,7 +545,7 @@ async def test_async_by_pmid(
     assert work.id == entity_data["id"]
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_async_open_access_list(
     async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
 ) -> None:
@@ -559,7 +559,7 @@ async def test_async_open_access_list(
     assert result.meta.count == 2
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_async_work_helpers(
     async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
 ) -> None:
@@ -609,7 +609,7 @@ async def test_async_work_helpers(
     ).meta.count == 100
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_async_search_with_default_filter(
     async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
 ) -> None:
@@ -629,7 +629,7 @@ def test_parse_list_response_error(client: OpenAlex) -> None:
         resource._parse_list_response(bad_data)
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_async_apply_filter_params(
     async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
 ) -> None:
@@ -642,7 +642,7 @@ async def test_async_apply_filter_params(
     assert result.meta.count == 1
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_async_parse_list_response_error(
     async_client: AsyncOpenAlex,
 ) -> None:
@@ -652,7 +652,7 @@ async def test_async_parse_list_response_error(
         resource._parse_list_response(bad_data)
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_async_filter_builder(async_client: AsyncOpenAlex) -> None:
     filt = async_client.works.filter(page=3)
     assert isinstance(filt, WorksFilter)
@@ -685,7 +685,7 @@ def test_paginate_default_filter_usage(
     assert len(paginator.all()) == 1
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_async_clone_with_string_filter(
     async_client: AsyncOpenAlex,
 ) -> None:
@@ -698,7 +698,7 @@ async def test_async_clone_with_string_filter(
     assert new_res._default_filter.filter["authorships.author.id"] == "A123"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_async_paginate_default_filter(
     async_client: AsyncOpenAlex,
     httpx_mock: HTTPXMock,

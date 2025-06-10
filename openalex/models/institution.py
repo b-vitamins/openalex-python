@@ -26,9 +26,9 @@ from .base import (
     Role,
     SummaryStats,
 )
-from .topic import TopicHierarchy  # noqa: TC001
 
 if TYPE_CHECKING:
+    from .topic import TopicHierarchy
     from .work import DehydratedConcept
 
 
@@ -278,6 +278,7 @@ class Institution(OpenAlexEntity):
         )
 
 
-from .work import DehydratedConcept  # noqa: E402,TC001
+from .topic import TopicHierarchy  # noqa: E402,TCH001
+from .work import DehydratedConcept  # noqa: E402,TCH001
 
 Institution.model_rebuild()

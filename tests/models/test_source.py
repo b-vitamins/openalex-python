@@ -17,7 +17,7 @@ from openalex.models import (
 class TestSource:
     """Test Source model with comprehensive realistic fixtures."""
 
-    @pytest.fixture
+    @pytest.fixture()
     def journal_source_data(self) -> dict[str, Any]:
         """Comprehensive journal source data based on real OpenAlex API response."""
         return {
@@ -100,7 +100,7 @@ class TestSource:
             "updated_date": "2024-12-16T10:12:34.567890",
         }
 
-    @pytest.fixture
+    @pytest.fixture()
     def repository_source_data(self) -> dict[str, Any]:
         """Repository source data."""
         return {
@@ -146,7 +146,7 @@ class TestSource:
             },
         }
 
-    @pytest.fixture
+    @pytest.fixture()
     def conference_source_data(self) -> dict[str, Any]:
         """Conference source data."""
         return {
@@ -177,7 +177,7 @@ class TestSource:
             ],
         }
 
-    @pytest.fixture
+    @pytest.fixture()
     def ebook_platform_source_data(self) -> dict[str, Any]:
         """E-book platform source data."""
         return {
