@@ -10,6 +10,22 @@ from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_serializer
 
 from ..constants import FILTER_DEFAULT_PER_PAGE, FIRST_PAGE
 
+__all__ = [
+    "AutocompleteResult",
+    "CountsByYear",
+    "DehydratedEntity",
+    "EntityType",
+    "Geo",
+    "GroupByResult",
+    "InternationalNames",
+    "ListResult",
+    "Meta",
+    "OpenAlexBase",
+    "OpenAlexEntity",
+    "Role",
+    "SummaryStats",
+]
+
 
 class EntityType(str, Enum):
     """OpenAlex entity types."""

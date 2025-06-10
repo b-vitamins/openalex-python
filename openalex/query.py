@@ -10,6 +10,14 @@ if TYPE_CHECKING:  # pragma: no cover - for type checking only
 from .models import BaseFilter, ListResult
 from .utils.pagination import MAX_PER_PAGE, Paginator
 
+__all__ = [
+    "Query",
+    "gt_",
+    "lt_",
+    "not_",
+    "or_",
+]
+
 T = TypeVar("T")
 F = TypeVar("F", bound=BaseFilter)
 

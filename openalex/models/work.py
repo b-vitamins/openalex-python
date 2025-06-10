@@ -10,6 +10,13 @@ from pydantic import BaseModel, Field, HttpUrl, field_validator, model_validator
 
 from ..utils.text import invert_abstract
 
+__all__ = [
+    "Work",
+    "WorkIds",
+    "WorkType",
+    "WorksFilter",
+]
+
 if TYPE_CHECKING:
     from .institution import InstitutionType
     from .topic import TopicHierarchy

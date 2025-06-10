@@ -9,6 +9,19 @@ if TYPE_CHECKING:  # pragma: no cover
 
 from pydantic import ValidationError
 
+__all__ = [
+    "Authors",
+    "BaseEntity",
+    "Concepts",
+    "Funders",
+    "Institutions",
+    "Keywords",
+    "Publishers",
+    "Sources",
+    "Topics",
+    "Works",
+]
+
 from .api import get_connection
 from .constants import (
     AUTOCOMPLETE_PATH,
@@ -65,6 +78,11 @@ class BaseEntity(Generic[T, F]):
 
         self._config = config
         self._connection = get_connection(config)
+
+    @property
+    def config(self) -> OpenAlexConfig:
+        """Return configuration for this entity."""
+        return self._config
 
     def __repr__(self) -> str:
         config_parts = []

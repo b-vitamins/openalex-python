@@ -9,6 +9,8 @@ from typing import TYPE_CHECKING, Any
 import httpx
 from structlog import get_logger
 
+__all__ = ["APIConnection", "AsyncAPIConnection", "get_connection"]
+
 from .config import OpenAlexConfig
 from .constants import DEFAULT_RATE_LIMIT
 from .exceptions import NetworkError, TimeoutError

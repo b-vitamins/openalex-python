@@ -22,11 +22,16 @@ KEY_MAP: Final[dict[str, str]] = {
 }
 
 
+def _normalize_keys(params: dict[str, Any]) -> dict[str, Any]:
+    """Return a new mapping with API parameter names normalized."""
+    return {KEY_MAP.get(k, k): v for k, v in params.items()}
+
+
 def normalize_params(params: dict[str, Any]) -> dict[str, Any]:
     """Normalize parameter keys and values for API requests."""
+    cleaned = _normalize_keys(params)
     normalized: dict[str, Any] = {}
-    for key, value in params.items():
-        key = KEY_MAP.get(key, key)
+    for key, value in cleaned.items():
         if key == "select" and isinstance(value, list):
             normalized[key] = ",".join(value)
         else:
@@ -36,16 +41,13 @@ def normalize_params(params: dict[str, Any]) -> dict[str, Any]:
 
 def strip_id_prefix(value: str, prefix: str = OPENALEX_ID_PREFIX) -> str:
     """Remove URL-style prefix from an OpenAlex identifier."""
-    if value.startswith(prefix):
-        return value[len(prefix) :]
-    return value.rsplit("/", 1)[-1]
+    trimmed = value.removeprefix(prefix)
+    return trimmed.rsplit("/", 1)[-1]
 
 
 def ensure_prefix(value: str, prefix: str) -> str:
     """Return ``value`` with ``prefix`` if missing."""
-    if value.startswith(prefix):
-        return value
-    return f"{prefix}{value}"
+    return value if value.startswith(prefix) else f"{prefix}{value}"
 
 
 def empty_list_result() -> ListResult[Any]:
