@@ -55,6 +55,17 @@ class BaseEntity(Generic[T, F]):
         self._client: OpenAlex | None = None
         self._async_client: AsyncOpenAlex | None = None
 
+    def __repr__(self) -> str:
+        """String representation of entity."""
+        config_parts = []
+        if self._email:
+            config_parts.append(f"email='{self._email}'")
+        if self._api_key:
+            config_parts.append("api_key='***'")
+
+        config_str = f"({', '.join(config_parts)})" if config_parts else ""
+        return f"<{self.__class__.__name__}{config_str}>"
+
     @property
     def _sync_client(self) -> OpenAlex:
         """Get or create sync client."""

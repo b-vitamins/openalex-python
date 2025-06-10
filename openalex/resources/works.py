@@ -4,16 +4,19 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Self
 
-from ..constants import DOI_URL_PREFIX, PMID_PREFIX, Resource
+from ..constants import DOI_URL_PREFIX, HTTP_METHOD_GET, PMID_PREFIX, Resource
+from ..exceptions import raise_for_status
 from ..models import ListResult, Work, WorksFilter
 from ..utils import ensure_prefix, strip_id_prefix
 from ..utils.pagination import MAX_PER_PAGE
+from ..utils.params import normalize_params
 from .base import AsyncBaseResource, BaseResource
 
 __all__ = ["AsyncWorksResource", "WorksResource"]
 
 if TYPE_CHECKING:
     from ..client import AsyncOpenAlex, OpenAlex
+    from ..models.work import Ngram
     from ..utils import AsyncPaginator, Paginator
 
 
@@ -171,6 +174,22 @@ class WorksResource(BaseResource[Work, WorksFilter]):
         """
         return self._clone_with({"is_oa": is_oa})
 
+    def ngrams(self, work_id: str, **params: Any) -> ListResult[Ngram]:
+        """Get n-grams for a work."""
+        from ..models.work import Ngram
+
+        work_id = strip_id_prefix(work_id)
+        url = self._build_url(f"{work_id}/ngrams")
+        params = normalize_params(params)
+
+        response = self.client._request(HTTP_METHOD_GET, url, params=params)  # noqa: SLF001
+        raise_for_status(response)
+
+        data = response.json()
+        results = [Ngram(**item) for item in data.get("ngrams", [])]
+
+        return ListResult[Ngram](meta=data.get("meta", {}), results=results)
+
     def list(
         self,
         filter: WorksFilter | dict[str, Any] | None = None,
@@ -284,6 +303,24 @@ class AsyncWorksResource(AsyncBaseResource[Work, WorksFilter]):
     ) -> AsyncWorksResource:
         """Filter works by open access status."""
         return self._clone_with({"is_oa": is_oa})
+
+    async def ngrams(self, work_id: str, **params: Any) -> ListResult[Ngram]:
+        """Get n-grams for a work asynchronously."""
+        from ..models.work import Ngram
+
+        work_id = strip_id_prefix(work_id)
+        url = self._build_url(f"{work_id}/ngrams")
+        params = normalize_params(params)
+
+        response = await self.client._request(  # noqa: SLF001
+            HTTP_METHOD_GET, url, params=params
+        )
+        raise_for_status(response)
+
+        data = response.json()
+        results = [Ngram(**item) for item in data.get("ngrams", [])]
+
+        return ListResult[Ngram](meta=data.get("meta", {}), results=results)
 
     async def list(
         self,

@@ -24,6 +24,7 @@ from .retry import (
     is_retryable_error,
     with_retry,
 )
+from .text import invert_abstract
 
 __all__ = [
     "DOI_URL_PREFIX",
@@ -42,6 +43,7 @@ __all__ = [
     "async_with_retry",
     "empty_list_result",
     "ensure_prefix",
+    "invert_abstract",
     "is_retryable_error",
     "normalize_params",
     "rate_limited",
