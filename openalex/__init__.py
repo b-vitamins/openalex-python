@@ -42,6 +42,19 @@ __license__ = "MIT"
 
 from .client import AsyncOpenAlex, OpenAlex, async_client, client  # noqa: E402
 from .config import OpenAlexConfig  # noqa: E402
+from .entities import (  # noqa: E402
+    Authors,
+    Concepts,
+    Funders,
+    Institutions,
+    Journals,
+    Keywords,
+    People,
+    Publishers,
+    Sources,
+    Topics,
+    Works,
+)
 from .exceptions import (  # noqa: E402
     APIError,
     AuthenticationError,
@@ -259,6 +272,19 @@ __all__ = [  # noqa: RUF022
     "is_retryable_error",
     "rate_limited",
     "with_retry",
+    # Entity classes
+    "Works",
+    "Authors",
+    "Institutions",
+    "Sources",
+    "Topics",
+    "Publishers",
+    "Funders",
+    "Keywords",
+    "Concepts",
+    # Aliases
+    "People",
+    "Journals",
 ]
 
 # When running under pytest with ``pytest-httpx`` installed, placeholder tests
