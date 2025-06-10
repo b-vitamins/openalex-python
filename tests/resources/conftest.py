@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_filters() -> dict[str, Any]:
     """Common filter scenarios for testing."""
     return {
@@ -27,7 +27,7 @@ def sample_filters() -> dict[str, Any]:
     }
 
 
-@pytest.fixture
+@pytest.fixture()
 def error_scenarios() -> dict[str, dict[str, Any]]:
     """Common error scenarios for testing."""
     return {
@@ -41,7 +41,7 @@ def error_scenarios() -> dict[str, dict[str, Any]]:
     }
 
 
-@pytest.fixture
+@pytest.fixture()
 def pagination_scenarios() -> dict[str, dict[str, Any]]:
     """Pagination test scenarios."""
     return {

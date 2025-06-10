@@ -11,7 +11,7 @@ from openalex.models import Keyword
 class TestKeyword:
     """Test Keyword model with comprehensive fixtures."""
 
-    @pytest.fixture
+    @pytest.fixture()
     def comprehensive_keyword_data(self) -> dict[str, Any]:
         """Comprehensive keyword data based on real OpenAlex API response."""
         return {
@@ -22,7 +22,7 @@ class TestKeyword:
             "cited_by_count": 12345678,
         }
 
-    @pytest.fixture
+    @pytest.fixture()
     def popular_keyword_data(self) -> dict[str, Any]:
         """Popular keyword with high metrics."""
         return {
@@ -33,7 +33,7 @@ class TestKeyword:
             "cited_by_count": 34567890,
         }
 
-    @pytest.fixture
+    @pytest.fixture()
     def new_keyword_data(self) -> dict[str, Any]:
         """New keyword with low metrics."""
         return {

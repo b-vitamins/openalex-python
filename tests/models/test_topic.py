@@ -17,7 +17,7 @@ from openalex.models import (
 class TestTopic:
     """Test Topic model with comprehensive realistic fixtures."""
 
-    @pytest.fixture
+    @pytest.fixture()
     def domain_topic_data(self) -> dict[str, Any]:
         """Domain-level topic data (level 0)."""
         return {
@@ -60,7 +60,7 @@ class TestTopic:
             "updated_date": "2024-12-16T14:56:78.901234",
         }
 
-    @pytest.fixture
+    @pytest.fixture()
     def field_topic_data(self) -> dict[str, Any]:
         """Field-level topic data (level 1)."""
         return {
@@ -101,7 +101,7 @@ class TestTopic:
             "cited_by_count": 67890123,
         }
 
-    @pytest.fixture
+    @pytest.fixture()
     def subfield_topic_data(self) -> dict[str, Any]:
         """Subfield-level topic data (level 2) - most detailed level."""
         return {
@@ -152,7 +152,7 @@ class TestTopic:
             "updated_date": "2024-12-16T15:12:34.567890",
         }
 
-    @pytest.fixture
+    @pytest.fixture()
     def interdisciplinary_topic_data(self) -> dict[str, Any]:
         """Interdisciplinary topic spanning multiple domains."""
         return {

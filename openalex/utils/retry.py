@@ -117,7 +117,8 @@ def with_retry(
                     return func(*args, **kwargs)
         except RetryError as e:
             if e.last_attempt.failed:
-                raise e.last_attempt.result() from e
+                exc = e.last_attempt.result()
+                raise exc from e
             raise
 
         raise AssertionError(UNREACHABLE_MSG)
@@ -162,7 +163,8 @@ def async_with_retry(
                     return await func(*args, **kwargs)
         except RetryError as e:
             if e.last_attempt.failed:
-                raise e.last_attempt.result() from e
+                exc = e.last_attempt.result()
+                raise exc from e
             raise
 
         raise AssertionError(UNREACHABLE_MSG)

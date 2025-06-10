@@ -283,7 +283,7 @@ class TestSourcesResource(BaseResourceTest[Source]):
         )
         assert sources_with_homepage.meta.count == 8000
 
-    @pytest.mark.asyncio
+    @pytest.mark.asyncio()
     async def test_async_by_issn(
         self,
         async_client: AsyncOpenAlex,

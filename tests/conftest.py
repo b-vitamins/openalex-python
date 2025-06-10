@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from collections.abc import Generator
 
 
-@pytest.fixture
+@pytest.fixture()
 def config() -> OpenAlexConfig:
     """Create test configuration."""
     return OpenAlexConfig(
@@ -25,7 +25,7 @@ def config() -> OpenAlexConfig:
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def client(config: OpenAlexConfig) -> Generator[OpenAlex, None, None]:
     """Create test client."""
     c = OpenAlex(config=config)
@@ -33,7 +33,7 @@ def client(config: OpenAlexConfig) -> Generator[OpenAlex, None, None]:
     c.close()
 
 
-@pytest.fixture
+@pytest.fixture()
 async def async_client(config: OpenAlexConfig) -> AsyncOpenAlex:
     """Create async test client."""
     c = AsyncOpenAlex(config=config)
@@ -41,7 +41,7 @@ async def async_client(config: OpenAlexConfig) -> AsyncOpenAlex:
     await c.close()
 
 
-@pytest.fixture
+@pytest.fixture()
 def mock_work_response() -> dict[str, Any]:
     """Mock work API response."""
     return {
@@ -94,7 +94,7 @@ def mock_work_response() -> dict[str, Any]:
     }
 
 
-@pytest.fixture
+@pytest.fixture()
 def mock_author_response() -> dict[str, Any]:
     """Mock author API response."""
     return {
@@ -134,7 +134,7 @@ def mock_author_response() -> dict[str, Any]:
     }
 
 
-@pytest.fixture
+@pytest.fixture()
 def mock_list_response(mock_work_response: dict[str, Any]) -> dict[str, Any]:
     """Mock list API response."""
     return {
@@ -149,7 +149,7 @@ def mock_list_response(mock_work_response: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-@pytest.fixture
+@pytest.fixture()
 def mock_autocomplete_response() -> dict[str, Any]:
     """Mock autocomplete API response."""
     return {
@@ -178,7 +178,7 @@ def mock_autocomplete_response() -> dict[str, Any]:
     }
 
 
-@pytest.fixture
+@pytest.fixture()
 def mock_error_response() -> dict[str, Any]:
     """Mock error API response."""
     return {

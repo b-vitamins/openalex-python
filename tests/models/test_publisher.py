@@ -12,7 +12,7 @@ from openalex.models import Publisher
 class TestPublisher:
     """Test Publisher model with comprehensive realistic fixtures."""
 
-    @pytest.fixture
+    @pytest.fixture()
     def parent_publisher_data(self) -> dict[str, Any]:
         """Parent publisher data based on real OpenAlex API response."""
         return {
@@ -72,7 +72,7 @@ class TestPublisher:
             "updated_date": "2024-12-16T12:34:56.789012",
         }
 
-    @pytest.fixture
+    @pytest.fixture()
     def child_publisher_data(self) -> dict[str, Any]:
         """Child publisher data (imprint)."""
         return {
@@ -117,7 +117,7 @@ class TestPublisher:
             },
         }
 
-    @pytest.fixture
+    @pytest.fixture()
     def university_press_publisher_data(self) -> dict[str, Any]:
         """University press publisher data."""
         return {
