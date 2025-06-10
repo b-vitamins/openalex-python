@@ -1,66 +1,80 @@
 # Filter works
 
-Use the `filter` argument of `works.list()` to narrow results. Filter
-keys follow the same names as the API.
+Use filters to narrow down your search results:
 
 ```python
 from openalex import Works
 
-works = Works()
-# works published in 2020
-works = works.list(filter={"publication_year": 2020})
+# Simple filter
+papers_2020 = Works().filter(publication_year=2020).get()
+
+# Multiple filters (AND operation)
+open_access_2020 = (
+    Works()
+    .filter(publication_year=2020, is_oa=True)
+    .get()
+)
+
+# Complex filters
+recent_ml_papers = (
+    Works()
+    .filter(
+        publication_year=[2021, 2022, 2023],
+        topics={"id": "T10159"},  # Machine Learning
+        is_oa=True
+    )
+    .get()
+)
 ```
 
-Multiple filters can be combined by passing a dictionary:
+## Logical Operations
 
 ```python
-params = {"publication_year": 2020, "is_oa": True}
-works = works.list(filter=params)
+# OR operation
+papers = Works().filter_or(
+    type="article",
+    type="preprint"
+).get()
+
+# NOT operation
+not_retracted = Works().filter_not(type="retracted").get()
+
+# Greater than / Less than
+highly_cited = Works().filter_gt(cited_by_count=100).get()
+recent = Works().filter_gt(publication_year=2020).get()
 ```
 
-For more complex queries you can build a `WorksFilter` object:
+## Nested Filters
 
 ```python
-from openalex import WorksFilter
+# Filter by institution
+mit_papers = Works().filter(
+    authorships={
+        "institutions": {
+            "id": "I63966007"  # MIT
+        }
+    }
+).get()
 
-filt = WorksFilter().with_publication_year(2020).with_open_access()
-works = works.list(filter=filt)
+# Filter by author's institution country
+us_papers = Works().filter(
+    authorships={
+        "institutions": {
+            "country_code": "US"
+        }
+    }
+).get()
 ```
 
-## Attribute filters
+## Common Filters
 
-Attribute filters match fields on the `Work` object. Pass them as a
-dictionary or use helper methods on `WorksFilter`.
+| Filter             | Description               | Example                             |
+| ------------------ | ------------------------- | ----------------------------------- |
+| `publication_year` | Year of publication       | `filter(publication_year=2023)`     |
+| `is_oa`            | Open access status        | `filter(is_oa=True)`                |
+| `type`             | Work type                 | `filter(type="article")`            |
+| `cited_by_count`   | Citation count            | `filter_gt(cited_by_count=10)`      |
+| `doi`              | Digital Object Identifier | `filter(doi="10.1038/nature12373")` |
+| `title.search`     | Search in title           | `filter(title.search="quantum")`    |
 
-```python
-# by author and work type
-params = {"authorships.author.id": "A123456789", "type": "article"}
-results = works.list(filter=params)
-
-filt = WorksFilter().with_author_id("A123456789").with_type("article")
-results = works.list(filter=filt)
-```
-
-Other common attribute filters include `publication_year`, `concepts.id`, and
-`primary_location.source.id`.
-
-## Convenience filters
-
-Convenience filters offer shortcuts for frequent queries that are not direct
-properties of the work record.
-
-```python
-# works that cite a specific paper and have an abstract
-params = {"cites": "W2741809807", "has_abstract": True}
-results = works.list(filter=params)
-
-filt = WorksFilter().with_cites("W2741809807").with_has_abstract(True)
-results = works.list(filter=filt)
-```
-
-Other examples are `from_publication_date`, `has_fulltext`, and
-`best_open_version`.
-
-For a complete list of available filters see the [OpenAlex API
-documentation](https://docs.openalex.org/api-entities/works/filter-works).
-
+For a complete list of filters, see the [OpenAlex API documentation](https://docs.openalex.org/api-entities/works/filter-works).

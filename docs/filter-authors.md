@@ -1,51 +1,66 @@
 # Filter authors
 
-Use the `filter` argument of `authors.list()` to narrow the results.
+Filter authors using various criteria:
 
 ```python
 from openalex import Authors
 
-authors = Authors()
-# authors that have an ORCID
-authors = authors.list(filter={"has_orcid": True})
-```
+# Authors with ORCID
+authors_with_orcid = Authors().filter(has_orcid=True).get()
 
-Multiple filters may be combined using a dictionary or the `AuthorsFilter` helper:
-
-```python
-params = {"has_orcid": True, "last_known_institution.continent": "africa"}
-results = authors.list(filter=params)
-
-filt = (
-    AuthorsFilter()
-    .with_orcid("!null")
-    .with_last_known_institution_continent("africa")
+# Multiple filters
+african_authors = (
+    Authors()
+    .filter(
+        has_orcid=True,
+        last_known_institution={"continent": "africa"}
+    )
+    .get()
 )
-results = authors.list(filter=filt)
 ```
 
-## Attribute filters
-
-Attribute filters correspond to fields on the `Author` object such as
-`orcid`, `works_count`, or `last_known_institution.id`.
-Pass them directly as keys in the filter dictionary or via `AuthorsFilter`.
+## Search Filters
 
 ```python
-params = {"works_count": ">100", "last_known_institution.id": "I27837315"}
-results = authors.list(filter=params)
+# Search in display name
+smiths = Authors().filter(display_name.search="smith").get()
+
+# Search with other filters
+prolific_johns = (
+    Authors()
+    .filter(display_name.search="john")
+    .filter_gt(works_count=50)
+    .get()
+)
 ```
 
-## Convenience filters
-
-Convenience filters are shortcuts for common queries that aren't single fields.
+## Range Filters
 
 ```python
-# search within the display name and require an ORCID
-params = {"display_name.search": "tupolev", "has_orcid": True}
-results = authors.list(filter=params)
+# Highly cited authors
+highly_cited = Authors().filter_gt(cited_by_count=1000).get()
+
+# Authors with moderate publication count
+moderate_publishers = (
+    Authors()
+    .filter_gt(works_count=10)
+    .filter_lt(works_count=100)
+    .get()
+)
 ```
 
-More examples include `default.search`, `last_known_institution.is_global_south`,
-and range filters for cited-by counts. See the
-[OpenAlex API documentation](https://docs.openalex.org/api-entities/authors/filter-authors)
-for the complete list.
+## Institution Filters
+
+```python
+# Authors from a specific institution
+mit_authors = Authors().filter(
+    last_known_institution={"id": "I63966007"}
+).get()
+
+# Authors from US institutions
+us_authors = Authors().filter(
+    last_known_institution={"country_code": "US"}
+).get()
+```
+
+For more filter options, see the [OpenAlex API documentation](https://docs.openalex.org/api-entities/authors/filter-authors).

@@ -12,15 +12,11 @@ concepts = Concepts()
 level_zero = concepts.list(filter={"level": 0})
 ```
 
-Combine multiple filters or use the `ConceptsFilter` helper:
+Combine multiple filters using a dictionary:
 
 ```python
 params = {"cited_by_count": ">100", "has_wikidata": True}
 results = concepts.list(filter=params)
-
-from openalex import ConceptsFilter
-filt = ConceptsFilter().with_level(1).with_has_wikidata(True)
-results = concepts.list(filter=filt)
 ```
 
 See [the API docs](https://docs.openalex.org/api-entities/concepts/filter-concepts) for the full list of attribute and convenience filters.

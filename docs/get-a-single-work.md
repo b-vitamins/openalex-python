@@ -1,6 +1,6 @@
 # Get a single work
 
-Use the client to fetch a `Work` by its OpenAlex identifier.
+Use `Works()` to fetch a `Work` by its OpenAlex identifier.
 
 ```python
 from openalex import Works
@@ -28,12 +28,12 @@ work = works.get("pmid:14907713")
 
 Supported prefixes:
 
-| External ID | Prefix |
-|-------------|-------|
-| DOI | `doi:` |
-| Microsoft Academic Graph (MAG) | `mag:` |
-| PubMed ID (PMID) | `pmid:` |
-| PubMed Central ID (PMCID) | `pmcid:` |
+| External ID                    | Prefix   |
+| ------------------------------ | -------- |
+| DOI                            | `doi:`   |
+| Microsoft Academic Graph (MAG) | `mag:`   |
+| PubMed ID (PMID)               | `pmid:`  |
+| PubMed Central ID (PMCID)      | `pmcid:` |
 
 Make sure the identifier is valid. Invalid or malformed IDs will either return no result or raise an error.
 
