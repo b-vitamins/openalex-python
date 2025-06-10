@@ -163,6 +163,6 @@ class Topic(OpenAlexEntity):
         }
 
 
-from .work import DehydratedTopic  # noqa: E402,TC001
+from .work import DehydratedTopic  # noqa: E402,TCH001
 
 Topic.model_rebuild()

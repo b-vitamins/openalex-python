@@ -147,6 +147,9 @@ class Author(OpenAlexEntity):
         return [c.display_name for c in self.x_concepts if c.display_name]
 
 
-from .work import DehydratedConcept, DehydratedInstitution  # noqa: E402,TC001
+from .work import (  # noqa: E402,TCH001
+    DehydratedConcept,
+    DehydratedInstitution,
+)
 
 Author.model_rebuild()

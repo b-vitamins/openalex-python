@@ -59,9 +59,9 @@ class APIConnection:
         params = params or {}
         params["mailto"] = self.config.email
         if self.config.api_key:
-            kwargs.setdefault("headers", {})["Authorization"] = (
-                f"Bearer {self.config.api_key}"
-            )
+            kwargs.setdefault("headers", {})[
+                "Authorization"
+            ] = f"Bearer {self.config.api_key}"
 
         wait = self.rate_limiter.acquire()
         if wait > 0:
@@ -133,9 +133,9 @@ class AsyncAPIConnection:
         params = params or {}
         params["mailto"] = self.config.email
         if self.config.api_key:
-            kwargs.setdefault("headers", {})["Authorization"] = (
-                f"Bearer {self.config.api_key}"
-            )
+            kwargs.setdefault("headers", {})[
+                "Authorization"
+            ] = f"Bearer {self.config.api_key}"
 
         wait = await self.rate_limiter.acquire()
         if wait > 0:
