@@ -19,7 +19,7 @@ def test_by_wikidata_formats(client, httpx_mock):
     assert concept.id == "https://openalex.org/C456"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_by_wikidata(async_client, httpx_mock):
     httpx_mock.add_response(
         url="https://api.openalex.org/concepts/https://www.wikidata.org/entity/Q789?mailto=test%40example.com",

@@ -392,7 +392,7 @@ class BaseResourceTest(Generic[T]):
 
         assert exc_info.value.status_code == 500
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_async_get(
         self,
         async_client: AsyncOpenAlex,
@@ -410,7 +410,7 @@ class BaseResourceTest(Generic[T]):
 
         assert isinstance(entity, self.entity_class)
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_async_pagination(
         self,
         async_client: AsyncOpenAlex,
@@ -432,7 +432,7 @@ class BaseResourceTest(Generic[T]):
 
         assert len(results) == 10
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_async_random(
         self, async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
     ) -> None:
@@ -445,7 +445,7 @@ class BaseResourceTest(Generic[T]):
         entity = await resource.random()
         assert isinstance(entity, self.entity_class)
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_async_autocomplete(
         self, async_client: AsyncOpenAlex, httpx_mock: HTTPXMock
     ) -> None:
@@ -475,7 +475,7 @@ class BaseResourceTest(Generic[T]):
         assert result.meta.count == 3
         assert len(result.results) == 1
 
-    @pytest.mark.asyncio()
+    @pytest.mark.asyncio
     async def test_async_get_with_full_url(
         self,
         async_client: AsyncOpenAlex,

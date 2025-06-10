@@ -27,7 +27,7 @@ from openalex.models.work import (
 class TestWork:
     """Test Work model with comprehensive realistic fixtures."""
 
-    @pytest.fixture()
+    @pytest.fixture
     def comprehensive_work_data(self) -> dict[str, Any]:
         """Comprehensive work data based on real OpenAlex API response."""
         return {
