@@ -7,7 +7,12 @@ from ..constants import (
     ORCID_URL_PREFIX,
     PMID_PREFIX,
 )
-from .common import empty_list_result, ensure_prefix, strip_id_prefix
+from .common import (
+    empty_list_result,
+    ensure_prefix,
+    is_openalex_id,
+    strip_id_prefix,
+)
 from .pagination import AsyncPaginator, Paginator
 from .params import normalize_params
 from .rate_limit import (
@@ -44,6 +49,7 @@ __all__ = [
     "empty_list_result",
     "ensure_prefix",
     "invert_abstract",
+    "is_openalex_id",
     "is_retryable_error",
     "normalize_params",
     "rate_limited",

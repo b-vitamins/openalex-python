@@ -171,6 +171,8 @@ def async_with_retry(
 class RetryHandler:
     """Handler for retry logic with rate limit awareness."""
 
+    __slots__ = ("_rate_limit_reset", "config")
+
     def __init__(self, config: RetryConfig | None = None) -> None:
         """Initialize retry handler."""
         self.config = config or RetryConfig()

@@ -68,6 +68,11 @@ class Paginator(Generic[T]):
         self.max_results = max_results
         self._total_fetched = 0
 
+    @property
+    def total_fetched(self) -> int:
+        """Number of results yielded so far."""
+        return self._total_fetched
+
     def __iter__(self) -> Iterator[T]:
         """Iterate over all results."""
         page: int | None = FIRST_PAGE
@@ -209,6 +214,11 @@ class AsyncPaginator(Generic[T]):
         self.max_results = max_results
         self.concurrency = concurrency
         self._total_fetched = 0
+
+    @property
+    def total_fetched(self) -> int:
+        """Number of results yielded so far."""
+        return self._total_fetched
 
     async def __aiter__(self) -> AsyncIterator[T]:
         """Iterate over all results asynchronously."""

@@ -58,6 +58,8 @@ F = TypeVar("F", bound="BaseFilter")
 class BaseEntity(Generic[T, F]):
     """Base class for entity direct access."""
 
+    __slots__ = ("_config", "_connection")
+
     endpoint: str = ""
     model_class: type[T] = None  # type: ignore
 

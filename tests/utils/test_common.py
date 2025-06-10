@@ -1,6 +1,7 @@
 from openalex.utils import (
     empty_list_result,
     ensure_prefix,
+    is_openalex_id,
     normalize_params,
     strip_id_prefix,
 )
@@ -14,6 +15,11 @@ def test_ensure_prefix() -> None:
 def test_strip_id_prefix() -> None:
     assert strip_id_prefix("https://openalex.org/W123") == "W123"
     assert strip_id_prefix("W123") == "W123"
+
+
+def test_is_openalex_id() -> None:
+    assert is_openalex_id("https://openalex.org/W1")
+    assert not is_openalex_id("W1")
 
 
 def test_normalize_params_select_list() -> None:
