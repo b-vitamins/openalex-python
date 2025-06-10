@@ -47,7 +47,7 @@ def test_paginator_iteration() -> None:
     assert paginator.count() == total
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_paginator_gather() -> None:
     total = 5
 
@@ -93,7 +93,7 @@ def test_paginator_error() -> None:
         list(paginator)
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_paginator_pages_first_all() -> None:
     total = 5
 
@@ -114,7 +114,7 @@ async def test_async_paginator_pages_first_all() -> None:
     assert len(results) == total
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_paginator_error() -> None:
     async def fetch(_: dict[str, Any]) -> ListResult[Work]:
         msg = "bad"
@@ -130,7 +130,7 @@ async def test_async_paginator_error() -> None:
         await iterate_paginator()
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_paginator_gather_max_results() -> None:
     total = 10
 
@@ -162,7 +162,7 @@ def test_paginator_pages_error() -> None:
         next(paginator.pages())
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_paginator_pages_error() -> None:
     async def fetch(_: dict[str, Any]) -> ListResult[Work]:
         msg = "boom"
@@ -185,7 +185,7 @@ def test_paginator_first_no_results() -> None:
     assert paginator.count() == 0
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_paginator_first_no_results() -> None:
     async def fetch(_: dict[str, Any]) -> ListResult[Work]:
         meta = Meta(
@@ -198,7 +198,7 @@ async def test_async_paginator_first_no_results() -> None:
     assert await paginator.count() == 0
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_paginator_max_results_iter() -> None:
     total = 5
 
@@ -231,7 +231,7 @@ def test_paginator_page_increment_and_all() -> None:
     assert [w.id for w in items] == ["W0", "W1", "W2", "W3", "W4"]
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_paginator_pages_page_increment() -> None:
     """Async paginator uses page numbers when no cursor is returned."""
     total = 5
@@ -249,7 +249,7 @@ async def test_async_paginator_pages_page_increment() -> None:
     assert len(pages) == 3
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_paginator_gather_respects_max_results() -> None:
     """gather stops when reaching ``max_results``."""
     total = 10

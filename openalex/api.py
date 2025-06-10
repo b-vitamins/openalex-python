@@ -26,6 +26,8 @@ logger = get_logger(__name__)
 class APIConnection:
     """Handles direct API communication."""
 
+    __slots__ = ("_client", "config", "rate_limiter", "retry_config")
+
     def __init__(self, config: OpenAlexConfig | None = None) -> None:
         self.config = config or OpenAlexConfig()
         self.rate_limiter = RateLimiter(DEFAULT_RATE_LIMIT)
@@ -48,6 +50,23 @@ class APIConnection:
         """Base URL without trailing slash."""
         return str(self.config.base_url).rstrip("/")
 
+    def _default_headers(
+        self, headers: dict[str, str] | None
+    ) -> dict[str, str]:
+        merged = self.config.headers.copy()
+        if headers:
+            merged.update(headers)
+        return merged
+
+    def _default_params(self, params: dict[str, Any] | None) -> dict[str, Any]:
+        merged = self.config.params.copy()
+        if params:
+            merged.update(params)
+        return merged
+
+    def __repr__(self) -> str:  # pragma: no cover - debugging aid
+        return f"<APIConnection base_url={self.base_url}>"
+
     def request(
         self,
         method: str,
@@ -56,12 +75,8 @@ class APIConnection:
         **kwargs: Any,
     ) -> Response:
         """Make HTTP request with retry and rate limiting."""
-        params = params or {}
-        params["mailto"] = self.config.email
-        if self.config.api_key:
-            kwargs.setdefault("headers", {})[
-                "Authorization"
-            ] = f"Bearer {self.config.api_key}"
+        params = self._default_params(params)
+        kwargs["headers"] = self._default_headers(kwargs.get("headers"))
 
         wait = self.rate_limiter.acquire()
         if wait > 0:
@@ -91,6 +106,8 @@ class APIConnection:
 class AsyncAPIConnection:
     """Async version of API connection."""
 
+    __slots__ = ("_client", "config", "rate_limiter", "retry_config")
+
     def __init__(self, config: OpenAlexConfig | None = None) -> None:
         self.config = config or OpenAlexConfig()
         self.rate_limiter = AsyncRateLimiter(DEFAULT_RATE_LIMIT)
@@ -100,6 +117,23 @@ class AsyncAPIConnection:
     @property
     def base_url(self) -> str:
         return str(self.config.base_url).rstrip("/")
+
+    def _default_headers(
+        self, headers: dict[str, str] | None
+    ) -> dict[str, str]:
+        merged = self.config.headers.copy()
+        if headers:
+            merged.update(headers)
+        return merged
+
+    def _default_params(self, params: dict[str, Any] | None) -> dict[str, Any]:
+        merged = self.config.params.copy()
+        if params:
+            merged.update(params)
+        return merged
+
+    def __repr__(self) -> str:  # pragma: no cover - debugging aid
+        return f"<AsyncAPIConnection base_url={self.base_url}>"
 
     async def __aenter__(self) -> AsyncAPIConnection:
         self._client = httpx.AsyncClient(
@@ -130,12 +164,8 @@ class AsyncAPIConnection:
             msg = "Use async with statement"
             raise RuntimeError(msg)
 
-        params = params or {}
-        params["mailto"] = self.config.email
-        if self.config.api_key:
-            kwargs.setdefault("headers", {})[
-                "Authorization"
-            ] = f"Bearer {self.config.api_key}"
+        params = self._default_params(params)
+        kwargs["headers"] = self._default_headers(kwargs.get("headers"))
 
         wait = await self.rate_limiter.acquire()
         if wait > 0:

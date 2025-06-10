@@ -224,8 +224,10 @@ class BaseEntity(Generic[T, F]):
 class Works(BaseEntity[Work, BaseFilter]):
     endpoint = "works"
     model_class = Work
+    __slots__ = ()
 
     def ngrams(self, work_id: str, **params: Any) -> ListResult[Any]:
+        """Return ngram statistics for a given work."""
         from .models.work import Ngram
 
         work_id = strip_id_prefix(work_id)
@@ -241,41 +243,49 @@ class Works(BaseEntity[Work, BaseFilter]):
 class Authors(BaseEntity[Author, BaseFilter]):
     endpoint = "authors"
     model_class = Author
+    __slots__ = ()
 
 
 class Institutions(BaseEntity[Institution, BaseFilter]):
     endpoint = "institutions"
     model_class = Institution
+    __slots__ = ()
 
 
 class Sources(BaseEntity[Source, BaseFilter]):
     endpoint = "sources"
     model_class = Source
+    __slots__ = ()
 
 
 class Topics(BaseEntity[Topic, BaseFilter]):
     endpoint = "topics"
     model_class = Topic
+    __slots__ = ()
 
 
 class Publishers(BaseEntity[Publisher, BaseFilter]):
     endpoint = "publishers"
     model_class = Publisher
+    __slots__ = ()
 
 
 class Funders(BaseEntity[Funder, BaseFilter]):
     endpoint = "funders"
     model_class = Funder
+    __slots__ = ()
 
 
 class Keywords(BaseEntity[Keyword, BaseFilter]):
     endpoint = "keywords"
     model_class = Keyword
+    __slots__ = ()
 
 
 class Concepts(BaseEntity[Concept, BaseFilter]):
     endpoint = "concepts"
     model_class = Concept
+    __slots__ = ()
 
 
 People = Authors
