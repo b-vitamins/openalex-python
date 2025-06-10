@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from datetime import date, datetime
 from enum import Enum
 from typing import Any, Generic, TypeVar
@@ -148,6 +149,25 @@ class ListResult(OpenAlexBase, Generic[T]):
     meta: Meta
     results: list[T] = Field(default_factory=list)
     group_by: list[GroupByResult] | None = None
+
+    def __len__(self) -> int:
+        """Return the number of results."""
+        return len(self.results)
+
+    def iter_results(self) -> Iterator[T]:
+        """Iterate over contained results."""
+        return iter(self.results)
+
+    def __getitem__(self, index: int) -> T:
+        """Get result at ``index``."""
+        return self.results[index]
+
+    def __bool__(self) -> bool:  # pragma: no cover - trivial
+        """Truthiness based on contained results."""
+        return bool(self.results)
+
+    def __repr__(self) -> str:  # pragma: no cover - for debugging only
+        return f"<ListResult {len(self)} results>"
 
 
 class AutocompleteResult(OpenAlexBase):

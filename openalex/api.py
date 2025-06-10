@@ -113,6 +113,11 @@ class AsyncAPIConnection:
         if self._client:
             await self._client.aclose()
 
+    async def close(self) -> None:
+        """Close the underlying HTTP client."""
+        if self._client:
+            await self._client.aclose()
+
     async def request(
         self,
         method: str,

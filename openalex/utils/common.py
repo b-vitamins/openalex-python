@@ -11,6 +11,7 @@ __all__ = [
     "OPENALEX_ID_PREFIX",
     "empty_list_result",
     "ensure_prefix",
+    "is_openalex_id",
     "strip_id_prefix",
 ]
 
@@ -19,6 +20,11 @@ def strip_id_prefix(value: str, prefix: str = OPENALEX_ID_PREFIX) -> str:
     """Remove URL-style prefix from an OpenAlex identifier."""
     trimmed = value.removeprefix(prefix)
     return trimmed.rsplit("/", 1)[-1]
+
+
+def is_openalex_id(value: str) -> bool:
+    """Return ``True`` if the value looks like an OpenAlex ID."""
+    return value.startswith(OPENALEX_ID_PREFIX)
 
 
 def ensure_prefix(value: str, prefix: str) -> str:

@@ -13,6 +13,7 @@ from structlog import get_logger
 DEFAULT_BUFFER: Final = 0.1
 
 __all__ = [
+    "DEFAULT_BUFFER",
     "AsyncRateLimiter",
     "RateLimiter",
     "SlidingWindowRateLimiter",
@@ -30,6 +31,14 @@ T = TypeVar("T")
 
 class RateLimiter:
     """Token bucket rate limiter."""
+
+    __slots__ = (
+        "burst",
+        "last_update",
+        "lock",
+        "rate",
+        "tokens",
+    )
 
     def __init__(
         self,
@@ -102,9 +111,30 @@ class RateLimiter:
 
             return False
 
+    def __repr__(self) -> str:  # pragma: no cover - debugging aid
+        return f"<RateLimiter rate={self.rate} burst={self.burst}>"
+
+    def __enter__(self) -> RateLimiter:
+        """Context manager entry."""
+        wait_time = self.acquire()
+        if wait_time > 0:
+            time.sleep(wait_time)
+        return self
+
+    def __exit__(self, *args: Any) -> None:
+        """Context manager exit."""
+        return
+
 
 class SlidingWindowRateLimiter:
     """Sliding window rate limiter."""
+
+    __slots__ = (
+        "lock",
+        "max_requests",
+        "requests",
+        "window_seconds",
+    )
 
     def __init__(
         self,
@@ -167,9 +197,34 @@ class SlidingWindowRateLimiter:
 
             return False
 
+    def __repr__(self) -> str:  # pragma: no cover - debugging aid
+        return f"<SlidingWindowRateLimiter max={self.max_requests} window={self.window_seconds}>"
+
+    def __enter__(self) -> SlidingWindowRateLimiter:
+        """Context manager entry."""
+        wait_time = self.acquire()
+        if wait_time > 0:
+            time.sleep(wait_time)
+        return self
+
+    def __exit__(self, *args: Any) -> None:
+        """Context manager exit."""
+        return
+
 
 class AsyncRateLimiter:
     """Async token bucket rate limiter."""
+
+    __slots__ = (
+        "burst",
+        "last_update",
+        "lock",
+        "rate",
+        "tokens",
+    )
+
+    def __repr__(self) -> str:  # pragma: no cover - debugging aid
+        return f"<AsyncRateLimiter rate={self.rate} burst={self.burst}>"
 
     def __init__(
         self,

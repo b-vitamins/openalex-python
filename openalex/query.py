@@ -23,7 +23,7 @@ F = TypeVar("F", bound=BaseFilter)
 
 
 class or_(dict[str, Any]):  # noqa: N801
-    """Logical OR expression for filters."""
+    """Container to mark a filter dictionary for OR combination."""
 
 
 class _LogicalExpression:
@@ -59,6 +59,8 @@ class lt_(_LogicalExpression):  # noqa: N801
 class Query(Generic[T, F]):
     """Fluent interface for building API queries."""
 
+    __slots__ = ("entity", "params")
+
     def __init__(
         self,
         entity: BaseEntity[T, F],
@@ -77,6 +79,8 @@ class Query(Generic[T, F]):
 
     # internal helper
     def _clone(self, **updates: Any) -> Query[T, F]:
+        """Return a new :class:`Query` with updated parameters."""
+
         new_params = {**self.params}
         for key, value in updates.items():
             if key == "filter" and value is not None:
