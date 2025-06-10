@@ -39,7 +39,7 @@ Each entity supports the same fluent interface:
 - [Topics](get-a-single-topic.md) - Research topics
 - [Publishers](get-a-single-publisher.md) - Academic publishers
 - [Funders](get-a-single-funder.md) - Funding organizations
-- [Concepts](get-a-single-concept.md) - Research concepts (deprecated)
+- [Concepts](concepts/get-a-single-concept.md) - Research concepts (deprecated)
 
 ## Common Operations
 
