@@ -28,8 +28,8 @@ def is_openalex_id(value: str, prefix: str = OPENALEX_ID_PREFIX) -> bool:
 
 
 def ensure_prefix(value: str, prefix: str) -> str:
-    """Ensure ``value`` starts with ``prefix``."""
-    return value if value.startswith(prefix) else f"{prefix}{value}"
+    """Return ``value`` with ``prefix`` if missing."""
+    return value if value.startswith(prefix) else prefix + value
 
 
 def empty_list_result() -> ListResult[Any]:

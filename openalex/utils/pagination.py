@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from itertools import repeat
 from typing import TYPE_CHECKING, Any, Final, Generic, TypeVar
 
 from structlog import get_logger
@@ -37,16 +38,33 @@ T = TypeVar("T")
 
 
 def _pad_results(results: list[T], per_page: int | None) -> list[T]:
-    """Pad ``results`` to ``per_page`` length if necessary.
+    """Pad ``results`` list to ``per_page`` length if needed.
 
-    When the API returns fewer items than requested, the last item is
-    duplicated to maintain a consistent list length. This ensures that
-    consumers relying on a fixed page size behave consistently.
+    When the API returns fewer items than requested, the last element is
+    repeated so that the returned list always matches ``per_page``.  This
+    avoids unexpected short pages when consumers rely on a fixed size.
     """
     if per_page and results and len(results) < per_page:
         padding = per_page - len(results)
-        return results + results[-1:] * padding
+        return [*results, *repeat(results[-1], padding)]
     return results
+
+
+def _build_params(
+    base: dict[str, Any],
+    *,
+    cursor: str | None,
+    page: int | None,
+    per_page: int,
+) -> dict[str, Any]:
+    """Construct parameters for a page request."""
+    params = base.copy()
+    params[PARAM_PER_PAGE] = per_page
+    if cursor:
+        params[PARAM_CURSOR] = cursor
+    else:
+        params[PARAM_PAGE] = page
+    return params
 
 
 class Paginator(Generic[T]):
@@ -87,18 +105,12 @@ class Paginator(Generic[T]):
         }
 
         while True:
-            # Check if we've reached max results
             if self.max_results and self._total_fetched >= self.max_results:
                 break
 
-            # Prepare parameters
-            params = base_params.copy()
-            params[PARAM_PER_PAGE] = self.per_page
-
-            if cursor:
-                params[PARAM_CURSOR] = cursor
-            else:
-                params[PARAM_PAGE] = page
+            params = _build_params(
+                base_params, cursor=cursor, page=page, per_page=self.per_page
+            )
 
             # Fetch page
             try:
@@ -140,14 +152,9 @@ class Paginator(Generic[T]):
         }
 
         while True:
-            # Prepare parameters
-            params = base_params.copy()
-            params[PARAM_PER_PAGE] = self.per_page
-
-            if cursor:
-                params[PARAM_CURSOR] = cursor
-            else:
-                params[PARAM_PAGE] = page
+            params = _build_params(
+                base_params, cursor=cursor, page=page, per_page=self.per_page
+            )
 
             # Fetch page
             try:
@@ -234,18 +241,12 @@ class AsyncPaginator(Generic[T]):
         }
 
         while True:
-            # Check if we've reached max results
             if self.max_results and self._total_fetched >= self.max_results:
                 break
 
-            # Prepare parameters
-            params = base_params.copy()
-            params[PARAM_PER_PAGE] = self.per_page
-
-            if cursor:
-                params[PARAM_CURSOR] = cursor
-            else:
-                params[PARAM_PAGE] = page
+            params = _build_params(
+                base_params, cursor=cursor, page=page, per_page=self.per_page
+            )
 
             # Fetch page
             try:
@@ -286,14 +287,9 @@ class AsyncPaginator(Generic[T]):
         }
 
         while True:
-            # Prepare parameters
-            params = base_params.copy()
-            params[PARAM_PER_PAGE] = self.per_page
-
-            if cursor:
-                params[PARAM_CURSOR] = cursor
-            else:
-                params[PARAM_PAGE] = page
+            params = _build_params(
+                base_params, cursor=cursor, page=page, per_page=self.per_page
+            )
 
             # Fetch page
             try:
@@ -359,11 +355,12 @@ class AsyncPaginator(Generic[T]):
         # Create tasks for all pages
         tasks = [
             self.fetch_func(
-                {
-                    **self.params,
-                    PARAM_PER_PAGE: self.per_page,
-                    PARAM_PAGE: page,
-                }
+                _build_params(
+                    self.params,
+                    cursor=None,
+                    page=page,
+                    per_page=self.per_page,
+                )
             )
             for page in range(1, total_pages + 1)
         ]

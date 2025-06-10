@@ -80,9 +80,10 @@ def flatten_filter_dict(
             nested = flatten_filter_dict(value, full_key, ",")
             if nested:
                 parts.append(nested)
-        else:
-            serialized = serialize_filter_value(value)
-            parts.append(f"{full_key}:{serialized}")
+            continue
+
+        serialized = serialize_filter_value(value)
+        parts.append(f"{full_key}:{serialized}")
 
     return logical.join(parts)
 
@@ -109,10 +110,9 @@ def serialize_params(params: dict[str, Any]) -> dict[str, str]:
         elif key == "select" and isinstance(value, list):
             serialized["select"] = ",".join(value)
         elif value is not None:
-            if isinstance(value, bool):
-                serialized[key] = str(value).lower()
-            else:
-                serialized[key] = str(value)
+            serialized[key] = (
+                str(value).lower() if isinstance(value, bool) else str(value)
+            )
 
     return serialized
 

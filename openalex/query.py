@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
 
 if TYPE_CHECKING:  # pragma: no cover - for type checking only
     from .entities import BaseEntity
@@ -26,13 +27,12 @@ class or_(dict[str, Any]):  # noqa: N801
     """Container to mark a filter dictionary for OR combination."""
 
 
+@dataclass(slots=True)
 class _LogicalExpression:
     """Base class for logical expressions."""
 
-    token: str = ""
-
-    def __init__(self, value: Any) -> None:
-        self.value = value
+    value: Any
+    token: ClassVar[str] = ""
 
     def __str__(self) -> str:
         return f"{self.token}{self.value}"
@@ -80,23 +80,23 @@ class Query(Generic[T, F]):
     # internal helper
     def _clone(self, **updates: Any) -> Query[T, F]:
         """Return a new :class:`Query` with updated parameters."""
+        params = self.params.copy()
+        filt = updates.pop("filter", None)
 
-        new_params = {**self.params}
-        for key, value in updates.items():
-            if key == "filter" and value is not None:
-                current = new_params.get("filter", {})
-                if (
-                    isinstance(current, dict)
-                    and isinstance(value, dict)
-                    and not isinstance(value, or_)
-                ):
-                    current.update(value)
-                    new_params[key] = current
-                else:
-                    new_params[key] = value
+        if filt is not None:
+            current = params.get("filter", {})
+            if (
+                isinstance(current, dict)
+                and isinstance(filt, dict)
+                and not isinstance(filt, or_)
+            ):
+                current.update(filt)
+                params["filter"] = current
             else:
-                new_params[key] = value
-        return Query(self.entity, new_params)
+                params["filter"] = filt
+
+        params.update(updates)
+        return Query(self.entity, params)
 
     def _merge_filter_dict(
         self,
@@ -106,10 +106,8 @@ class Query(Generic[T, F]):
     ) -> dict[str, Any]:
         """Merge filter dictionaries based on operation type."""
         if operation == "or":
-            return or_({**current, **new})
-        result = current.copy()
-        result.update(new)
-        return result
+            return or_(current | new)
+        return current | new
 
     def _apply_logical_operation(
         self, filter_dict: dict[str, Any], operation: type[_LogicalExpression]
@@ -216,16 +214,15 @@ class Query(Generic[T, F]):
 
     def __repr__(self) -> str:
         """String representation of query."""
-        parts = []
-
-        if "filter" in self.params:
-            parts.append(f"filter={self.params['filter']}")
-        if "search" in self.params:
-            parts.append(f"search='{self.params['search']}'")
-        if "sort" in self.params:
-            parts.append(f"sort={self.params['sort']}")
-        if "select" in self.params:
-            parts.append(f"select={self.params['select']}")
+        parts = [
+            (
+                f"{k}={self.params[k]!r}"
+                if k == "search"
+                else f"{k}={self.params[k]}"
+            )
+            for k in ("filter", "search", "sort", "select")
+            if k in self.params
+        ]
 
         params_str = ", ".join(parts) if parts else "no filters"
         return f"<Query({self.entity.__class__.__name__}) {params_str}>"
