@@ -3,11 +3,11 @@
 Use `group_by` to aggregate works by a given field.
 
 ```python
-from openalex import OpenAlex
+from openalex import Works
 
-client = OpenAlex()
+works = Works()
 # count works for each open access status
-result = client.works.list(group_by="oa_status")
+result = works.list(group_by="oa_status")
 for group in result.group_by:
     print(group.key, group.count)
 ```
@@ -15,7 +15,7 @@ for group in result.group_by:
 You can combine grouping with filters or other parameters via the query builder:
 
 ```python
-query = client.works.query().filter(is_oa=True).group_by("publication_year")
+query = works.query().filter(is_oa=True).group_by("publication_year")
 result = query.list()
 ```
 

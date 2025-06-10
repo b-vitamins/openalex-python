@@ -1,12 +1,12 @@
 # Get lists of topics
 
-List topics using `client.topics.list()`.
+List topics using `topics.list()`.
 
 ```python
-from openalex import OpenAlex
+from openalex import Topics
 
-client = OpenAlex()
-resp = client.topics.list()
+topics = Topics()
+resp = topics.list()
 print(resp.meta.count)
 ```
 
@@ -15,8 +15,8 @@ print(resp.meta.count)
 Adjust pagination and ordering:
 
 ```python
-page2 = client.topics.list(per_page=50, page=2)
-sorted_topics = client.topics.list(sort="cited_by_count:desc")
+page2 = topics.list(per_page=50, page=2)
+sorted_topics = topics.list(sort="cited_by_count:desc")
 ```
 
 ## Sample topics
@@ -24,7 +24,7 @@ sorted_topics = client.topics.list(sort="cited_by_count:desc")
 Retrieve a random sample:
 
 ```python
-sample = client.topics.list(sample=10)
+sample = topics.list(sample=10)
 ```
 
 ## Select fields
@@ -32,5 +32,5 @@ sample = client.topics.list(sample=10)
 Return only specific fields:
 
 ```python
-mini = client.topics.list(select=["id", "display_name", "description"])
+mini = topics.list(select=["id", "display_name", "description"])
 ```

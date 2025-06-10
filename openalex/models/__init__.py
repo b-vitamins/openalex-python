@@ -17,18 +17,7 @@ from .base import (
     SummaryStats,
 )
 from .concept import Concept, ConceptAncestor, ConceptIds, RelatedConcept
-from .filters import (
-    AuthorsFilter,
-    BaseFilter,
-    ConceptsFilter,
-    FundersFilter,
-    GroupBy,
-    InstitutionsFilter,
-    PublishersFilter,
-    SortOrder,
-    SourcesFilter,
-    WorksFilter,
-)
+from .filters import BaseFilter, GroupBy, SortOrder
 from .funder import Funder, FunderIds
 from .institution import (
     AssociatedInstitution,
@@ -72,7 +61,6 @@ __all__ = [
     "Author",
     "AuthorAffiliation",
     "AuthorIds",
-    "AuthorsFilter",
     "Authorship",
     "AutocompleteResult",
     "BaseFilter",
@@ -81,7 +69,6 @@ __all__ = [
     "Concept",
     "ConceptAncestor",
     "ConceptIds",
-    "ConceptsFilter",
     "CountsByYear",
     "DehydratedAuthor",
     "DehydratedConcept",
@@ -92,7 +79,6 @@ __all__ = [
     "EntityType",
     "Funder",
     "FunderIds",
-    "FundersFilter",
     "Geo",
     "Grant",
     "GroupBy",
@@ -102,7 +88,6 @@ __all__ = [
     "InstitutionTopic",
     "InstitutionTopicShare",
     "InstitutionType",
-    "InstitutionsFilter",
     "InternationalNames",
     "Keyword",
     "KeywordTag",
@@ -116,7 +101,6 @@ __all__ = [
     "OpenAlexEntity",
     "Publisher",
     "PublisherIds",
-    "PublishersFilter",
     "RelatedConcept",
     "Repository",
     "Role",
@@ -125,7 +109,6 @@ __all__ = [
     "Source",
     "SourceIds",
     "SourceType",
-    "SourcesFilter",
     "SummaryStats",
     "SustainableDevelopmentGoal",
     "Topic",
@@ -135,5 +118,4 @@ __all__ = [
     "Work",
     "WorkIds",
     "WorkType",
-    "WorksFilter",
 ]

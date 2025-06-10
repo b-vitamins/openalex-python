@@ -1,12 +1,12 @@
 # Get lists of publishers
 
-Use `client.publishers.list()` to retrieve batches of publishers.
+Use `publishers.list()` to retrieve batches of publishers.
 
 ```python
-from openalex import OpenAlex
+from openalex import Publishers
 
-client = OpenAlex()
-results = client.publishers.list()
+publishers = Publishers()
+results = publishers.list()
 print(results.meta.count)
 ```
 
@@ -16,10 +16,10 @@ Control pagination and ordering with parameters:
 
 ```python
 # second page with 50 results
-page2 = client.publishers.list(per_page=50, page=2)
+page2 = publishers.list(per_page=50, page=2)
 
 # sort by display name descending
-sorted_pubs = client.publishers.list(sort="display_name:desc")
+sorted_pubs = publishers.list(sort="display_name:desc")
 ```
 
 ## Sample publishers
@@ -27,7 +27,7 @@ sorted_pubs = client.publishers.list(sort="display_name:desc")
 Request a random sample of publishers:
 
 ```python
-sample = client.publishers.list(sample=10)
+sample = publishers.list(sample=10)
 ```
 
 ## Select fields
@@ -35,7 +35,7 @@ sample = client.publishers.list(sample=10)
 Return only selected fields:
 
 ```python
-minimal = client.publishers.list(select=["id", "display_name", "alternate_titles"])
+minimal = publishers.list(select=["id", "display_name", "alternate_titles"])
 ```
 
 Filtering and searching are covered in their own guides.

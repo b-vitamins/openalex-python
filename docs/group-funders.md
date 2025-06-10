@@ -3,10 +3,10 @@
 Summarise funders by an attribute using `group_by`.
 
 ```python
-from openalex import OpenAlex
+from openalex import Funders
 
-client = OpenAlex()
-result = client.funders.list(group_by="country_code")
+funders = Funders()
+result = funders.list(group_by="country_code")
 for group in result.group_by:
     print(group.key, group.count)
 ```
@@ -14,7 +14,7 @@ for group in result.group_by:
 Chaining is possible with the query builder:
 
 ```python
-query = client.funders.query().filter(country_code="US").group_by("continent")
+query = funders.query().filter(country_code="US").group_by("continent")
 result = query.list()
 ```
 

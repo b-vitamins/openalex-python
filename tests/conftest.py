@@ -4,15 +4,12 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import pytest
 from httpx import Response
 
-from openalex import AsyncOpenAlex, OpenAlex, OpenAlexConfig
-
-if TYPE_CHECKING:
-    from collections.abc import Generator
+from openalex import OpenAlexConfig
 
 
 @pytest.fixture
@@ -23,22 +20,6 @@ def config() -> OpenAlexConfig:
         retry_count=0,  # Disable retries in tests
         timeout=5.0,
     )
-
-
-@pytest.fixture
-def client(config: OpenAlexConfig) -> Generator[OpenAlex, None, None]:
-    """Create test client."""
-    c = OpenAlex(config=config)
-    yield c
-    c.close()
-
-
-@pytest.fixture
-async def async_client(config: OpenAlexConfig) -> AsyncOpenAlex:
-    """Create async test client."""
-    c = AsyncOpenAlex(config=config)
-    yield c
-    await c.close()
 
 
 @pytest.fixture

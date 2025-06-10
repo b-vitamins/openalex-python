@@ -3,10 +3,10 @@
 Aggregate topics using `group_by`.
 
 ```python
-from openalex import OpenAlex
+from openalex import Topics
 
-client = OpenAlex()
-result = client.topics.list(group_by="domain.id")
+topics = Topics()
+result = topics.list(group_by="domain.id")
 for group in result.group_by:
     print(group.key, group.count)
 ```
@@ -14,7 +14,7 @@ for group in result.group_by:
 You can also build a query first and chain additional operations:
 
 ```python
-query = client.topics.query().filter(field_id=2713).group_by("subfield.id")
+query = topics.query().filter(field_id=2713).group_by("subfield.id")
 result = query.list()
 ```
 

@@ -1,12 +1,12 @@
 # Search works
 
-Use `client.works.search()` to query titles, abstracts, and full text.
+Use `works.search()` to query titles, abstracts, and full text.
 
 ```python
-from openalex import OpenAlex
+from openalex import Works
 
-client = OpenAlex()
-results = client.works.search("dna")
+works = Works()
+results = works.search("dna")
 print(results.results[0].display_name)
 ```
 
@@ -19,7 +19,7 @@ See the [OpenAlex documentation](https://docs.openalex.org/api-entities/works/se
 Append `.search` to a filter key to limit searching to that field:
 
 ```python
-works = client.works.list(filter={"title.search": "cubist"})
+works = works.list(filter={"title.search": "cubist"})
 ```
 
 Fields that accept `.search` include `abstract`, `display_name` (alias `title`), `fulltext`, `raw_affiliation_strings`, and `title_and_abstract`. You can also use `default.search`, which behaves the same as the `search` parameter.
@@ -40,16 +40,18 @@ These searches apply stemming and stop-word removal. See the API docs if you nee
 To search works by a related entity like an author or institution, first lookup that entity and then filter works by its ID:
 
 ```python
-nyu = client.institutions.search("nyu").results[0]
-works = client.works.list(filter={"institutions.id": nyu.id})
+from openalex import Institutions
+
+nyu = Institutions().search("nyu").results[0]
+works = works.list(filter={"institutions.id": nyu.id})
 ```
 
 ## Autocomplete works
 
-`client.works.autocomplete()` provides typeahead suggestions:
+`works.autocomplete()` provides typeahead suggestions:
 
 ```python
-suggestions = client.works.autocomplete("tigers")
+suggestions = works.autocomplete("tigers")
 ```
 
 Each suggestion includes the title and a hint containing the authors.

@@ -1,12 +1,12 @@
 # Search sources
 
-Look up journals and repositories by name with `client.sources.search()`.
+Look up journals and repositories by name with `sources.search()`.
 
 ```python
-from openalex import OpenAlex
+from openalex import Sources
 
-client = OpenAlex()
-results = client.sources.search("jacs")
+sources = Sources()
+results = sources.search("jacs")
 print(results.results[0].display_name)
 ```
 
@@ -17,15 +17,15 @@ See the [OpenAlex docs](https://docs.openalex.org/api-entities/sources/search-so
 As with other endpoints, search can be used as a filter by appending `.search` to a field:
 
 ```python
-results = client.sources.list(filter={"display_name.search": "nature"})
+results = sources.list(filter={"display_name.search": "nature"})
 ```
 
 ## Autocomplete sources
 
-Use `client.sources.autocomplete()` for typeahead suggestions:
+Use `sources.autocomplete()` for typeahead suggestions:
 
 ```python
-suggestions = client.sources.autocomplete("neuro")
+suggestions = sources.autocomplete("neuro")
 ```
 
 Each result includes the publisher as a hint.

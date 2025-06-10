@@ -1,12 +1,12 @@
 # Get a single author
 
-Use `client.authors.get()` to fetch an author by OpenAlex ID.
+Use `Authors().get()` to fetch an author by OpenAlex ID.
 
 ```python
-from openalex import OpenAlex
+from openalex import Authors
 
-client = OpenAlex()
-author = client.authors.get("A5023888391")
+authors = Authors()
+author = authors.get("A5023888391")
 print(author.display_name)
 ```
 
@@ -14,7 +14,7 @@ You can request several authors at once by filtering on their IDs:
 
 ```python
 ids = ["A5023888391", "A5053780153"]
-authors = client.authors.list(filter={"id": ids})
+authors = authors.list(filter={"id": ids})
 ```
 
 ## External IDs
@@ -22,8 +22,8 @@ authors = client.authors.list(filter={"id": ids})
 Authors can also be retrieved using ORCID or other external identifiers:
 
 ```python
-author = client.authors.by_orcid("0000-0002-1298-3089")
-author = client.authors.get("orcid:0000-0002-1298-3089")
+author = authors.by_orcid("0000-0002-1298-3089")
+author = authors.get("orcid:0000-0002-1298-3089")
 ```
 
 Supported prefixes:
@@ -42,7 +42,7 @@ Make sure the identifier is valid; incorrect or malformed IDs return no result.
 Limit returned data with `select`:
 
 ```python
-author = client.authors.get(
+author = authors.get(
     "A5023888391", select=["id", "display_name", "orcid"]
 )
 ```

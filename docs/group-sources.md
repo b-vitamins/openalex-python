@@ -3,10 +3,10 @@
 Summarise sources by a chosen attribute with `group_by`.
 
 ```python
-from openalex import OpenAlex
+from openalex import Sources
 
-client = OpenAlex()
-result = client.sources.list(group_by="publisher")
+sources = Sources()
+result = sources.list(group_by="publisher")
 for group in result.group_by:
     print(group.key, group.count)
 ```
@@ -14,7 +14,7 @@ for group in result.group_by:
 You can chain operations using the query builder:
 
 ```python
-query = client.sources.query().filter(has_issn=True).group_by("country_code")
+query = sources.query().filter(has_issn=True).group_by("country_code")
 result = query.list()
 ```
 

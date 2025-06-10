@@ -6,10 +6,10 @@
 Aggregate concepts by a particular attribute using `group_by`.
 
 ```python
-from openalex import OpenAlex
+from openalex import Concepts
 
-client = OpenAlex()
-result = client.concepts.list(group_by="level")
+concepts = Concepts()
+result = concepts.list(group_by="level")
 for group in result.group_by:
     print(group.key, group.count)
 ```
@@ -17,7 +17,7 @@ for group in result.group_by:
 You can also build a query with additional filters before grouping:
 
 ```python
-query = client.concepts.query().filter(has_wikidata=True).group_by("level")
+query = concepts.query().filter(has_wikidata=True).group_by("level")
 result = query.list()
 ```
 
