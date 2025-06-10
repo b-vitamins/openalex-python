@@ -12,7 +12,7 @@ from openalex.models import CountsByYear, Funder
 class TestFunder:
     """Test Funder model with comprehensive realistic fixtures."""
 
-    @pytest.fixture
+    @pytest.fixture()
     def government_funder_data(self) -> dict[str, Any]:
         """Government funder data based on real OpenAlex API response."""
         return {
@@ -66,7 +66,7 @@ class TestFunder:
             "updated_date": "2024-12-16T13:45:67.890123",
         }
 
-    @pytest.fixture
+    @pytest.fixture()
     def private_foundation_data(self) -> dict[str, Any]:
         """Private foundation funder data."""
         return {
@@ -102,7 +102,7 @@ class TestFunder:
             },
         }
 
-    @pytest.fixture
+    @pytest.fixture()
     def european_funder_data(self) -> dict[str, Any]:
         """European research council funder data."""
         return {

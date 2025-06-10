@@ -31,7 +31,7 @@ def test_with_retry(monkeypatch: pytest.MonkeyPatch) -> None:
     assert len(attempts) == 3
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_async_with_retry(monkeypatch: pytest.MonkeyPatch) -> None:
     attempts: list[int] = []
 
@@ -68,7 +68,7 @@ def test_retry_config_wait_strategy() -> None:
     assert isinstance(strategy, type(wait_exponential()))
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_retry_handler_should_retry_and_wait(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -110,7 +110,7 @@ def test_with_retry_failure(monkeypatch: pytest.MonkeyPatch) -> None:
     assert len(attempts) == 2
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_async_with_retry_failure(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -149,7 +149,7 @@ def test_with_retry_default_config(monkeypatch: pytest.MonkeyPatch) -> None:
     assert len(attempts) == 2
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_async_with_retry_default_config(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

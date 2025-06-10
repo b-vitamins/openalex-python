@@ -14,7 +14,7 @@ from openalex.models import (
 class TestAuthor:
     """Test Author model with comprehensive realistic fixtures."""
 
-    @pytest.fixture
+    @pytest.fixture()
     def comprehensive_author_data(self) -> dict[str, Any]:
         """Comprehensive author data based on real OpenAlex API response."""
         return {
@@ -126,7 +126,7 @@ class TestAuthor:
             "updated_date": "2024-12-16T09:27:51.699330",
         }
 
-    @pytest.fixture
+    @pytest.fixture()
     def minimal_author_data(self) -> dict[str, Any]:
         """Minimal author data for edge case testing."""
         return {
@@ -136,7 +136,7 @@ class TestAuthor:
             "cited_by_count": 0,
         }
 
-    @pytest.fixture
+    @pytest.fixture()
     def author_with_multiple_affiliations_data(self) -> dict[str, Any]:
         """Author with complex affiliation history."""
         return {

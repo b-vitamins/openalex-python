@@ -278,7 +278,7 @@ class Institution(OpenAlexEntity):
         )
 
 
-from .topic import TopicHierarchy  # noqa: E402,TC001
-from .work import DehydratedConcept  # noqa: E402,TC001
+from .topic import TopicHierarchy  # noqa: E402,TCH001
+from .work import DehydratedConcept  # noqa: E402,TCH001
 
 Institution.model_rebuild()
