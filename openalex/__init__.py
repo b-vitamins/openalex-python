@@ -129,6 +129,7 @@ from .models import (  # noqa: E402
     WorksFilter,
     WorkType,
 )
+from .query import Query, gt_, lt_, not_, or_  # noqa: E402
 from .utils import (  # noqa: E402
     AsyncPaginator,
     AsyncRateLimiter,
@@ -144,7 +145,7 @@ from .utils import (  # noqa: E402
     with_retry,
 )
 
-__all__ = [
+__all__ = [  # noqa: RUF022
     "APC",
     "APCPrice",
     "APIError",
@@ -200,6 +201,11 @@ __all__ = [
     "NotFoundError",
     "OpenAccess",
     "OpenAccessStatus",
+    "Query",
+    "or_",
+    "not_",
+    "gt_",
+    "lt_",
     # Client classes
     "OpenAlex",
     # Base models
