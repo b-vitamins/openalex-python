@@ -1,4 +1,8 @@
 # OpenAlex Python Client
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
+[![PyPI Version](https://img.shields.io/pypi/v/openalex.svg)](https://pypi.org/project/openalex/)
+
 
 A modern Python client for the [OpenAlex](https://openalex.org) API with full type annotations and a fluent interface.
 

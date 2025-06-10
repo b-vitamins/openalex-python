@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from structlog import get_logger
 
+# Version is managed here and in pyproject.toml
+# Keep both in sync when releasing
 __version__ = "0.1.0"
 __author__ = "OpenAlex Python Contributors"
 __license__ = "MIT"

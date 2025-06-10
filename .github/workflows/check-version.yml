@@ -1,0 +1,38 @@
+name: Check Version Consistency
+
+on:
+  pull_request:
+    paths:
+      - 'pyproject.toml'
+      - 'openalex/__init__.py'
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      
+      - name: Check version consistency
+        run: |
+          # Extract version from pyproject.toml
+          TOML_VERSION=$(grep -E '^version = ' pyproject.toml | cut -d'"' -f2)
+          
+          # Extract version from __init__.py
+          PY_VERSION=$(grep -E '^__version__ = ' openalex/__init__.py | cut -d'"' -f2)
+          
+          echo "pyproject.toml version: $TOML_VERSION"
+          echo "__init__.py version: $PY_VERSION"
+          
+          if [ "$TOML_VERSION" != "$PY_VERSION" ]; then
+            echo "Version mismatch!"
+            echo "pyproject.toml: $TOML_VERSION"
+            echo "__init__.py: $PY_VERSION"
+            exit 1
+          fi
+          
+          echo "Versions match: $TOML_VERSION"
