@@ -17,12 +17,9 @@ from ..constants import (
 from ..exceptions import ValidationError as OpenAlexValidationError
 from ..exceptions import raise_for_status
 from ..models import BaseFilter, ListResult
-from ..utils import (
-    AsyncPaginator,
-    Paginator,
-    normalize_params,
-)
+from ..utils import AsyncPaginator, Paginator
 from ..utils.pagination import MAX_PER_PAGE
+from ..utils.params import normalize_params
 
 if TYPE_CHECKING:
     from ..client import AsyncOpenAlex, OpenAlex

@@ -19,7 +19,7 @@ def test_strip_id_prefix() -> None:
 def test_normalize_params_select_list() -> None:
     params = normalize_params({"select": ["id", "name"], "per_page": 5})
     assert params["select"] == "id,name"
-    assert params["per-page"] == 5
+    assert params["per-page"] == "5"
 
 
 def test_empty_list_result() -> None:
