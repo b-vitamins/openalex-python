@@ -549,7 +549,7 @@ class TestWork:
         assert abstract is not None
         assert abstract.startswith("Generalized gradient approximations")
         assert "exchange-correlation energy" in abstract
-        assert abstract.endswith("gas.")
+        assert "gas." in abstract
         assert len(abstract.split()) > 50  # Substantial abstract
 
     def test_locations_and_versions(

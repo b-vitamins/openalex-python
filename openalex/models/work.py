@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field, HttpUrl, field_validator, model_validator
 
+from ..utils.text import invert_abstract
+
 if TYPE_CHECKING:
     from .institution import InstitutionType
     from .topic import TopicHierarchy
@@ -258,24 +260,8 @@ class Work(OpenAlexEntity):
 
     @property
     def abstract(self) -> str | None:
-        """Reconstruct abstract from inverted index."""
-        if not self.abstract_inverted_index:
-            return None
-
-        word_positions = {
-            pos: word
-            for word, positions in self.abstract_inverted_index.items()
-            for pos in positions
-            if pos >= 0
-        }
-        length = max(word_positions, default=-1) + 1
-        words = [word_positions.get(i, "") for i in range(length)]
-        abstract = " ".join(words).strip()
-        if not abstract.endswith((".", "!", "?")):
-            last_punct = max((abstract.rfind(p) for p in ".!?"), default=-1)
-            if last_punct != -1:
-                abstract = abstract[: last_punct + 1]
-        return abstract
+        """Get abstract as plaintext."""
+        return invert_abstract(self.abstract_inverted_index)
 
     @model_validator(mode="after")
     def _set_defaults(self) -> Work:
@@ -323,6 +309,15 @@ class Work(OpenAlexEntity):
     def has_references(self) -> bool:
         """Return ``True`` if the work has reference information."""
         return bool(self.referenced_works_count or self.referenced_works)
+
+
+class Ngram(OpenAlexBase):
+    """N-gram from a work."""
+
+    ngram: str
+    ngram_count: int
+    ngram_tokens: int
+    term_frequency: float | None = None
 
 
 class BaseFilter(BaseModel):
@@ -516,3 +511,4 @@ Biblio.model_rebuild()
 CitationNormalizedPercentile.model_rebuild()
 SustainableDevelopmentGoal.model_rebuild()
 Work.model_rebuild()
+Ngram.model_rebuild()

@@ -201,3 +201,19 @@ class Query(Generic[T, F]):
     def autocomplete(self, query: str, **kwargs: Any) -> ListResult[Any]:
         """Autocomplete search."""
         return self.resource.autocomplete(query, **kwargs)
+
+    def __repr__(self) -> str:
+        """String representation of query."""
+        parts = []
+
+        if "filter" in self.params:
+            parts.append(f"filter={self.params['filter']}")
+        if "search" in self.params:
+            parts.append(f"search='{self.params['search']}'")
+        if "sort" in self.params:
+            parts.append(f"sort={self.params['sort']}")
+        if "select" in self.params:
+            parts.append(f"select={self.params['select']}")
+
+        params_str = ", ".join(parts) if parts else "no filters"
+        return f"<Query({self.resource.__class__.__name__}) {params_str}>"
