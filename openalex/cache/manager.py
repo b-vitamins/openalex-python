@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast
 
 from structlog import get_logger
 
@@ -44,6 +44,8 @@ class CacheManager:
         if not self.enabled:
             return fetch_func()
 
+        assert self._cache is not None
+
         cache_key = CacheKeyBuilder.build_key(endpoint, entity_id, params)
 
         cached_data = self._cache.get(cache_key)
@@ -54,7 +56,7 @@ class CacheManager:
                 entity_id=entity_id,
                 from_cache=True,
             )
-            return cached_data
+            return cast("T", cached_data)
 
         logger.debug(
             "cache_miss",
@@ -77,17 +79,20 @@ class CacheManager:
         if not self.enabled:
             return
 
+        assert self._cache is not None
         cache_key = CacheKeyBuilder.build_key(endpoint, entity_id, params)
         self._cache.delete(cache_key)
 
     def clear(self) -> None:
         if self.enabled:
+            assert self._cache is not None
             self._cache.clear()
 
     def stats(self) -> dict[str, Any]:
         if not self.enabled:
             return {"enabled": False}
 
+        assert self._cache is not None
         return {
             "enabled": True,
             **self._cache.stats(),

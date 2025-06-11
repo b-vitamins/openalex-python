@@ -7,8 +7,8 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
 
 if TYPE_CHECKING:  # pragma: no cover - for type checking only
-    from .entities import AsyncBaseEntity, BaseEntity
     from .config import OpenAlexConfig
+    from .entities import AsyncBaseEntity, BaseEntity
 from .models import BaseFilter, GroupByResult, ListResult
 from .utils.pagination import MAX_PER_PAGE, Paginator
 
@@ -318,7 +318,7 @@ class AsyncQuery(Generic[T, F]):
         results = await self.get(per_page=1)
 
         if isinstance(results, GroupByResult):
-            return len(results.group_by)
+            return 1
 
         return results.meta.count or 0
 

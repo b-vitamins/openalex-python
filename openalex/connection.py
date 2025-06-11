@@ -59,6 +59,7 @@ class Connection:
     ) -> httpx.Response:
         if self._client is None:
             self.open()
+        assert self._client is not None
 
         try:
             response = self._client.request(
@@ -119,6 +120,7 @@ class AsyncConnection:
     ) -> httpx.Response:
         if self._client is None:
             await self.open()
+        assert self._client is not None
 
         try:
             response = await self._make_request_with_retry(

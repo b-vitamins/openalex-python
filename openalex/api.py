@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import time
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 import httpx
 from structlog import get_logger
@@ -39,6 +39,8 @@ from .utils.retry import (
 
 if TYPE_CHECKING:  # pragma: no cover - for type checking only
     from httpx import Response
+
+    from .connection import AsyncConnection
 
 T = TypeVar("T")
 
@@ -284,7 +286,7 @@ class AsyncBaseAPI(Generic[T]):
                 HTTP_METHOD_GET, url, params=params_norm
             )
             raise_for_status(response)
-            return response.json()
+            return cast("dict[str, Any]", response.json())
 
         if cache_manager.enabled:
             from .cache.base import CacheKeyBuilder
@@ -298,12 +300,13 @@ class AsyncBaseAPI(Generic[T]):
                 else None
             )
             if cached is not None:
-                return cached
+                return cast("dict[str, Any]", cached)
 
         data = await fetch()
 
         if cache_manager.enabled and cache_manager._cache:
-            cache_manager._cache.set(cache_key, data)
+            ttl = cache_manager._get_ttl_for_endpoint(self.endpoint)
+            cache_manager._cache.set(cache_key, data, ttl)
 
         return data
 
@@ -317,7 +320,7 @@ class AsyncBaseAPI(Generic[T]):
             HTTP_METHOD_GET, url, params=params_norm
         )
         raise_for_status(response)
-        return response.json()
+        return cast("dict[str, Any]", response.json())
 
     async def autocomplete(
         self,
@@ -332,11 +335,11 @@ class AsyncBaseAPI(Generic[T]):
             HTTP_METHOD_GET, url, params=params_norm
         )
         raise_for_status(response)
-        return response.json()
+        return cast("dict[str, Any]", response.json())
 
     async def random(self) -> dict[str, Any]:
         connection = await self._get_connection()
         url = self._build_url(f"{self.endpoint}/{RANDOM_PATH}")
         response = await connection.request(HTTP_METHOD_GET, url)
         raise_for_status(response)
-        return response.json()
+        return cast("dict[str, Any]", response.json())
