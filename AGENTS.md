@@ -64,3 +64,25 @@ pytest
 
 Any failures should be addressed before committing.
 
+
+## Version Management
+- Bump the patch number for bug fixes, the minor number for backward-compatible features, and the major number for breaking changes.
+- Keep `openalex/__init__.py` and `pyproject.toml` versions in sync.
+- Tag releases as `v<major>.<minor>.<patch>` and update the changelog links.
+
+## Code Housekeeping
+- Run `pre-commit autoupdate` monthly and commit updated hook versions.
+- Remove obsolete code and unused dependencies.
+- Check for outdated packages with `pip list --outdated` and update when reasonable.
+
+## Testing Standards
+- Maintain at least 85% coverage (enforced in `pytest.ini`).
+- Organize tests under `tests/` using `test_*.py` naming.
+- Mark slow or integration tests with `@pytest.mark.slow` or `@pytest.mark.integration`.
+
+## Documentation Standards
+- Document public APIs with reStructuredText docstrings.
+- Update `README.md` and relevant docs for any user-facing change.
+- Add an entry to `CHANGELOG.md` under `Unreleased` for every feature or fix.
+
+
