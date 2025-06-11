@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
 
 if TYPE_CHECKING:  # pragma: no cover - for type checking only
-    from .entities import BaseEntity
-
-from .models import BaseFilter, ListResult
+    from .entities import AsyncBaseEntity, BaseEntity
+    from .config import OpenAlexConfig
+from .models import BaseFilter, GroupByResult, ListResult
 from .utils.pagination import MAX_PER_PAGE, Paginator
 
 __all__ = [
@@ -226,3 +227,105 @@ class Query(Generic[T, F]):
 
         params_str = ", ".join(parts) if parts else "no filters"
         return f"<Query({self.entity.__class__.__name__}) {params_str}>"
+
+
+class AsyncQuery(Generic[T, F]):
+    """Async query builder for OpenAlex entities."""
+
+    def __init__(
+        self,
+        entity: AsyncBaseEntity[T, F],
+        model_class: type[T],
+        config: OpenAlexConfig,
+    ) -> None:
+        self._entity = entity
+        self._model_class = model_class
+        self._config = config
+        self._params: dict[str, Any] = {}
+
+    def filter(self, **kwargs: Any) -> AsyncQuery[T, F]:
+        current = self._params.get("filter")
+        if isinstance(current, dict):
+            current.update(kwargs)
+            self._params["filter"] = current
+        else:
+            self._params["filter"] = kwargs
+        return self
+
+    def search(self, query: str) -> AsyncQuery[T, F]:
+        self._params["search"] = query
+        return self
+
+    def search_filter(self, **kwargs: Any) -> AsyncQuery[T, F]:
+        if "filter" not in self._params:
+            self._params["filter"] = {}
+        for field, value in kwargs.items():
+            self._params["filter"][f"{field}.search"] = value
+        return self
+
+    def sort(self, field: str, order: str = "desc") -> AsyncQuery[T, F]:
+        self._params["sort"] = f"{field}:{order}"
+        return self
+
+    def group_by(self, field: str) -> AsyncQuery[T, F]:
+        self._params["group_by"] = field
+        return self
+
+    def select(self, *fields: str) -> AsyncQuery[T, F]:
+        self._params["select"] = ",".join(fields)
+        return self
+
+    async def get(
+        self,
+        page: int | None = None,
+        per_page: int | None = None,
+    ) -> ListResult[T] | GroupByResult:
+        params = self._params.copy()
+        if page is not None:
+            params["page"] = page
+        if per_page is not None:
+            params["per_page"] = per_page
+
+        data = await self._entity.get_list(params=params)
+
+        if "group_by" in self._params:
+            return GroupByResult(**data)
+
+        return ListResult[T](
+            meta=data.get("meta", {}),
+            results=[
+                self._model_class(**item) for item in data.get("results", [])
+            ],
+        )
+
+    async def all(self) -> AsyncIterator[T]:
+        page = 1
+        while True:
+            results = await self.get(page=page)
+
+            if isinstance(results, GroupByResult):
+                raise ValueError("Cannot iterate over grouped results")
+
+            for item in results.results:
+                yield item
+
+            if not results.results:
+                break
+
+            page += 1
+
+    async def count(self) -> int:
+        results = await self.get(per_page=1)
+
+        if isinstance(results, GroupByResult):
+            return len(results.group_by)
+
+        return results.meta.count or 0
+
+    async def first(self) -> T | None:
+        results = await self.get(per_page=1)
+
+        if isinstance(results, GroupByResult):
+            raise ValueError("Cannot get first item from grouped results")
+
+        return results.results[0] if results.results else None

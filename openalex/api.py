@@ -4,32 +4,43 @@ from __future__ import annotations
 
 import asyncio
 import time
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 import httpx
 from structlog import get_logger
 
 __all__ = ["APIConnection", "AsyncAPIConnection", "get_connection"]
 
+from .cache.manager import get_cache_manager
 from .config import OpenAlexConfig
-from .constants import DEFAULT_RATE_LIMIT
-from .exceptions import (
-    NetworkError,
-    TimeoutError,
-    ServerError,
-    RateLimitExceeded,
-    TemporaryError,
+from .constants import (
+    AUTOCOMPLETE_PATH,
+    DEFAULT_RATE_LIMIT,
+    HTTP_METHOD_GET,
+    PARAM_Q,
+    RANDOM_PATH,
 )
-from .utils import AsyncRateLimiter, RateLimiter
+from .exceptions import (
+    APIError,
+    NetworkError,
+    RateLimitExceeded,
+    ServerError,
+    TemporaryError,
+    TimeoutError,
+    raise_for_status,
+)
+from .utils import AsyncRateLimiter, RateLimiter, strip_id_prefix
+from .utils.params import normalize_params
 from .utils.retry import (
     RetryConfig,
     async_with_retry,
-    with_retry,
     retry_with_rate_limit,
 )
 
 if TYPE_CHECKING:  # pragma: no cover - for type checking only
     from httpx import Response
+
+T = TypeVar("T")
 
 logger = get_logger(__name__)
 
@@ -129,9 +140,9 @@ class APIConnection:
                 f"Request timed out after {self.config.timeout}s"
             ) from e
         except httpx.NetworkError as e:
-            raise NetworkError(f"Network error: {str(e)}") from e
+            raise NetworkError(f"Network error: {e!s}") from e
         except httpx.HTTPError as e:
-            raise APIError(f"HTTP error: {str(e)}") from e
+            raise APIError(f"HTTP error: {e!s}") from e
 
     def close(self) -> None:
         if self._client:
@@ -235,3 +246,97 @@ def get_connection(config: OpenAlexConfig | None = None) -> APIConnection:
     if key not in _connection_pool:
         _connection_pool[key] = APIConnection(config)
     return _connection_pool[key]
+
+
+class AsyncBaseAPI(Generic[T]):
+    """Base class for async API endpoints."""
+
+    endpoint: str = ""
+    model_class: type[T]
+
+    def __init__(self, config: OpenAlexConfig) -> None:
+        self._config = config
+        self._base_url = str(config.base_url).rstrip("/")
+
+    async def _get_connection(self) -> AsyncConnection:
+        from .connection import get_async_connection
+
+        return await get_async_connection(self._config)
+
+    def _build_url(self, path: str) -> str:
+        return f"{self._base_url}/{path}"
+
+    async def get_single_entity(
+        self,
+        entity_id: str,
+        params: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        entity_id = strip_id_prefix(entity_id)
+        endpoint = f"{self.endpoint}/{entity_id}"
+
+        cache_manager = get_cache_manager(self._config)
+
+        async def fetch() -> dict[str, Any]:
+            connection = await self._get_connection()
+            url = self._build_url(endpoint)
+            params_norm = normalize_params(params or {})
+            response = await connection.request(
+                HTTP_METHOD_GET, url, params=params_norm
+            )
+            raise_for_status(response)
+            return response.json()
+
+        if cache_manager.enabled:
+            from .cache.base import CacheKeyBuilder
+
+            cache_key = CacheKeyBuilder.build_key(
+                self.endpoint, entity_id, params
+            )
+            cached = (
+                cache_manager._cache.get(cache_key)
+                if cache_manager._cache
+                else None
+            )
+            if cached is not None:
+                return cached
+
+        data = await fetch()
+
+        if cache_manager.enabled and cache_manager._cache:
+            cache_manager._cache.set(cache_key, data)
+
+        return data
+
+    async def get_list(
+        self, params: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
+        connection = await self._get_connection()
+        url = self._build_url(self.endpoint)
+        params_norm = normalize_params(params or {})
+        response = await connection.request(
+            HTTP_METHOD_GET, url, params=params_norm
+        )
+        raise_for_status(response)
+        return response.json()
+
+    async def autocomplete(
+        self,
+        query: str,
+        params: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        connection = await self._get_connection()
+        url = self._build_url(f"{self.endpoint}/{AUTOCOMPLETE_PATH}")
+        params_norm = normalize_params(params or {})
+        params_norm[PARAM_Q] = query
+        response = await connection.request(
+            HTTP_METHOD_GET, url, params=params_norm
+        )
+        raise_for_status(response)
+        return response.json()
+
+    async def random(self) -> dict[str, Any]:
+        connection = await self._get_connection()
+        url = self._build_url(f"{self.endpoint}/{RANDOM_PATH}")
+        response = await connection.request(HTTP_METHOD_GET, url)
+        raise_for_status(response)
+        return response.json()
