@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 from collections.abc import AsyncIterator
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 if TYPE_CHECKING:  # pragma: no cover
     import builtins
+
+    from .models.work import Ngram
+    from .query import AsyncQuery
 
 from pydantic import ValidationError
 
@@ -62,7 +65,7 @@ from .utils.params import normalize_params
 
 if TYPE_CHECKING:  # pragma: no cover
     from .config import OpenAlexConfig
-    from .query import Query
+    from .query import AsyncQuery, Query
 
 T = TypeVar("T")
 F = TypeVar("F", bound="BaseFilter")
@@ -147,12 +150,12 @@ class BaseEntity(Generic[T, F]):
 
         def fetch() -> dict[str, Any]:
             url = self._build_url(entity_id)
-            norm_params = normalize_params(params)
+            norm_params = normalize_params(params or {})
             response = self._connection.request(
                 HTTP_METHOD_GET, url, params=norm_params
             )
             raise_for_status(response)
-            return response.json()
+            return cast("dict[str, Any]", response.json())
 
         data = cache_manager.get_or_fetch(
             endpoint=self.endpoint,
@@ -328,11 +331,11 @@ class AsyncBaseEntity(AsyncBaseAPI[T], Generic[T, F]):
 
             page += 1
 
-    async def random(self) -> T:
+    async def random(self) -> T:  # type: ignore[override]
         data = await super().random()
         return self.model_class(**data)
 
-    async def autocomplete(
+    async def autocomplete(  # type: ignore[override]
         self,
         query: str,
         params: dict[str, Any] | None = None,

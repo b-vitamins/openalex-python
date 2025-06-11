@@ -5,9 +5,10 @@ from __future__ import annotations
 import asyncio
 import random
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, Final, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Final, TypeVar
 
 from structlog import get_logger
 from tenacity import (
@@ -19,7 +20,6 @@ from tenacity import (
     stop_after_attempt,
     wait_exponential,
     wait_exponential_jitter,
-    wait_fixed,
 )
 
 from ..constants import UNREACHABLE_MSG
@@ -27,10 +27,10 @@ from ..exceptions import (
     APIError,
     NetworkError,
     RateLimitError,
-    TimeoutError,
     RateLimitExceeded,
     RetryableError,
     ServerError,
+    TimeoutError,
 )
 
 if TYPE_CHECKING:
@@ -47,9 +47,9 @@ __all__ = [
     "RetryHandler",
     "async_with_retry",
     "is_retryable_error",
-    "with_retry",
     "retry_on_error",
     "retry_with_rate_limit",
+    "with_retry",
 ]
 
 
@@ -286,9 +286,12 @@ def create_retry_decorator(
                 for attempt in retry_instance:
                     with attempt:
                         result = func(*args, **kwargs)
-                        return cast(T, result)
+                        return result
             except RetryError as e:
-                raise e.last_attempt.exception() from None
+                exc = e.last_attempt.exception()
+                if isinstance(exc, BaseException):
+                    raise exc from None
+                raise RuntimeError("Retry logic failed unexpectedly") from None
 
             raise RuntimeError("Retry logic failed unexpectedly")
 
