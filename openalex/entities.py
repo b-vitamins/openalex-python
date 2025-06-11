@@ -23,10 +23,10 @@ __all__ = [
 ]
 
 from .api import get_connection
+from .cache.manager import get_cache_manager
 from .constants import (
     AUTOCOMPLETE_PATH,
     HTTP_METHOD_GET,
-    OPENALEX_ID_PREFIX,
     PARAM_Q,
     RANDOM_PATH,
 )
@@ -126,16 +126,32 @@ class BaseEntity(Generic[T, F]):
     def __getitem__(self, record_id: str | list[str]) -> T | ListResult[T]:
         return self.query()[record_id]
 
-    def get(self, id: str | None = None, **params: Any) -> T | ListResult[T]:
-        if id is not None:
-            if id.startswith(OPENALEX_ID_PREFIX):
-                id = id[len(OPENALEX_ID_PREFIX) :]
-            url = self._build_url(id)
+    def _get_single_entity(
+        self, entity_id: str, params: dict[str, Any] | None = None
+    ) -> T:
+        cache_manager = get_cache_manager(self._config)
+        entity_id = strip_id_prefix(entity_id)
+
+        def fetch() -> dict[str, Any]:
+            url = self._build_url(entity_id)
+            norm_params = normalize_params(params)
             response = self._connection.request(
-                HTTP_METHOD_GET, url, params=params
+                HTTP_METHOD_GET, url, params=norm_params
             )
             raise_for_status(response)
-            return self._parse_response(response.json())
+            return response.json()
+
+        data = cache_manager.get_or_fetch(
+            endpoint=self.endpoint,
+            fetch_func=fetch,
+            entity_id=entity_id,
+            params=params,
+        )
+        return self._parse_response(data)
+
+    def get(self, id: str | None = None, **params: Any) -> T | ListResult[T]:
+        if id is not None:
+            return self._get_single_entity(id, params)
         return self.query().get(**params)
 
     def list(
@@ -219,6 +235,16 @@ class BaseEntity(Generic[T, F]):
 
     def count(self) -> int:
         return self.query().count()
+
+    def clear_cache(self) -> None:
+        """Clear cache for this entity type."""
+        cache_manager = get_cache_manager(self._config)
+        cache_manager.clear()
+
+    def cache_stats(self) -> dict[str, Any]:
+        """Get cache statistics for this entity type."""
+        cache_manager = get_cache_manager(self._config)
+        return cache_manager.stats()
 
 
 class Works(BaseEntity[Work, BaseFilter]):
