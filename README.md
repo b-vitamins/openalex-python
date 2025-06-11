@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/openalex-logo-neon.png" alt="OpenAlex Logo" width="300">
+  <img src="assets/openalex-logo.png" alt="OpenAlex Logo" width="300">
   <br>
   <sub>Logo adapted from <a href="https://commons.wikimedia.org/wiki/File:OpenAlex-logo-5.2de7053c.png">OurResearch</a>, CC0, via Wikimedia Commons</sub>
   
