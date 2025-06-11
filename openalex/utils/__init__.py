@@ -28,6 +28,8 @@ from .retry import (
     async_with_retry,
     is_retryable_error,
     with_retry,
+    retry_on_error,
+    retry_with_rate_limit,
 )
 from .text import invert_abstract
 
@@ -53,6 +55,8 @@ __all__ = [
     "is_retryable_error",
     "normalize_params",
     "rate_limited",
+    "retry_on_error",
+    "retry_with_rate_limit",
     "strip_id_prefix",
     "with_retry",
 ]
