@@ -2,20 +2,31 @@
 
 import asyncio
 
-from openalex import AsyncAuthors, AsyncWorks, close_all_async_connections
+from openalex import (
+    AsyncAuthors,
+    AsyncWorks,
+    OpenAlexConfig,
+    close_all_async_connections,
+)
+
+CONFIG = OpenAlexConfig(email="test@example.com")
 
 
 async def search_recent_ml_papers():
     """Search for recent machine learning papers."""
-    works = AsyncWorks()
+    works = AsyncWorks(config=CONFIG)
 
-    results = await (
-        works.search("machine learning")
-        .filter(publication_year=2024)
-        .filter(is_oa=True)
-        .sort("cited_by_count", "desc")
-        .get(per_page=10)
-    )
+    try:
+        results = await (
+            works.search("machine learning")
+            .filter(publication_year=2024)
+            .filter(is_oa=True)
+            .sort("cited_by_count", "desc")
+            .get(per_page=10)
+        )
+    except Exception as e:
+        print(f"Error fetching ML papers: {e}")
+        return
 
     print(f"Found {results.meta.count} ML papers from 2024")
 
@@ -27,8 +38,8 @@ async def search_recent_ml_papers():
 
 async def parallel_searches():
     """Demonstrate parallel searches."""
-    works = AsyncWorks()
-    authors = AsyncAuthors()
+    works = AsyncWorks(config=CONFIG)
+    authors = AsyncAuthors(config=CONFIG)
 
     tasks = [
         works.search("quantum computing").get(per_page=5),
@@ -36,7 +47,11 @@ async def parallel_searches():
         authors.search("Einstein").get(per_page=5),
     ]
 
-    results = await asyncio.gather(*tasks)
+    try:
+        results = await asyncio.gather(*tasks)
+    except Exception as e:
+        print(f"Error in parallel searches: {e}")
+        return
 
     quantum_results, climate_results, einstein_results = results
 
@@ -47,16 +62,20 @@ async def parallel_searches():
 
 async def stream_all_results():
     """Stream all results using async iteration."""
-    works = AsyncWorks()
+    works = AsyncWorks(config=CONFIG)
 
     count = 0
-    async for _work in works.filter(publication_year=2024, is_oa=True).all():
-        count += 1
-        if count % 100 == 0:
-            print(f"Processed {count} papers...")
+    try:
+        async for _work in works.filter(publication_year=2024, is_oa=True).all():
+            count += 1
+            if count % 100 == 0:
+                print(f"Processed {count} papers...")
 
-        if count >= 1000:
-            break
+            if count >= 1000:
+                break
+    except Exception as e:
+        print(f"Error streaming results: {e}")
+        return
 
     print(f"Total processed: {count}")
 

@@ -40,7 +40,7 @@ multiple_topics = Topics().filter(openalex=topic_ids).get()
 print(f"Found {len(multiple_topics.results)} topics")
 for t in multiple_topics.results:
     print(f"- {t.display_name}")
-    print(f"  {t.domain.display_name} → {t.field.display_name} → {t.subfield.display_name}")
+    print(f"  {t.domain.display_name} -> {t.field.display_name} -> {t.subfield.display_name}")
     print(f"  Works: {t.works_count:,}")
 ```
 

@@ -53,7 +53,7 @@ print(f"Topic: {topic.display_name}")
 # "Artificial Intelligence in Medicine"
 
 # Show full hierarchy
-print(f"Full hierarchy: {topic.domain.display_name} → {topic.field.display_name} → {topic.subfield.display_name} → {topic.display_name}")
+print(f"Full hierarchy: {topic.domain.display_name} -> {topic.field.display_name} -> {topic.subfield.display_name} -> {topic.display_name}")
 ```
 
 ## Keywords
@@ -260,11 +260,11 @@ def explore_topic_hierarchy(topic_id):
     # Show full path
     print(f"\nFull path:")
     print(f"  Domain: {topic.domain.display_name} (ID: {topic.domain.id})")
-    print(f"  ↓")
+    print(f"  v")
     print(f"  Field: {topic.field.display_name} (ID: {topic.field.id})")
-    print(f"  ↓")
+    print(f"  v")
     print(f"  Subfield: {topic.subfield.display_name} (ID: {topic.subfield.id})")
-    print(f"  ↓")
+    print(f"  v")
     print(f"  Topic: {topic.display_name}")
     
     # Count siblings at each level
