@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/openalex-logo.png" alt="OpenAlex Logo" width="300">
+  <img src="assets/openalex-logo.png" alt="OpenAlex Logo" width="400">
   <br>
   <sub>Logo adapted from <a href="https://commons.wikimedia.org/wiki/File:OpenAlex-logo-5.2de7053c.png">OurResearch</a>, CC0, via Wikimedia Commons</sub>
   
@@ -7,6 +7,10 @@
 
   [![Test Coverage](https://img.shields.io/badge/coverage-85%25+-brightgreen.svg)](https://github.com/b-vitamins/openalex-python)
 </div>
+
+> **Disclaimer**: This is an **unofficial** client library for OpenAlex. It is not endorsed by or affiliated with OpenAlex or its parent organization. The library's author is not associated with OpenAlex.
+
+> **Note**: This project is inspired by and builds upon the excellent work of [PyAlex](https://github.com/J535D165/pyalex).
 
 A Python client for the [OpenAlex](https://openalex.org) API with:
 
@@ -18,10 +22,6 @@ A Python client for the [OpenAlex](https://openalex.org) API with:
 - **Connection pooling** and concurrent requests
 - **Comprehensive error handling**
 - **Documentation and examples**
-
-> **Disclaimer**: This is an **unofficial** client library for OpenAlex. It is not endorsed by or affiliated with OpenAlex or its parent organization. The library's author is not associated with OpenAlex.
-
-> **Note**: This project is inspired by and builds upon the excellent work of [PyAlex](https://github.com/J535D165/pyalex).
 
 For the official OpenAlex API documentation, please visit [docs.openalex.org](https://docs.openalex.org/).
 
