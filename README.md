@@ -1,150 +1,195 @@
-# OpenAlex Python Client
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![PyPI Version](https://img.shields.io/pypi/v/openalex.svg)](https://pypi.org/project/openalex/)
+<div align="center">
+  <img src="assets/openalex-logo.png" alt="OpenAlex Logo" width="300">
+  
+  # OpenAlex Python Client
 
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
+  [![Test Coverage](https://img.shields.io/badge/coverage-85%25+-brightgreen.svg)](https://github.com/b-vitamins/openalex-python)
+</div>
 
-A modern Python client for the [OpenAlex](https://openalex.org) API with full type annotations and a fluent interface.
+A Python client for the [OpenAlex](https://openalex.org) API with async support, automatic retries, and caching.
+
+> **Disclaimer**: This is an **unofficial** client library for OpenAlex. It is not endorsed by or affiliated with OpenAlex or its parent organization in any way. The author of this library is not associated with OpenAlex.
+
+> **Note**: This project is inspired by and builds upon the excellent work of [PyAlex](https://github.com/J535D165/pyalex). We've reimagined the client with modern Python practices, full type safety, and async support while maintaining ease of use.
+
+## Logo Attribution
+
+The OpenAlex logo used in this project is from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:OpenAlex-logo-5.2de7053c.png) and is available under the [Creative Commons CC0 1.0 Universal Public Domain Dedication](https://creativecommons.org/publicdomain/zero/1.0/).
 
 ## Features
 
-- **Fluent, chainable interface** inspired by PyAlex
-- **Fully typed** with comprehensive Pydantic models
-- **Autocomplete support** in IDEs
-- **Automatic retries** and rate limiting
-- **Pagination** helpers for large result sets
-
-## Installation
-
-```bash
-pip install openalex
-```
+- Async support with HTTP/2
+- Automatic retries with exponential backoff
+- Type hints and Pydantic models
+- Fluent query API
+- Built-in caching
+- Connection pooling and concurrent requests
+- Comprehensive error handling
+- Documentation and examples
 
 ## Quick Start
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/b-vitamins/openalex-python.git
+cd openalex-python
+
+# Install with Poetry
+poetry install
+
+# Or install dependencies directly
+pip install -r requirements.txt
+```
+
+### Basic Usage
 
 ```python
 from openalex import Works, Authors
 
-# Get a single work
-work = Works()["W2741809807"]
-print(work.title)
-print(work.abstract)  # Automatically converts inverted index
+# Get a specific work
+work = Works().get("W2741809807")
+print(f"{work.title} has been cited {work.cited_by_count} times")
 
 # Search for works
-quantum_papers = (
+climate_papers = (
     Works()
-    .search("quantum computing")
-    .filter(publication_year=2023, is_oa=True)
-    .get()
+    .search("climate change")
+    .filter(publication_year=2024, is_oa=True)
+    .sort("cited_by_count", "desc")
+    .get(per_page=10)
 )
 
-for paper in quantum_papers.results:
+for paper in climate_papers.results:
     print(f"{paper.title} - {paper.cited_by_count} citations")
 
-# Complex queries with logical operators
-recent_papers = (
-    Works()
-    .filter_gt(cited_by_count=10)
-    .filter_lt(publication_year=2024)
-    .filter_not(type="retracted")
-    .sort(cited_by_count="desc")
+# Find highly-cited authors in machine learning
+ml_authors = (
+    Authors()
+    .search("machine learning")
+    .filter(works_count=">50", cited_by_count=">1000")
     .get()
 )
-
-# Get authors by ORCID
-author = Authors()["https://orcid.org/0000-0002-1234-5678"]
-
-# Pagination
-for work in Works().filter(authorships={"author": {"id": author.id}}).paginate():
-    process_work(work)
 ```
+
+### Async Usage
+
+```python
+import asyncio
+from openalex import AsyncWorks
+
+async def get_trending_papers():
+    works = AsyncWorks()
+    
+    # Fetch multiple queries in parallel
+    results = await asyncio.gather(
+        works.search("quantum computing").get(),
+        works.search("artificial intelligence").get(),
+        works.search("climate change").get(),
+    )
+    
+    for topic_results in results:
+        print(f"Found {topic_results.meta.count} papers")
+
+# Run async function
+asyncio.run(get_trending_papers())
+```
+
+## Documentation
+
+- [API Reference](docs/api-reference.md)
+- Examples: [basic.py](examples/basic.py), [advanced.py](examples/advanced.py), [async.py](examples/async.py)
+- [Performance Guide](docs/performance-guide.md)
 
 ## Configuration
 
-Set your email for the polite pool and get faster response times:
-
 ```python
-from openalex import Works, OpenAlexConfig
+from openalex import OpenAlexConfig, Works
 
-config = OpenAlexConfig(email="your-email@example.com")
+# Configure the client
+config = OpenAlexConfig(
+    email="your-email@example.com",  # Optional: for polite pool
+    api_key="your-api-key",          # Optional: for higher rate limits
+    retry_count=3,                   # Automatic retries
+    cache_enabled=True,              # Enable caching
+    cache_ttl=3600,                 # Cache for 1 hour
+)
+
 works = Works(config=config)
 ```
 
-## Examples
+## Advanced Features
 
-### Search and Filter
-
+### Field Selection
 ```python
-# Search with field-specific filters
-results = (
+# Only fetch specific fields for performance
+minimal_works = (
     Works()
-    .search_filter(title="climate change", abstract="temperature")
-    .filter(publication_year=[2020, 2021, 2022])
+    .filter(publication_year=2024)
+    .select("id", "title", "cited_by_count")
+    .get()
+)
+```
+
+### Grouping and Aggregation
+```python
+# Group works by open access status
+oa_stats = (
+    Works()
+    .filter(publication_year=2024)
+    .group_by("is_oa")
     .get()
 )
 
-# OR operations
-open_papers = Works().filter_or(
-    is_oa=True,
-    best_open_version="publishedVersion"
-).get()
-
-# Complex nested filters
-ml_papers = Works().filter(
-    topics={"id": "T10159"},  # Machine Learning
-    authorships={
-        "institutions": {
-            "country_code": ["US", "UK", "CA"]
-        }
-    }
-).get()
+for group in oa_stats.groups:
+    print(f"OA={group.key}: {group.count} works")
 ```
 
-### Group and Aggregate
-
+### Auto-Pagination
 ```python
-# Group by open access status
-grouped = Works().filter(publication_year=2023).group_by("oa_status").get()
-
-for group in grouped.group_by:
-    print(f"{group.key}: {group.count} papers")
+# Automatically fetch all pages
+for work in Works().filter(publication_year=2024).all():
+    process_work(work)  # Processes items as they're fetched
 ```
 
-### Select Specific Fields
-
+### Complex Queries
 ```python
-# Get only essential fields for performance
-papers = (
-    Works()
-    .filter(journal="Nature")
-    .select(["id", "title", "doi", "publication_date"])
-    .get(per_page=200)
+from openalex import Authors, Institutions
+
+# Find authors at specific institutions with complex filters
+authors = (
+    Authors()
+    .filter(
+        affiliations=["Harvard University", "MIT"],
+        works_count=">100",
+        cited_by_count=">5000",
+    )
+    .sort("cited_by_count", "desc")
+    .get()
 )
 ```
 
-## Available Entities
+## Performance Tips
 
-- `Works()` - Scholarly works (papers, books, datasets)
-- `Authors()` - Researchers and their publications
-- `Institutions()` - Universities and research organizations
-- `Sources()` - Journals, conferences, repositories
-- `Topics()` - Research topics and fields
-- `Publishers()` - Academic publishers
-- `Funders()` - Research funding organizations
-- `Keywords()` - Keywords from works
-- `Concepts()` - Research concepts (deprecated)
+1. **Use field selection** to reduce response size
+2. **Enable caching** for frequently accessed data
+3. **Use async for parallel requests**
+4. **Batch operations** when possible
+5. **Set appropriate timeouts** for your use case
 
-## Error Handling
+## Contributing
 
-```python
-from openalex import Works, NotFoundError
-
-try:
-    work = Works()["W99999999"]
-except NotFoundError as e:
-    print(f"Work not found: {e.message}")
-```
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
 ## License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- Built for the amazing [OpenAlex](https://openalex.org) API
+- Inspired by [PyAlex](https://github.com/J535D165/pyalex) - the original Python client for OpenAlex
+- Thanks to all contributors!

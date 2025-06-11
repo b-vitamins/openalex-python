@@ -28,7 +28,7 @@ The response contains:
 # Each result shows topic information
 for topic in first_page.results[:5]:  # First 5 topics
     print(f"\n{topic.display_name}")
-    print(f"  Hierarchy: {topic.domain.display_name} → {topic.field.display_name} → {topic.subfield.display_name}")
+    print(f"  Hierarchy: {topic.domain.display_name} -> {topic.field.display_name} -> {topic.subfield.display_name}")
     print(f"  Works count: {topic.works_count:,}")
     print(f"  Keywords: {', '.join(topic.keywords[:3])}")  # First 3 keywords
     if topic.description:
@@ -145,7 +145,7 @@ def find_trending_topics():
     print("Most active research topics:")
     for i, topic in enumerate(active_topics, 1):
         print(f"{i}. {topic.display_name}")
-        print(f"   {topic.domain.display_name} → {topic.field.display_name}")
+        print(f"   {topic.domain.display_name} -> {topic.field.display_name}")
         print(f"   Works: {topic.works_count:,}")
 
 find_trending_topics()

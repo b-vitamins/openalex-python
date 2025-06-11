@@ -14,7 +14,7 @@ results = ai_search.get()
 print(f"Found {results.meta.count} topics matching 'artificial intelligence'")
 for topic in results.results[:5]:
     print(f"\n{topic.display_name}")
-    print(f"  {topic.domain.display_name} → {topic.field.display_name} → {topic.subfield.display_name}")
+    print(f"  {topic.domain.display_name} -> {topic.field.display_name} -> {topic.subfield.display_name}")
     print(f"  Works: {topic.works_count:,}")
     if topic.keywords:
         print(f"  Keywords: {', '.join(topic.keywords[:5])}")
@@ -218,7 +218,7 @@ def search_within_hierarchy(search_term, domain_id=None, field_id=None):
     
     for topic in results.results:
         print(f"\n{topic.display_name}")
-        print(f"  {topic.domain.display_name} → {topic.field.display_name} → {topic.subfield.display_name}")
+        print(f"  {topic.domain.display_name} -> {topic.field.display_name} -> {topic.subfield.display_name}")
         print(f"  Works: {topic.works_count:,}")
 
 # Examples
@@ -320,7 +320,7 @@ def comprehensive_topic_search(search_terms, min_works=100):
         print(f"Found {len(sorted_topics)} unique topics")
         for topic in sorted_topics[:20]:
             print(f"\n{topic.display_name}")
-            print(f"  {topic.field.display_name} → {topic.subfield.display_name}")
+            print(f"  {topic.field.display_name} -> {topic.subfield.display_name}")
             print(f"  Works: {topic.works_count:,}")
 
 # Search for AI/ML topics comprehensively

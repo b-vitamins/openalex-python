@@ -182,7 +182,7 @@ def find_interdisciplinary_topics():
     for topic in sorted(unique_topics, key=lambda t: t.works_count, reverse=True)[:20]:
         print(f"
 {topic.display_name}")
-        print(f"  {topic.domain.display_name} → {topic.field.display_name} → {topic.subfield.display_name}")
+        print(f"  {topic.domain.display_name} -> {topic.field.display_name} -> {topic.subfield.display_name}")
         print(f"  Works: {topic.works_count:,}")
 
 find_interdisciplinary_topics()
