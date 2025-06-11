@@ -1,16 +1,17 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import httpx
 from structlog import get_logger
 
-from .config import OpenAlexConfig
+if TYPE_CHECKING:  # pragma: no cover
+    from .config import OpenAlexConfig
 from .exceptions import (
     APIError,
     NetworkError,
-    RateLimitExceeded,
+    RateLimitExceededError,
     ServerError,
     TemporaryError,
     TimeoutError,
@@ -65,15 +66,17 @@ class Connection:
             response = self._client.request(
                 method, url, params=params, **kwargs
             )
-            return response
         except httpx.TimeoutException as e:
-            raise TimeoutError(
-                f"Request timed out after {self._config.timeout}s"
-            ) from e
+            msg = f"Request timed out after {self._config.timeout}s"
+            raise TimeoutError(msg) from e
         except httpx.NetworkError as e:
-            raise NetworkError(f"Network error: {e!s}") from e
+            msg = f"Network error: {e!s}"
+            raise NetworkError(msg) from e
         except httpx.HTTPError as e:
-            raise APIError(f"HTTP error: {e!s}") from e
+            msg = f"HTTP error: {e!s}"
+            raise APIError(msg) from e
+        else:
+            return response
 
     def _build_headers(self) -> dict[str, str]:
         return self._config.headers.copy()
@@ -126,15 +129,17 @@ class AsyncConnection:
             response = await self._make_request_with_retry(
                 method, url, params, **kwargs
             )
-            return response
         except httpx.TimeoutException as e:
-            raise TimeoutError(
-                f"Request timed out after {self._config.timeout}s"
-            ) from e
+            msg = f"Request timed out after {self._config.timeout}s"
+            raise TimeoutError(msg) from e
         except httpx.NetworkError as e:
-            raise NetworkError(f"Network error: {e!s}") from e
+            msg = f"Network error: {e!s}"
+            raise NetworkError(msg) from e
         except httpx.HTTPError as e:
-            raise APIError(f"HTTP error: {e!s}") from e
+            msg = f"HTTP error: {e!s}"
+            raise APIError(msg) from e
+        else:
+            return response
 
     async def _make_request_with_retry(
         self,
@@ -147,6 +152,9 @@ class AsyncConnection:
             self._config.retry_max_attempts if self._config.retry_enabled else 1
         )
         attempt = 0
+
+        def _raise(err: Exception) -> None:
+            raise err
 
         while attempt < max_attempts:
             try:
@@ -161,28 +169,26 @@ class AsyncConnection:
                 if response.status_code == 429:
                     retry_after = response.headers.get("Retry-After")
                     retry_after_int = int(retry_after) if retry_after else None
-                    raise RateLimitExceeded(
-                        f"Rate limit exceeded. Retry after {retry_after} seconds",
-                        retry_after=retry_after_int,
-                    )
+                    _raise(RateLimitExceededError(retry_after=retry_after_int))
 
                 if 500 <= response.status_code < 600:
-                    raise ServerError(
+                    msg = (
                         f"Server error {response.status_code}: {response.text}"
                     )
+                    _raise(ServerError(msg))
 
                 if response.status_code in (502, 503, 504):
-                    raise TemporaryError(
+                    msg = (
                         f"Temporary error {response.status_code}: Service unavailable"
                     )
+                    _raise(TemporaryError(msg))
 
-                return response
-            except (RateLimitExceeded, ServerError, TemporaryError) as e:
+            except (RateLimitExceededError, ServerError, TemporaryError) as e:
                 attempt += 1
                 if attempt >= max_attempts:
                     raise
 
-                if isinstance(e, RateLimitExceeded) and e.retry_after:
+                if isinstance(e, RateLimitExceededError) and e.retry_after:
                     wait_time = e.retry_after
                 else:
                     wait_time = min(
@@ -198,8 +204,11 @@ class AsyncConnection:
                 )
 
                 await asyncio.sleep(wait_time)
+            else:
+                return response
 
-        raise RuntimeError("Retry logic failed unexpectedly")
+        msg = "Retry logic failed unexpectedly"
+        raise RuntimeError(msg)
 
     def _build_headers(self) -> dict[str, str]:
         headers = {

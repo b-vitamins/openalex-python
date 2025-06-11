@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
 
 if TYPE_CHECKING:  # pragma: no cover - for type checking only
+    from collections.abc import AsyncIterator
+
     from .config import OpenAlexConfig
     from .entities import AsyncBaseEntity, BaseEntity
 from .models import BaseFilter, GroupByResult, ListResult
@@ -304,7 +305,8 @@ class AsyncQuery(Generic[T, F]):
             results = await self.get(page=page)
 
             if isinstance(results, GroupByResult):
-                raise ValueError("Cannot iterate over grouped results")
+                msg = "Cannot iterate over grouped results"
+                raise TypeError(msg)
 
             for item in results.results:
                 yield item
@@ -326,6 +328,7 @@ class AsyncQuery(Generic[T, F]):
         results = await self.get(per_page=1)
 
         if isinstance(results, GroupByResult):
-            raise ValueError("Cannot get first item from grouped results")
+            msg = "Cannot get first item from grouped results"
+            raise TypeError(msg)
 
         return results.results[0] if results.results else None

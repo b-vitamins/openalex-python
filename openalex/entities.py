@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 if TYPE_CHECKING:  # pragma: no cover
     import builtins
+    from collections.abc import AsyncIterator
 
     from .models.work import Ngram
     from .query import AsyncQuery

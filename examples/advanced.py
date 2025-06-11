@@ -33,7 +33,7 @@ def performance_optimized_queries():
     # 2. Use cursor pagination for large datasets
     print("\n=== Efficient pagination ===")
     count = 0
-    for work in works.filter(publication_year=2024, is_oa=True).paginate():
+    for _ in works.filter(publication_year=2024, is_oa=True).paginate():
         count += 1
         if count >= 1000:
             break
@@ -280,25 +280,25 @@ def cache_performance_demo():
 
     # First fetch - no cache
     start = time.time()
-    work1 = works_no_cache.get(work_id)
+    works_no_cache.get(work_id)
     time1 = time.time() - start
     print(f"First fetch (no cache): {time1:.3f}s")
 
     # Second fetch - no cache
     start = time.time()
-    work2 = works_no_cache.get(work_id)
+    works_no_cache.get(work_id)
     time2 = time.time() - start
     print(f"Second fetch (no cache): {time2:.3f}s")
 
     # First fetch - with cache
     start = time.time()
-    work3 = works_cache.get(work_id)
+    works_cache.get(work_id)
     time3 = time.time() - start
     print(f"First fetch (with cache): {time3:.3f}s")
 
     # Second fetch - from cache
     start = time.time()
-    work4 = works_cache.get(work_id)
+    works_cache.get(work_id)
     time4 = time.time() - start
     print(f"Second fetch (from cache): {time4:.3f}s")
 
