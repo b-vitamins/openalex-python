@@ -1,33 +1,29 @@
 <div align="center">
-  <img src="assets/openalex-logo.png" alt="OpenAlex Logo" width="300">
+  <img src="assets/openalex-logo-neon.png" alt="OpenAlex Logo" width="300">
+  <br>
+  <sub>Logo adapted from <a href="https://commons.wikimedia.org/wiki/File:OpenAlex-logo-5.2de7053c.png">OurResearch</a>, CC0, via Wikimedia Commons</sub>
   
-  # OpenAlex Python Client
+  # Python Client for the OpenAlex API
 
-  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-  [![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
   [![Test Coverage](https://img.shields.io/badge/coverage-85%25+-brightgreen.svg)](https://github.com/b-vitamins/openalex-python)
 </div>
 
-A Python client for the [OpenAlex](https://openalex.org) API with async support, automatic retries, and caching.
+A Python client for the [OpenAlex](https://openalex.org) API with:
 
-> **Disclaimer**: This is an **unofficial** client library for OpenAlex. It is not endorsed by or affiliated with OpenAlex or its parent organization in any way. The author of this library is not associated with OpenAlex.
+- **Async support** with HTTP/2
+- **Automatic retries** with exponential backoff
+- **Type hints** and Pydantic models
+- **Fluent query API**
+- **Built-in caching**
+- **Connection pooling** and concurrent requests
+- **Comprehensive error handling**
+- **Documentation and examples**
 
-> **Note**: This project is inspired by and builds upon the excellent work of [PyAlex](https://github.com/J535D165/pyalex). We've reimagined the client with modern Python practices, full type safety, and async support while maintaining ease of use.
+> **Disclaimer**: This is an **unofficial** client library for OpenAlex. It is not endorsed by or affiliated with OpenAlex or its parent organization. The library's author is not associated with OpenAlex.
 
-## Logo Attribution
+> **Note**: This project is inspired by and builds upon the excellent work of [PyAlex](https://github.com/J535D165/pyalex).
 
-The OpenAlex logo used in this project is from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:OpenAlex-logo-5.2de7053c.png) and is available under the [Creative Commons CC0 1.0 Universal Public Domain Dedication](https://creativecommons.org/publicdomain/zero/1.0/).
-
-## Features
-
-- Async support with HTTP/2
-- Automatic retries with exponential backoff
-- Type hints and Pydantic models
-- Fluent query API
-- Built-in caching
-- Connection pooling and concurrent requests
-- Comprehensive error handling
-- Documentation and examples
+For the official OpenAlex API documentation, please visit [docs.openalex.org](https://docs.openalex.org/).
 
 ## Quick Start
 
@@ -121,7 +117,7 @@ config = OpenAlexConfig(
 works = Works(config=config)
 ```
 
-## Advanced Features
+## Features
 
 ### Field Selection
 ```python
@@ -182,7 +178,7 @@ authors = (
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+Please see the [Contributing Guide](CONTRIBUTING.md) for details.
 
 ## License
 
@@ -190,6 +186,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- Built for the amazing [OpenAlex](https://openalex.org) API
+- Built for the amazing [OpenAlex](https://openalex.org) API - see their [documentation](https://docs.openalex.org/) for API details
 - Inspired by [PyAlex](https://github.com/J535D165/pyalex) - the original Python client for OpenAlex
-- Thanks to all contributors!
