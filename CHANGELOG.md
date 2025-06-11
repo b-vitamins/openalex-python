@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Full async/await support for all API operations
 - Extended documentation with advanced usage examples
 - Performance monitoring and metrics collection
+- Development guidelines for contributors in `AGENTS.md`
 
 ### Changed
 - License clarification: Now consistently MIT licensed

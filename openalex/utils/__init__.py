@@ -27,9 +27,9 @@ from .retry import (
     RetryHandler,
     async_with_retry,
     is_retryable_error,
-    with_retry,
     retry_on_error,
     retry_with_rate_limit,
+    with_retry,
 )
 from .text import invert_abstract
 
