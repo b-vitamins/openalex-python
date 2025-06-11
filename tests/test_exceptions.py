@@ -2,11 +2,10 @@ import httpx
 import pytest
 
 from openalex.exceptions import (
-    APIError,
     AuthenticationError,
     NetworkError,
     NotFoundError,
-    RateLimitExceeded,
+    RateLimitExceededError,
     ServerError,
     TimeoutError,
     ValidationError,
@@ -19,7 +18,7 @@ from openalex.exceptions import (
     [
         (401, AuthenticationError),
         (404, NotFoundError),
-        (429, RateLimitExceeded),
+        (429, RateLimitExceededError),
         (500, ServerError),
         (400, ValidationError),
     ],

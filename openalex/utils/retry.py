@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 import random
 import time
-from collections.abc import Callable
 from dataclasses import dataclass
 from functools import wraps
 from typing import TYPE_CHECKING, Any, Final, TypeVar
@@ -27,11 +26,13 @@ from ..exceptions import (
     APIError,
     NetworkError,
     RateLimitError,
-    RateLimitExceeded,
+    RateLimitExceededError,
     RetryableError,
     ServerError,
     TimeoutError,
 )
+
+RETRY_FAIL_MSG: Final = "Retry logic failed unexpectedly"
 
 if TYPE_CHECKING:
     from collections.abc import Awaitable, Callable
@@ -239,7 +240,7 @@ def is_retryable_error_simple(exception: Exception) -> bool:
 
 def get_retry_after(exception: Exception) -> int | None:
     """Extract retry-after value from exception."""
-    if isinstance(exception, RateLimitExceeded):
+    if isinstance(exception, RateLimitExceededError):
         return exception.retry_after
     return None
 
@@ -285,15 +286,14 @@ def create_retry_decorator(
             try:
                 for attempt in retry_instance:
                     with attempt:
-                        result = func(*args, **kwargs)
-                        return result
+                        return func(*args, **kwargs)
             except RetryError as e:
                 exc = e.last_attempt.exception()
                 if isinstance(exc, BaseException):
                     raise exc from None
-                raise RuntimeError("Retry logic failed unexpectedly") from None
+                raise RuntimeError(RETRY_FAIL_MSG) from None
 
-            raise RuntimeError("Retry logic failed unexpectedly")
+            raise RuntimeError(RETRY_FAIL_MSG)
 
         return wrapper
 
@@ -315,7 +315,7 @@ def retry_with_rate_limit(func: Callable[..., T]) -> Callable[..., T]:
         while attempt < max_attempts:
             try:
                 return func(*args, **kwargs)
-            except RateLimitExceeded as e:
+            except RateLimitExceededError as e:
                 attempt += 1
                 if attempt >= max_attempts:
                     raise
@@ -342,7 +342,7 @@ def retry_with_rate_limit(func: Callable[..., T]) -> Callable[..., T]:
                 )
                 time.sleep(wait_time)
 
-        raise RuntimeError("Retry logic failed unexpectedly")
+        raise RuntimeError(RETRY_FAIL_MSG)
 
     return wrapper
 

@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
-from typing import Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from structlog import get_logger
 
-from ..config import OpenAlexConfig
+if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Callable
+
+    from ..config import OpenAlexConfig
 from .base import BaseCache, CacheKeyBuilder
 from .memory import SmartMemoryCache
 
@@ -32,6 +34,15 @@ class CacheManager:
     @property
     def enabled(self) -> bool:
         return self._cache is not None
+
+    @property
+    def cache(self) -> BaseCache | None:
+        """Expose the underlying cache object, if enabled."""
+        return self._cache
+
+    def get_ttl_for_endpoint(self, endpoint: str) -> int:
+        """Public wrapper for ``_get_ttl_for_endpoint``."""
+        return self._get_ttl_for_endpoint(endpoint)
 
     def get_or_fetch(
         self,

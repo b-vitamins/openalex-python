@@ -1,14 +1,13 @@
 """Test retry logic."""
 
-import pytest
-from unittest.mock import Mock, patch
 import time
+from unittest.mock import Mock
+
+import pytest
 
 from openalex.exceptions import (
-    RateLimitExceeded,
+    RateLimitExceededError,
     ServerError,
-    TemporaryError,
-    NetworkError,
 )
 from openalex.utils.retry import retry_on_error, retry_with_rate_limit
 
@@ -51,7 +50,7 @@ class TestRetryLogic:
         """Test rate limit retry with header."""
         mock_func = Mock()
         mock_func.side_effect = [
-            RateLimitExceeded("Rate limited", retry_after=1),
+            RateLimitExceededError(retry_after=1),
             "success",
         ]
 
@@ -76,7 +75,7 @@ class TestRetryLogic:
         def func():
             return mock_func()
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Not retryable"):
             func()
 
         assert mock_func.call_count == 1  # No retry

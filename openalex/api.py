@@ -23,7 +23,7 @@ from .constants import (
 from .exceptions import (
     APIError,
     NetworkError,
-    RateLimitExceeded,
+    RateLimitExceededError,
     ServerError,
     TemporaryError,
     TimeoutError,
@@ -120,31 +120,27 @@ class APIConnection:
             if isinstance(status_code, int) and status_code == 429:
                 retry_after = response.headers.get("Retry-After")
                 retry_after_int = int(retry_after) if retry_after else None
-                raise RateLimitExceeded(
-                    f"Rate limit exceeded. Retry after {retry_after} seconds",
-                    retry_after=retry_after_int,
-                )
+                raise RateLimitExceededError(retry_after=retry_after_int)
 
             if isinstance(status_code, int) and 500 <= status_code < 600:
-                raise ServerError(
-                    f"Server error {status_code}: {getattr(response, 'text', '')}"
-                )
+                msg = f"Server error {status_code}: {getattr(response, 'text', '')}"
+                raise ServerError(msg)
 
             if isinstance(status_code, int) and status_code in (502, 503, 504):
-                raise TemporaryError(
-                    f"Temporary error {status_code}: Service unavailable"
-                )
-
-            return response
+                msg = f"Temporary error {status_code}: Service unavailable"
+                raise TemporaryError(msg)
 
         except httpx.TimeoutException as e:
-            raise TimeoutError(
-                f"Request timed out after {self.config.timeout}s"
-            ) from e
+            msg = f"Request timed out after {self.config.timeout}s"
+            raise TimeoutError(msg) from e
         except httpx.NetworkError as e:
-            raise NetworkError(f"Network error: {e!s}") from e
+            msg = f"Network error: {e!s}"
+            raise NetworkError(msg) from e
         except httpx.HTTPError as e:
-            raise APIError(f"HTTP error: {e!s}") from e
+            msg = f"HTTP error: {e!s}"
+            raise APIError(msg) from e
+        else:
+            return response
 
     def close(self) -> None:
         if self._client:
@@ -295,18 +291,16 @@ class AsyncBaseAPI(Generic[T]):
                 self.endpoint, entity_id, params
             )
             cached = (
-                cache_manager._cache.get(cache_key)
-                if cache_manager._cache
-                else None
+                cache_manager.cache.get(cache_key) if cache_manager.cache else None
             )
             if cached is not None:
                 return cast("dict[str, Any]", cached)
 
         data = await fetch()
 
-        if cache_manager.enabled and cache_manager._cache:
-            ttl = cache_manager._get_ttl_for_endpoint(self.endpoint)
-            cache_manager._cache.set(cache_key, data, ttl)
+        if cache_manager.enabled and cache_manager.cache:
+            ttl = cache_manager.get_ttl_for_endpoint(self.endpoint)
+            cache_manager.cache.set(cache_key, data, ttl)
 
         return data
 

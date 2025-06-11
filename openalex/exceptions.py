@@ -2,26 +2,20 @@
 
 from __future__ import annotations
 
-import json
-from typing import TYPE_CHECKING, Any, Final
-
-from .constants import (
-    HTTP_NOT_FOUND,
-    HTTP_UNAUTHORIZED,
-)
+from typing import TYPE_CHECKING, Any
 
 __all__ = [
     "APIError",
     "AuthenticationError",
+    "ConfigurationError",
     "NetworkError",
     "NotFoundError",
     "OpenAlexError",
     "RateLimitError",
+    "RateLimitExceededError",
     "RetryableError",
     "ServerError",
-    "RateLimitExceeded",
     "TemporaryError",
-    "ConfigurationError",
     "TimeoutError",
     "ValidationError",
     "raise_for_status",
@@ -148,10 +142,15 @@ class ServerError(RetryableError):
     pass
 
 
-class RateLimitExceeded(RetryableError):
+class RateLimitExceededError(RetryableError):
     """Rate limit exceeded error with retry information."""
 
-    def __init__(self, message: str, retry_after: int | None = None) -> None:
+    def __init__(self, retry_after: int | None = None) -> None:
+        message = (
+            f"Rate limit exceeded. Retry after {retry_after} seconds"
+            if retry_after is not None
+            else "Rate limit exceeded"
+        )
         super().__init__(message)
         self.retry_after = retry_after
 
@@ -189,40 +188,41 @@ def raise_for_status(response: httpx.Response) -> None:
 
     # Add helpful context based on status code
     if status_code == 400:
-        raise ValidationError(
+        msg = (
             f"{base_message}\n"
             "This usually means there's an issue with your query parameters. "
             "Check the filter syntax and parameter names."
         )
-    elif status_code == 401:
-        raise AuthenticationError(
+        raise ValidationError(msg)
+    if status_code == 401:
+        msg = (
             f"{base_message}\n"
             "Your API key may be invalid or expired. "
             "Get a new key at https://openalex.org/api-key"
         )
-    elif status_code == 403:
-        raise AuthenticationError(
+        raise AuthenticationError(msg)
+    if status_code == 403:
+        msg = (
             f"{base_message}\n"
             "You don't have permission to access this resource."
         )
-    elif status_code == 404:
-        raise NotFoundError(
+        raise AuthenticationError(msg)
+    if status_code == 404:
+        msg = (
             f"{base_message}\n"
             "The requested resource does not exist. "
             "Check the entity ID or endpoint."
         )
-    elif status_code == 429:
+        raise NotFoundError(msg)
+    if status_code == 429:
         retry_after = response.headers.get("Retry-After", "unknown")
-        raise RateLimitExceeded(
-            f"{base_message}\n"
-            f"Rate limit exceeded. Retry after {retry_after} seconds. "
-            "Consider adding an API key for higher limits.",
+        raise RateLimitExceededError(
             retry_after=int(retry_after) if retry_after.isdigit() else None,
         )
-    elif 500 <= status_code < 600:
-        raise ServerError(
+    if 500 <= status_code < 600:
+        msg = (
             f"{base_message}\n"
             "This is a server-side error. The request may succeed if retried."
         )
-    else:
-        raise APIError(base_message)
+        raise ServerError(msg)
+    raise APIError(base_message)
