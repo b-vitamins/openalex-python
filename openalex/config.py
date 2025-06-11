@@ -57,12 +57,19 @@ class OpenAlexConfig(BaseModel):
     )
     cache_enabled: bool = Field(
         default=True,
-        description="Enable response caching",
+        description="Enable request caching",
+    )
+    cache_maxsize: int = Field(
+        default=1000,
+        description="Maximum number of cached entries",
+        ge=100,
+        le=10000,
     )
     cache_ttl: int = Field(
         default=DEFAULT_CACHE_TTL,
-        ge=0,
-        description="Cache TTL in seconds",
+        description="Default cache TTL in seconds",
+        ge=60,
+        le=86400,
     )
     rate_limit_buffer: float = Field(
         default=DEFAULT_BUFFER,
