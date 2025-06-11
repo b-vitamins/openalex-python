@@ -19,7 +19,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.12"
-httpx = "0.28.1"
+httpx = { version = "0.28.1", extras = ["http2"] }
 pydantic = "2.10.4"
 tenacity = "9.0.0"
 structlog = "23.1.0"

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -10,6 +11,17 @@ if TYPE_CHECKING:  # pragma: no cover
 from pydantic import ValidationError
 
 __all__ = [
+    "AsyncAuthors",
+    "AsyncConcepts",
+    "AsyncFunders",
+    "AsyncInstitutions",
+    "AsyncJournals",
+    "AsyncKeywords",
+    "AsyncPeople",
+    "AsyncPublishers",
+    "AsyncSources",
+    "AsyncTopics",
+    "AsyncWorks",
     "Authors",
     "BaseEntity",
     "Concepts",
@@ -22,7 +34,7 @@ __all__ = [
     "Works",
 ]
 
-from .api import get_connection
+from .api import AsyncBaseAPI, get_connection
 from .cache.manager import get_cache_manager
 from .constants import (
     AUTOCOMPLETE_PATH,
@@ -33,6 +45,7 @@ from .constants import (
 from .exceptions import raise_for_status
 from .models import (
     Author,
+    AutocompleteResult,
     BaseFilter,
     Concept,
     Funder,
@@ -247,6 +260,104 @@ class BaseEntity(Generic[T, F]):
         return cache_manager.stats()
 
 
+class AsyncBaseEntity(AsyncBaseAPI[T], Generic[T, F]):
+    """Base class for async entity access."""
+
+    __slots__ = ("_config",)
+
+    model_class: type[T]
+
+    def __init__(
+        self,
+        email: str | None = None,
+        api_key: str | None = None,
+        config: OpenAlexConfig | None = None,
+    ) -> None:
+        from .config import OpenAlexConfig
+
+        if config is None:
+            config = OpenAlexConfig()
+        if email is not None:
+            config = config.model_copy(update={"email": email})
+        if api_key is not None:
+            config = config.model_copy(update={"api_key": api_key})
+
+        super().__init__(config)
+
+    async def get(self, entity_id: str) -> T:
+        data = await self.get_single_entity(entity_id)
+        return self.model_class(**data)
+
+    def filter(self, **kwargs: Any) -> AsyncQuery[T, F]:
+        from .query import AsyncQuery
+
+        return AsyncQuery(
+            entity=self,
+            model_class=self.model_class,
+            config=self._config,
+        ).filter(**kwargs)
+
+    def search(self, query: str) -> AsyncQuery[T, F]:
+        return self.filter(search=query)
+
+    def search_filter(self, **kwargs: Any) -> AsyncQuery[T, F]:
+        from .query import AsyncQuery
+
+        return AsyncQuery(
+            entity=self,
+            model_class=self.model_class,
+            config=self._config,
+        ).search_filter(**kwargs)
+
+    async def all(self) -> AsyncIterator[T]:
+        page = 1
+        while True:
+            data = await self.get_list(params={"page": page})
+            results = ListResult[T](
+                meta=data.get("meta", {}),
+                results=[
+                    self.model_class(**item) for item in data.get("results", [])
+                ],
+            )
+
+            for item in results.results:
+                yield item
+
+            if len(results.results) == 0:
+                break
+
+            page += 1
+
+    async def random(self) -> T:
+        data = await super().random()
+        return self.model_class(**data)
+
+    async def autocomplete(
+        self,
+        query: str,
+        params: dict[str, Any] | None = None,
+    ) -> ListResult[AutocompleteResult]:
+        data = await super().autocomplete(query, params)
+        return ListResult[AutocompleteResult](
+            meta=data.get("meta", {}),
+            results=[
+                AutocompleteResult(**item) for item in data.get("results", [])
+            ],
+        )
+
+    def clear_cache(self) -> None:
+        from .cache.manager import get_cache_manager
+
+        cache_manager = get_cache_manager(self._config)
+        cache_manager.clear()
+
+    def cache_stats(self) -> dict[str, Any]:
+        from .cache.manager import get_cache_manager
+
+        cache_manager = get_cache_manager(self._config)
+        return cache_manager.stats()
+
+
 class Works(BaseEntity[Work, BaseFilter]):
     endpoint = "works"
     model_class = Work
@@ -316,3 +427,103 @@ class Concepts(BaseEntity[Concept, BaseFilter]):
 
 People = Authors
 Journals = Sources
+
+
+# Async entity classes
+class AsyncWorks(AsyncBaseEntity[Work, BaseFilter]):
+    """Async Works entity."""
+
+    endpoint = "works"
+    model_class = Work
+    __slots__ = ()
+
+    async def ngrams(
+        self,
+        work_id: str,
+        params: dict[str, Any] | None = None,
+    ) -> ListResult[Ngram]:
+        from .models.work import Ngram
+
+        work_id = strip_id_prefix(work_id)
+        endpoint = f"{self.endpoint}/{work_id}/ngrams"
+        connection = await self._get_connection()
+        url = self._build_url(endpoint)
+        params_norm = normalize_params(params or {})
+        response = await connection.request(
+            HTTP_METHOD_GET, url, params=params_norm
+        )
+        raise_for_status(response)
+        data = response.json()
+        return ListResult[Ngram](
+            meta=data.get("meta", {}),
+            results=[Ngram(**item) for item in data.get("ngrams", [])],
+        )
+
+
+class AsyncAuthors(AsyncBaseEntity[Author, BaseFilter]):
+    """Async Authors entity."""
+
+    endpoint = "authors"
+    model_class = Author
+    __slots__ = ()
+
+
+class AsyncInstitutions(AsyncBaseEntity[Institution, BaseFilter]):
+    """Async Institutions entity."""
+
+    endpoint = "institutions"
+    model_class = Institution
+    __slots__ = ()
+
+
+class AsyncSources(AsyncBaseEntity[Source, BaseFilter]):
+    """Async Sources entity."""
+
+    endpoint = "sources"
+    model_class = Source
+    __slots__ = ()
+
+
+class AsyncTopics(AsyncBaseEntity[Topic, BaseFilter]):
+    """Async Topics entity."""
+
+    endpoint = "topics"
+    model_class = Topic
+    __slots__ = ()
+
+
+class AsyncPublishers(AsyncBaseEntity[Publisher, BaseFilter]):
+    """Async Publishers entity."""
+
+    endpoint = "publishers"
+    model_class = Publisher
+    __slots__ = ()
+
+
+class AsyncFunders(AsyncBaseEntity[Funder, BaseFilter]):
+    """Async Funders entity."""
+
+    endpoint = "funders"
+    model_class = Funder
+    __slots__ = ()
+
+
+class AsyncKeywords(AsyncBaseEntity[Keyword, BaseFilter]):
+    """Async Keywords entity."""
+
+    endpoint = "keywords"
+    model_class = Keyword
+    __slots__ = ()
+
+
+class AsyncConcepts(AsyncBaseEntity[Concept, BaseFilter]):
+    """Async Concepts entity."""
+
+    endpoint = "concepts"
+    model_class = Concept
+    __slots__ = ()
+
+
+# Async aliases
+AsyncPeople = AsyncAuthors
+AsyncJournals = AsyncSources
