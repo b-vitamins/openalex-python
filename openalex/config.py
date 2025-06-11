@@ -71,6 +71,36 @@ class OpenAlexConfig(BaseModel):
         description="Rate limit buffer (0-1)",
     )
 
+    # Retry settings
+    retry_enabled: bool = Field(
+        default=True,
+        description="Enable automatic retry for failed requests",
+    )
+    retry_max_attempts: int = Field(
+        default=3,
+        description="Maximum number of retry attempts",
+        ge=1,
+        le=10,
+    )
+    retry_initial_wait: float = Field(
+        default=1.0,
+        description="Initial wait time between retries in seconds",
+        ge=0.1,
+        le=60.0,
+    )
+    retry_max_wait: float = Field(
+        default=60.0,
+        description="Maximum wait time between retries in seconds",
+        ge=1.0,
+        le=300.0,
+    )
+    retry_exponential_base: float = Field(
+        default=2.0,
+        description="Base for exponential backoff",
+        ge=1.1,
+        le=4.0,
+    )
+
     @field_validator("base_url")
     @classmethod
     def validate_base_url(cls, v: HttpUrl) -> HttpUrl:

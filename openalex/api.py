@@ -13,9 +13,20 @@ __all__ = ["APIConnection", "AsyncAPIConnection", "get_connection"]
 
 from .config import OpenAlexConfig
 from .constants import DEFAULT_RATE_LIMIT
-from .exceptions import NetworkError, TimeoutError
+from .exceptions import (
+    NetworkError,
+    TimeoutError,
+    ServerError,
+    RateLimitExceeded,
+    TemporaryError,
+)
 from .utils import AsyncRateLimiter, RateLimiter
-from .utils.retry import RetryConfig, async_with_retry, with_retry
+from .utils.retry import (
+    RetryConfig,
+    async_with_retry,
+    with_retry,
+    retry_with_rate_limit,
+)
 
 if TYPE_CHECKING:  # pragma: no cover - for type checking only
     from httpx import Response
@@ -67,6 +78,7 @@ class APIConnection:
     def __repr__(self) -> str:  # pragma: no cover - debugging aid
         return f"<APIConnection base_url={self.base_url}>"
 
+    @retry_with_rate_limit
     def request(
         self,
         method: str,
@@ -74,7 +86,7 @@ class APIConnection:
         params: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> Response:
-        """Make HTTP request with retry and rate limiting."""
+        """Make HTTP request with retry logic."""
         params = self._default_params(params)
         kwargs["headers"] = self._default_headers(kwargs.get("headers"))
 
@@ -82,15 +94,44 @@ class APIConnection:
         if wait > 0:
             time.sleep(wait)
 
-        def make_request() -> Response:
-            try:
-                return self.client.request(method, url, params=params, **kwargs)
-            except httpx.TimeoutException as e:  # pragma: no cover - network
-                raise TimeoutError(str(e)) from e
-            except httpx.RequestError as e:  # pragma: no cover - network
-                raise NetworkError(str(e)) from e
+        try:
+            response = self.client.request(
+                method=method,
+                url=url,
+                params=params,
+                timeout=self.config.timeout,
+                **kwargs,
+            )
 
-        return with_retry(make_request, self.retry_config)()
+            status_code = getattr(response, "status_code", 200)
+            if isinstance(status_code, int) and status_code == 429:
+                retry_after = response.headers.get("Retry-After")
+                retry_after_int = int(retry_after) if retry_after else None
+                raise RateLimitExceeded(
+                    f"Rate limit exceeded. Retry after {retry_after} seconds",
+                    retry_after=retry_after_int,
+                )
+
+            if isinstance(status_code, int) and 500 <= status_code < 600:
+                raise ServerError(
+                    f"Server error {status_code}: {getattr(response, 'text', '')}"
+                )
+
+            if isinstance(status_code, int) and status_code in (502, 503, 504):
+                raise TemporaryError(
+                    f"Temporary error {status_code}: Service unavailable"
+                )
+
+            return response
+
+        except httpx.TimeoutException as e:
+            raise TimeoutError(
+                f"Request timed out after {self.config.timeout}s"
+            ) from e
+        except httpx.NetworkError as e:
+            raise NetworkError(f"Network error: {str(e)}") from e
+        except httpx.HTTPError as e:
+            raise APIError(f"HTTP error: {str(e)}") from e
 
     def close(self) -> None:
         if self._client:

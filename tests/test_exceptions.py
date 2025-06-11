@@ -6,7 +6,8 @@ from openalex.exceptions import (
     AuthenticationError,
     NetworkError,
     NotFoundError,
-    RateLimitError,
+    RateLimitExceeded,
+    ServerError,
     TimeoutError,
     ValidationError,
     raise_for_status,
@@ -18,9 +19,9 @@ from openalex.exceptions import (
     [
         (401, AuthenticationError),
         (404, NotFoundError),
-        (429, RateLimitError),
-        (500, APIError),
-        (400, APIError),
+        (429, RateLimitExceeded),
+        (500, ServerError),
+        (400, ValidationError),
     ],
 )
 def test_raise_for_status(status: int, exc: type[Exception]) -> None:
@@ -45,7 +46,6 @@ def test_validation_and_network_errors() -> None:
 def test_raise_for_status_non_json() -> None:
     request = httpx.Request("GET", "https://api.openalex.org/test")
     response = httpx.Response(502, text="<!doctype html>", request=request)
-    with pytest.raises(APIError) as exc_info:
+    with pytest.raises(ServerError) as exc_info:
         raise_for_status(response)
-    assert exc_info.value.status_code == 502
-    assert "Server error" in str(exc_info.value)
+    assert "Server-side error" in str(exc_info.value) or "server-side" in str(exc_info.value)

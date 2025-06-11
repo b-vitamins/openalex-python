@@ -6,7 +6,8 @@ import asyncio
 import random
 import time
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Final, TypeVar
+from functools import wraps
+from typing import TYPE_CHECKING, Any, Callable, Final, TypeVar, cast
 
 from structlog import get_logger
 from tenacity import (
@@ -14,13 +15,23 @@ from tenacity import (
     RetryError,
     Retrying,
     retry_if_exception,
+    retry_if_exception_type,
     stop_after_attempt,
     wait_exponential,
     wait_exponential_jitter,
+    wait_fixed,
 )
 
 from ..constants import UNREACHABLE_MSG
-from ..exceptions import APIError, NetworkError, RateLimitError, TimeoutError
+from ..exceptions import (
+    APIError,
+    NetworkError,
+    RateLimitError,
+    TimeoutError,
+    RateLimitExceeded,
+    RetryableError,
+    ServerError,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Awaitable, Callable
@@ -37,6 +48,8 @@ __all__ = [
     "async_with_retry",
     "is_retryable_error",
     "with_retry",
+    "retry_on_error",
+    "retry_with_rate_limit",
 ]
 
 
@@ -212,3 +225,121 @@ class RetryHandler:
         """Synchronous wait for specified seconds."""
         logger.debug("Waiting %.2f seconds before retry", seconds)
         time.sleep(seconds)
+
+
+# ---------------------------------------------------------------------------
+# Additional retry utilities used for connection-level retries
+# ---------------------------------------------------------------------------
+
+
+def is_retryable_error_simple(exception: Exception) -> bool:
+    """Check if an error should trigger a retry based on class hierarchy."""
+    return isinstance(exception, RetryableError)
+
+
+def get_retry_after(exception: Exception) -> int | None:
+    """Extract retry-after value from exception."""
+    if isinstance(exception, RateLimitExceeded):
+        return exception.retry_after
+    return None
+
+
+def before_retry_log(retry_state: Any) -> None:
+    """Log before retry attempt."""
+    attempt = retry_state.attempt_number
+    exception = retry_state.outcome.exception() if retry_state.outcome else None
+    wait_time = retry_state.next_action.sleep if retry_state.next_action else 0
+
+    logger.warning(
+        "retrying_request",
+        attempt=attempt,
+        exception_type=type(exception).__name__ if exception else None,
+        exception_message=str(exception) if exception else "",
+        wait_seconds=wait_time,
+    )
+
+
+def create_retry_decorator(
+    max_attempts: int = 3,
+    initial_wait: float = 1.0,
+    max_wait: float = 60.0,
+    exponential_base: float = 2.0,
+) -> Callable[[Callable[..., T]], Callable[..., T]]:
+    """Create a retry decorator with configurable parameters."""
+
+    def decorator(func: Callable[..., T]) -> Callable[..., T]:
+        @wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> T:
+            retry_instance = Retrying(
+                stop=stop_after_attempt(max_attempts),
+                wait=wait_exponential(
+                    multiplier=initial_wait,
+                    max=max_wait,
+                    exp_base=exponential_base,
+                ),
+                retry=retry_if_exception_type(RetryableError),
+                before=before_retry_log,
+                reraise=True,
+            )
+
+            try:
+                for attempt in retry_instance:
+                    with attempt:
+                        result = func(*args, **kwargs)
+                        return cast(T, result)
+            except RetryError as e:
+                raise e.last_attempt.exception() from None
+
+            raise RuntimeError("Retry logic failed unexpectedly")
+
+        return wrapper
+
+    return decorator
+
+
+# Default retry decorator
+retry_on_error = create_retry_decorator()
+
+
+def retry_with_rate_limit(func: Callable[..., T]) -> Callable[..., T]:
+    """Retry decorator that respects rate limit headers."""
+
+    @wraps(func)
+    def wrapper(*args: Any, **kwargs: Any) -> T:
+        max_attempts = 5
+        attempt = 0
+
+        while attempt < max_attempts:
+            try:
+                return func(*args, **kwargs)
+            except RateLimitExceeded as e:
+                attempt += 1
+                if attempt >= max_attempts:
+                    raise
+
+                wait_time = e.retry_after or (2 ** attempt)
+                logger.warning(
+                    "rate_limit_hit",
+                    retry_after=e.retry_after,
+                    wait_time=wait_time,
+                    attempt=attempt,
+                )
+                time.sleep(wait_time)
+            except ServerError as e:
+                attempt += 1
+                if attempt >= max_attempts:
+                    raise
+
+                wait_time = min(60, 2 ** attempt)
+                logger.warning(
+                    "server_error",
+                    error=str(e),
+                    wait_time=wait_time,
+                    attempt=attempt,
+                )
+                time.sleep(wait_time)
+
+        raise RuntimeError("Retry logic failed unexpectedly")
+
+    return wrapper
+

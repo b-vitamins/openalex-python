@@ -7,8 +7,6 @@ from typing import TYPE_CHECKING, Any, Final
 
 from .constants import (
     HTTP_NOT_FOUND,
-    HTTP_SERVER_ERROR_BOUNDARY,
-    HTTP_TOO_MANY_REQUESTS,
     HTTP_UNAUTHORIZED,
 )
 
@@ -19,6 +17,11 @@ __all__ = [
     "NotFoundError",
     "OpenAlexError",
     "RateLimitError",
+    "RetryableError",
+    "ServerError",
+    "RateLimitExceeded",
+    "TemporaryError",
+    "ConfigurationError",
     "TimeoutError",
     "ValidationError",
     "raise_for_status",
@@ -135,39 +138,91 @@ class TimeoutError(NetworkError):
         super().__init__(message, **kwargs)
 
 
+class RetryableError(OpenAlexError):
+    """Base class for errors that can be retried."""
+    pass
+
+
+class ServerError(RetryableError):
+    """Server-side errors (5xx status codes)."""
+    pass
+
+
+class RateLimitExceeded(RetryableError):
+    """Rate limit exceeded error with retry information."""
+
+    def __init__(self, message: str, retry_after: int | None = None) -> None:
+        super().__init__(message)
+        self.retry_after = retry_after
+
+
+class TemporaryError(RetryableError):
+    """Temporary errors that may succeed on retry."""
+    pass
+
+
+class ConfigurationError(OpenAlexError):
+    """Configuration-related errors."""
+    pass
+
+
 def raise_for_status(response: httpx.Response) -> None:
-    """Raise an appropriate exception for the HTTP response."""
+    """Raise an exception for HTTP error responses with detailed messages."""
     if response.is_success:
         return
 
+    status_code = response.status_code
+
+    # Try to extract error message from response
     try:
         error_data = response.json()
-        message = error_data.get("message", response.reason_phrase)
-    except (ValueError, json.JSONDecodeError):
-        message = response.reason_phrase or f"HTTP {response.status_code}"
+        error_message = error_data.get("message", "No error message provided")
+        error_details = error_data.get("error", "")
+    except Exception:
+        error_message = response.text or "No error message provided"
+        error_details = ""
 
-    if response.status_code == HTTP_TOO_MANY_REQUESTS:
-        retry_after = response.headers.get("Retry-After")
-        raise RateLimitError(
-            message,
-            retry_after=int(retry_after) if retry_after else None,
-            response=response,
+    # Construct detailed error message
+    base_message = f"HTTP {status_code}: {error_message}"
+    if error_details:
+        base_message += f" - {error_details}"
+
+    # Add helpful context based on status code
+    if status_code == 400:
+        raise ValidationError(
+            f"{base_message}\n"
+            "This usually means there's an issue with your query parameters. "
+            "Check the filter syntax and parameter names."
         )
-
-    _exception_map: Final[dict[int, type[APIError]]] = {
-        HTTP_UNAUTHORIZED: AuthenticationError,
-        HTTP_NOT_FOUND: NotFoundError,
-    }
-    exc_cls = _exception_map.get(response.status_code)
-    if exc_cls is not None:
-        raise exc_cls(message, response=response)
-
-    if response.status_code >= HTTP_SERVER_ERROR_BOUNDARY:
-        server_msg = f"Server error: {message}"
-        raise APIError(
-            server_msg,
-            status_code=response.status_code,
-            response=response,
+    elif status_code == 401:
+        raise AuthenticationError(
+            f"{base_message}\n"
+            "Your API key may be invalid or expired. "
+            "Get a new key at https://openalex.org/api-key"
         )
-
-    raise APIError(message, status_code=response.status_code, response=response)
+    elif status_code == 403:
+        raise AuthenticationError(
+            f"{base_message}\n"
+            "You don't have permission to access this resource."
+        )
+    elif status_code == 404:
+        raise NotFoundError(
+            f"{base_message}\n"
+            "The requested resource does not exist. "
+            "Check the entity ID or endpoint."
+        )
+    elif status_code == 429:
+        retry_after = response.headers.get("Retry-After", "unknown")
+        raise RateLimitExceeded(
+            f"{base_message}\n"
+            f"Rate limit exceeded. Retry after {retry_after} seconds. "
+            "Consider adding an API key for higher limits.",
+            retry_after=int(retry_after) if retry_after.isdigit() else None,
+        )
+    elif 500 <= status_code < 600:
+        raise ServerError(
+            f"{base_message}\n"
+            "This is a server-side error. The request may succeed if retried."
+        )
+    else:
+        raise APIError(base_message)
