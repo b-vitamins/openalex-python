@@ -8,6 +8,11 @@ from typing import Any
 
 from structlog import get_logger
 
+__all__ = [
+    "MemoryCache",
+    "SmartMemoryCache",
+]
+
 from .base import BaseCache, CacheEntry
 
 logger = get_logger(__name__)
@@ -15,6 +20,8 @@ logger = get_logger(__name__)
 
 class MemoryCache(BaseCache):
     """Thread-safe in-memory cache implementation."""
+
+    __slots__ = ("_cache", "_default_ttl", "_lock", "_maxsize", "_stats")
 
     def __init__(self, maxsize: int = 1000, ttl: int = 3600) -> None:
         self._cache: dict[str, CacheEntry] = {}
@@ -62,7 +69,7 @@ class MemoryCache(BaseCache):
             if len(self._cache) >= self._maxsize and key not in self._cache:
                 self._evict_oldest()
 
-            self._cache[key] = CacheEntry(value, ttl)
+            self._cache[key] = CacheEntry.create(value, ttl)
             self._stats["sets"] += 1
 
             logger.debug(
@@ -111,6 +118,8 @@ class MemoryCache(BaseCache):
 
 class SmartMemoryCache(MemoryCache):
     """Memory cache with smart eviction based on usage patterns."""
+
+    __slots__ = ()
 
     def _evict_oldest(self) -> None:
         if not self._cache:

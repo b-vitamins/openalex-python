@@ -28,6 +28,8 @@ if TYPE_CHECKING:
 class OpenAlexError(Exception):
     """Base exception for OpenAlex client errors."""
 
+    __slots__ = ("extra", "message")
+
     def __init__(self, message: str, **kwargs: Any) -> None:
         super().__init__(message)
         self.message = message
@@ -36,6 +38,8 @@ class OpenAlexError(Exception):
 
 class APIError(OpenAlexError):
     """Error from the OpenAlex API."""
+
+    __slots__ = ("response", "status_code")
 
     def __init__(
         self,
@@ -53,6 +57,8 @@ class APIError(OpenAlexError):
 class RateLimitError(APIError):
     """Rate limit exceeded error."""
 
+    __slots__ = ("retry_after",)
+
     def __init__(
         self,
         message: str = "Rate limit exceeded",
@@ -67,6 +73,8 @@ class RateLimitError(APIError):
 class AuthenticationError(APIError):
     """Authentication error."""
 
+    __slots__ = ()
+
     def __init__(
         self,
         message: str = "Authentication failed",
@@ -77,6 +85,8 @@ class AuthenticationError(APIError):
 
 class NotFoundError(APIError):
     """Resource not found error."""
+
+    __slots__ = ("resource_id", "resource_type")
 
     def __init__(
         self,
@@ -94,6 +104,8 @@ class NotFoundError(APIError):
 class ValidationError(OpenAlexError):
     """Validation error for input data."""
 
+    __slots__ = ("field", "value")
+
     def __init__(
         self,
         message: str,
@@ -110,6 +122,8 @@ class ValidationError(OpenAlexError):
 class NetworkError(OpenAlexError):
     """Network-related error."""
 
+    __slots__ = ("original_error",)
+
     def __init__(
         self,
         message: str = "Network error occurred",
@@ -124,6 +138,8 @@ class NetworkError(OpenAlexError):
 class TimeoutError(NetworkError):
     """Request timeout error."""
 
+    __slots__ = ()
+
     def __init__(
         self,
         message: str = "Request timed out",
@@ -134,16 +150,18 @@ class TimeoutError(NetworkError):
 
 class RetryableError(OpenAlexError):
     """Base class for errors that can be retried."""
-    pass
+    __slots__ = ()
 
 
 class ServerError(RetryableError):
     """Server-side errors (5xx status codes)."""
-    pass
+    __slots__ = ()
 
 
 class RateLimitExceededError(RetryableError):
     """Rate limit exceeded error with retry information."""
+
+    __slots__ = ("retry_after",)
 
     def __init__(self, retry_after: int | None = None) -> None:
         message = (
@@ -157,12 +175,12 @@ class RateLimitExceededError(RetryableError):
 
 class TemporaryError(RetryableError):
     """Temporary errors that may succeed on retry."""
-    pass
+    __slots__ = ()
 
 
 class ConfigurationError(OpenAlexError):
     """Configuration-related errors."""
-    pass
+    __slots__ = ()
 
 
 def raise_for_status(response: httpx.Response) -> None:

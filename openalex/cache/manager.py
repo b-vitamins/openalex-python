@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from structlog import get_logger
 
+__all__ = ["CacheManager", "clear_cache", "get_cache_manager"]
+
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import Callable
 
