@@ -1,384 +1,297 @@
-from __future__ import annotations
+"""
+Comprehensive tests for the Funder model using conftest fixtures.
+Tests cover all fields, relationships, and edge cases based on actual OpenAlex data.
+"""
 
-from datetime import datetime
-from typing import Any
+from datetime import date
 
 import pytest
 from pydantic import ValidationError
 
-from openalex.models import CountsByYear, Funder
 
+class TestFunderModel:
+    """Test suite for Funder model with real OpenAlex data structure."""
 
-class TestFunder:
-    """Test Funder model with comprehensive realistic fixtures."""
+    def test_funder_basic_fields(self, mock_funder_data):
+        """Test basic funder fields from fixture."""
+        from openalex.models import Funder
 
-    @pytest.fixture
-    def government_funder_data(self) -> dict[str, Any]:
-        """Government funder data based on real OpenAlex API response."""
-        return {
-            "id": "https://openalex.org/F4320306076",
-            "display_name": "National Science Foundation",
-            "alternate_titles": [
-                "NSF",
-                "US National Science Foundation",
-                "United States National Science Foundation",
-            ],
-            "country_code": "US",
-            "description": "The National Science Foundation (NSF) is an independent agency of the United States government that supports fundamental research and education in all the non-medical fields of science and engineering.",
-            "homepage_url": "https://www.nsf.gov/",
-            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/NSF_logo.png/320px-NSF_logo.png",
-            "image_thumbnail_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/NSF_logo.png/160px-NSF_logo.png",
-            "grants_count": 543210,
-            "works_count": 1234567,
-            "cited_by_count": 45678901,
-            "summary_stats": {
-                "2yr_mean_citedness": 4.567,
-                "h_index": 456,
-                "i10_index": 234567,
-            },
-            "counts_by_year": [
-                {"year": 2024, "works_count": 45678, "cited_by_count": 2345678},
-                {"year": 2023, "works_count": 44567, "cited_by_count": 2234567},
-                {"year": 2022, "works_count": 43456, "cited_by_count": 2123456},
-                {"year": 2021, "works_count": 42345, "cited_by_count": 2012345},
-                {"year": 2020, "works_count": 41234, "cited_by_count": 1901234},
-            ],
-            "roles": [
-                {
-                    "role": "funder",
-                    "id": "https://openalex.org/F4320306076",
-                    "works_count": 1234567,
-                },
-                {
-                    "role": "institution",
-                    "id": "https://openalex.org/I135310074",
-                    "works_count": 12345,
-                },
-            ],
-            "ids": {
-                "openalex": "https://openalex.org/F4320306076",
-                "ror": "https://ror.org/021nxhr62",
-                "wikidata": "https://www.wikidata.org/wiki/Q304878",
-                "crossref": "100000001",
-                "doi": "https://doi.org/10.13039/100000001",
-            },
-            "created_date": "2023-01-01",
-            "updated_date": "2024-12-16T13:45:67.890123",
-        }
+        funder = Funder(**mock_funder_data)
 
-    @pytest.fixture
-    def private_foundation_data(self) -> dict[str, Any]:
-        """Private foundation funder data."""
-        return {
-            "id": "https://openalex.org/F4320306079",
-            "display_name": "Bill & Melinda Gates Foundation",
-            "alternate_titles": [
-                "Gates Foundation",
-                "BMGF",
-                "Bill and Melinda Gates Foundation",
-            ],
-            "country_code": "US",
-            "description": "The Bill & Melinda Gates Foundation is an American private foundation founded by Bill Gates and Melinda French Gates.",
-            "homepage_url": "https://www.gatesfoundation.org/",
-            "grants_count": 87654,
-            "works_count": 234567,
-            "cited_by_count": 8901234,
-            "counts_by_year": [
-                {"year": 2024, "works_count": 8901, "cited_by_count": 456789}
-            ],
-            "roles": [
-                {
-                    "role": "funder",
-                    "id": "https://openalex.org/F4320306079",
-                    "works_count": 234567,
-                }
-            ],
-            "ids": {
-                "openalex": "https://openalex.org/F4320306079",
-                "ror": "https://ror.org/0456r8d26",
-                "wikidata": "https://www.wikidata.org/wiki/Q334105",
-                "crossref": "100000865",
-                "doi": "https://doi.org/10.13039/100000865",
-            },
-        }
+        # Basic identifiers
+        assert funder.id == "https://openalex.org/F4320332161"
+        assert funder.display_name == "National Institutes of Health"
 
-    @pytest.fixture
-    def european_funder_data(self) -> dict[str, Any]:
-        """European research council funder data."""
-        return {
-            "id": "https://openalex.org/F4320306101",
-            "display_name": "European Research Council",
-            "alternate_titles": [
-                "ERC",
-                "Conseil Européen de la Recherche",
-                "Consejo Europeo de Investigación",
-            ],
-            "country_code": "BE",
-            "description": "The European Research Council (ERC) is a public body for funding of scientific and technological research conducted within the European Union.",
-            "homepage_url": "https://erc.europa.eu/",
-            "grants_count": 65432,
-            "works_count": 345678,
-            "cited_by_count": 12345678,
-            "summary_stats": {
-                "2yr_mean_citedness": 5.123,
-                "h_index": 234,
-                "i10_index": 98765,
-            },
-            "counts_by_year": [
-                {"year": 2024, "works_count": 12345, "cited_by_count": 567890},
-                {"year": 2023, "works_count": 11234, "cited_by_count": 534567},
-            ],
-            "roles": [
-                {
-                    "role": "funder",
-                    "id": "https://openalex.org/F4320306101",
-                    "works_count": 345678,
-                }
-            ],
-            "ids": {
-                "openalex": "https://openalex.org/F4320306101",
-                "ror": "https://ror.org/0472cxd90",
-                "wikidata": "https://www.wikidata.org/wiki/Q1376517",
-                "crossref": "501100000781",
-                "doi": "https://doi.org/10.13039/501100000781",
-            },
-        }
+        # Alternate names
+        assert funder.alternate_titles == [
+            "US National Institutes of Health",
+            "Institutos Nacionales de la Salud",
+            "NIH",
+        ]
 
-    def test_government_funder_creation(
-        self, government_funder_data: dict[str, Any]
-    ) -> None:
-        """Test creating a government funder with all fields."""
-        funder = Funder(**government_funder_data)
-
-        # Basic fields
-        assert funder.id == "https://openalex.org/F4320306076"
-        assert funder.display_name == "National Science Foundation"
+        # Country and description
         assert funder.country_code == "US"
-        assert "independent agency" in funder.description
-
-        # URLs
-        assert str(funder.homepage_url) == "https://www.nsf.gov/"
-        assert "NSF_logo.png" in str(funder.image_url)
-        assert "160px" in str(funder.image_thumbnail_url)
+        assert funder.description == "US government medical research agency"
 
         # Metrics
-        assert funder.grants_count == 543210
-        assert funder.works_count == 1234567
-        assert funder.cited_by_count == 45678901
+        assert funder.grants_count == 273197
+        assert funder.works_count == 386464
+        assert funder.cited_by_count == 15223472
 
-        # Helper methods
-        assert funder.is_government_funder() is True
-        assert funder.funding_per_work == pytest.approx(0.44, rel=0.01)
+    def test_funder_homepage_and_images(self, mock_funder_data):
+        """Test homepage and image URLs."""
+        from openalex.models import Funder
 
-    def test_funder_alternate_titles(
-        self, government_funder_data: dict[str, Any]
-    ) -> None:
-        """Test funder alternate titles."""
-        funder = Funder(**government_funder_data)
+        funder = Funder(**mock_funder_data)
 
-        assert len(funder.alternate_titles) == 3
-        assert "NSF" in funder.alternate_titles
-        assert "US National Science Foundation" in funder.alternate_titles
-
-    def test_funder_summary_stats(
-        self, government_funder_data: dict[str, Any]
-    ) -> None:
-        """Test funder summary statistics."""
-        funder = Funder(**government_funder_data)
-
-        assert funder.summary_stats is not None
-        assert funder.summary_stats.two_year_mean_citedness == 4.567
-        assert funder.summary_stats.h_index == 456
-        assert funder.summary_stats.i10_index == 234567
-
-    def test_funder_counts_by_year(
-        self, government_funder_data: dict[str, Any]
-    ) -> None:
-        """Test yearly counts."""
-        funder = Funder(**government_funder_data)
-
-        assert len(funder.counts_by_year) == 5
-
-        recent = funder.counts_by_year[0]
-        assert recent.year == 2024
-        assert recent.works_count == 45678
-        assert recent.cited_by_count == 2345678
-
-    def test_funder_roles(self, government_funder_data: dict[str, Any]) -> None:
-        """Test funder roles."""
-        funder = Funder(**government_funder_data)
-
-        assert len(funder.roles) == 2
-
-        # Funder role
-        funder_role = funder.roles[0]
-        assert funder_role.role == "funder"
-        assert funder_role.works_count == 1234567
-
-        # Institution role
-        inst_role = funder.roles[1]
-        assert inst_role.role == "institution"
-        assert inst_role.id == "https://openalex.org/I135310074"
-
-    def test_funder_ids(self, government_funder_data: dict[str, Any]) -> None:
-        """Test funder external identifiers."""
-        funder = Funder(**government_funder_data)
-
-        assert funder.ids is not None
-        assert funder.ids.openalex == funder.id
-        assert str(funder.ids.ror) == "https://ror.org/021nxhr62"
-        assert "wikidata.org" in str(funder.ids.wikidata)
-        assert funder.ids.crossref == "100000001"
-        assert str(funder.ids.doi) == "https://doi.org/10.13039/100000001"
-
-    def test_private_foundation(
-        self, private_foundation_data: dict[str, Any]
-    ) -> None:
-        """Test private foundation funder."""
-        funder = Funder(**private_foundation_data)
-
-        assert funder.display_name == "Bill & Melinda Gates Foundation"
-        assert "Gates Foundation" in funder.alternate_titles
-        assert funder.is_government_funder() is False
-
-        # Only funder role
-        assert len(funder.roles) == 1
-        assert funder.roles[0].role == "funder"
-
-    def test_european_funder(
-        self, european_funder_data: dict[str, Any]
-    ) -> None:
-        """Test European funder with multilingual names."""
-        funder = Funder(**european_funder_data)
-
-        assert funder.country_code == "BE"
-        assert "ERC" in funder.alternate_titles
-        assert "Conseil Européen de la Recherche" in funder.alternate_titles
-
-        # EU funders often have government-like status
-        assert "European Union" in funder.description
-
-    def test_funder_helper_methods(
-        self, government_funder_data: dict[str, Any]
-    ) -> None:
-        """Test funder helper methods."""
-        funder = Funder(**government_funder_data)
-
-        # Year-based lookups
-        assert funder.works_in_year(2024) == 45678
-        assert funder.citations_in_year(2023) == 2234567
-        assert funder.works_in_year(2019) == 0  # Not in data
-
-        # Active years
-        active_years = funder.active_years()
-        assert 2024 in active_years
-        assert len(active_years) == 5
-
-        # Funding metrics
-        assert funder.funding_per_work == pytest.approx(0.44, rel=0.01)
-
-    def test_funder_no_works(self) -> None:
-        """Test funder with grants but no works."""
-        funder = Funder(
-            id="F123",
-            display_name="New Funder",
-            grants_count=100,
-            works_count=0,
+        assert funder.homepage_url == "http://www.nih.gov"
+        assert (
+            funder.image_url
+            == "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/NIH 2013 logo vertical.svg"
+        )
+        assert (
+            funder.image_thumbnail_url
+            == "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/NIH 2013 logo vertical.svg&width=300"
         )
 
-        assert funder.funding_per_work is None  # Avoid division by zero
+    def test_funder_summary_stats(self, mock_funder_data):
+        """Test summary statistics."""
+        from openalex.models import Funder
 
-    def test_minimal_funder(self) -> None:
-        """Test funder with minimal data."""
-        funder = Funder(id="F456", display_name="Minimal Funder")
+        funder = Funder(**mock_funder_data)
 
-        assert funder.country_code is None
-        assert funder.description is None
-        assert funder.grants_count == 0
-        assert funder.works_count == 0
-        assert len(funder.roles) == 0
+        assert funder.summary_stats is not None
+        assert funder.summary_stats.two_year_mean_citedness == 5.326992141129093
+        assert funder.summary_stats.h_index == 855
+        assert funder.summary_stats.i10_index == 232869
 
-    def test_funder_validation_errors(self) -> None:
-        """Test validation errors for invalid funder data."""
+        # Test convenience properties
+        assert funder.h_index == 855
+        assert funder.i10_index == 232869
+
+    def test_funder_ids_structure(self, mock_funder_data):
+        """Test the IDs nested structure."""
+        from openalex.models import Funder
+
+        funder = Funder(**mock_funder_data)
+
+        assert funder.ids.openalex == "https://openalex.org/F4320332161"
+        assert funder.ids.ror == "https://ror.org/01cwqze88"
+        assert funder.ids.wikidata == "https://www.wikidata.org/entity/Q390551"
+        assert funder.ids.crossref == "100000002"
+        assert funder.ids.doi == "https://doi.org/10.13039/100000002"
+
+    def test_funder_counts_by_year(self, mock_funder_data):
+        """Test yearly grant and citation counts."""
+        from openalex.models import Funder
+
+        funder = Funder(**mock_funder_data)
+
+        assert len(funder.counts_by_year) == 13
+
+        # Most recent year
+        recent = funder.counts_by_year[0]
+        assert recent.year == 2025
+        assert recent.works_count == 10542
+        assert recent.cited_by_count == 846731
+
+        # High-productivity year
+        year_2021 = next(c for c in funder.counts_by_year if c.year == 2021)
+        assert year_2021.works_count == 40674
+        assert year_2021.cited_by_count == 1921445
+
+        # Verify descending order
+        years = [c.year for c in funder.counts_by_year]
+        assert years == sorted(years, reverse=True)
+
+    def test_funder_roles(self, mock_funder_data):
+        """Test funder roles."""
+        from openalex.models import Funder
+
+        funder = Funder(**mock_funder_data)
+
+        assert len(funder.roles) == 3
+
+        # Check different roles
+        roles_dict = {r.role: r for r in funder.roles}
+
+        assert "funder" in roles_dict
+        assert roles_dict["funder"].id == funder.id
+        assert roles_dict["funder"].works_count == 386464
+
+        assert "institution" in roles_dict
+        assert (
+            roles_dict["institution"].id == "https://openalex.org/I1299303238"
+        )
+        assert roles_dict["institution"].works_count == 280579
+
+        assert "publisher" in roles_dict
+        assert roles_dict["publisher"].id == "https://openalex.org/P4310316754"
+        assert roles_dict["publisher"].works_count == 38485
+
+    def test_funder_updated_date(self, mock_funder_data):
+        """Test updated date field."""
+        from openalex.models import Funder
+
+        funder = Funder(**mock_funder_data)
+        assert funder.updated_date == date(2025, 6, 10)
+
+    def test_funder_created_date(self, mock_funder_data):
+        """Test created date field."""
+        from openalex.models import Funder
+
+        funder = Funder(**mock_funder_data)
+        assert funder.created_date == date(2023, 2, 13)
+
+    def test_funder_minimal_data(self):
+        """Test funder with minimal required fields."""
+        from openalex.models import Funder
+
+        minimal_funder = Funder(
+            id="https://openalex.org/F123456", display_name="Test Funder"
+        )
+
+        assert minimal_funder.id == "https://openalex.org/F123456"
+        assert minimal_funder.display_name == "Test Funder"
+        assert minimal_funder.country_code is None
+        assert minimal_funder.description is None
+        assert minimal_funder.grants_count == 0
+        assert minimal_funder.works_count == 0
+
+    def test_funder_validation_errors(self):
+        """Test validation errors for invalid data."""
+        from openalex.models import Funder
+
         # Missing required fields
         with pytest.raises(ValidationError):
             Funder()
 
+        # Invalid URL format for id
+        with pytest.raises(ValidationError):
+            Funder(id="not-a-url", display_name="Test")
+
         # Invalid country code
         with pytest.raises(ValidationError):
             Funder(
-                id="F123",
+                id="https://openalex.org/F123",
                 display_name="Test",
                 country_code="ZZZ",  # Not a valid ISO code
             )
 
-        # Negative counts
-        with pytest.raises(ValidationError):
-            Funder(id="F123", display_name="Test", grants_count=-1)
+    def test_government_funder(self, mock_funder_data):
+        """Test government funding agency."""
+        from openalex.models import Funder
 
-    def test_funder_edge_cases(self) -> None:
-        """Test edge cases in funder data."""
-        # Funder with empty lists
-        funder = Funder(
-            id="F789",
-            display_name="Empty Funder",
-            alternate_titles=[],
-            counts_by_year=[],
-            roles=[],
-        )
+        funder = Funder(**mock_funder_data)
 
-        assert funder.active_years() == []
-        assert funder.is_government_funder() is False
+        # NIH is a US government agency
+        assert funder.country_code == "US"
+        assert "government" in funder.description.lower()
+        assert funder.grants_count > 250_000  # Major funder
 
-        # Funder with very long name
-        long_name = "The " + "Very " * 20 + "Long Named Foundation"
-        funder_long = Funder(id="F999", display_name=long_name)
-        assert len(funder_long.display_name) > 100
+    def test_private_foundation_funder(self):
+        """Test private foundation funder."""
+        from openalex.models import Funder
 
-    def test_datetime_fields(
-        self, government_funder_data: dict[str, Any]
-    ) -> None:
-        """Test datetime field parsing."""
-        funder = Funder(**government_funder_data)
+        funder_data = {
+            "id": "https://openalex.org/F4320311493",
+            "display_name": "Bill & Melinda Gates Foundation",
+            "country_code": "US",
+            "description": "Private philanthropic foundation",
+            "alternate_titles": ["Gates Foundation", "BMGF"],
+            "grants_count": 50000,
+            "works_count": 75000,
+        }
 
-        assert isinstance(funder.created_date, str)
-        assert funder.created_date == "2023-01-01"
+        funder = Funder(**funder_data)
 
-        assert isinstance(funder.updated_date, datetime)
-        assert funder.updated_date.year == 2024
+        assert "Gates" in funder.display_name
+        assert "foundation" in funder.description.lower()
+        assert funder.grants_count > 0
 
-    def test_country_code_none_and_invalid(self) -> None:
-        """Country code validation branches."""
-        funder = Funder(
-            id="F1", display_name="Foo", country_code=None, updated_date=None
-        )
-        assert funder.country_code is None
-        msg = "Invalid country code"
-        with pytest.raises(ValueError, match=msg):
-            Funder(id="F2", display_name="Bar", country_code="ZZZ")
+    def test_international_funder(self):
+        """Test international funding organization."""
+        from openalex.models import Funder
 
-    def test_parse_updated_date_out_of_range(self) -> None:
-        """Handle times with minutes/seconds overflow."""
-        funder = Funder(
-            id="F3", display_name="Baz", updated_date="2024-12-31T22:70:10"
-        )
-        assert isinstance(funder.updated_date, datetime)
-        assert funder.updated_date.minute == 10
-        assert funder.updated_date.hour == 23
+        funder_data = {
+            "id": "https://openalex.org/F789",
+            "display_name": "European Research Council",
+            "alternate_titles": ["ERC", "Conseil européen de la recherche"],
+            "country_code": "EU",  # Or appropriate code
+            "description": "EU funding body for frontier research",
+            "grants_count": 15000,
+        }
 
-    def test_active_years_helpers(self) -> None:
-        """Year helper methods with partial data."""
-        years = [
-            CountsByYear(year=2020, works_count=1, cited_by_count=2),
-            CountsByYear(year=2021, works_count=0, cited_by_count=3),
-        ]
-        funder = Funder(id="F4", display_name="Qux", counts_by_year=years)
-        assert funder.works_in_year(2020) == 1
-        assert funder.citations_in_year(2021) == 3
-        assert funder.active_years() == [2020]
+        funder = Funder(**funder_data)
 
-    def test_parse_updated_date_invalid(self) -> None:
-        """Invalid updated_date string raises error."""
-        msg = "Invalid datetime format"
-        with pytest.raises(ValueError, match=msg):
-            Funder(id="F5", display_name="Bad", updated_date="not-a-date")
+        assert "European" in funder.display_name
+        assert len(funder.alternate_titles) > 0
+        assert funder.grants_count > 0
+
+    def test_funder_with_crossref_doi(self, mock_funder_data):
+        """Test funder with Crossref and DOI identifiers."""
+        from openalex.models import Funder
+
+        funder = Funder(**mock_funder_data)
+
+        # NIH has Crossref Funder Registry ID
+        assert funder.ids.crossref == "100000002"
+        assert funder.ids.doi == "https://doi.org/10.13039/100000002"
+        assert "10.13039" in funder.ids.doi  # Crossref Funder ID prefix
+
+    def test_funder_metrics_comparison(self):
+        """Test comparing metrics between funders."""
+        from openalex.models import Funder
+
+        # Major government funder
+        nih_data = {
+            "id": "https://openalex.org/F1",
+            "display_name": "National Institutes of Health",
+            "grants_count": 273197,
+            "works_count": 386464,
+            "cited_by_count": 15223472,
+            "summary_stats": {
+                "2yr_mean_citedness": 5.3,
+                "h_index": 855,
+                "i10_index": 232869,
+            },
+        }
+
+        # Smaller foundation
+        foundation_data = {
+            "id": "https://openalex.org/F2",
+            "display_name": "Small Research Foundation",
+            "grants_count": 500,
+            "works_count": 1200,
+            "cited_by_count": 50000,
+            "summary_stats": {
+                "2yr_mean_citedness": 2.1,
+                "h_index": 85,
+                "i10_index": 450,
+            },
+        }
+
+        nih = Funder(**nih_data)
+        foundation = Funder(**foundation_data)
+
+        # NIH metrics should be much higher
+        assert nih.grants_count > foundation.grants_count * 100
+        assert nih.h_index > foundation.h_index * 5
+        assert nih.cited_by_count > foundation.cited_by_count * 100
+
+    def test_funder_complete_profile(self, mock_funder_data):
+        """Test complete funder profile with all fields populated."""
+        from openalex.models import Funder
+
+        funder = Funder(**mock_funder_data)
+
+        # Verify all major sections are populated
+        assert funder.id is not None
+        assert funder.display_name is not None
+        assert funder.grants_count > 0
+        assert funder.works_count > 0
+        assert funder.cited_by_count > 0
+        assert len(funder.counts_by_year) > 0
+        assert funder.summary_stats is not None
+        assert funder.ids is not None
+        assert funder.homepage_url is not None
