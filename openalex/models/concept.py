@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pydantic import Field, HttpUrl
+from pydantic import Field
 
 __all__ = [
     "Concept",
@@ -11,15 +11,21 @@ __all__ = [
     "RelatedConcept",
 ]
 
-from .base import CountsByYear, OpenAlexBase, OpenAlexEntity, SummaryStats
+from .base import (
+    CountsByYear,
+    InternationalNames,
+    OpenAlexBase,
+    OpenAlexEntity,
+    SummaryStats,
+)
 
 
 class ConceptIds(OpenAlexBase):
     """External identifiers for a concept."""
 
     openalex: str | None = None
-    wikidata: HttpUrl | None = None
-    wikipedia: HttpUrl | None = None
+    wikidata: str | None = None
+    wikipedia: str | None = None
     umls_cui: list[str] | None = None
     umls_aui: list[str] | None = None
     mag: str | None = None
@@ -29,7 +35,7 @@ class ConceptAncestor(OpenAlexEntity):
     """Concept ancestor in hierarchy."""
 
     level: int | None = None
-    wikidata: HttpUrl | None = None
+    wikidata: str | None = None
 
 
 class RelatedConcept(ConceptAncestor):
@@ -41,13 +47,13 @@ class RelatedConcept(ConceptAncestor):
 class Concept(OpenAlexEntity):
     """Full concept model."""
 
-    wikidata: HttpUrl | None = None
-    level: int | None = Field(None, ge=0, le=5, description="Hierarchy level")
+    wikidata: str | None = None
+    level: int | None = Field(0, ge=0, le=5, description="Hierarchy level")
 
     description: str | None = None
 
-    image_url: HttpUrl | None = None
-    image_thumbnail_url: HttpUrl | None = None
+    image_url: str | None = None
+    image_thumbnail_url: str | None = None
 
     works_count: int = Field(0, description="Number of works")
     cited_by_count: int = Field(0, description="Total citations")
@@ -62,16 +68,14 @@ class Concept(OpenAlexEntity):
         default_factory=list, description="Similar concepts"
     )
 
-    international_display_name: dict[str, str] | None = Field(
-        default=None, alias="international_display_name"
-    )
+    international: InternationalNames | None = None
 
     counts_by_year: list[CountsByYear] = Field(
         default_factory=list,
         description="Yearly publication and citation counts",
     )
 
-    works_api_url: HttpUrl | None = Field(
+    works_api_url: str | None = Field(
         None, description="API URL for concept's works"
     )
 
@@ -126,3 +130,13 @@ class Concept(OpenAlexEntity):
         return sorted(
             [y.year for y in self.counts_by_year if y.works_count > 0]
         )
+
+    @property
+    def h_index(self) -> int | None:
+        """Return h-index from summary stats."""
+        return self.summary_stats.h_index if self.summary_stats else None
+
+    @property
+    def i10_index(self) -> int | None:
+        """Return i10-index from summary stats."""
+        return self.summary_stats.i10_index if self.summary_stats else None

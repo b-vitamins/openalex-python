@@ -4,13 +4,21 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-__all__ = ["Author", "AuthorAffiliation", "AuthorIds"]
+__all__ = [
+    "Author",
+    "AuthorAffiliation",
+    "AuthorIds",
+    "AuthorTopic",
+    "AuthorTopicShare",
+]
 
-from pydantic import Field, HttpUrl
+from pydantic import Field, HttpUrl, TypeAdapter, field_validator
 
+from ..constants import ORCID_URL_PREFIX
 from .base import CountsByYear, OpenAlexBase, OpenAlexEntity, SummaryStats
 
 if TYPE_CHECKING:
+    from .topic import TopicHierarchy
     from .work import DehydratedConcept, DehydratedInstitution
 
 
@@ -32,10 +40,40 @@ class AuthorAffiliation(OpenAlexBase):
     years: list[int] = Field(default_factory=list)
 
 
+class AuthorTopic(OpenAlexEntity):
+    """Topic statistics for an author."""
+
+    count: int | None = None
+    subfield: TopicHierarchy | None = None
+    field: TopicHierarchy | None = None
+    domain: TopicHierarchy | None = None
+
+
+class AuthorTopicShare(OpenAlexEntity):
+    """Topic share information for an author."""
+
+    value: float | None = None
+    subfield: TopicHierarchy | None = None
+    field: TopicHierarchy | None = None
+    domain: TopicHierarchy | None = None
+
+
 class Author(OpenAlexEntity):
     """Full author model."""
 
-    orcid: HttpUrl | None = None
+    orcid: str | None = None
+
+    @field_validator("orcid")
+    @classmethod
+    def validate_orcid(cls, v: str | None) -> str | None:
+        """Validate ORCID format."""
+        if v is None:
+            return None
+        if not v.startswith(ORCID_URL_PREFIX):
+            msg = "Invalid ORCID"
+            raise ValueError(msg)
+        TypeAdapter(HttpUrl).validate_python(v)
+        return v
 
     display_name_alternatives: list[str] = Field(
         default_factory=list, description="Alternative names"
@@ -60,12 +98,16 @@ class Author(OpenAlexEntity):
         default_factory=list, description="Associated concepts"
     )
 
+    topics: list[AuthorTopic] = Field(default_factory=list)
+    topic_share: list[AuthorTopicShare] = Field(default_factory=list)
+
     counts_by_year: list[CountsByYear] = Field(
         default_factory=list,
         description="Yearly publication and citation counts",
     )
 
-    works_api_url: HttpUrl | None = Field(
+
+    works_api_url: str | None = Field(
         None, description="API URL for author's works"
     )
 
@@ -147,9 +189,12 @@ class Author(OpenAlexEntity):
         return [c.display_name for c in self.x_concepts if c.display_name]
 
 
+from .topic import TopicHierarchy  # noqa: E402,TC001
 from .work import (  # noqa: E402,TC001
     DehydratedConcept,
     DehydratedInstitution,
 )
 
 Author.model_rebuild()
+AuthorTopic.model_rebuild()
+AuthorTopicShare.model_rebuild()

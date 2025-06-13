@@ -1,6 +1,12 @@
 """OpenAlex data models."""
 
-from .author import Author, AuthorAffiliation, AuthorIds
+from .author import (
+    Author,
+    AuthorAffiliation,
+    AuthorIds,
+    AuthorTopic,
+    AuthorTopicShare,
+)
 from .base import (
     AutocompleteResult,
     CountsByYear,
@@ -61,6 +67,8 @@ __all__ = [
     "Author",
     "AuthorAffiliation",
     "AuthorIds",
+    "AuthorTopic",
+    "AuthorTopicShare",
     "Authorship",
     "AutocompleteResult",
     "BaseFilter",

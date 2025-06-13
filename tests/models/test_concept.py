@@ -99,7 +99,7 @@ class TestConceptModel:
         # Check descriptions
         descriptions = concept.international.description
         assert "field of study" in descriptions.get("en", "").lower()
-        assert "médecine" in descriptions.get("fr", "").lower()
+        assert "corps humain" in descriptions.get("fr", "").lower()
 
     def test_concept_ancestors(self, mock_concept_data):
         """Test concept ancestors (hierarchical relationships)."""
@@ -137,7 +137,7 @@ class TestConceptModel:
 
         concept = Concept(**mock_concept_data)
 
-        assert len(concept.counts_by_year) == 13
+        assert len(concept.counts_by_year) == 14
 
         # Most recent year
         recent = concept.counts_by_year[0]

@@ -10,7 +10,15 @@ if TYPE_CHECKING:
 from enum import Enum
 from typing import Any, Generic, TypeVar
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_serializer
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    HttpUrl,
+    TypeAdapter,
+    field_serializer,
+    field_validator,
+)
 
 from ..constants import FILTER_DEFAULT_PER_PAGE, FIRST_PAGE
 
@@ -67,8 +75,37 @@ class OpenAlexEntity(OpenAlexBase):
 
     id: str = Field(..., description="OpenAlex ID")
     display_name: str = Field(..., description="Display name")
-    created_date: str | None = Field(None, description="Creation date")
-    updated_date: datetime | None = Field(None, description="Last update date")
+    created_date: date | None = Field(None, description="Creation date")
+    updated_date: date | None = Field(None, description="Last update date")
+
+    @field_validator("updated_date", mode="before")
+    @classmethod
+    def parse_updated_date(cls, v: Any) -> date | Any:
+        """Parse updated_date string to date."""
+        if isinstance(v, date) or v is None:
+            return v
+        try:
+            return date.fromisoformat(v.split("T")[0])
+        except Exception:
+            return v
+
+    @field_validator("id")
+    @classmethod
+    def validate_id(cls, v: str) -> str:
+        """Ensure ID is a valid URL."""
+        TypeAdapter(HttpUrl).validate_python(v)
+        return v
+
+    @field_validator("created_date", mode="before")
+    @classmethod
+    def parse_created_date(cls, v: Any) -> date | Any:
+        """Parse created_date string to date."""
+        if isinstance(v, date) or v is None:
+            return v
+        try:
+            return date.fromisoformat(v)
+        except Exception:
+            return v
 
 
 class DehydratedEntity(OpenAlexBase):
@@ -112,6 +149,7 @@ class InternationalNames(OpenAlexBase):
     """International names for an entity."""
 
     display_name: dict[str, str] = Field(default_factory=dict)
+    description: dict[str, str] | None = None
 
 
 class Role(OpenAlexBase):

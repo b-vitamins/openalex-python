@@ -171,7 +171,7 @@ class TestAuthorModel:
 
         author = Author(**mock_author_data)
 
-        assert len(author.counts_by_year) == 13
+        assert len(author.counts_by_year) == 14
 
         # Most recent year
         recent = author.counts_by_year[0]

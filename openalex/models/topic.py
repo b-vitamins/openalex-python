@@ -3,19 +3,14 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime
+from datetime import date, datetime
 from enum import IntEnum
 from typing import TYPE_CHECKING, cast
 
 __all__ = ["Topic", "TopicHierarchy", "TopicIds", "TopicLevel"]
 
 from dateutil import parser  # type: ignore
-from pydantic import (
-    Field,
-    HttpUrl,
-    field_validator,
-    model_validator,
-)
+from pydantic import Field, field_validator, model_validator
 
 from ..constants import MAX_SECONDS_IN_MINUTE
 
@@ -44,7 +39,7 @@ class TopicIds(OpenAlexBase):
     """External identifiers for a topic."""
 
     openalex: str | None = None
-    wikipedia: HttpUrl | None = None
+    wikipedia: str | None = None
 
 
 class Topic(OpenAlexEntity):
@@ -87,7 +82,7 @@ class Topic(OpenAlexEntity):
     def sisters(self) -> list[DehydratedTopic]:
         return self.siblings
 
-    works_api_url: HttpUrl | None = Field(
+    works_api_url: str | None = Field(
         None, description="API URL for topic's works"
     )
 
@@ -95,16 +90,20 @@ class Topic(OpenAlexEntity):
 
     @field_validator("updated_date", mode="before")
     @classmethod
-    def parse_updated_date(cls, v: datetime | str | None) -> datetime | None:
+    def parse_updated_date(cls, v: datetime | str | None) -> date | None:
         """Parse potentially malformed datetime strings."""
-        if v is None or isinstance(v, datetime):
+        if v is None:
+            return None
+        if isinstance(v, date) and not isinstance(v, datetime):
             return v
+        if isinstance(v, datetime):
+            return v.date()
 
         try:
-            return datetime.fromisoformat(v)
+            return datetime.fromisoformat(v).date()
         except ValueError:
             try:
-                return cast("datetime", parser.parse(v))
+                return cast("datetime", parser.parse(v)).date()
             except (ValueError, TypeError):
                 match = MALFORMED_DATETIME_REGEX.match(v)
                 if match:
@@ -112,9 +111,9 @@ class Topic(OpenAlexEntity):
                     sec = min(sec, MAX_SECONDS_IN_MINUTE)
                     new_v = f"{match.group('prefix')}:{sec:02d}{match.group('rest')}"
                     try:
-                        return datetime.fromisoformat(new_v)
+                        return datetime.fromisoformat(new_v).date()
                     except ValueError:
-                        return cast("datetime", parser.parse(new_v))
+                        return cast("datetime", parser.parse(new_v)).date()
 
         return None
 

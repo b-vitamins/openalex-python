@@ -6,7 +6,7 @@ from datetime import date, datetime
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
-from pydantic import BaseModel, Field, HttpUrl, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from ..utils.text import invert_abstract
 
@@ -74,7 +74,7 @@ class OpenAccess(BaseModel):
 
     is_oa: bool = False
     oa_status: OpenAccessStatus | None = None
-    oa_url: HttpUrl | None = None
+    oa_url: str | None = None
     any_repository_has_fulltext: bool | None = None
 
 
@@ -90,12 +90,13 @@ class DehydratedConcept(DehydratedEntity):
 
     level: int | None = None
     score: float | None = None
+    wikidata: str | None = None
 
 
 class DehydratedInstitution(DehydratedEntity):
     """Minimal institution representation with optional details."""
 
-    ror: HttpUrl | None = None
+    ror: str | None = None
     country_code: str | None = None
     type: InstitutionType | None = None
     lineage: list[str] = Field(default_factory=list)
@@ -105,6 +106,9 @@ class DehydratedSource(DehydratedEntity):
     """Minimal source representation."""
 
     type: str | None = None
+    issn_l: str | None = None
+    is_oa: bool | None = None
+    is_in_doaj: bool | None = None
 
 
 class DehydratedTopic(DehydratedEntity):
@@ -138,7 +142,7 @@ class Location(OpenAlexBase):
     """Location of a hosted version of the work."""
 
     is_oa: bool = False
-    landing_page_url: HttpUrl | None = None
+    landing_page_url: str | None = None
     pdf_url: str | None = None
     source: DehydratedSource | None = None
     license: str | None = None
@@ -201,8 +205,10 @@ class WorkIds(OpenAlexBase):
     """External identifiers for a work."""
 
     openalex: str | None = None
-    doi: HttpUrl | None = None
+    doi: str | None = None
     pmid: str | None = None
+    pmcid: str | None = None
+    mag: str | None = None
 
 
 class Authorship(OpenAlexBase):
@@ -220,6 +226,7 @@ class Authorship(OpenAlexBase):
 class Work(OpenAlexEntity):
     """Representation of a work."""
 
+    doi: str | None = None
     title: str | None = None
     publication_year: int | None = None
     publication_date: date | None = None
@@ -235,6 +242,8 @@ class Work(OpenAlexEntity):
     corresponding_author_ids: list[str] = Field(default_factory=list)
     corresponding_institution_ids: list[str] = Field(default_factory=list)
     countries_distinct_count: int | None = None
+    institutions_distinct_count: int | None = None
+    institution_assertions: list[str] = Field(default_factory=list)
     concepts: list[DehydratedConcept] = Field(default_factory=list)
     primary_topic: DehydratedTopic | None = None
     topics: list[DehydratedTopic] = Field(default_factory=list)
@@ -252,7 +261,7 @@ class Work(OpenAlexEntity):
     citation_normalized_percentile: CitationNormalizedPercentile | None = None
     counts_by_year: list[CountsByYear] = Field(default_factory=list)
     abstract_inverted_index: dict[str, list[int]] | None = None
-    created_date: str | None = None
+    created_date: date | None = None
     ids: WorkIds | None = None
     referenced_works: list[str] = Field(default_factory=list)
     referenced_works_count: int | None = None
@@ -277,6 +286,10 @@ class Work(OpenAlexEntity):
             self.title = self.display_name
         if self.is_oa is None and self.open_access is not None:
             self.is_oa = self.open_access.is_oa
+        if self.doi is None and self.ids and self.ids.doi is not None:
+            self.doi = self.ids.doi
+        if self.ids is None and self.doi is not None:
+            self.ids = WorkIds(doi=self.doi, openalex=self.id)
         return self
 
     def citations_in_year(self, year: int) -> int:

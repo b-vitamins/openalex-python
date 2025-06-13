@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Any, cast
+from typing import Any, cast
 
 __all__ = [
     "APCPrice",
@@ -13,12 +13,10 @@ __all__ = [
     "SourceType",
 ]
 
-from pydantic import Field, HttpUrl, field_validator
+from pydantic import Field, field_validator
 
 from .base import CountsByYear, OpenAlexBase, OpenAlexEntity, SummaryStats
-
-if TYPE_CHECKING:
-    from .work import DehydratedConcept
+from .work import DehydratedConcept, DehydratedTopic
 
 
 class SourceType(str, Enum):
@@ -27,8 +25,8 @@ class SourceType(str, Enum):
     JOURNAL = "journal"
     REPOSITORY = "repository"
     CONFERENCE = "conference"
-    EBOOK_PLATFORM = "ebook-platform"
-    BOOK_SERIES = "book-series"
+    EBOOK = "ebook"
+    BOOK_SERIES = "book series"
     OTHER = "other"
 
 
@@ -42,8 +40,20 @@ class APCPrice(OpenAlexBase):
 class Society(OpenAlexEntity):
     """Society affiliation."""
 
-    url: HttpUrl | None = None
+    url: str | None = None
     organization: str | None = None
+
+
+class SourceTopic(DehydratedTopic):
+    """Topic with count information."""
+
+    count: int | None = None
+
+
+class SourceTopicShare(DehydratedTopic):
+    """Topic share percentage."""
+
+    value: float | None = None
 
 
 class SourceIds(OpenAlexBase):
@@ -54,21 +64,23 @@ class SourceIds(OpenAlexBase):
     issn: list[str] | None = None
     mag: str | None = None
     fatcat: str | None = None
-    wikidata: HttpUrl | None = None
+    wikidata: str | None = None
 
 
 class Source(OpenAlexEntity):
     """Full source model."""
 
     issn_l: str | None = Field(None, description="Linking ISSN")
-    issn: list[str] = Field(default_factory=list, description="All ISSNs")
+    issn: list[str] | None = Field(
+        default=None, description="All ISSNs"
+    )
 
     @field_validator("issn", mode="before")
     @classmethod
-    def ensure_list(cls, v: Any) -> list[str]:
-        """Coerce ``issn`` to an empty list when given ``None``."""
+    def ensure_list(cls, v: Any) -> list[str] | None:
+        """Coerce ``issn`` to ``None`` when missing."""
         if v is None:
-            return []
+            return None
         return cast("list[str]", v)
 
     host_organization: str | None = Field(
@@ -84,11 +96,12 @@ class Source(OpenAlexEntity):
 
     is_oa: bool = Field(default=False, description="Is open access")
     is_in_doaj: bool = Field(default=False, description="In DOAJ")
+    is_indexed_in_scopus: bool | None = None
     is_core: bool | None = Field(None, description="Is CORE source")
 
     type: SourceType | None = None
 
-    homepage_url: HttpUrl | None = None
+    homepage_url: str | None = None
 
     apc_prices: list[APCPrice] = Field(
         default_factory=list, description="Article processing charges"
@@ -111,16 +124,30 @@ class Source(OpenAlexEntity):
         default_factory=list, description="Associated concepts"
     )
 
+    topics: list[SourceTopic] = Field(default_factory=list)
+    topic_share: list[SourceTopicShare] = Field(default_factory=list)
+
     counts_by_year: list[CountsByYear] = Field(
         default_factory=list,
         description="Yearly publication and citation counts",
     )
 
-    works_api_url: HttpUrl | None = Field(
+
+    works_api_url: str | None = Field(
         None, description="API URL for source's works"
     )
 
     ids: SourceIds | None = None
+
+    @property
+    def h_index(self) -> int | None:
+        """Return h-index from summary stats."""
+        return self.summary_stats.h_index if self.summary_stats else None
+
+    @property
+    def i10_index(self) -> int | None:
+        """Return i10-index from summary stats."""
+        return self.summary_stats.i10_index if self.summary_stats else None
 
     @property
     def is_journal(self) -> bool:
@@ -140,7 +167,7 @@ class Source(OpenAlexEntity):
     @property
     def is_ebook_platform(self) -> bool:
         """Check if source is an e-book platform."""
-        return self.type == SourceType.EBOOK_PLATFORM
+        return self.type == SourceType.EBOOK
 
     @property
     def has_apc(self) -> bool:
@@ -163,10 +190,11 @@ class Source(OpenAlexEntity):
         # Start with the ISSN list and remove any duplicates it may contain
         unique_list: list[str] = []
         seen_in_list: set[str] = set()
-        for issn in self.issn:
-            if issn not in seen_in_list:
-                seen_in_list.add(issn)
-                unique_list.append(issn)
+        if self.issn:
+            for issn in self.issn:
+                if issn not in seen_in_list:
+                    seen_in_list.add(issn)
+                    unique_list.append(issn)
 
         if self.issn_l:
             if len(unique_list) <= 2:
@@ -209,6 +237,5 @@ class Source(OpenAlexEntity):
         )
 
 
-from .work import DehydratedConcept  # noqa: E402,TC001
 
 Source.model_rebuild()

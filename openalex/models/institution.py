@@ -43,6 +43,7 @@ class InstitutionType(str, Enum):
     GOVERNMENT = "government"
     FACILITY = "facility"
     OTHER = "other"
+    FUNDER = "funder"
 
 
 class Repository(OpenAlexEntity):
@@ -86,8 +87,8 @@ class InstitutionIds(OpenAlexBase):
     openalex: str | None = None
     ror: str | None = None
     grid: str | None = None
-    wikipedia: HttpUrl | None = None
-    wikidata: HttpUrl | None = None
+    wikipedia: str | None = None
+    wikidata: str | None = None
     mag: str | None = None
 
 
@@ -107,9 +108,9 @@ class Institution(OpenAlexEntity):
     country_code: str | None = Field(None, description="ISO country code")
     type: InstitutionType | None = None
 
-    homepage_url: HttpUrl | None = None
-    image_url: HttpUrl | None = None
-    image_thumbnail_url: HttpUrl | None = None
+    homepage_url: str | None = None
+    image_url: str | None = None
+    image_thumbnail_url: str | None = None
 
     geo: Geo | None = None
 
@@ -124,6 +125,8 @@ class Institution(OpenAlexEntity):
     lineage: list[str] = Field(
         default_factory=list, description="Parent institution hierarchy"
     )
+
+    parent_institution: AssociatedInstitution | None = None
 
     is_super_system: bool = Field(
         default=False,
@@ -162,7 +165,8 @@ class Institution(OpenAlexEntity):
         description="Yearly publication and citation counts",
     )
 
-    works_api_url: HttpUrl | None = Field(
+
+    works_api_url: str | None = Field(
         None, description="API URL for institution's works"
     )
 
@@ -207,7 +211,15 @@ class Institution(OpenAlexEntity):
         return self.type == InstitutionType.COMPANY
 
     @property
-    def parent_institution(self) -> str | None:
+    def type_id(self) -> str | None:
+        """Return OpenAlex type ID."""
+        if self.type is None:
+            return None
+        return f"https://openalex.org/institution-types/{self.type}"
+
+
+    @property
+    def parent_institution_id(self) -> str | None:
         """Get immediate parent institution ID."""
         if self.lineage and len(self.lineage) > 1:
             return self.lineage[1]
