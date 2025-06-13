@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - License clarification: Now consistently MIT licensed
 - Improved error messages with more context
+- Pytest configuration skips docs-based examples
 
 ### Fixed
 - License inconsistency between LICENSE file and pyproject.toml
