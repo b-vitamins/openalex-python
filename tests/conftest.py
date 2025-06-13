@@ -7,2219 +7,2307 @@ from datetime import datetime
 from unittest.mock import Mock, patch
 
 import pytest
-import responses
 
 # Auto-generated mock data from JSON files
 
 # Mock data loaded from JSON files
 
 MOCK_S137773608_DATA = {
-    "id": "https://openalex.org/S137773608",
-    "issn_l": "0028-0836",
-    "issn": ["0028-0836", "1476-4687"],
+    "abbreviated_title": None,
+    "alternate_titles": [],
+    "apc_prices": [
+        {"currency": "EUR", "price": 9750},
+        {"currency": "USD", "price": 11690},
+        {"currency": "GBP", "price": 8490},
+    ],
+    "apc_usd": 11690,
+    "cited_by_count": 25258309,
+    "country_code": "GB",
+    "counts_by_year": [
+        {"cited_by_count": 382314, "works_count": 2075, "year": 2025},
+        {"cited_by_count": 1151508, "works_count": 4381, "year": 2024},
+        {"cited_by_count": 1248823, "works_count": 4312, "year": 2023},
+        {"cited_by_count": 1263427, "works_count": 4101, "year": 2022},
+        {"cited_by_count": 1325338, "works_count": 3771, "year": 2021},
+        {"cited_by_count": 1212485, "works_count": 3697, "year": 2020},
+        {"cited_by_count": 1051697, "works_count": 4054, "year": 2019},
+        {"cited_by_count": 978354, "works_count": 4072, "year": 2018},
+        {"cited_by_count": 921411, "works_count": 3920, "year": 2017},
+        {"cited_by_count": 883389, "works_count": 4150, "year": 2016},
+        {"cited_by_count": 863227, "works_count": 4244, "year": 2015},
+        {"cited_by_count": 859351, "works_count": 4163, "year": 2014},
+        {"cited_by_count": 835051, "works_count": 4293, "year": 2013},
+        {"cited_by_count": 784106, "works_count": 4397, "year": 2012},
+    ],
+    "created_date": "2016-06-24",
     "display_name": "Nature",
+    "homepage_url": "https://www.nature.com/nature/",
     "host_organization": "https://openalex.org/P4310319908",
-    "host_organization_name": "Nature Portfolio",
     "host_organization_lineage": [
         "https://openalex.org/P4310319908",
         "https://openalex.org/P4310319965",
     ],
-    "works_count": 431710,
-    "cited_by_count": 25258309,
+    "host_organization_name": "Nature Portfolio",
+    "id": "https://openalex.org/S137773608",
+    "ids": {
+        "issn": ["0028-0836", "1476-4687"],
+        "issn_l": "0028-0836",
+        "mag": "137773608",
+        "openalex": "https://openalex.org/S137773608",
+        "wikidata": "https://www.wikidata.org/entity/Q180445",
+    },
+    "is_core": True,
+    "is_in_doaj": False,
+    "is_indexed_in_scopus": True,
+    "is_oa": False,
+    "issn": ["0028-0836", "1476-4687"],
+    "issn_l": "0028-0836",
+    "societies": [],
     "summary_stats": {
         "2yr_mean_citedness": 16.2611434684417,
         "h_index": 1779,
         "i10_index": 117589,
     },
-    "is_oa": False,
-    "is_in_doaj": False,
-    "is_indexed_in_scopus": True,
-    "is_core": True,
-    "ids": {
-        "openalex": "https://openalex.org/S137773608",
-        "issn_l": "0028-0836",
-        "issn": ["0028-0836", "1476-4687"],
-        "mag": "137773608",
-        "wikidata": "https://www.wikidata.org/entity/Q180445",
-    },
-    "homepage_url": "https://www.nature.com/nature/",
-    "apc_prices": [
-        {"price": 9750, "currency": "EUR"},
-        {"price": 11690, "currency": "USD"},
-        {"price": 8490, "currency": "GBP"},
-    ],
-    "apc_usd": 11690,
-    "country_code": "GB",
-    "societies": [],
-    "alternate_titles": [],
-    "abbreviated_title": None,
-    "type": "journal",
-    "topics": [
-        {
-            "id": "https://openalex.org/T13656",
-            "display_name": "Science, Research, and Medicine",
-            "count": 12534,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2743",
-                "display_name": "Reproductive Medicine",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/27",
-                "display_name": "Medicine",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/4",
-                "display_name": "Health Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T12836",
-            "display_name": "History and Developments in Astronomy",
-            "count": 9942,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10325",
-            "display_name": "Astro and Planetary Science",
-            "count": 7620,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10017",
-            "display_name": "Geology and Paleoclimatology Research",
-            "count": 7003,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1902",
-                "display_name": "Atmospheric Science",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/19",
-                "display_name": "Earth and Planetary Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T13297",
-            "display_name": "History and advancements in chemistry",
-            "count": 6034,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1606",
-                "display_name": "Physical and Theoretical Chemistry",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/16",
-                "display_name": "Chemistry",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T12168",
-            "display_name": "Health and Medical Research Impacts",
-            "count": 5975,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2739",
-                "display_name": "Public Health, Environmental and Occupational Health",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/27",
-                "display_name": "Medicine",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/4",
-                "display_name": "Health Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T14293",
-            "display_name": "Biotechnology and Related Fields",
-            "count": 4822,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2739",
-                "display_name": "Public Health, Environmental and Occupational Health",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/27",
-                "display_name": "Medicine",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/4",
-                "display_name": "Health Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T12327",
-            "display_name": "Various Chemistry Research Topics",
-            "count": 4554,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1606",
-                "display_name": "Physical and Theoretical Chemistry",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/16",
-                "display_name": "Chemistry",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10487",
-            "display_name": "Plant and animal studies",
-            "count": 4159,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1105",
-                "display_name": "Ecology, Evolution, Behavior and Systematics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/11",
-                "display_name": "Agricultural and Biological Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/1",
-                "display_name": "Life Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10001",
-            "display_name": "Geological and Geochemical Analysis",
-            "count": 4089,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1908",
-                "display_name": "Geophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/19",
-                "display_name": "Earth and Planetary Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T13175",
-            "display_name": "Historical Astronomy and Related Studies",
-            "count": 4072,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10406",
-            "display_name": "Planetary Science and Exploration",
-            "count": 3956,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10521",
-            "display_name": "RNA and protein synthesis mechanisms",
-            "count": 3923,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1312",
-                "display_name": "Molecular Biology",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/13",
-                "display_name": "Biochemistry, Genetics and Molecular Biology",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/1",
-                "display_name": "Life Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10251",
-            "display_name": "Solar and Space Plasma Dynamics",
-            "count": 3725,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T13937",
-            "display_name": "Genetics, Bioinformatics, and Biomedical Research",
-            "count": 3705,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1312",
-                "display_name": "Molecular Biology",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/13",
-                "display_name": "Biochemistry, Genetics and Molecular Biology",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/1",
-                "display_name": "Life Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T12788",
-            "display_name": "Space Science and Extraterrestrial Life",
-            "count": 3642,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T12471",
-            "display_name": "History of Science and Natural History",
-            "count": 3545,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1207",
-                "display_name": "History and Philosophy of Science",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/12",
-                "display_name": "Arts and Humanities",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T12250",
-            "display_name": "Experimental and Theoretical Physics Studies",
-            "count": 3346,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3109",
-                "display_name": "Statistical and Nonlinear Physics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10110",
-            "display_name": "earthquake and tectonic studies",
-            "count": 3279,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1908",
-                "display_name": "Geophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/19",
-                "display_name": "Earth and Planetary Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10039",
-            "display_name": "Stellar, planetary, and galactic studies",
-            "count": 3150,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11354",
-            "display_name": "Evolution and Paleontology Studies",
-            "count": 3083,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1911",
-                "display_name": "Paleontology",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/19",
-                "display_name": "Earth and Planetary Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T13726",
-            "display_name": "International Science and Diplomacy",
-            "count": 2886,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3320",
-                "display_name": "Political Science and International Relations",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10413",
-            "display_name": "High-pressure geophysics and materials",
-            "count": 2805,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1908",
-                "display_name": "Geophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/19",
-                "display_name": "Earth and Planetary Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10878",
-            "display_name": "CRISPR and Genetic Engineering",
-            "count": 2734,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1312",
-                "display_name": "Molecular Biology",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/13",
-                "display_name": "Biochemistry, Genetics and Molecular Biology",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/1",
-                "display_name": "Life Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10702",
-            "display_name": "Insect and Arachnid Ecology and Behavior",
-            "count": 2728,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1311",
-                "display_name": "Genetics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/13",
-                "display_name": "Biochemistry, Genetics and Molecular Biology",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/1",
-                "display_name": "Life Sciences",
-            },
-        },
-    ],
     "topic_share": [
         {
-            "id": "https://openalex.org/T13656",
             "display_name": "Science, Research, and Medicine",
-            "value": 0.0869209,
+            "domain": {
+                "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
+            },
+            "field": {
+                "display_name": "Medicine",
+                "id": "https://openalex.org/fields/27",
+            },
+            "id": "https://openalex.org/T13656",
             "subfield": {
-                "id": "https://openalex.org/subfields/2743",
                 "display_name": "Reproductive Medicine",
+                "id": "https://openalex.org/subfields/2743",
             },
-            "field": {
-                "id": "https://openalex.org/fields/27",
-                "display_name": "Medicine",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/4",
-                "display_name": "Health Sciences",
-            },
+            "value": 0.0869209,
         },
         {
-            "id": "https://openalex.org/T14329",
             "display_name": "Science and Climate Studies",
-            "value": 0.0513421,
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Environmental Science",
+                "id": "https://openalex.org/fields/23",
+            },
+            "id": "https://openalex.org/T14329",
             "subfield": {
-                "id": "https://openalex.org/subfields/2306",
                 "display_name": "Global and Planetary Change",
+                "id": "https://openalex.org/subfields/2306",
             },
-            "field": {
-                "id": "https://openalex.org/fields/23",
-                "display_name": "Environmental Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
+            "value": 0.0513421,
         },
         {
-            "id": "https://openalex.org/T13726",
             "display_name": "International Science and Diplomacy",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T13726",
+            "subfield": {
+                "display_name": "Political Science and International Relations",
+                "id": "https://openalex.org/subfields/3320",
+            },
             "value": 0.0500295,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3320",
-                "display_name": "Political Science and International Relations",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
         },
         {
-            "id": "https://openalex.org/T12445",
             "display_name": "Twentieth Century Scientific Developments",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Arts and Humanities",
+                "id": "https://openalex.org/fields/12",
+            },
+            "id": "https://openalex.org/T12445",
+            "subfield": {
+                "display_name": "History and Philosophy of Science",
+                "id": "https://openalex.org/subfields/1207",
+            },
             "value": 0.0397904,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1207",
-                "display_name": "History and Philosophy of Science",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/12",
-                "display_name": "Arts and Humanities",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
         },
         {
-            "id": "https://openalex.org/T12182",
             "display_name": "Evolution and Science Education",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Arts and Humanities",
+                "id": "https://openalex.org/fields/12",
+            },
+            "id": "https://openalex.org/T12182",
+            "subfield": {
+                "display_name": "History and Philosophy of Science",
+                "id": "https://openalex.org/subfields/1207",
+            },
             "value": 0.0373123,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1207",
-                "display_name": "History and Philosophy of Science",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/12",
-                "display_name": "Arts and Humanities",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
         },
         {
-            "id": "https://openalex.org/T12471",
             "display_name": "History of Science and Natural History",
-            "value": 0.0365445,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1207",
-                "display_name": "History and Philosophy of Science",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
             },
             "field": {
-                "id": "https://openalex.org/fields/12",
                 "display_name": "Arts and Humanities",
+                "id": "https://openalex.org/fields/12",
             },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
+            "id": "https://openalex.org/T12471",
+            "subfield": {
+                "display_name": "History and Philosophy of Science",
+                "id": "https://openalex.org/subfields/1207",
             },
+            "value": 0.0365445,
         },
         {
-            "id": "https://openalex.org/T14293",
             "display_name": "Biotechnology and Related Fields",
+            "domain": {
+                "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
+            },
+            "field": {
+                "display_name": "Medicine",
+                "id": "https://openalex.org/fields/27",
+            },
+            "id": "https://openalex.org/T14293",
+            "subfield": {
+                "display_name": "Public Health, Environmental and Occupational Health",
+                "id": "https://openalex.org/subfields/2739",
+            },
             "value": 0.0359339,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2739",
-                "display_name": "Public Health, Environmental and Occupational Health",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/27",
-                "display_name": "Medicine",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/4",
-                "display_name": "Health Sciences",
-            },
         },
         {
-            "id": "https://openalex.org/T12836",
             "display_name": "History and Developments in Astronomy",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T12836",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
+            },
             "value": 0.0301925,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
         },
         {
-            "id": "https://openalex.org/T13967",
             "display_name": "Conservation, Ecology, Wildlife Education",
-            "value": 0.0282282,
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Environmental Science",
+                "id": "https://openalex.org/fields/23",
+            },
+            "id": "https://openalex.org/T13967",
             "subfield": {
-                "id": "https://openalex.org/subfields/2308",
                 "display_name": "Management, Monitoring, Policy and Law",
+                "id": "https://openalex.org/subfields/2308",
             },
-            "field": {
-                "id": "https://openalex.org/fields/23",
-                "display_name": "Environmental Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
+            "value": 0.0282282,
         },
         {
-            "id": "https://openalex.org/T12168",
             "display_name": "Health and Medical Research Impacts",
+            "domain": {
+                "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
+            },
+            "field": {
+                "display_name": "Medicine",
+                "id": "https://openalex.org/fields/27",
+            },
+            "id": "https://openalex.org/T12168",
+            "subfield": {
+                "display_name": "Public Health, Environmental and Occupational Health",
+                "id": "https://openalex.org/subfields/2739",
+            },
             "value": 0.0275612,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2739",
-                "display_name": "Public Health, Environmental and Occupational Health",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/27",
-                "display_name": "Medicine",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/4",
-                "display_name": "Health Sciences",
-            },
         },
         {
-            "id": "https://openalex.org/T14311",
             "display_name": "Electrical and Electromagnetic Research",
-            "value": 0.0264873,
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T14311",
             "subfield": {
-                "id": "https://openalex.org/subfields/3107",
                 "display_name": "Atomic and Molecular Physics, and Optics",
+                "id": "https://openalex.org/subfields/3107",
             },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
+            "value": 0.0264873,
         },
         {
-            "id": "https://openalex.org/T12180",
             "display_name": "Polar Research and Ecology",
-            "value": 0.0245654,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2303",
-                "display_name": "Ecology",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
             },
             "field": {
-                "id": "https://openalex.org/fields/23",
                 "display_name": "Environmental Science",
+                "id": "https://openalex.org/fields/23",
             },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
+            "id": "https://openalex.org/T12180",
+            "subfield": {
+                "display_name": "Ecology",
+                "id": "https://openalex.org/subfields/2303",
             },
+            "value": 0.0245654,
         },
         {
-            "id": "https://openalex.org/T12250",
             "display_name": "Experimental and Theoretical Physics Studies",
-            "value": 0.0239155,
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T12250",
             "subfield": {
-                "id": "https://openalex.org/subfields/3109",
                 "display_name": "Statistical and Nonlinear Physics",
+                "id": "https://openalex.org/subfields/3109",
             },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
+            "value": 0.0239155,
         },
         {
-            "id": "https://openalex.org/T13098",
             "display_name": "Conferences and Exhibitions Management",
-            "value": 0.0238536,
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T13098",
             "subfield": {
-                "id": "https://openalex.org/subfields/3312",
                 "display_name": "Sociology and Political Science",
+                "id": "https://openalex.org/subfields/3312",
             },
-            "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
+            "value": 0.0238536,
         },
         {
-            "id": "https://openalex.org/T12788",
             "display_name": "Space Science and Extraterrestrial Life",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T12788",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
+            },
             "value": 0.0229391,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
         },
         {
-            "id": "https://openalex.org/T13175",
             "display_name": "Historical Astronomy and Related Studies",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T13175",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
+            },
             "value": 0.0226898,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
         },
         {
-            "id": "https://openalex.org/T13607",
             "display_name": "Academic Publishing and Open Access",
-            "value": 0.021198,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1802",
-                "display_name": "Information Systems and Management",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
             },
             "field": {
-                "id": "https://openalex.org/fields/18",
                 "display_name": "Decision Sciences",
+                "id": "https://openalex.org/fields/18",
             },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
+            "id": "https://openalex.org/T13607",
+            "subfield": {
+                "display_name": "Information Systems and Management",
+                "id": "https://openalex.org/subfields/1802",
             },
+            "value": 0.021198,
         },
         {
-            "id": "https://openalex.org/T11731",
             "display_name": "Global Health and Surgery",
-            "value": 0.0208038,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2739",
-                "display_name": "Public Health, Environmental and Occupational Health",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/27",
-                "display_name": "Medicine",
-            },
             "domain": {
-                "id": "https://openalex.org/domains/4",
                 "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
             },
+            "field": {
+                "display_name": "Medicine",
+                "id": "https://openalex.org/fields/27",
+            },
+            "id": "https://openalex.org/T11731",
+            "subfield": {
+                "display_name": "Public Health, Environmental and Occupational Health",
+                "id": "https://openalex.org/subfields/2739",
+            },
+            "value": 0.0208038,
         },
         {
-            "id": "https://openalex.org/T10955",
             "display_name": "Paleontology and Evolutionary Biology",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Earth and Planetary Sciences",
+                "id": "https://openalex.org/fields/19",
+            },
+            "id": "https://openalex.org/T10955",
+            "subfield": {
+                "display_name": "Paleontology",
+                "id": "https://openalex.org/subfields/1911",
+            },
             "value": 0.019876,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1911",
-                "display_name": "Paleontology",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/19",
-                "display_name": "Earth and Planetary Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
         },
         {
-            "id": "https://openalex.org/T12717",
             "display_name": "Space exploration and regulation",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T12717",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
+            },
             "value": 0.0193599,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
         },
         {
-            "id": "https://openalex.org/T11445",
             "display_name": "Origins and Evolution of Life",
-            "value": 0.0188727,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
             },
             "field": {
-                "id": "https://openalex.org/fields/31",
                 "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
             },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
+            "id": "https://openalex.org/T11445",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
             },
+            "value": 0.0188727,
         },
         {
-            "id": "https://openalex.org/T13705",
             "display_name": "Australian Indigenous Culture and History",
-            "value": 0.017732,
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T13705",
             "subfield": {
-                "id": "https://openalex.org/subfields/3314",
                 "display_name": "Anthropology",
+                "id": "https://openalex.org/subfields/3314",
             },
-            "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
+            "value": 0.017732,
         },
         {
-            "id": "https://openalex.org/T11354",
             "display_name": "Evolution and Paleontology Studies",
-            "value": 0.0176865,
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Earth and Planetary Sciences",
+                "id": "https://openalex.org/fields/19",
+            },
+            "id": "https://openalex.org/T11354",
             "subfield": {
-                "id": "https://openalex.org/subfields/1911",
                 "display_name": "Paleontology",
+                "id": "https://openalex.org/subfields/1911",
             },
-            "field": {
-                "id": "https://openalex.org/fields/19",
-                "display_name": "Earth and Planetary Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
+            "value": 0.0176865,
         },
         {
-            "id": "https://openalex.org/T13721",
             "display_name": "Political Science Research and Education",
-            "value": 0.0176124,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3320",
-                "display_name": "Political Science and International Relations",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
             },
             "field": {
+                "display_name": "Social Sciences",
                 "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
             },
+            "id": "https://openalex.org/T13721",
+            "subfield": {
+                "display_name": "Political Science and International Relations",
+                "id": "https://openalex.org/subfields/3320",
+            },
+            "value": 0.0176124,
+        },
+        {
+            "display_name": "Earth Systems and Cosmic Evolution",
             "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Earth and Planetary Sciences",
+                "id": "https://openalex.org/fields/19",
+            },
+            "id": "https://openalex.org/T13811",
+            "subfield": {
+                "display_name": "Atmospheric Science",
+                "id": "https://openalex.org/subfields/1902",
+            },
+            "value": 0.0173419,
+        },
+    ],
+    "topics": [
+        {
+            "count": 12534,
+            "display_name": "Science, Research, and Medicine",
+            "domain": {
+                "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
+            },
+            "field": {
+                "display_name": "Medicine",
+                "id": "https://openalex.org/fields/27",
+            },
+            "id": "https://openalex.org/T13656",
+            "subfield": {
+                "display_name": "Reproductive Medicine",
+                "id": "https://openalex.org/subfields/2743",
             },
         },
         {
-            "id": "https://openalex.org/T13811",
-            "display_name": "Earth Systems and Cosmic Evolution",
-            "value": 0.0173419,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1902",
-                "display_name": "Atmospheric Science",
+            "count": 9942,
+            "display_name": "History and Developments in Astronomy",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
             },
             "field": {
-                "id": "https://openalex.org/fields/19",
-                "display_name": "Earth and Planetary Sciences",
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
             },
+            "id": "https://openalex.org/T12836",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
+            },
+        },
+        {
+            "count": 7620,
+            "display_name": "Astro and Planetary Science",
             "domain": {
-                "id": "https://openalex.org/domains/3",
                 "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T10325",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
+            },
+        },
+        {
+            "count": 7003,
+            "display_name": "Geology and Paleoclimatology Research",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Earth and Planetary Sciences",
+                "id": "https://openalex.org/fields/19",
+            },
+            "id": "https://openalex.org/T10017",
+            "subfield": {
+                "display_name": "Atmospheric Science",
+                "id": "https://openalex.org/subfields/1902",
+            },
+        },
+        {
+            "count": 6034,
+            "display_name": "History and advancements in chemistry",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Chemistry",
+                "id": "https://openalex.org/fields/16",
+            },
+            "id": "https://openalex.org/T13297",
+            "subfield": {
+                "display_name": "Physical and Theoretical Chemistry",
+                "id": "https://openalex.org/subfields/1606",
+            },
+        },
+        {
+            "count": 5975,
+            "display_name": "Health and Medical Research Impacts",
+            "domain": {
+                "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
+            },
+            "field": {
+                "display_name": "Medicine",
+                "id": "https://openalex.org/fields/27",
+            },
+            "id": "https://openalex.org/T12168",
+            "subfield": {
+                "display_name": "Public Health, Environmental and Occupational Health",
+                "id": "https://openalex.org/subfields/2739",
+            },
+        },
+        {
+            "count": 4822,
+            "display_name": "Biotechnology and Related Fields",
+            "domain": {
+                "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
+            },
+            "field": {
+                "display_name": "Medicine",
+                "id": "https://openalex.org/fields/27",
+            },
+            "id": "https://openalex.org/T14293",
+            "subfield": {
+                "display_name": "Public Health, Environmental and Occupational Health",
+                "id": "https://openalex.org/subfields/2739",
+            },
+        },
+        {
+            "count": 4554,
+            "display_name": "Various Chemistry Research Topics",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Chemistry",
+                "id": "https://openalex.org/fields/16",
+            },
+            "id": "https://openalex.org/T12327",
+            "subfield": {
+                "display_name": "Physical and Theoretical Chemistry",
+                "id": "https://openalex.org/subfields/1606",
+            },
+        },
+        {
+            "count": 4159,
+            "display_name": "Plant and animal studies",
+            "domain": {
+                "display_name": "Life Sciences",
+                "id": "https://openalex.org/domains/1",
+            },
+            "field": {
+                "display_name": "Agricultural and Biological Sciences",
+                "id": "https://openalex.org/fields/11",
+            },
+            "id": "https://openalex.org/T10487",
+            "subfield": {
+                "display_name": "Ecology, Evolution, Behavior and Systematics",
+                "id": "https://openalex.org/subfields/1105",
+            },
+        },
+        {
+            "count": 4089,
+            "display_name": "Geological and Geochemical Analysis",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Earth and Planetary Sciences",
+                "id": "https://openalex.org/fields/19",
+            },
+            "id": "https://openalex.org/T10001",
+            "subfield": {
+                "display_name": "Geophysics",
+                "id": "https://openalex.org/subfields/1908",
+            },
+        },
+        {
+            "count": 4072,
+            "display_name": "Historical Astronomy and Related Studies",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T13175",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
+            },
+        },
+        {
+            "count": 3956,
+            "display_name": "Planetary Science and Exploration",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T10406",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
+            },
+        },
+        {
+            "count": 3923,
+            "display_name": "RNA and protein synthesis mechanisms",
+            "domain": {
+                "display_name": "Life Sciences",
+                "id": "https://openalex.org/domains/1",
+            },
+            "field": {
+                "display_name": "Biochemistry, Genetics and Molecular Biology",
+                "id": "https://openalex.org/fields/13",
+            },
+            "id": "https://openalex.org/T10521",
+            "subfield": {
+                "display_name": "Molecular Biology",
+                "id": "https://openalex.org/subfields/1312",
+            },
+        },
+        {
+            "count": 3725,
+            "display_name": "Solar and Space Plasma Dynamics",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T10251",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
+            },
+        },
+        {
+            "count": 3705,
+            "display_name": "Genetics, Bioinformatics, and Biomedical Research",
+            "domain": {
+                "display_name": "Life Sciences",
+                "id": "https://openalex.org/domains/1",
+            },
+            "field": {
+                "display_name": "Biochemistry, Genetics and Molecular Biology",
+                "id": "https://openalex.org/fields/13",
+            },
+            "id": "https://openalex.org/T13937",
+            "subfield": {
+                "display_name": "Molecular Biology",
+                "id": "https://openalex.org/subfields/1312",
+            },
+        },
+        {
+            "count": 3642,
+            "display_name": "Space Science and Extraterrestrial Life",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T12788",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
+            },
+        },
+        {
+            "count": 3545,
+            "display_name": "History of Science and Natural History",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Arts and Humanities",
+                "id": "https://openalex.org/fields/12",
+            },
+            "id": "https://openalex.org/T12471",
+            "subfield": {
+                "display_name": "History and Philosophy of Science",
+                "id": "https://openalex.org/subfields/1207",
+            },
+        },
+        {
+            "count": 3346,
+            "display_name": "Experimental and Theoretical Physics Studies",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T12250",
+            "subfield": {
+                "display_name": "Statistical and Nonlinear Physics",
+                "id": "https://openalex.org/subfields/3109",
+            },
+        },
+        {
+            "count": 3279,
+            "display_name": "earthquake and tectonic studies",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Earth and Planetary Sciences",
+                "id": "https://openalex.org/fields/19",
+            },
+            "id": "https://openalex.org/T10110",
+            "subfield": {
+                "display_name": "Geophysics",
+                "id": "https://openalex.org/subfields/1908",
+            },
+        },
+        {
+            "count": 3150,
+            "display_name": "Stellar, planetary, and galactic studies",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T10039",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
+            },
+        },
+        {
+            "count": 3083,
+            "display_name": "Evolution and Paleontology Studies",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Earth and Planetary Sciences",
+                "id": "https://openalex.org/fields/19",
+            },
+            "id": "https://openalex.org/T11354",
+            "subfield": {
+                "display_name": "Paleontology",
+                "id": "https://openalex.org/subfields/1911",
+            },
+        },
+        {
+            "count": 2886,
+            "display_name": "International Science and Diplomacy",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T13726",
+            "subfield": {
+                "display_name": "Political Science and International Relations",
+                "id": "https://openalex.org/subfields/3320",
+            },
+        },
+        {
+            "count": 2805,
+            "display_name": "High-pressure geophysics and materials",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Earth and Planetary Sciences",
+                "id": "https://openalex.org/fields/19",
+            },
+            "id": "https://openalex.org/T10413",
+            "subfield": {
+                "display_name": "Geophysics",
+                "id": "https://openalex.org/subfields/1908",
+            },
+        },
+        {
+            "count": 2734,
+            "display_name": "CRISPR and Genetic Engineering",
+            "domain": {
+                "display_name": "Life Sciences",
+                "id": "https://openalex.org/domains/1",
+            },
+            "field": {
+                "display_name": "Biochemistry, Genetics and Molecular Biology",
+                "id": "https://openalex.org/fields/13",
+            },
+            "id": "https://openalex.org/T10878",
+            "subfield": {
+                "display_name": "Molecular Biology",
+                "id": "https://openalex.org/subfields/1312",
+            },
+        },
+        {
+            "count": 2728,
+            "display_name": "Insect and Arachnid Ecology and Behavior",
+            "domain": {
+                "display_name": "Life Sciences",
+                "id": "https://openalex.org/domains/1",
+            },
+            "field": {
+                "display_name": "Biochemistry, Genetics and Molecular Biology",
+                "id": "https://openalex.org/fields/13",
+            },
+            "id": "https://openalex.org/T10702",
+            "subfield": {
+                "display_name": "Genetics",
+                "id": "https://openalex.org/subfields/1311",
             },
         },
     ],
+    "type": "journal",
+    "updated_date": "2025-06-07T06:11:41.088389",
+    "works_api_url": "https://api.openalex.org/works?filter=primary_location.source.id:S137773608",
+    "works_count": 431710,
     "x_concepts": [
         {
-            "id": "https://openalex.org/C86803240",
-            "wikidata": "https://www.wikidata.org/wiki/Q420",
             "display_name": "Biology",
+            "id": "https://openalex.org/C86803240",
             "level": 0,
             "score": 58.1,
+            "wikidata": "https://www.wikidata.org/wiki/Q420",
         },
         {
-            "id": "https://openalex.org/C121332964",
-            "wikidata": "https://www.wikidata.org/wiki/Q413",
             "display_name": "Physics",
+            "id": "https://openalex.org/C121332964",
             "level": 0,
             "score": 40.5,
+            "wikidata": "https://www.wikidata.org/wiki/Q413",
         },
         {
-            "id": "https://openalex.org/C185592680",
-            "wikidata": "https://www.wikidata.org/wiki/Q2329",
             "display_name": "Chemistry",
+            "id": "https://openalex.org/C185592680",
             "level": 0,
             "score": 36.0,
+            "wikidata": "https://www.wikidata.org/wiki/Q2329",
         },
         {
-            "id": "https://openalex.org/C41008148",
-            "wikidata": "https://www.wikidata.org/wiki/Q21198",
             "display_name": "Computer science",
+            "id": "https://openalex.org/C41008148",
             "level": 0,
             "score": 31.7,
+            "wikidata": "https://www.wikidata.org/wiki/Q21198",
         },
         {
-            "id": "https://openalex.org/C71924100",
-            "wikidata": "https://www.wikidata.org/wiki/Q11190",
             "display_name": "Medicine",
+            "id": "https://openalex.org/C71924100",
             "level": 0,
             "score": 26.6,
+            "wikidata": "https://www.wikidata.org/wiki/Q11190",
         },
         {
-            "id": "https://openalex.org/C205649164",
-            "wikidata": "https://www.wikidata.org/wiki/Q1071",
             "display_name": "Geography",
+            "id": "https://openalex.org/C205649164",
             "level": 0,
             "score": 25.6,
+            "wikidata": "https://www.wikidata.org/wiki/Q1071",
         },
         {
-            "id": "https://openalex.org/C127313418",
-            "wikidata": "https://www.wikidata.org/wiki/Q1069",
             "display_name": "Geology",
+            "id": "https://openalex.org/C127313418",
             "level": 0,
             "score": 23.5,
+            "wikidata": "https://www.wikidata.org/wiki/Q1069",
         },
         {
-            "id": "https://openalex.org/C95457728",
-            "wikidata": "https://www.wikidata.org/wiki/Q309",
             "display_name": "History",
+            "id": "https://openalex.org/C95457728",
             "level": 0,
             "score": 23.1,
+            "wikidata": "https://www.wikidata.org/wiki/Q309",
         },
         {
-            "id": "https://openalex.org/C138885662",
-            "wikidata": "https://www.wikidata.org/wiki/Q5891",
             "display_name": "Philosophy",
+            "id": "https://openalex.org/C138885662",
             "level": 0,
             "score": 22.3,
+            "wikidata": "https://www.wikidata.org/wiki/Q5891",
         },
         {
-            "id": "https://openalex.org/C17744445",
-            "wikidata": "https://www.wikidata.org/wiki/Q36442",
             "display_name": "Political science",
+            "id": "https://openalex.org/C17744445",
             "level": 0,
             "score": 21.9,
+            "wikidata": "https://www.wikidata.org/wiki/Q36442",
         },
         {
-            "id": "https://openalex.org/C54355233",
-            "wikidata": "https://www.wikidata.org/wiki/Q7162",
             "display_name": "Genetics",
+            "id": "https://openalex.org/C54355233",
             "level": 1,
             "score": 21.4,
+            "wikidata": "https://www.wikidata.org/wiki/Q7162",
         },
         {
-            "id": "https://openalex.org/C127413603",
-            "wikidata": "https://www.wikidata.org/wiki/Q11023",
             "display_name": "Engineering",
+            "id": "https://openalex.org/C127413603",
             "level": 0,
             "score": 21.2,
+            "wikidata": "https://www.wikidata.org/wiki/Q11023",
         },
         {
-            "id": "https://openalex.org/C55493867",
-            "wikidata": "https://www.wikidata.org/wiki/Q7094",
             "display_name": "Biochemistry",
+            "id": "https://openalex.org/C55493867",
             "level": 1,
             "score": 21.1,
+            "wikidata": "https://www.wikidata.org/wiki/Q7094",
         },
         {
-            "id": "https://openalex.org/C62520636",
-            "wikidata": "https://www.wikidata.org/wiki/Q944",
             "display_name": "Quantum mechanics",
+            "id": "https://openalex.org/C62520636",
             "level": 1,
             "score": 20.5,
+            "wikidata": "https://www.wikidata.org/wiki/Q944",
         },
     ],
-    "counts_by_year": [
-        {"year": 2025, "works_count": 2075, "cited_by_count": 382314},
-        {"year": 2024, "works_count": 4381, "cited_by_count": 1151508},
-        {"year": 2023, "works_count": 4312, "cited_by_count": 1248823},
-        {"year": 2022, "works_count": 4101, "cited_by_count": 1263427},
-        {"year": 2021, "works_count": 3771, "cited_by_count": 1325338},
-        {"year": 2020, "works_count": 3697, "cited_by_count": 1212485},
-        {"year": 2019, "works_count": 4054, "cited_by_count": 1051697},
-        {"year": 2018, "works_count": 4072, "cited_by_count": 978354},
-        {"year": 2017, "works_count": 3920, "cited_by_count": 921411},
-        {"year": 2016, "works_count": 4150, "cited_by_count": 883389},
-        {"year": 2015, "works_count": 4244, "cited_by_count": 863227},
-        {"year": 2014, "works_count": 4163, "cited_by_count": 859351},
-        {"year": 2013, "works_count": 4293, "cited_by_count": 835051},
-        {"year": 2012, "works_count": 4397, "cited_by_count": 784106},
-    ],
-    "works_api_url": "https://api.openalex.org/works?filter=primary_location.source.id:S137773608",
-    "updated_date": "2025-06-07T06:11:41.088389",
-    "created_date": "2016-06-24",
 }
 
 MOCK_A5023888391_DATA = {
-    "id": "https://openalex.org/A5023888391",
-    "orcid": "https://orcid.org/0000-0001-6187-6610",
-    "display_name": "Jason Priem",
-    "display_name_alternatives": ["Priem Jason", "Jason Priem"],
-    "works_count": 62,
-    "cited_by_count": 3886,
-    "summary_stats": {
-        "2yr_mean_citedness": 6.0,
-        "h_index": 17,
-        "i10_index": 20,
-    },
-    "ids": {
-        "openalex": "https://openalex.org/A5023888391",
-        "orcid": "https://orcid.org/0000-0001-6187-6610",
-        "scopus": "http://www.scopus.com/inward/authorDetails.url?authorID=36455008000&partnerID=MN8TOARS",
-    },
     "affiliations": [
         {
             "institution": {
-                "id": "https://openalex.org/I4200000001",
-                "ror": "https://ror.org/02nr0ka47",
-                "display_name": "OurResearch",
                 "country_code": "CA",
-                "type": "nonprofit",
+                "display_name": "OurResearch",
+                "id": "https://openalex.org/I4200000001",
                 "lineage": ["https://openalex.org/I4200000001"],
+                "ror": "https://ror.org/02nr0ka47",
+                "type": "nonprofit",
             },
             "years": [2023, 2022, 2021, 2019],
         },
         {
             "institution": {
-                "id": "https://openalex.org/I145311948",
-                "ror": "https://ror.org/00za53h95",
+                "country_code": "US",
                 "display_name": "Johns Hopkins University",
-                "country_code": "US",
-                "type": "funder",
+                "id": "https://openalex.org/I145311948",
                 "lineage": ["https://openalex.org/I145311948"],
-            },
-            "years": [2020],
-        },
-        {
-            "institution": {
-                "id": "https://openalex.org/I103163165",
-                "ror": "https://ror.org/05g3dte14",
-                "display_name": "Florida State University",
-                "country_code": "US",
+                "ror": "https://ror.org/00za53h95",
                 "type": "funder",
-                "lineage": ["https://openalex.org/I103163165"],
             },
             "years": [2020],
         },
         {
             "institution": {
-                "id": "https://openalex.org/I4210166736",
-                "ror": "https://ror.org/05ppvf150",
-                "display_name": "Impact Technology Development (United States)",
                 "country_code": "US",
-                "type": "company",
+                "display_name": "Florida State University",
+                "id": "https://openalex.org/I103163165",
+                "lineage": ["https://openalex.org/I103163165"],
+                "ror": "https://ror.org/05g3dte14",
+                "type": "funder",
+            },
+            "years": [2020],
+        },
+        {
+            "institution": {
+                "country_code": "US",
+                "display_name": "Impact Technology Development (United States)",
+                "id": "https://openalex.org/I4210166736",
                 "lineage": ["https://openalex.org/I4210166736"],
+                "ror": "https://ror.org/05ppvf150",
+                "type": "company",
             },
             "years": [2018, 2017, 2013],
         },
         {
             "institution": {
-                "id": "https://openalex.org/I114027177",
-                "ror": "https://ror.org/0130frc33",
-                "display_name": "University of North Carolina at Chapel Hill",
                 "country_code": "US",
-                "type": "funder",
+                "display_name": "University of North Carolina at Chapel Hill",
+                "id": "https://openalex.org/I114027177",
                 "lineage": ["https://openalex.org/I114027177"],
+                "ror": "https://ror.org/0130frc33",
+                "type": "funder",
             },
             "years": [2014, 2013, 2012, 2011, 2010],
         },
         {
             "institution": {
-                "id": "https://openalex.org/I4210161256",
-                "ror": "https://ror.org/05d9dsr70",
-                "display_name": "Impact",
                 "country_code": "CA",
-                "type": "nonprofit",
+                "display_name": "Impact",
+                "id": "https://openalex.org/I4210161256",
                 "lineage": ["https://openalex.org/I4210161256"],
+                "ror": "https://ror.org/05d9dsr70",
+                "type": "nonprofit",
             },
             "years": [2013],
         },
         {
             "institution": {
-                "id": "https://openalex.org/I94062374",
-                "ror": "https://ror.org/010bgev76",
-                "display_name": "Florida College",
                 "country_code": "US",
-                "type": "education",
+                "display_name": "Florida College",
+                "id": "https://openalex.org/I94062374",
                 "lineage": ["https://openalex.org/I94062374"],
+                "ror": "https://ror.org/010bgev76",
+                "type": "education",
             },
             "years": [2008],
         },
         {
             "institution": {
-                "id": "https://openalex.org/I33213144",
-                "ror": "https://ror.org/02y3ad647",
-                "display_name": "University of Florida",
                 "country_code": "US",
-                "type": "funder",
+                "display_name": "University of Florida",
+                "id": "https://openalex.org/I33213144",
                 "lineage": ["https://openalex.org/I33213144"],
+                "ror": "https://ror.org/02y3ad647",
+                "type": "funder",
             },
             "years": [2008],
         },
     ],
+    "cited_by_count": 3886,
+    "counts_by_year": [
+        {"cited_by_count": 78, "works_count": 0, "year": 2025},
+        {"cited_by_count": 314, "works_count": 1, "year": 2024},
+        {"cited_by_count": 317, "works_count": 6, "year": 2023},
+        {"cited_by_count": 317, "works_count": 2, "year": 2022},
+        {"cited_by_count": 354, "works_count": 1, "year": 2021},
+        {"cited_by_count": 431, "works_count": 5, "year": 2020},
+        {"cited_by_count": 369, "works_count": 3, "year": 2019},
+        {"cited_by_count": 321, "works_count": 2, "year": 2018},
+        {"cited_by_count": 303, "works_count": 7, "year": 2017},
+        {"cited_by_count": 236, "works_count": 2, "year": 2016},
+        {"cited_by_count": 358, "works_count": 2, "year": 2015},
+        {"cited_by_count": 317, "works_count": 4, "year": 2014},
+        {"cited_by_count": 260, "works_count": 10, "year": 2013},
+        {"cited_by_count": 98, "works_count": 10, "year": 2012},
+    ],
+    "created_date": "2023-07-21",
+    "display_name": "Jason Priem",
+    "display_name_alternatives": ["Priem Jason", "Jason Priem"],
+    "id": "https://openalex.org/A5023888391",
+    "ids": {
+        "openalex": "https://openalex.org/A5023888391",
+        "orcid": "https://orcid.org/0000-0001-6187-6610",
+        "scopus": "http://www.scopus.com/inward/authorDetails.url?authorID=36455008000&partnerID=MN8TOARS",
+    },
     "last_known_institutions": [
         {
-            "id": "https://openalex.org/I4200000001",
-            "ror": "https://ror.org/02nr0ka47",
-            "display_name": "OurResearch",
             "country_code": "CA",
-            "type": "nonprofit",
+            "display_name": "OurResearch",
+            "id": "https://openalex.org/I4200000001",
             "lineage": ["https://openalex.org/I4200000001"],
+            "ror": "https://ror.org/02nr0ka47",
+            "type": "nonprofit",
         }
+    ],
+    "orcid": "https://orcid.org/0000-0001-6187-6610",
+    "summary_stats": {
+        "2yr_mean_citedness": 6.0,
+        "h_index": 17,
+        "i10_index": 20,
+    },
+    "topic_share": [
+        {
+            "display_name": "Web visibility and informetrics",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T13976",
+            "subfield": {
+                "display_name": "Information Systems",
+                "id": "https://openalex.org/subfields/1710",
+            },
+            "value": 0.0003116,
+        },
+        {
+            "display_name": "scientometrics and bibliometrics research",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Decision Sciences",
+                "id": "https://openalex.org/fields/18",
+            },
+            "id": "https://openalex.org/T10102",
+            "subfield": {
+                "display_name": "Statistics, Probability and Uncertainty",
+                "id": "https://openalex.org/subfields/1804",
+            },
+            "value": 0.0001916,
+        },
+        {
+            "display_name": "Wikis in Education and Collaboration",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T12478",
+            "subfield": {
+                "display_name": "Communication",
+                "id": "https://openalex.org/subfields/3315",
+            },
+            "value": 0.0001293,
+        },
+        {
+            "display_name": "Research Data Management Practices",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T11937",
+            "subfield": {
+                "display_name": "Information Systems",
+                "id": "https://openalex.org/subfields/1710",
+            },
+            "value": 0.0001209,
+        },
+        {
+            "display_name": "Academic Publishing and Open Access",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Decision Sciences",
+                "id": "https://openalex.org/fields/18",
+            },
+            "id": "https://openalex.org/T13607",
+            "subfield": {
+                "display_name": "Information Systems and Management",
+                "id": "https://openalex.org/subfields/1802",
+            },
+            "value": 0.000114,
+        },
+        {
+            "display_name": "Knowledge Management and Technology",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Decision Sciences",
+                "id": "https://openalex.org/fields/18",
+            },
+            "id": "https://openalex.org/T14222",
+            "subfield": {
+                "display_name": "Management Science and Operations Research",
+                "id": "https://openalex.org/subfields/1803",
+            },
+            "value": 9.46e-05,
+        },
+        {
+            "display_name": "Data Analysis with R",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T13398",
+            "subfield": {
+                "display_name": "Artificial Intelligence",
+                "id": "https://openalex.org/subfields/1702",
+            },
+            "value": 5.78e-05,
+        },
+        {
+            "display_name": "Social Media in Health Education",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T12027",
+            "subfield": {
+                "display_name": "Health",
+                "id": "https://openalex.org/subfields/3306",
+            },
+            "value": 5.61e-05,
+        },
+        {
+            "display_name": "Biomedical Text Mining and Ontologies",
+            "domain": {
+                "display_name": "Life Sciences",
+                "id": "https://openalex.org/domains/1",
+            },
+            "field": {
+                "display_name": "Biochemistry, Genetics and Molecular Biology",
+                "id": "https://openalex.org/fields/13",
+            },
+            "id": "https://openalex.org/T11710",
+            "subfield": {
+                "display_name": "Molecular Biology",
+                "id": "https://openalex.org/subfields/1312",
+            },
+            "value": 4.33e-05,
+        },
+        {
+            "display_name": "Data Quality and Management",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Decision Sciences",
+                "id": "https://openalex.org/fields/18",
+            },
+            "id": "https://openalex.org/T11719",
+            "subfield": {
+                "display_name": "Management Science and Operations Research",
+                "id": "https://openalex.org/subfields/1803",
+            },
+            "value": 4.15e-05,
+        },
+        {
+            "display_name": "Scientific Computing and Data Management",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Decision Sciences",
+                "id": "https://openalex.org/fields/18",
+            },
+            "id": "https://openalex.org/T11986",
+            "subfield": {
+                "display_name": "Information Systems and Management",
+                "id": "https://openalex.org/subfields/1802",
+            },
+            "value": 3.98e-05,
+        },
+        {
+            "display_name": "Library Collection Development and Digital Resources",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T11813",
+            "subfield": {
+                "display_name": "Information Systems",
+                "id": "https://openalex.org/subfields/1710",
+            },
+            "value": 3.35e-05,
+        },
+        {
+            "display_name": "Library Science and Information Systems",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T14330",
+            "subfield": {
+                "display_name": "Information Systems",
+                "id": "https://openalex.org/subfields/1710",
+            },
+            "value": 2.93e-05,
+        },
+        {
+            "display_name": "Complex Network Analysis Techniques",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T10064",
+            "subfield": {
+                "display_name": "Statistical and Nonlinear Physics",
+                "id": "https://openalex.org/subfields/3109",
+            },
+            "value": 2.47e-05,
+        },
+        {
+            "display_name": "Cooperative Studies and Economics",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Business, Management and Accounting",
+                "id": "https://openalex.org/fields/14",
+            },
+            "id": "https://openalex.org/T12121",
+            "subfield": {
+                "display_name": "Strategy and Management",
+                "id": "https://openalex.org/subfields/1408",
+            },
+            "value": 2.28e-05,
+        },
+        {
+            "display_name": "Conferences and Exhibitions Management",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T13098",
+            "subfield": {
+                "display_name": "Sociology and Political Science",
+                "id": "https://openalex.org/subfields/3312",
+            },
+            "value": 2.18e-05,
+        },
+        {
+            "display_name": "Mobile Crowdsensing and Crowdsourcing",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T11704",
+            "subfield": {
+                "display_name": "Computer Science Applications",
+                "id": "https://openalex.org/subfields/1706",
+            },
+            "value": 2.17e-05,
+        },
+        {
+            "display_name": "Data Visualization and Analytics",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T10799",
+            "subfield": {
+                "display_name": "Computer Vision and Pattern Recognition",
+                "id": "https://openalex.org/subfields/1707",
+            },
+            "value": 2.08e-05,
+        },
+        {
+            "display_name": "Library Science and Information Literacy",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T10712",
+            "subfield": {
+                "display_name": "Library and Information Sciences",
+                "id": "https://openalex.org/subfields/3309",
+            },
+            "value": 2.06e-05,
+        },
+        {
+            "display_name": "Semantic Web and Ontologies",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T10215",
+            "subfield": {
+                "display_name": "Artificial Intelligence",
+                "id": "https://openalex.org/subfields/1702",
+            },
+            "value": 1.88e-05,
+        },
+        {
+            "display_name": "Advanced Graph Neural Networks",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T11273",
+            "subfield": {
+                "display_name": "Artificial Intelligence",
+                "id": "https://openalex.org/subfields/1702",
+            },
+            "value": 1.52e-05,
+        },
+        {
+            "display_name": "Online Learning and Analytics",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T11122",
+            "subfield": {
+                "display_name": "Computer Science Applications",
+                "id": "https://openalex.org/subfields/1706",
+            },
+            "value": 1.31e-05,
+        },
+        {
+            "display_name": "Artificial Intelligence in Healthcare and Education",
+            "domain": {
+                "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
+            },
+            "field": {
+                "display_name": "Medicine",
+                "id": "https://openalex.org/fields/27",
+            },
+            "id": "https://openalex.org/T11636",
+            "subfield": {
+                "display_name": "Health Informatics",
+                "id": "https://openalex.org/subfields/2718",
+            },
+            "value": 1.18e-05,
+        },
+        {
+            "display_name": "Misinformation and Its Impacts",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T11147",
+            "subfield": {
+                "display_name": "Sociology and Political Science",
+                "id": "https://openalex.org/subfields/3312",
+            },
+            "value": 8.5e-06,
+        },
+        {
+            "display_name": "Private Equity and Venture Capital",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Business, Management and Accounting",
+                "id": "https://openalex.org/fields/14",
+            },
+            "id": "https://openalex.org/T11903",
+            "subfield": {
+                "display_name": "Accounting",
+                "id": "https://openalex.org/subfields/1402",
+            },
+            "value": 8.2e-06,
+        },
     ],
     "topics": [
         {
-            "id": "https://openalex.org/T10102",
-            "display_name": "scientometrics and bibliometrics research",
             "count": 23,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1804",
-                "display_name": "Statistics, Probability and Uncertainty",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/18",
-                "display_name": "Decision Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11937",
-            "display_name": "Research Data Management Practices",
-            "count": 11,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1710",
-                "display_name": "Information Systems",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T12478",
-            "display_name": "Wikis in Education and Collaboration",
-            "count": 8,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3315",
-                "display_name": "Communication",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10215",
-            "display_name": "Semantic Web and Ontologies",
-            "count": 7,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1702",
-                "display_name": "Artificial Intelligence",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11986",
-            "display_name": "Scientific Computing and Data Management",
-            "count": 7,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1802",
-                "display_name": "Information Systems and Management",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/18",
-                "display_name": "Decision Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11710",
-            "display_name": "Biomedical Text Mining and Ontologies",
-            "count": 6,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1312",
-                "display_name": "Molecular Biology",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/13",
-                "display_name": "Biochemistry, Genetics and Molecular Biology",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/1",
-                "display_name": "Life Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T13976",
-            "display_name": "Web visibility and informetrics",
-            "count": 6,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1710",
-                "display_name": "Information Systems",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11719",
-            "display_name": "Data Quality and Management",
-            "count": 5,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1803",
-                "display_name": "Management Science and Operations Research",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/18",
-                "display_name": "Decision Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10064",
-            "display_name": "Complex Network Analysis Techniques",
-            "count": 5,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3109",
-                "display_name": "Statistical and Nonlinear Physics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T13607",
-            "display_name": "Academic Publishing and Open Access",
-            "count": 5,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1802",
-                "display_name": "Information Systems and Management",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/18",
-                "display_name": "Decision Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T12027",
-            "display_name": "Social Media in Health Education",
-            "count": 4,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3306",
-                "display_name": "Health",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11813",
-            "display_name": "Library Collection Development and Digital Resources",
-            "count": 4,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1710",
-                "display_name": "Information Systems",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T14330",
-            "display_name": "Library Science and Information Systems",
-            "count": 3,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1710",
-                "display_name": "Information Systems",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10712",
-            "display_name": "Library Science and Information Literacy",
-            "count": 3,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3309",
-                "display_name": "Library and Information Sciences",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10799",
-            "display_name": "Data Visualization and Analytics",
-            "count": 2,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1707",
-                "display_name": "Computer Vision and Pattern Recognition",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11122",
-            "display_name": "Online Learning and Analytics",
-            "count": 2,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1706",
-                "display_name": "Computer Science Applications",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T13398",
-            "display_name": "Data Analysis with R",
-            "count": 2,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1702",
-                "display_name": "Artificial Intelligence",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10895",
-            "display_name": "Species Distribution and Climate Change",
-            "count": 2,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2302",
-                "display_name": "Ecological Modeling",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/23",
-                "display_name": "Environmental Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T12121",
-            "display_name": "Cooperative Studies and Economics",
-            "count": 2,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1408",
-                "display_name": "Strategy and Management",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/14",
-                "display_name": "Business, Management and Accounting",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11891",
-            "display_name": "Big Data and Business Intelligence",
-            "count": 2,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1404",
-                "display_name": "Management Information Systems",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/14",
-                "display_name": "Business, Management and Accounting",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10636",
-            "display_name": "Innovative Teaching and Learning Methods",
-            "count": 2,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3204",
-                "display_name": "Developmental and Educational Psychology",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/32",
-                "display_name": "Psychology",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10162",
-            "display_name": "Online and Blended Learning",
-            "count": 2,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3304",
-                "display_name": "Education",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10028",
-            "display_name": "Topic Modeling",
-            "count": 2,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1702",
-                "display_name": "Artificial Intelligence",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T14222",
-            "display_name": "Knowledge Management and Technology",
-            "count": 1,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1803",
-                "display_name": "Management Science and Operations Research",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/18",
-                "display_name": "Decision Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11704",
-            "display_name": "Mobile Crowdsensing and Crowdsourcing",
-            "count": 1,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1706",
-                "display_name": "Computer Science Applications",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-    ],
-    "topic_share": [
-        {
-            "id": "https://openalex.org/T13976",
-            "display_name": "Web visibility and informetrics",
-            "value": 0.0003116,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1710",
-                "display_name": "Information Systems",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10102",
             "display_name": "scientometrics and bibliometrics research",
-            "value": 0.0001916,
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Decision Sciences",
+                "id": "https://openalex.org/fields/18",
+            },
+            "id": "https://openalex.org/T10102",
             "subfield": {
-                "id": "https://openalex.org/subfields/1804",
                 "display_name": "Statistics, Probability and Uncertainty",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/18",
-                "display_name": "Decision Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
+                "id": "https://openalex.org/subfields/1804",
             },
         },
         {
-            "id": "https://openalex.org/T12478",
-            "display_name": "Wikis in Education and Collaboration",
-            "value": 0.0001293,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3315",
-                "display_name": "Communication",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11937",
+            "count": 11,
             "display_name": "Research Data Management Practices",
-            "value": 0.0001209,
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T11937",
             "subfield": {
-                "id": "https://openalex.org/subfields/1710",
                 "display_name": "Information Systems",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T13607",
-            "display_name": "Academic Publishing and Open Access",
-            "value": 0.000114,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1802",
-                "display_name": "Information Systems and Management",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/18",
-                "display_name": "Decision Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T14222",
-            "display_name": "Knowledge Management and Technology",
-            "value": 9.46e-05,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1803",
-                "display_name": "Management Science and Operations Research",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/18",
-                "display_name": "Decision Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T13398",
-            "display_name": "Data Analysis with R",
-            "value": 5.78e-05,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1702",
-                "display_name": "Artificial Intelligence",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T12027",
-            "display_name": "Social Media in Health Education",
-            "value": 5.61e-05,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3306",
-                "display_name": "Health",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11710",
-            "display_name": "Biomedical Text Mining and Ontologies",
-            "value": 4.33e-05,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1312",
-                "display_name": "Molecular Biology",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/13",
-                "display_name": "Biochemistry, Genetics and Molecular Biology",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/1",
-                "display_name": "Life Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11719",
-            "display_name": "Data Quality and Management",
-            "value": 4.15e-05,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1803",
-                "display_name": "Management Science and Operations Research",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/18",
-                "display_name": "Decision Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11986",
-            "display_name": "Scientific Computing and Data Management",
-            "value": 3.98e-05,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1802",
-                "display_name": "Information Systems and Management",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/18",
-                "display_name": "Decision Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11813",
-            "display_name": "Library Collection Development and Digital Resources",
-            "value": 3.35e-05,
-            "subfield": {
                 "id": "https://openalex.org/subfields/1710",
-                "display_name": "Information Systems",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
             },
         },
         {
-            "id": "https://openalex.org/T14330",
-            "display_name": "Library Science and Information Systems",
-            "value": 2.93e-05,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1710",
-                "display_name": "Information Systems",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
+            "count": 8,
+            "display_name": "Wikis in Education and Collaboration",
             "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10064",
-            "display_name": "Complex Network Analysis Techniques",
-            "value": 2.47e-05,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3109",
-                "display_name": "Statistical and Nonlinear Physics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T12121",
-            "display_name": "Cooperative Studies and Economics",
-            "value": 2.28e-05,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1408",
-                "display_name": "Strategy and Management",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/14",
-                "display_name": "Business, Management and Accounting",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
                 "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T13098",
-            "display_name": "Conferences and Exhibitions Management",
-            "value": 2.18e-05,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3312",
-                "display_name": "Sociology and Political Science",
+                "id": "https://openalex.org/domains/2",
             },
             "field": {
+                "display_name": "Social Sciences",
                 "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
             },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11704",
-            "display_name": "Mobile Crowdsensing and Crowdsourcing",
-            "value": 2.17e-05,
+            "id": "https://openalex.org/T12478",
             "subfield": {
-                "id": "https://openalex.org/subfields/1706",
-                "display_name": "Computer Science Applications",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
+                "display_name": "Communication",
+                "id": "https://openalex.org/subfields/3315",
             },
         },
         {
-            "id": "https://openalex.org/T10799",
-            "display_name": "Data Visualization and Analytics",
-            "value": 2.08e-05,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1707",
-                "display_name": "Computer Vision and Pattern Recognition",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10712",
-            "display_name": "Library Science and Information Literacy",
-            "value": 2.06e-05,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3309",
-                "display_name": "Library and Information Sciences",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10215",
+            "count": 7,
             "display_name": "Semantic Web and Ontologies",
-            "value": 1.88e-05,
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T10215",
             "subfield": {
-                "id": "https://openalex.org/subfields/1702",
                 "display_name": "Artificial Intelligence",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11273",
-            "display_name": "Advanced Graph Neural Networks",
-            "value": 1.52e-05,
-            "subfield": {
                 "id": "https://openalex.org/subfields/1702",
-                "display_name": "Artificial Intelligence",
+            },
+        },
+        {
+            "count": 7,
+            "display_name": "Scientific Computing and Data Management",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
             },
             "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
+                "display_name": "Decision Sciences",
+                "id": "https://openalex.org/fields/18",
             },
+            "id": "https://openalex.org/T11986",
+            "subfield": {
+                "display_name": "Information Systems and Management",
+                "id": "https://openalex.org/subfields/1802",
+            },
+        },
+        {
+            "count": 6,
+            "display_name": "Biomedical Text Mining and Ontologies",
             "domain": {
-                "id": "https://openalex.org/domains/3",
+                "display_name": "Life Sciences",
+                "id": "https://openalex.org/domains/1",
+            },
+            "field": {
+                "display_name": "Biochemistry, Genetics and Molecular Biology",
+                "id": "https://openalex.org/fields/13",
+            },
+            "id": "https://openalex.org/T11710",
+            "subfield": {
+                "display_name": "Molecular Biology",
+                "id": "https://openalex.org/subfields/1312",
+            },
+        },
+        {
+            "count": 6,
+            "display_name": "Web visibility and informetrics",
+            "domain": {
                 "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11122",
-            "display_name": "Online Learning and Analytics",
-            "value": 1.31e-05,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1706",
-                "display_name": "Computer Science Applications",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
                 "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T13976",
+            "subfield": {
+                "display_name": "Information Systems",
+                "id": "https://openalex.org/subfields/1710",
             },
         },
         {
-            "id": "https://openalex.org/T11636",
-            "display_name": "Artificial Intelligence in Healthcare and Education",
-            "value": 1.18e-05,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2718",
-                "display_name": "Health Informatics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/27",
-                "display_name": "Medicine",
-            },
+            "count": 5,
+            "display_name": "Data Quality and Management",
             "domain": {
-                "id": "https://openalex.org/domains/4",
-                "display_name": "Health Sciences",
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Decision Sciences",
+                "id": "https://openalex.org/fields/18",
+            },
+            "id": "https://openalex.org/T11719",
+            "subfield": {
+                "display_name": "Management Science and Operations Research",
+                "id": "https://openalex.org/subfields/1803",
             },
         },
         {
-            "id": "https://openalex.org/T11147",
-            "display_name": "Misinformation and Its Impacts",
-            "value": 8.5e-06,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3312",
-                "display_name": "Sociology and Political Science",
+            "count": 5,
+            "display_name": "Complex Network Analysis Techniques",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
             },
             "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T10064",
+            "subfield": {
+                "display_name": "Statistical and Nonlinear Physics",
+                "id": "https://openalex.org/subfields/3109",
+            },
+        },
+        {
+            "count": 5,
+            "display_name": "Academic Publishing and Open Access",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Decision Sciences",
+                "id": "https://openalex.org/fields/18",
+            },
+            "id": "https://openalex.org/T13607",
+            "subfield": {
+                "display_name": "Information Systems and Management",
+                "id": "https://openalex.org/subfields/1802",
+            },
+        },
+        {
+            "count": 4,
+            "display_name": "Social Media in Health Education",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
                 "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
             },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
+            "id": "https://openalex.org/T12027",
+            "subfield": {
+                "display_name": "Health",
+                "id": "https://openalex.org/subfields/3306",
             },
         },
         {
-            "id": "https://openalex.org/T11903",
-            "display_name": "Private Equity and Venture Capital",
-            "value": 8.2e-06,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1402",
-                "display_name": "Accounting",
+            "count": 4,
+            "display_name": "Library Collection Development and Digital Resources",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
             },
             "field": {
-                "id": "https://openalex.org/fields/14",
-                "display_name": "Business, Management and Accounting",
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
             },
+            "id": "https://openalex.org/T11813",
+            "subfield": {
+                "display_name": "Information Systems",
+                "id": "https://openalex.org/subfields/1710",
+            },
+        },
+        {
+            "count": 3,
+            "display_name": "Library Science and Information Systems",
             "domain": {
-                "id": "https://openalex.org/domains/2",
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T14330",
+            "subfield": {
+                "display_name": "Information Systems",
+                "id": "https://openalex.org/subfields/1710",
+            },
+        },
+        {
+            "count": 3,
+            "display_name": "Library Science and Information Literacy",
+            "domain": {
                 "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T10712",
+            "subfield": {
+                "display_name": "Library and Information Sciences",
+                "id": "https://openalex.org/subfields/3309",
+            },
+        },
+        {
+            "count": 2,
+            "display_name": "Data Visualization and Analytics",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T10799",
+            "subfield": {
+                "display_name": "Computer Vision and Pattern Recognition",
+                "id": "https://openalex.org/subfields/1707",
+            },
+        },
+        {
+            "count": 2,
+            "display_name": "Online Learning and Analytics",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T11122",
+            "subfield": {
+                "display_name": "Computer Science Applications",
+                "id": "https://openalex.org/subfields/1706",
+            },
+        },
+        {
+            "count": 2,
+            "display_name": "Data Analysis with R",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T13398",
+            "subfield": {
+                "display_name": "Artificial Intelligence",
+                "id": "https://openalex.org/subfields/1702",
+            },
+        },
+        {
+            "count": 2,
+            "display_name": "Species Distribution and Climate Change",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Environmental Science",
+                "id": "https://openalex.org/fields/23",
+            },
+            "id": "https://openalex.org/T10895",
+            "subfield": {
+                "display_name": "Ecological Modeling",
+                "id": "https://openalex.org/subfields/2302",
+            },
+        },
+        {
+            "count": 2,
+            "display_name": "Cooperative Studies and Economics",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Business, Management and Accounting",
+                "id": "https://openalex.org/fields/14",
+            },
+            "id": "https://openalex.org/T12121",
+            "subfield": {
+                "display_name": "Strategy and Management",
+                "id": "https://openalex.org/subfields/1408",
+            },
+        },
+        {
+            "count": 2,
+            "display_name": "Big Data and Business Intelligence",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Business, Management and Accounting",
+                "id": "https://openalex.org/fields/14",
+            },
+            "id": "https://openalex.org/T11891",
+            "subfield": {
+                "display_name": "Management Information Systems",
+                "id": "https://openalex.org/subfields/1404",
+            },
+        },
+        {
+            "count": 2,
+            "display_name": "Innovative Teaching and Learning Methods",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Psychology",
+                "id": "https://openalex.org/fields/32",
+            },
+            "id": "https://openalex.org/T10636",
+            "subfield": {
+                "display_name": "Developmental and Educational Psychology",
+                "id": "https://openalex.org/subfields/3204",
+            },
+        },
+        {
+            "count": 2,
+            "display_name": "Online and Blended Learning",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T10162",
+            "subfield": {
+                "display_name": "Education",
+                "id": "https://openalex.org/subfields/3304",
+            },
+        },
+        {
+            "count": 2,
+            "display_name": "Topic Modeling",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T10028",
+            "subfield": {
+                "display_name": "Artificial Intelligence",
+                "id": "https://openalex.org/subfields/1702",
+            },
+        },
+        {
+            "count": 1,
+            "display_name": "Knowledge Management and Technology",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Decision Sciences",
+                "id": "https://openalex.org/fields/18",
+            },
+            "id": "https://openalex.org/T14222",
+            "subfield": {
+                "display_name": "Management Science and Operations Research",
+                "id": "https://openalex.org/subfields/1803",
+            },
+        },
+        {
+            "count": 1,
+            "display_name": "Mobile Crowdsensing and Crowdsourcing",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T11704",
+            "subfield": {
+                "display_name": "Computer Science Applications",
+                "id": "https://openalex.org/subfields/1706",
             },
         },
     ],
+    "updated_date": "2025-05-28T07:42:45.776887",
+    "works_api_url": "https://api.openalex.org/works?filter=author.id:A5023888391",
+    "works_count": 62,
     "x_concepts": [
         {
-            "id": "https://openalex.org/C41008148",
-            "wikidata": "https://www.wikidata.org/wiki/Q21198",
             "display_name": "Computer science",
+            "id": "https://openalex.org/C41008148",
             "level": 0,
             "score": 95.2,
+            "wikidata": "https://www.wikidata.org/wiki/Q21198",
         },
         {
-            "id": "https://openalex.org/C17744445",
-            "wikidata": "https://www.wikidata.org/wiki/Q36442",
             "display_name": "Political science",
+            "id": "https://openalex.org/C17744445",
             "level": 0,
             "score": 64.5,
+            "wikidata": "https://www.wikidata.org/wiki/Q36442",
         },
         {
-            "id": "https://openalex.org/C136764020",
-            "wikidata": "https://www.wikidata.org/wiki/Q466",
             "display_name": "World Wide Web",
+            "id": "https://openalex.org/C136764020",
             "level": 1,
             "score": 61.3,
+            "wikidata": "https://www.wikidata.org/wiki/Q466",
         },
         {
-            "id": "https://openalex.org/C161191863",
-            "wikidata": "https://www.wikidata.org/wiki/Q199655",
             "display_name": "Library science",
+            "id": "https://openalex.org/C161191863",
             "level": 1,
             "score": 56.5,
+            "wikidata": "https://www.wikidata.org/wiki/Q199655",
         },
         {
-            "id": "https://openalex.org/C199539241",
-            "wikidata": "https://www.wikidata.org/wiki/Q7748",
             "display_name": "Law",
+            "id": "https://openalex.org/C199539241",
             "level": 1,
             "score": 56.5,
+            "wikidata": "https://www.wikidata.org/wiki/Q7748",
         },
         {
-            "id": "https://openalex.org/C2522767166",
-            "wikidata": "https://www.wikidata.org/wiki/Q2374463",
             "display_name": "Data science",
+            "id": "https://openalex.org/C2522767166",
             "level": 1,
             "score": 51.6,
+            "wikidata": "https://www.wikidata.org/wiki/Q2374463",
         },
         {
-            "id": "https://openalex.org/C121332964",
-            "wikidata": "https://www.wikidata.org/wiki/Q413",
             "display_name": "Physics",
+            "id": "https://openalex.org/C121332964",
             "level": 0,
             "score": 41.9,
+            "wikidata": "https://www.wikidata.org/wiki/Q413",
         },
         {
-            "id": "https://openalex.org/C33923547",
-            "wikidata": "https://www.wikidata.org/wiki/Q395",
             "display_name": "Mathematics",
+            "id": "https://openalex.org/C33923547",
             "level": 0,
             "score": 32.3,
+            "wikidata": "https://www.wikidata.org/wiki/Q395",
         },
         {
-            "id": "https://openalex.org/C111919701",
-            "wikidata": "https://www.wikidata.org/wiki/Q9135",
             "display_name": "Operating system",
+            "id": "https://openalex.org/C111919701",
             "level": 1,
             "score": 30.6,
+            "wikidata": "https://www.wikidata.org/wiki/Q9135",
         },
         {
-            "id": "https://openalex.org/C2778407487",
-            "wikidata": "https://www.wikidata.org/wiki/Q14565201",
             "display_name": "Altmetrics",
+            "id": "https://openalex.org/C2778407487",
             "level": 2,
             "score": 30.6,
+            "wikidata": "https://www.wikidata.org/wiki/Q14565201",
         },
         {
-            "id": "https://openalex.org/C144024400",
-            "wikidata": "https://www.wikidata.org/wiki/Q21201",
             "display_name": "Sociology",
+            "id": "https://openalex.org/C144024400",
             "level": 0,
             "score": 25.8,
+            "wikidata": "https://www.wikidata.org/wiki/Q21201",
         },
         {
-            "id": "https://openalex.org/C199360897",
-            "wikidata": "https://www.wikidata.org/wiki/Q9143",
             "display_name": "Programming language",
+            "id": "https://openalex.org/C199360897",
             "level": 1,
             "score": 25.8,
+            "wikidata": "https://www.wikidata.org/wiki/Q9143",
         },
         {
-            "id": "https://openalex.org/C205649164",
-            "wikidata": "https://www.wikidata.org/wiki/Q1071",
             "display_name": "Geography",
+            "id": "https://openalex.org/C205649164",
             "level": 0,
             "score": 25.8,
+            "wikidata": "https://www.wikidata.org/wiki/Q1071",
         },
         {
-            "id": "https://openalex.org/C142362112",
-            "wikidata": "https://www.wikidata.org/wiki/Q735",
             "display_name": "Art",
+            "id": "https://openalex.org/C142362112",
             "level": 0,
             "score": 24.2,
+            "wikidata": "https://www.wikidata.org/wiki/Q735",
         },
         {
-            "id": "https://openalex.org/C62520636",
-            "wikidata": "https://www.wikidata.org/wiki/Q944",
             "display_name": "Quantum mechanics",
+            "id": "https://openalex.org/C62520636",
             "level": 1,
             "score": 22.6,
+            "wikidata": "https://www.wikidata.org/wiki/Q944",
         },
         {
-            "id": "https://openalex.org/C124952713",
-            "wikidata": "https://www.wikidata.org/wiki/Q8242",
             "display_name": "Literature",
+            "id": "https://openalex.org/C124952713",
             "level": 1,
             "score": 21.0,
+            "wikidata": "https://www.wikidata.org/wiki/Q8242",
         },
         {
-            "id": "https://openalex.org/C127413603",
-            "wikidata": "https://www.wikidata.org/wiki/Q11023",
             "display_name": "Engineering",
+            "id": "https://openalex.org/C127413603",
             "level": 0,
             "score": 21.0,
+            "wikidata": "https://www.wikidata.org/wiki/Q11023",
         },
         {
-            "id": "https://openalex.org/C151719136",
-            "wikidata": "https://www.wikidata.org/wiki/Q3972943",
             "display_name": "Publishing",
+            "id": "https://openalex.org/C151719136",
             "level": 2,
             "score": 21.0,
+            "wikidata": "https://www.wikidata.org/wiki/Q3972943",
         },
         {
-            "id": "https://openalex.org/C2778805511",
-            "wikidata": "https://www.wikidata.org/wiki/Q1713",
             "display_name": "Citation",
+            "id": "https://openalex.org/C2778805511",
             "level": 2,
             "score": 21.0,
+            "wikidata": "https://www.wikidata.org/wiki/Q1713",
         },
     ],
-    "counts_by_year": [
-        {"year": 2025, "works_count": 0, "cited_by_count": 78},
-        {"year": 2024, "works_count": 1, "cited_by_count": 314},
-        {"year": 2023, "works_count": 6, "cited_by_count": 317},
-        {"year": 2022, "works_count": 2, "cited_by_count": 317},
-        {"year": 2021, "works_count": 1, "cited_by_count": 354},
-        {"year": 2020, "works_count": 5, "cited_by_count": 431},
-        {"year": 2019, "works_count": 3, "cited_by_count": 369},
-        {"year": 2018, "works_count": 2, "cited_by_count": 321},
-        {"year": 2017, "works_count": 7, "cited_by_count": 303},
-        {"year": 2016, "works_count": 2, "cited_by_count": 236},
-        {"year": 2015, "works_count": 2, "cited_by_count": 358},
-        {"year": 2014, "works_count": 4, "cited_by_count": 317},
-        {"year": 2013, "works_count": 10, "cited_by_count": 260},
-        {"year": 2012, "works_count": 10, "cited_by_count": 98},
-    ],
-    "works_api_url": "https://api.openalex.org/works?filter=author.id:A5023888391",
-    "updated_date": "2025-05-28T07:42:45.776887",
-    "created_date": "2023-07-21",
 }
 
 MOCK_I27837315_DATA = {
-    "id": "https://openalex.org/I27837315",
-    "ror": "https://ror.org/00jmfr291",
-    "display_name": "University of Michigan",
+    "associated_institutions": [
+        {
+            "country_code": None,
+            "display_name": "Center for Complex Particle Systems",
+            "id": "https://openalex.org/I4404532909",
+            "relationship": "child",
+            "ror": "https://ror.org/02bkkgm47",
+            "type": "education",
+        },
+        {
+            "country_code": None,
+            "display_name": "Cooperative Institute for Great Lakes Research",
+            "id": "https://openalex.org/I4402554065",
+            "relationship": "child",
+            "ror": "https://ror.org/04xgzv028",
+            "type": "funder",
+        },
+        {
+            "country_code": None,
+            "display_name": "Inter-university Consortium for Political and Social Research",
+            "id": "https://openalex.org/I4387153780",
+            "relationship": "child",
+            "ror": "https://ror.org/02q7mkh03",
+            "type": "other",
+        },
+        {
+            "country_code": "US",
+            "display_name": "Michigan Sea Grant",
+            "id": "https://openalex.org/I4210104572",
+            "relationship": "child",
+            "ror": "https://ror.org/015tnsz82",
+            "type": "other",
+        },
+        {
+            "country_code": "US",
+            "display_name": "Michigan Space Grant Consortium",
+            "id": "https://openalex.org/I4210163254",
+            "relationship": "child",
+            "ror": "https://ror.org/057mgcy61",
+            "type": "other",
+        },
+        {
+            "country_code": None,
+            "display_name": "University of Michigan Biological Station",
+            "id": "https://openalex.org/I4387930282",
+            "relationship": "child",
+            "ror": "https://ror.org/02hhndj92",
+            "type": "facility",
+        },
+        {
+            "country_code": None,
+            "display_name": "University of Michigan Press",
+            "id": "https://openalex.org/I4387153798",
+            "relationship": "child",
+            "ror": "https://ror.org/00rx1p510",
+            "type": "other",
+        },
+        {
+            "country_code": None,
+            "display_name": "Arctic Long Term Ecological Research",
+            "id": "https://openalex.org/I4387154935",
+            "relationship": "related",
+            "ror": "https://ror.org/04pk7zz41",
+            "type": "facility",
+        },
+        {
+            "country_code": "US",
+            "display_name": "Hurley Medical Center",
+            "id": "https://openalex.org/I2801799315",
+            "relationship": "related",
+            "ror": "https://ror.org/034npj057",
+            "type": "healthcare",
+        },
+        {
+            "country_code": "US",
+            "display_name": "Michigan Medicine",
+            "id": "https://openalex.org/I4210114445",
+            "relationship": "related",
+            "ror": "https://ror.org/01zcpa714",
+            "type": "healthcare",
+        },
+        {
+            "country_code": "US",
+            "display_name": "University of Michigan–Dearborn",
+            "id": "https://openalex.org/I4210130704",
+            "relationship": "related",
+            "ror": "https://ror.org/035wtm547",
+            "type": "funder",
+        },
+        {
+            "country_code": "US",
+            "display_name": "University of Michigan–Flint",
+            "id": "https://openalex.org/I4210092198",
+            "relationship": "related",
+            "ror": "https://ror.org/01c3xc117",
+            "type": "education",
+        },
+    ],
+    "cited_by_count": 22747187,
     "country_code": "US",
-    "type": "funder",
-    "type_id": "https://openalex.org/institution-types/funder",
-    "lineage": ["https://openalex.org/I27837315"],
-    "homepage_url": "https://www.umich.edu",
-    "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/University%20of%20Michigan%20logo.svg",
-    "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/University%20of%20Michigan%20logo.svg&width=300",
+    "counts_by_year": [
+        {"cited_by_count": 532567, "works_count": 6145, "year": 2025},
+        {"cited_by_count": 1462812, "works_count": 18342, "year": 2024},
+        {"cited_by_count": 1524877, "works_count": 20618, "year": 2023},
+        {"cited_by_count": 1495516, "works_count": 454439, "year": 2022},
+        {"cited_by_count": 1586795, "works_count": 21040, "year": 2021},
+        {"cited_by_count": 1459646, "works_count": 25511, "year": 2020},
+        {"cited_by_count": 1248561, "works_count": 23036, "year": 2019},
+        {"cited_by_count": 1116638, "works_count": 18918, "year": 2018},
+        {"cited_by_count": 1036848, "works_count": 18303, "year": 2017},
+        {"cited_by_count": 988291, "works_count": 16824, "year": 2016},
+        {"cited_by_count": 960390, "works_count": 16064, "year": 2015},
+        {"cited_by_count": 919870, "works_count": 15758, "year": 2014},
+        {"cited_by_count": 858243, "works_count": 15347, "year": 2013},
+        {"cited_by_count": 791485, "works_count": 14778, "year": 2012},
+    ],
+    "created_date": "2016-06-24",
+    "display_name": "University of Michigan",
     "display_name_acronyms": ["UM"],
     "display_name_alternatives": [
         "UMich",
         "University of Michigan–Ann Arbor",
         "Université du Michigan",
     ],
-    "repositories": [
-        {
-            "id": "https://openalex.org/S4306400708",
-            "display_name": "CINECA IRIS Institutional Research Information System (IRIS Istituto Nazionale di Ricerca Metrologica)",
-            "host_organization": "https://openalex.org/I27837315",
-            "host_organization_name": "University of Michigan",
-            "host_organization_lineage": ["https://openalex.org/I27837315"],
-        },
-        {
-            "id": "https://openalex.org/S4306400393",
-            "display_name": "Deep Blue (University of Michigan)",
-            "host_organization": "https://openalex.org/I27837315",
-            "host_organization_name": "University of Michigan",
-            "host_organization_lineage": ["https://openalex.org/I27837315"],
-        },
-    ],
-    "works_count": 932499,
-    "cited_by_count": 22747187,
-    "summary_stats": {
-        "2yr_mean_citedness": 0.37478000185261595,
-        "h_index": 1265,
-        "i10_index": 245116,
-    },
-    "ids": {
-        "openalex": "https://openalex.org/I27837315",
-        "ror": "https://ror.org/00jmfr291",
-        "mag": "27837315",
-        "grid": "grid.214458.e",
-        "wikipedia": "https://en.wikipedia.org/wiki/University%20of%20Michigan",
-        "wikidata": "https://www.wikidata.org/wiki/Q230492",
-    },
     "geo": {
         "city": "Ann Arbor",
-        "geonames_city_id": "4984247",
-        "region": None,
-        "country_code": "US",
         "country": "United States",
+        "country_code": "US",
+        "geonames_city_id": "4984247",
         "latitude": 42.27756,
         "longitude": -83.74088,
+        "region": None,
     },
+    "homepage_url": "https://www.umich.edu",
+    "id": "https://openalex.org/I27837315",
+    "ids": {
+        "grid": "grid.214458.e",
+        "mag": "27837315",
+        "openalex": "https://openalex.org/I27837315",
+        "ror": "https://ror.org/00jmfr291",
+        "wikidata": "https://www.wikidata.org/wiki/Q230492",
+        "wikipedia": "https://en.wikipedia.org/wiki/University%20of%20Michigan",
+    },
+    "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/University%20of%20Michigan%20logo.svg&width=300",
+    "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/University%20of%20Michigan%20logo.svg",
     "international": {
         "display_name": {
             "ar": "جامعة ميشيغان",
             "arz": "جامعة ميشيجان",
             "ast": "Universidá de Michigan",
             "az": "Miçiqan Universiteti",
-            "azb": "میشیقان بیلیم‌یوردو",
+            "azb": "میشیقان بیلیم\u200cیوردو",
             "ba": "Мичиган университеты",
             "be": "Мічыганскі ўніверсітэт",
             "be-tarask": "Мічыганскі ўнівэрсытэт",
@@ -2284,7 +2372,7 @@ MOCK_I27837315_DATA = {
             "ru": "Мичиганский университет",
             "rw": "Kaminuza ya Michigan",
             "sh": "Univerzitet u Michiganu",
-            "si": "මිචිගන් විශ්වවිද්‍යාලය",
+            "si": "මිචිගන් විශ්වවිද්\u200dයාලය",
             "sl": "Univerza Michigana",
             "sr": "Универзитет Мичигена",
             "sv": "University of Michigan",
@@ -2312,1921 +2400,1988 @@ MOCK_I27837315_DATA = {
             "zh-tw": "密西根大學",
         }
     },
-    "associated_institutions": [
+    "is_super_system": False,
+    "lineage": ["https://openalex.org/I27837315"],
+    "repositories": [
         {
-            "id": "https://openalex.org/I4404532909",
-            "ror": "https://ror.org/02bkkgm47",
-            "display_name": "Center for Complex Particle Systems",
-            "country_code": None,
-            "type": "education",
-            "relationship": "child",
+            "display_name": "CINECA IRIS Institutional Research Information System (IRIS Istituto "
+            "Nazionale di Ricerca Metrologica)",
+            "host_organization": "https://openalex.org/I27837315",
+            "host_organization_lineage": ["https://openalex.org/I27837315"],
+            "host_organization_name": "University of Michigan",
+            "id": "https://openalex.org/S4306400708",
         },
         {
-            "id": "https://openalex.org/I4402554065",
-            "ror": "https://ror.org/04xgzv028",
-            "display_name": "Cooperative Institute for Great Lakes Research",
-            "country_code": None,
-            "type": "funder",
-            "relationship": "child",
+            "display_name": "Deep Blue (University of Michigan)",
+            "host_organization": "https://openalex.org/I27837315",
+            "host_organization_lineage": ["https://openalex.org/I27837315"],
+            "host_organization_name": "University of Michigan",
+            "id": "https://openalex.org/S4306400393",
         },
-        {
-            "id": "https://openalex.org/I4387153780",
-            "ror": "https://ror.org/02q7mkh03",
-            "display_name": "Inter-university Consortium for Political and Social Research",
-            "country_code": None,
-            "type": "other",
-            "relationship": "child",
-        },
-        {
-            "id": "https://openalex.org/I4210104572",
-            "ror": "https://ror.org/015tnsz82",
-            "display_name": "Michigan Sea Grant",
-            "country_code": "US",
-            "type": "other",
-            "relationship": "child",
-        },
-        {
-            "id": "https://openalex.org/I4210163254",
-            "ror": "https://ror.org/057mgcy61",
-            "display_name": "Michigan Space Grant Consortium",
-            "country_code": "US",
-            "type": "other",
-            "relationship": "child",
-        },
-        {
-            "id": "https://openalex.org/I4387930282",
-            "ror": "https://ror.org/02hhndj92",
-            "display_name": "University of Michigan Biological Station",
-            "country_code": None,
-            "type": "facility",
-            "relationship": "child",
-        },
-        {
-            "id": "https://openalex.org/I4387153798",
-            "ror": "https://ror.org/00rx1p510",
-            "display_name": "University of Michigan Press",
-            "country_code": None,
-            "type": "other",
-            "relationship": "child",
-        },
-        {
-            "id": "https://openalex.org/I4387154935",
-            "ror": "https://ror.org/04pk7zz41",
-            "display_name": "Arctic Long Term Ecological Research",
-            "country_code": None,
-            "type": "facility",
-            "relationship": "related",
-        },
-        {
-            "id": "https://openalex.org/I2801799315",
-            "ror": "https://ror.org/034npj057",
-            "display_name": "Hurley Medical Center",
-            "country_code": "US",
-            "type": "healthcare",
-            "relationship": "related",
-        },
-        {
-            "id": "https://openalex.org/I4210114445",
-            "ror": "https://ror.org/01zcpa714",
-            "display_name": "Michigan Medicine",
-            "country_code": "US",
-            "type": "healthcare",
-            "relationship": "related",
-        },
-        {
-            "id": "https://openalex.org/I4210130704",
-            "ror": "https://ror.org/035wtm547",
-            "display_name": "University of Michigan–Dearborn",
-            "country_code": "US",
-            "type": "funder",
-            "relationship": "related",
-        },
-        {
-            "id": "https://openalex.org/I4210092198",
-            "ror": "https://ror.org/01c3xc117",
-            "display_name": "University of Michigan–Flint",
-            "country_code": "US",
-            "type": "education",
-            "relationship": "related",
-        },
-    ],
-    "counts_by_year": [
-        {"year": 2025, "works_count": 6145, "cited_by_count": 532567},
-        {"year": 2024, "works_count": 18342, "cited_by_count": 1462812},
-        {"year": 2023, "works_count": 20618, "cited_by_count": 1524877},
-        {"year": 2022, "works_count": 454439, "cited_by_count": 1495516},
-        {"year": 2021, "works_count": 21040, "cited_by_count": 1586795},
-        {"year": 2020, "works_count": 25511, "cited_by_count": 1459646},
-        {"year": 2019, "works_count": 23036, "cited_by_count": 1248561},
-        {"year": 2018, "works_count": 18918, "cited_by_count": 1116638},
-        {"year": 2017, "works_count": 18303, "cited_by_count": 1036848},
-        {"year": 2016, "works_count": 16824, "cited_by_count": 988291},
-        {"year": 2015, "works_count": 16064, "cited_by_count": 960390},
-        {"year": 2014, "works_count": 15758, "cited_by_count": 919870},
-        {"year": 2013, "works_count": 15347, "cited_by_count": 858243},
-        {"year": 2012, "works_count": 14778, "cited_by_count": 791485},
     ],
     "roles": [
         {
-            "role": "institution",
             "id": "https://openalex.org/I27837315",
+            "role": "institution",
             "works_count": 932499,
         },
         {
-            "role": "funder",
             "id": "https://openalex.org/F4320309652",
+            "role": "funder",
             "works_count": 4048,
         },
         {
-            "role": "publisher",
             "id": "https://openalex.org/P4310316579",
+            "role": "publisher",
             "works_count": 21226,
+        },
+    ],
+    "ror": "https://ror.org/00jmfr291",
+    "summary_stats": {
+        "2yr_mean_citedness": 0.37478000185261595,
+        "h_index": 1265,
+        "i10_index": 245116,
+    },
+    "topic_share": [
+        {
+            "display_name": "Quality of Life Measurement",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T14440",
+            "subfield": {
+                "display_name": "Sociology and Political Science",
+                "id": "https://openalex.org/subfields/3312",
+            },
+            "value": 0.1615252,
+        },
+        {
+            "display_name": "Survey Methodology and Nonresponse",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T11539",
+            "subfield": {
+                "display_name": "Sociology and Political Science",
+                "id": "https://openalex.org/subfields/3312",
+            },
+            "value": 0.0307621,
+        },
+        {
+            "display_name": "Biomimetic flight and propulsion mechanisms",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Engineering",
+                "id": "https://openalex.org/fields/22",
+            },
+            "id": "https://openalex.org/T11170",
+            "subfield": {
+                "display_name": "Aerospace Engineering",
+                "id": "https://openalex.org/subfields/2202",
+            },
+            "value": 0.0263623,
+        },
+        {
+            "display_name": "Optics and Image Analysis",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Business, Management and Accounting",
+                "id": "https://openalex.org/fields/14",
+            },
+            "id": "https://openalex.org/T14320",
+            "subfield": {
+                "display_name": "Management Information Systems",
+                "id": "https://openalex.org/subfields/1404",
+            },
+            "value": 0.0262617,
+        },
+        {
+            "display_name": "Genetic Associations and Epidemiology",
+            "domain": {
+                "display_name": "Life Sciences",
+                "id": "https://openalex.org/domains/1",
+            },
+            "field": {
+                "display_name": "Biochemistry, Genetics and Molecular Biology",
+                "id": "https://openalex.org/fields/13",
+            },
+            "id": "https://openalex.org/T10261",
+            "subfield": {
+                "display_name": "Genetics",
+                "id": "https://openalex.org/subfields/1311",
+            },
+            "value": 0.0242312,
+        },
+        {
+            "display_name": "Animal testing and alternatives",
+            "domain": {
+                "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
+            },
+            "field": {
+                "display_name": "Veterinary",
+                "id": "https://openalex.org/fields/34",
+            },
+            "id": "https://openalex.org/T12281",
+            "subfield": {
+                "display_name": "Small Animals",
+                "id": "https://openalex.org/subfields/3404",
+            },
+            "value": 0.023241,
+        },
+        {
+            "display_name": "Racial and Ethnic Identity Research",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T10652",
+            "subfield": {
+                "display_name": "Sociology and Political Science",
+                "id": "https://openalex.org/subfields/3312",
+            },
+            "value": 0.022723,
+        },
+        {
+            "display_name": "Advanced Causal Inference Techniques",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Mathematics",
+                "id": "https://openalex.org/fields/26",
+            },
+            "id": "https://openalex.org/T10845",
+            "subfield": {
+                "display_name": "Statistics and Probability",
+                "id": "https://openalex.org/subfields/2613",
+            },
+            "value": 0.0174284,
+        },
+        {
+            "display_name": "Bladed Disk Vibration Dynamics",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Engineering",
+                "id": "https://openalex.org/fields/22",
+            },
+            "id": "https://openalex.org/T12435",
+            "subfield": {
+                "display_name": "Civil and Structural Engineering",
+                "id": "https://openalex.org/subfields/2205",
+            },
+            "value": 0.0169689,
+        },
+        {
+            "display_name": "Inorganic Fluorides and Related Compounds",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Chemistry",
+                "id": "https://openalex.org/fields/16",
+            },
+            "id": "https://openalex.org/T12646",
+            "subfield": {
+                "display_name": "Inorganic Chemistry",
+                "id": "https://openalex.org/subfields/1604",
+            },
+            "value": 0.0164709,
+        },
+        {
+            "display_name": "Health disparities and outcomes",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T10235",
+            "subfield": {
+                "display_name": "Health",
+                "id": "https://openalex.org/subfields/3306",
+            },
+            "value": 0.0161683,
+        },
+        {
+            "display_name": "Pesticide Exposure and Toxicity",
+            "domain": {
+                "display_name": "Life Sciences",
+                "id": "https://openalex.org/domains/1",
+            },
+            "field": {
+                "display_name": "Agricultural and Biological Sciences",
+                "id": "https://openalex.org/fields/11",
+            },
+            "id": "https://openalex.org/T10875",
+            "subfield": {
+                "display_name": "Plant Science",
+                "id": "https://openalex.org/subfields/1110",
+            },
+            "value": 0.0156653,
+        },
+        {
+            "display_name": "Diversity and Career in Medicine",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T10843",
+            "subfield": {
+                "display_name": "Gender Studies",
+                "id": "https://openalex.org/subfields/3318",
+            },
+            "value": 0.015173,
+        },
+        {
+            "display_name": "Galaxies: Formation, Evolution, Phenomena",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T10026",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
+            },
+            "value": 0.0147844,
+        },
+        {
+            "display_name": "Contact Dermatitis and Allergies",
+            "domain": {
+                "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
+            },
+            "field": {
+                "display_name": "Medicine",
+                "id": "https://openalex.org/fields/27",
+            },
+            "id": "https://openalex.org/T11033",
+            "subfield": {
+                "display_name": "Dermatology",
+                "id": "https://openalex.org/subfields/2708",
+            },
+            "value": 0.0138826,
+        },
+        {
+            "display_name": "Steroid Chemistry and Biochemistry",
+            "domain": {
+                "display_name": "Life Sciences",
+                "id": "https://openalex.org/domains/1",
+            },
+            "field": {
+                "display_name": "Biochemistry, Genetics and Molecular Biology",
+                "id": "https://openalex.org/fields/13",
+            },
+            "id": "https://openalex.org/T13736",
+            "subfield": {
+                "display_name": "Molecular Biology",
+                "id": "https://openalex.org/subfields/1312",
+            },
+            "value": 0.0132975,
+        },
+        {
+            "display_name": "Scientific Measurement and Uncertainty Evaluation",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Decision Sciences",
+                "id": "https://openalex.org/fields/18",
+            },
+            "id": "https://openalex.org/T11890",
+            "subfield": {
+                "display_name": "Statistics, Probability and Uncertainty",
+                "id": "https://openalex.org/subfields/1804",
+            },
+            "value": 0.0131803,
+        },
+        {
+            "display_name": "Hospital Admissions and Outcomes",
+            "domain": {
+                "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
+            },
+            "field": {
+                "display_name": "Medicine",
+                "id": "https://openalex.org/fields/27",
+            },
+            "id": "https://openalex.org/T12174",
+            "subfield": {
+                "display_name": "Emergency Medicine",
+                "id": "https://openalex.org/subfields/2711",
+            },
+            "value": 0.0131715,
+        },
+        {
+            "display_name": "Social and Intergroup Psychology",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T10314",
+            "subfield": {
+                "display_name": "Sociology and Political Science",
+                "id": "https://openalex.org/subfields/3312",
+            },
+            "value": 0.0130721,
+        },
+        {
+            "display_name": "Advanced Fluorescence Microscopy Techniques",
+            "domain": {
+                "display_name": "Life Sciences",
+                "id": "https://openalex.org/domains/1",
+            },
+            "field": {
+                "display_name": "Biochemistry, Genetics and Molecular Biology",
+                "id": "https://openalex.org/fields/13",
+            },
+            "id": "https://openalex.org/T10540",
+            "subfield": {
+                "display_name": "Biophysics",
+                "id": "https://openalex.org/subfields/1304",
+            },
+            "value": 0.0127903,
+        },
+        {
+            "display_name": "Patient-Provider Communication in Healthcare",
+            "domain": {
+                "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
+            },
+            "field": {
+                "display_name": "Health Professions",
+                "id": "https://openalex.org/fields/36",
+            },
+            "id": "https://openalex.org/T10827",
+            "subfield": {
+                "display_name": "General Health Professions",
+                "id": "https://openalex.org/subfields/3600",
+            },
+            "value": 0.0125319,
+        },
+        {
+            "display_name": "Prostate Cancer Treatment and Research",
+            "domain": {
+                "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
+            },
+            "field": {
+                "display_name": "Medicine",
+                "id": "https://openalex.org/fields/27",
+            },
+            "id": "https://openalex.org/T10543",
+            "subfield": {
+                "display_name": "Pulmonary and Respiratory Medicine",
+                "id": "https://openalex.org/subfields/2740",
+            },
+            "value": 0.0124949,
+        },
+        {
+            "display_name": "Health Policy Implementation Science",
+            "domain": {
+                "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
+            },
+            "field": {
+                "display_name": "Health Professions",
+                "id": "https://openalex.org/fields/36",
+            },
+            "id": "https://openalex.org/T10629",
+            "subfield": {
+                "display_name": "General Health Professions",
+                "id": "https://openalex.org/subfields/3600",
+            },
+            "value": 0.0121141,
+        },
+        {
+            "display_name": "PI3K/AKT/mTOR signaling in cancer",
+            "domain": {
+                "display_name": "Life Sciences",
+                "id": "https://openalex.org/domains/1",
+            },
+            "field": {
+                "display_name": "Biochemistry, Genetics and Molecular Biology",
+                "id": "https://openalex.org/fields/13",
+            },
+            "id": "https://openalex.org/T10952",
+            "subfield": {
+                "display_name": "Molecular Biology",
+                "id": "https://openalex.org/subfields/1312",
+            },
+            "value": 0.0119385,
+        },
+        {
+            "display_name": "Political Developments and Conflicts",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T13598",
+            "subfield": {
+                "display_name": "Political Science and International Relations",
+                "id": "https://openalex.org/subfields/3320",
+            },
+            "value": 0.0117647,
         },
     ],
     "topics": [
         {
-            "id": "https://openalex.org/T10048",
-            "display_name": "Particle physics theoretical and experimental studies",
             "count": 5089,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3106",
-                "display_name": "Nuclear and High Energy Physics",
+            "display_name": "Particle physics theoretical and experimental studies",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
             },
             "field": {
-                "id": "https://openalex.org/fields/31",
                 "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
             },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
+            "id": "https://openalex.org/T10048",
+            "subfield": {
+                "display_name": "Nuclear and High Energy Physics",
+                "id": "https://openalex.org/subfields/3106",
             },
         },
         {
-            "id": "https://openalex.org/T10325",
-            "display_name": "Astro and Planetary Science",
             "count": 4301,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
+            "display_name": "Astro and Planetary Science",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
             },
             "field": {
-                "id": "https://openalex.org/fields/31",
                 "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
             },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
+            "id": "https://openalex.org/T10325",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
             },
         },
         {
-            "id": "https://openalex.org/T11949",
-            "display_name": "Nuclear Physics and Applications",
             "count": 4157,
+            "display_name": "Nuclear Physics and Applications",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T11949",
             "subfield": {
-                "id": "https://openalex.org/subfields/3108",
                 "display_name": "Radiation",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/subfields/3108",
             },
         },
         {
-            "id": "https://openalex.org/T10235",
-            "display_name": "Health disparities and outcomes",
             "count": 3987,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3306",
-                "display_name": "Health",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10391",
-            "display_name": "Healthcare Policy and Management",
-            "count": 3823,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2002",
-                "display_name": "Economics and Econometrics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/20",
-                "display_name": "Economics, Econometrics and Finance",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10039",
-            "display_name": "Stellar, planetary, and galactic studies",
-            "count": 3797,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10804",
-            "display_name": "Health Systems, Economic Evaluations, Quality of Life",
-            "count": 3476,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2002",
-                "display_name": "Economics and Econometrics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/20",
-                "display_name": "Economics, Econometrics and Finance",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T12646",
-            "display_name": "Inorganic Fluorides and Related Compounds",
-            "count": 3283,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1604",
-                "display_name": "Inorganic Chemistry",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/16",
-                "display_name": "Chemistry",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10522",
-            "display_name": "Medical Imaging Techniques and Applications",
-            "count": 3236,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2741",
-                "display_name": "Radiology, Nuclear Medicine and Imaging",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/27",
-                "display_name": "Medicine",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/4",
-                "display_name": "Health Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10077",
-            "display_name": "Neuroscience and Neuropharmacology Research",
-            "count": 3050,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2804",
-                "display_name": "Cellular and Molecular Neuroscience",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/28",
-                "display_name": "Neuroscience",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/1",
-                "display_name": "Life Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10251",
-            "display_name": "Solar and Space Plasma Dynamics",
-            "count": 3047,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10527",
-            "display_name": "High-Energy Particle Collisions Research",
-            "count": 3040,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3106",
-                "display_name": "Nuclear and High Energy Physics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10182",
-            "display_name": "Child and Adolescent Psychosocial and Emotional Development",
-            "count": 3030,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3203",
-                "display_name": "Clinical Psychology",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/32",
-                "display_name": "Psychology",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10159",
-            "display_name": "Ionosphere and magnetosphere dynamics",
-            "count": 3001,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10224",
-            "display_name": "Quantum Chromodynamics and Particle Interactions",
-            "count": 2985,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3106",
-                "display_name": "Nuclear and High Energy Physics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10026",
-            "display_name": "Galaxies: Formation, Evolution, Phenomena",
-            "count": 2844,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11930",
-            "display_name": "Cardiac, Anesthesia and Surgical Outcomes",
-            "count": 2640,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2705",
-                "display_name": "Cardiology and Cardiovascular Medicine",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/27",
-                "display_name": "Medicine",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/4",
-                "display_name": "Health Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10269",
-            "display_name": "Epigenetics and DNA Methylation",
-            "count": 2631,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1312",
-                "display_name": "Molecular Biology",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/13",
-                "display_name": "Biochemistry, Genetics and Molecular Biology",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/1",
-                "display_name": "Life Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11178",
-            "display_name": "Receptor Mechanisms and Signaling",
-            "count": 2613,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1312",
-                "display_name": "Molecular Biology",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/13",
-                "display_name": "Biochemistry, Genetics and Molecular Biology",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/1",
-                "display_name": "Life Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T12564",
-            "display_name": "Sensor Technology and Measurement Systems",
-            "count": 2594,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1705",
-                "display_name": "Computer Networks and Communications",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10477",
-            "display_name": "Astrophysics and Star Formation Studies",
-            "count": 2574,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10645",
-            "display_name": "Cardiac Arrest and Resuscitation",
-            "count": 2556,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2711",
-                "display_name": "Emergency Medicine",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/27",
-                "display_name": "Medicine",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/4",
-                "display_name": "Health Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10521",
-            "display_name": "RNA and protein synthesis mechanisms",
-            "count": 2509,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1312",
-                "display_name": "Molecular Biology",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/13",
-                "display_name": "Biochemistry, Genetics and Molecular Biology",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/1",
-                "display_name": "Life Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10543",
-            "display_name": "Prostate Cancer Treatment and Research",
-            "count": 2506,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2740",
-                "display_name": "Pulmonary and Respiratory Medicine",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/27",
-                "display_name": "Medicine",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/4",
-                "display_name": "Health Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10254",
-            "display_name": "Innovations in Medical Education",
-            "count": 2461,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2739",
-                "display_name": "Public Health, Environmental and Occupational Health",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/27",
-                "display_name": "Medicine",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/4",
-                "display_name": "Health Sciences",
-            },
-        },
-    ],
-    "topic_share": [
-        {
-            "id": "https://openalex.org/T14440",
-            "display_name": "Quality of Life Measurement",
-            "value": 0.1615252,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3312",
-                "display_name": "Sociology and Political Science",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11539",
-            "display_name": "Survey Methodology and Nonresponse",
-            "value": 0.0307621,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3312",
-                "display_name": "Sociology and Political Science",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11170",
-            "display_name": "Biomimetic flight and propulsion mechanisms",
-            "value": 0.0263623,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2202",
-                "display_name": "Aerospace Engineering",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/22",
-                "display_name": "Engineering",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T14320",
-            "display_name": "Optics and Image Analysis",
-            "value": 0.0262617,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1404",
-                "display_name": "Management Information Systems",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/14",
-                "display_name": "Business, Management and Accounting",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10261",
-            "display_name": "Genetic Associations and Epidemiology",
-            "value": 0.0242312,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1311",
-                "display_name": "Genetics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/13",
-                "display_name": "Biochemistry, Genetics and Molecular Biology",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/1",
-                "display_name": "Life Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T12281",
-            "display_name": "Animal testing and alternatives",
-            "value": 0.023241,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3404",
-                "display_name": "Small Animals",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/34",
-                "display_name": "Veterinary",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/4",
-                "display_name": "Health Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10652",
-            "display_name": "Racial and Ethnic Identity Research",
-            "value": 0.022723,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3312",
-                "display_name": "Sociology and Political Science",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10845",
-            "display_name": "Advanced Causal Inference Techniques",
-            "value": 0.0174284,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2613",
-                "display_name": "Statistics and Probability",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/26",
-                "display_name": "Mathematics",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T12435",
-            "display_name": "Bladed Disk Vibration Dynamics",
-            "value": 0.0169689,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2205",
-                "display_name": "Civil and Structural Engineering",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/22",
-                "display_name": "Engineering",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T12646",
-            "display_name": "Inorganic Fluorides and Related Compounds",
-            "value": 0.0164709,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1604",
-                "display_name": "Inorganic Chemistry",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/16",
-                "display_name": "Chemistry",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10235",
             "display_name": "Health disparities and outcomes",
-            "value": 0.0161683,
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/fields/33",
+            },
+            "id": "https://openalex.org/T10235",
             "subfield": {
-                "id": "https://openalex.org/subfields/3306",
                 "display_name": "Health",
+                "id": "https://openalex.org/subfields/3306",
             },
-            "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
-            },
+        },
+        {
+            "count": 3823,
+            "display_name": "Healthcare Policy and Management",
             "domain": {
+                "display_name": "Social Sciences",
                 "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
+            },
+            "field": {
+                "display_name": "Economics, Econometrics and Finance",
+                "id": "https://openalex.org/fields/20",
+            },
+            "id": "https://openalex.org/T10391",
+            "subfield": {
+                "display_name": "Economics and Econometrics",
+                "id": "https://openalex.org/subfields/2002",
             },
         },
         {
-            "id": "https://openalex.org/T10875",
-            "display_name": "Pesticide Exposure and Toxicity",
-            "value": 0.0156653,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1110",
-                "display_name": "Plant Science",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/11",
-                "display_name": "Agricultural and Biological Sciences",
-            },
+            "count": 3797,
+            "display_name": "Stellar, planetary, and galactic studies",
             "domain": {
-                "id": "https://openalex.org/domains/1",
-                "display_name": "Life Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10843",
-            "display_name": "Diversity and Career in Medicine",
-            "value": 0.015173,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3318",
-                "display_name": "Gender Studies",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10026",
-            "display_name": "Galaxies: Formation, Evolution, Phenomena",
-            "value": 0.0147844,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3103",
-                "display_name": "Astronomy and Astrophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/31",
-                "display_name": "Physics and Astronomy",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
                 "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T10039",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
             },
         },
         {
-            "id": "https://openalex.org/T11033",
-            "display_name": "Contact Dermatitis and Allergies",
-            "value": 0.0138826,
-            "subfield": {
-                "id": "https://openalex.org/subfields/2708",
-                "display_name": "Dermatology",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/27",
-                "display_name": "Medicine",
-            },
+            "count": 3476,
+            "display_name": "Health Systems, Economic Evaluations, Quality of Life",
             "domain": {
-                "id": "https://openalex.org/domains/4",
-                "display_name": "Health Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T13736",
-            "display_name": "Steroid Chemistry and Biochemistry",
-            "value": 0.0132975,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1312",
-                "display_name": "Molecular Biology",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/13",
-                "display_name": "Biochemistry, Genetics and Molecular Biology",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/1",
-                "display_name": "Life Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11890",
-            "display_name": "Scientific Measurement and Uncertainty Evaluation",
-            "value": 0.0131803,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1804",
-                "display_name": "Statistics, Probability and Uncertainty",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/18",
-                "display_name": "Decision Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
                 "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Economics, Econometrics and Finance",
+                "id": "https://openalex.org/fields/20",
+            },
+            "id": "https://openalex.org/T10804",
+            "subfield": {
+                "display_name": "Economics and Econometrics",
+                "id": "https://openalex.org/subfields/2002",
             },
         },
         {
-            "id": "https://openalex.org/T12174",
-            "display_name": "Hospital Admissions and Outcomes",
-            "value": 0.0131715,
+            "count": 3283,
+            "display_name": "Inorganic Fluorides and Related Compounds",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Chemistry",
+                "id": "https://openalex.org/fields/16",
+            },
+            "id": "https://openalex.org/T12646",
             "subfield": {
-                "id": "https://openalex.org/subfields/2711",
+                "display_name": "Inorganic Chemistry",
+                "id": "https://openalex.org/subfields/1604",
+            },
+        },
+        {
+            "count": 3236,
+            "display_name": "Medical Imaging Techniques and Applications",
+            "domain": {
+                "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
+            },
+            "field": {
+                "display_name": "Medicine",
+                "id": "https://openalex.org/fields/27",
+            },
+            "id": "https://openalex.org/T10522",
+            "subfield": {
+                "display_name": "Radiology, Nuclear Medicine and Imaging",
+                "id": "https://openalex.org/subfields/2741",
+            },
+        },
+        {
+            "count": 3050,
+            "display_name": "Neuroscience and Neuropharmacology Research",
+            "domain": {
+                "display_name": "Life Sciences",
+                "id": "https://openalex.org/domains/1",
+            },
+            "field": {
+                "display_name": "Neuroscience",
+                "id": "https://openalex.org/fields/28",
+            },
+            "id": "https://openalex.org/T10077",
+            "subfield": {
+                "display_name": "Cellular and Molecular Neuroscience",
+                "id": "https://openalex.org/subfields/2804",
+            },
+        },
+        {
+            "count": 3047,
+            "display_name": "Solar and Space Plasma Dynamics",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T10251",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
+            },
+        },
+        {
+            "count": 3040,
+            "display_name": "High-Energy Particle Collisions Research",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T10527",
+            "subfield": {
+                "display_name": "Nuclear and High Energy Physics",
+                "id": "https://openalex.org/subfields/3106",
+            },
+        },
+        {
+            "count": 3030,
+            "display_name": "Child and Adolescent Psychosocial and Emotional Development",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Psychology",
+                "id": "https://openalex.org/fields/32",
+            },
+            "id": "https://openalex.org/T10182",
+            "subfield": {
+                "display_name": "Clinical Psychology",
+                "id": "https://openalex.org/subfields/3203",
+            },
+        },
+        {
+            "count": 3001,
+            "display_name": "Ionosphere and magnetosphere dynamics",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T10159",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
+            },
+        },
+        {
+            "count": 2985,
+            "display_name": "Quantum Chromodynamics and Particle Interactions",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T10224",
+            "subfield": {
+                "display_name": "Nuclear and High Energy Physics",
+                "id": "https://openalex.org/subfields/3106",
+            },
+        },
+        {
+            "count": 2844,
+            "display_name": "Galaxies: Formation, Evolution, Phenomena",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T10026",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
+            },
+        },
+        {
+            "count": 2640,
+            "display_name": "Cardiac, Anesthesia and Surgical Outcomes",
+            "domain": {
+                "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
+            },
+            "field": {
+                "display_name": "Medicine",
+                "id": "https://openalex.org/fields/27",
+            },
+            "id": "https://openalex.org/T11930",
+            "subfield": {
+                "display_name": "Cardiology and Cardiovascular Medicine",
+                "id": "https://openalex.org/subfields/2705",
+            },
+        },
+        {
+            "count": 2631,
+            "display_name": "Epigenetics and DNA Methylation",
+            "domain": {
+                "display_name": "Life Sciences",
+                "id": "https://openalex.org/domains/1",
+            },
+            "field": {
+                "display_name": "Biochemistry, Genetics and Molecular Biology",
+                "id": "https://openalex.org/fields/13",
+            },
+            "id": "https://openalex.org/T10269",
+            "subfield": {
+                "display_name": "Molecular Biology",
+                "id": "https://openalex.org/subfields/1312",
+            },
+        },
+        {
+            "count": 2613,
+            "display_name": "Receptor Mechanisms and Signaling",
+            "domain": {
+                "display_name": "Life Sciences",
+                "id": "https://openalex.org/domains/1",
+            },
+            "field": {
+                "display_name": "Biochemistry, Genetics and Molecular Biology",
+                "id": "https://openalex.org/fields/13",
+            },
+            "id": "https://openalex.org/T11178",
+            "subfield": {
+                "display_name": "Molecular Biology",
+                "id": "https://openalex.org/subfields/1312",
+            },
+        },
+        {
+            "count": 2594,
+            "display_name": "Sensor Technology and Measurement Systems",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T12564",
+            "subfield": {
+                "display_name": "Computer Networks and Communications",
+                "id": "https://openalex.org/subfields/1705",
+            },
+        },
+        {
+            "count": 2574,
+            "display_name": "Astrophysics and Star Formation Studies",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Physics and Astronomy",
+                "id": "https://openalex.org/fields/31",
+            },
+            "id": "https://openalex.org/T10477",
+            "subfield": {
+                "display_name": "Astronomy and Astrophysics",
+                "id": "https://openalex.org/subfields/3103",
+            },
+        },
+        {
+            "count": 2556,
+            "display_name": "Cardiac Arrest and Resuscitation",
+            "domain": {
+                "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
+            },
+            "field": {
+                "display_name": "Medicine",
+                "id": "https://openalex.org/fields/27",
+            },
+            "id": "https://openalex.org/T10645",
+            "subfield": {
                 "display_name": "Emergency Medicine",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/27",
-                "display_name": "Medicine",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/4",
-                "display_name": "Health Sciences",
+                "id": "https://openalex.org/subfields/2711",
             },
         },
         {
-            "id": "https://openalex.org/T10314",
-            "display_name": "Social and Intergroup Psychology",
-            "value": 0.0130721,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3312",
-                "display_name": "Sociology and Political Science",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
-            },
+            "count": 2509,
+            "display_name": "RNA and protein synthesis mechanisms",
             "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10540",
-            "display_name": "Advanced Fluorescence Microscopy Techniques",
-            "value": 0.0127903,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1304",
-                "display_name": "Biophysics",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/13",
-                "display_name": "Biochemistry, Genetics and Molecular Biology",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/1",
                 "display_name": "Life Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10827",
-            "display_name": "Patient-Provider Communication in Healthcare",
-            "value": 0.0125319,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3600",
-                "display_name": "General Health Professions",
+                "id": "https://openalex.org/domains/1",
             },
             "field": {
-                "id": "https://openalex.org/fields/36",
-                "display_name": "Health Professions",
+                "display_name": "Biochemistry, Genetics and Molecular Biology",
+                "id": "https://openalex.org/fields/13",
             },
-            "domain": {
-                "id": "https://openalex.org/domains/4",
-                "display_name": "Health Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10543",
-            "display_name": "Prostate Cancer Treatment and Research",
-            "value": 0.0124949,
+            "id": "https://openalex.org/T10521",
             "subfield": {
-                "id": "https://openalex.org/subfields/2740",
-                "display_name": "Pulmonary and Respiratory Medicine",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/27",
-                "display_name": "Medicine",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/4",
-                "display_name": "Health Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10629",
-            "display_name": "Health Policy Implementation Science",
-            "value": 0.0121141,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3600",
-                "display_name": "General Health Professions",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/36",
-                "display_name": "Health Professions",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/4",
-                "display_name": "Health Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T10952",
-            "display_name": "PI3K/AKT/mTOR signaling in cancer",
-            "value": 0.0119385,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1312",
                 "display_name": "Molecular Biology",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/13",
-                "display_name": "Biochemistry, Genetics and Molecular Biology",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/1",
-                "display_name": "Life Sciences",
+                "id": "https://openalex.org/subfields/1312",
             },
         },
         {
-            "id": "https://openalex.org/T13598",
-            "display_name": "Political Developments and Conflicts",
-            "value": 0.0117647,
-            "subfield": {
-                "id": "https://openalex.org/subfields/3320",
-                "display_name": "Political Science and International Relations",
+            "count": 2506,
+            "display_name": "Prostate Cancer Treatment and Research",
+            "domain": {
+                "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
             },
             "field": {
-                "id": "https://openalex.org/fields/33",
-                "display_name": "Social Sciences",
+                "display_name": "Medicine",
+                "id": "https://openalex.org/fields/27",
             },
+            "id": "https://openalex.org/T10543",
+            "subfield": {
+                "display_name": "Pulmonary and Respiratory Medicine",
+                "id": "https://openalex.org/subfields/2740",
+            },
+        },
+        {
+            "count": 2461,
+            "display_name": "Innovations in Medical Education",
             "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
+                "display_name": "Health Sciences",
+                "id": "https://openalex.org/domains/4",
+            },
+            "field": {
+                "display_name": "Medicine",
+                "id": "https://openalex.org/fields/27",
+            },
+            "id": "https://openalex.org/T10254",
+            "subfield": {
+                "display_name": "Public Health, Environmental and Occupational Health",
+                "id": "https://openalex.org/subfields/2739",
             },
         },
     ],
+    "type": "funder",
+    "type_id": "https://openalex.org/institution-types/funder",
+    "updated_date": "2025-06-06T01:50:58.405958",
+    "works_api_url": "https://api.openalex.org/works?filter=institutions.id:I27837315",
+    "works_count": 932499,
     "x_concepts": [
         {
-            "id": "https://openalex.org/C41008148",
-            "wikidata": "https://www.wikidata.org/wiki/Q21198",
             "display_name": "Computer science",
+            "id": "https://openalex.org/C41008148",
             "level": 0,
             "score": 57.9,
+            "wikidata": "https://www.wikidata.org/wiki/Q21198",
         },
         {
-            "id": "https://openalex.org/C86803240",
-            "wikidata": "https://www.wikidata.org/wiki/Q420",
             "display_name": "Biology",
+            "id": "https://openalex.org/C86803240",
             "level": 0,
             "score": 31.6,
+            "wikidata": "https://www.wikidata.org/wiki/Q420",
         },
         {
-            "id": "https://openalex.org/C71924100",
-            "wikidata": "https://www.wikidata.org/wiki/Q11190",
             "display_name": "Medicine",
+            "id": "https://openalex.org/C71924100",
             "level": 0,
             "score": 29.4,
+            "wikidata": "https://www.wikidata.org/wiki/Q11190",
         },
         {
-            "id": "https://openalex.org/C185592680",
-            "wikidata": "https://www.wikidata.org/wiki/Q2329",
             "display_name": "Chemistry",
+            "id": "https://openalex.org/C185592680",
             "level": 0,
             "score": 23.3,
+            "wikidata": "https://www.wikidata.org/wiki/Q2329",
         },
         {
-            "id": "https://openalex.org/C121332964",
-            "wikidata": "https://www.wikidata.org/wiki/Q413",
             "display_name": "Physics",
+            "id": "https://openalex.org/C121332964",
             "level": 0,
             "score": 21.6,
+            "wikidata": "https://www.wikidata.org/wiki/Q413",
         },
     ],
-    "is_super_system": False,
-    "works_api_url": "https://api.openalex.org/works?filter=institutions.id:I27837315",
-    "updated_date": "2025-06-06T01:50:58.405958",
-    "created_date": "2016-06-24",
 }
 
 MOCK_W2741809807_DATA = {
-    "id": "https://openalex.org/W2741809807",
-    "doi": "https://doi.org/10.7717/peerj.4375",
-    "title": "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles",
-    "display_name": "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles",
-    "publication_year": 2018,
-    "publication_date": "2018-02-13",
-    "ids": {
-        "openalex": "https://openalex.org/W2741809807",
-        "doi": "https://doi.org/10.7717/peerj.4375",
-        "mag": "2741809807",
-        "pmid": "https://pubmed.ncbi.nlm.nih.gov/29456894",
-        "pmcid": "https://www.ncbi.nlm.nih.gov/pmc/articles/5815332",
+    "abstract_inverted_index": {
+        "(1)": [60],
+        "(19M": [109],
+        "(2)": [68],
+        "(2015)": [131],
+        "(3)": [78],
+        "(45%).": [139],
+        "(OA)": [6],
+        "100,000": [52],
+        "18%": [226],
+        "28%": [102],
+        "47%": [162],
+        "67": [43],
+        "Access": [5],
+        "Because": [140],
+        "Bronze:": [190],
+        "Crossref": [66],
+        "DOI,": [67],
+        "Despite": [0],
+        "Gold": [123],
+        "Gold,": [178],
+        "Green": [236],
+        "Green,": [179],
+        "Hybrid": [181, 238],
+        "Hybrid.": [125],
+        "Notably,": [169],
+        "OA": [40, 56, 93, 108, 138, 159, 175, 210, 223, 254],
+        "OA,": [182],
+        "OA.": [27, 168, 239],
+        "Open": [4, 201],
+        "Science,": [76],
+        "The": [126],
+        "Unpaywall": [156],
+        "Unpaywall,": [84],
+        "We": [28, 46, 97, 203, 240],
+        "Web": [74],
+        "a": [65, 250],
+        "access": [150],
+        "accounting": [218],
+        "address": [29],
+        "advantage:": [217],
+        "age": [220],
+        "all": [61],
+        "also": [132, 204],
+        "an": [12, 34, 85, 185, 199, 231],
+        "analyzed": [130],
+        "and": [18, 24, 77, 112, 124, 144, 221, 237, 256],
+        "are": [167],
+        "articles": [63, 71, 79, 94, 164, 191, 224],
+        "articles,": [53, 152, 211],
+        "articles.": [45],
+        "as": [249],
+        "assessing": [21],
+        "assigned": [64],
+        "at": [100],
+        "average,": [230],
+        "browser": [87],
+        "but": [183],
+        "by": [81, 120, 235],
+        "category": [187],
+        "characteristics": [25],
+        "citation": [207, 216],
+        "citations": [228],
+        "common": [172],
+        "corroborating": [212],
+        "determines": [39],
+        "discipline,": [222],
+        "disproportionately": [149],
+        "driven": [118, 233],
+        "dub": [189],
+        "each": [50],
+        "effect": [232],
+        "encounter": [158],
+        "encourage": [241],
+        "estimate": [98],
+        "examine": [205],
+        "explicit": [200],
+        "extension": [88],
+        "fact": [146],
+        "find": [92, 154],
+        "for": [15, 42, 174, 219],
+        "free": [246],
+        "free-to-read": [193],
+        "frequently:": [161],
+        "further": [242],
+        "growing": [1],
+        "growing,": [117],
+        "growth": [121],
+        "growth,": [143],
+        "has": [133],
+        "highest": [135],
+        "impact": [208],
+        "in": [3, 57, 73, 110, 122],
+        "indexed": [72],
+        "inform": [253],
+        "interest": [2],
+        "investigate": [55],
+        "is": [11, 107, 116, 176],
+        "journal": [62, 70],
+        "large-scale,": [16],
+        "least": [101],
+        "lets": [90],
+        "license.": [202],
+        "literature": [106],
+        "literature,": [9],
+        "made": [192],
+        "mechanism": [173],
+        "million": [44],
+        "more": [227],
+        "most": [127, 171],
+        "need": [14, 31],
+        "newer": [151],
+        "not": [177],
+        "oaDOI": [247],
+        "oaDOI,": [33],
+        "oaDOI.": [96],
+        "of": [26, 51, 75, 83, 103, 137, 141, 163, 209],
+        "on": [194],
+        "online": [36],
+        "open": [35],
+        "open-access": [215],
+        "open-source": [86],
+        "or": [180],
+        "particularly": [119],
+        "percentage": [136],
+        "policy": [255],
+        "populations:": [59],
+        "practice.": [257],
+        "prevalence": [23],
+        "primarily": [234],
+        "proportion": [115],
+        "publisher": [196],
+        "quite": [160],
+        "rather": [184],
+        "readers": [148],
+        "receive": [225],
+        "recent": [69, 128],
+        "reproducible": [19],
+        "research": [243],
+        "samples,": [49],
+        "scholarly": [8, 105],
+        "service": [37],
+        "service,": [248],
+        "so-called": [214],
+        "status": [41],
+        "studies": [20],
+        "than": [229],
+        "that": [38, 89, 99, 113, 147, 155],
+        "the": [22, 104, 134, 145, 170, 195, 206, 213, 245],
+        "there": [10],
+        "they": [165],
+        "this": [30, 114, 142],
+        "three": [48, 58],
+        "to": [7, 54, 252],
+        "total)": [111],
+        "under-discussed": [186],
+        "unmet": [13],
+        "up-to-date,": [17],
+        "use": [47],
+        "users": [82, 91, 157],
+        "using": [32, 95, 244],
+        "view": [166],
+        "viewed": [80],
+        "way": [251],
+        "we": [153, 188],
+        "website,": [197],
+        "without": [198],
+        "year": [129],
     },
-    "language": "en",
-    "primary_location": {
-        "is_oa": True,
-        "landing_page_url": "https://doi.org/10.7717/peerj.4375",
-        "pdf_url": "https://peerj.com/articles/4375.pdf",
-        "source": {
-            "id": "https://openalex.org/S1983995261",
-            "display_name": "PeerJ",
-            "issn_l": "2167-8359",
-            "issn": ["2167-8359"],
-            "is_oa": True,
-            "is_in_doaj": True,
-            "is_indexed_in_scopus": True,
-            "is_core": True,
-            "host_organization": "https://openalex.org/P4310320104",
-            "host_organization_name": "PeerJ, Inc.",
-            "host_organization_lineage": ["https://openalex.org/P4310320104"],
-            "host_organization_lineage_names": ["PeerJ, Inc."],
-            "type": "journal",
-        },
-        "license": "cc-by",
-        "license_id": "https://openalex.org/licenses/cc-by",
-        "version": "publishedVersion",
-        "is_accepted": True,
-        "is_published": True,
-    },
-    "type": "article",
-    "type_crossref": "journal-article",
-    "indexed_in": ["crossref", "doaj", "pubmed"],
-    "open_access": {
-        "is_oa": True,
-        "oa_status": "gold",
-        "oa_url": "https://peerj.com/articles/4375.pdf",
-        "any_repository_has_fulltext": True,
-    },
+    "abstract_inverted_index_v3": None,
+    "apc_list": {"currency": "USD", "value": 1395, "value_usd": 1395},
+    "apc_paid": {"currency": "USD", "value": 1395, "value_usd": 1395},
     "authorships": [
         {
-            "author_position": "first",
+            "affiliations": [
+                {
+                    "institution_ids": ["https://openalex.org/I4210166736"],
+                    "raw_affiliation_string": "Impactstory, Sanford, NC, USA",
+                }
+            ],
             "author": {
-                "id": "https://openalex.org/A5048491430",
                 "display_name": "Heather Piwowar",
+                "id": "https://openalex.org/A5048491430",
                 "orcid": "https://orcid.org/0000-0003-1613-5981",
             },
+            "author_position": "first",
+            "countries": ["US"],
             "institutions": [
                 {
-                    "id": "https://openalex.org/I4210166736",
-                    "display_name": "Impact Technology Development (United States)",
-                    "ror": "https://ror.org/05ppvf150",
                     "country_code": "US",
-                    "type": "company",
+                    "display_name": "Impact Technology Development (United States)",
+                    "id": "https://openalex.org/I4210166736",
                     "lineage": ["https://openalex.org/I4210166736"],
+                    "ror": "https://ror.org/05ppvf150",
+                    "type": "company",
                 }
             ],
-            "countries": ["US"],
             "is_corresponding": False,
-            "raw_author_name": "Heather Piwowar",
             "raw_affiliation_strings": ["Impactstory, Sanford, NC, USA"],
-            "affiliations": [
-                {
-                    "raw_affiliation_string": "Impactstory, Sanford, NC, USA",
-                    "institution_ids": ["https://openalex.org/I4210166736"],
-                }
-            ],
+            "raw_author_name": "Heather Piwowar",
         },
         {
-            "author_position": "middle",
+            "affiliations": [
+                {
+                    "institution_ids": ["https://openalex.org/I4210166736"],
+                    "raw_affiliation_string": "Impactstory, Sanford, NC, USA",
+                }
+            ],
             "author": {
-                "id": "https://openalex.org/A5023888391",
                 "display_name": "Jason Priem",
+                "id": "https://openalex.org/A5023888391",
                 "orcid": "https://orcid.org/0000-0001-6187-6610",
             },
+            "author_position": "middle",
+            "countries": ["US"],
             "institutions": [
                 {
-                    "id": "https://openalex.org/I4210166736",
-                    "display_name": "Impact Technology Development (United States)",
-                    "ror": "https://ror.org/05ppvf150",
                     "country_code": "US",
-                    "type": "company",
+                    "display_name": "Impact Technology Development (United States)",
+                    "id": "https://openalex.org/I4210166736",
                     "lineage": ["https://openalex.org/I4210166736"],
+                    "ror": "https://ror.org/05ppvf150",
+                    "type": "company",
                 }
             ],
-            "countries": ["US"],
             "is_corresponding": False,
-            "raw_author_name": "Jason Priem",
             "raw_affiliation_strings": ["Impactstory, Sanford, NC, USA"],
-            "affiliations": [
-                {
-                    "raw_affiliation_string": "Impactstory, Sanford, NC, USA",
-                    "institution_ids": ["https://openalex.org/I4210166736"],
-                }
-            ],
+            "raw_author_name": "Jason Priem",
         },
         {
-            "author_position": "middle",
-            "author": {
-                "id": "https://openalex.org/A5068542997",
-                "display_name": "Vincent Larivière",
-                "orcid": "https://orcid.org/0000-0002-2733-0689",
-            },
-            "institutions": [
+            "affiliations": [
                 {
-                    "id": "https://openalex.org/I70931966",
-                    "display_name": "Université de Montréal",
-                    "ror": "https://ror.org/0161xgx34",
-                    "country_code": "CA",
-                    "type": "funder",
-                    "lineage": ["https://openalex.org/I70931966"],
+                    "institution_ids": ["https://openalex.org/I70931966"],
+                    "raw_affiliation_string": "École de bibliothéconomie et des "
+                    "sciences de l’information, Université de "
+                    "Montréal, Montréal, QC, Canada",
                 },
                 {
-                    "id": "https://openalex.org/I159129438",
-                    "display_name": "Université du Québec à Montréal",
-                    "ror": "https://ror.org/002rjbv21",
+                    "institution_ids": ["https://openalex.org/I159129438"],
+                    "raw_affiliation_string": "Observatoire des Sciences et des "
+                    "Technologies (OST), Centre "
+                    "Interuniversitaire de Recherche sur la "
+                    "Science et la Technologie (CIRST), "
+                    "Université du Québec à Montréal, "
+                    "Montréal, QC, Canada",
+                },
+            ],
+            "author": {
+                "display_name": "Vincent Larivière",
+                "id": "https://openalex.org/A5068542997",
+                "orcid": "https://orcid.org/0000-0002-2733-0689",
+            },
+            "author_position": "middle",
+            "countries": ["CA"],
+            "institutions": [
+                {
                     "country_code": "CA",
+                    "display_name": "Université de Montréal",
+                    "id": "https://openalex.org/I70931966",
+                    "lineage": ["https://openalex.org/I70931966"],
+                    "ror": "https://ror.org/0161xgx34",
                     "type": "funder",
+                },
+                {
+                    "country_code": "CA",
+                    "display_name": "Université du Québec à Montréal",
+                    "id": "https://openalex.org/I159129438",
                     "lineage": [
                         "https://openalex.org/I159129438",
                         "https://openalex.org/I49663120",
                     ],
+                    "ror": "https://ror.org/002rjbv21",
+                    "type": "funder",
                 },
             ],
-            "countries": ["CA"],
             "is_corresponding": False,
-            "raw_author_name": "Vincent Larivière",
             "raw_affiliation_strings": [
-                "Observatoire des Sciences et des Technologies (OST), Centre Interuniversitaire de Recherche sur la Science et la Technologie (CIRST), Université du Québec à Montréal, Montréal, QC, Canada",
-                "École de bibliothéconomie et des sciences de l’information, Université de Montréal, Montréal, QC, Canada",
+                "Observatoire des Sciences et des Technologies (OST), Centre "
+                "Interuniversitaire de Recherche sur la Science et la "
+                "Technologie (CIRST), Université du Québec à Montréal, "
+                "Montréal, QC, Canada",
+                "École de bibliothéconomie et des sciences de l’information, "
+                "Université de Montréal, Montréal, QC, Canada",
             ],
-            "affiliations": [
-                {
-                    "raw_affiliation_string": "École de bibliothéconomie et des sciences de l’information, Université de Montréal, Montréal, QC, Canada",
-                    "institution_ids": ["https://openalex.org/I70931966"],
-                },
-                {
-                    "raw_affiliation_string": "Observatoire des Sciences et des Technologies (OST), Centre Interuniversitaire de Recherche sur la Science et la Technologie (CIRST), Université du Québec à Montréal, Montréal, QC, Canada",
-                    "institution_ids": ["https://openalex.org/I159129438"],
-                },
-            ],
+            "raw_author_name": "Vincent Larivière",
         },
         {
-            "author_position": "middle",
-            "author": {
-                "id": "https://openalex.org/A5085171399",
-                "display_name": "Juan Pablo Alperín",
-                "orcid": "https://orcid.org/0000-0002-9344-7439",
-            },
-            "institutions": [
+            "affiliations": [
                 {
-                    "id": "https://openalex.org/I18014758",
-                    "display_name": "Simon Fraser University",
-                    "ror": "https://ror.org/0213rcc28",
-                    "country_code": "CA",
-                    "type": "funder",
-                    "lineage": ["https://openalex.org/I18014758"],
+                    "institution_ids": ["https://openalex.org/I18014758"],
+                    "raw_affiliation_string": "Canadian Institute for Studies in "
+                    "Publishing, Simon Fraser University, "
+                    "Vancouver, BC, Canada",
                 },
                 {
-                    "id": "https://openalex.org/I4387153203",
-                    "display_name": "Public Knowledge Project",
-                    "ror": "https://ror.org/05ek4tb53",
+                    "institution_ids": ["https://openalex.org/I4387153203"],
+                    "raw_affiliation_string": "Public Knowledge Project, Canada",
+                },
+            ],
+            "author": {
+                "display_name": "Juan Pablo Alperín",
+                "id": "https://openalex.org/A5085171399",
+                "orcid": "https://orcid.org/0000-0002-9344-7439",
+            },
+            "author_position": "middle",
+            "countries": ["CA"],
+            "institutions": [
+                {
+                    "country_code": "CA",
+                    "display_name": "Simon Fraser University",
+                    "id": "https://openalex.org/I18014758",
+                    "lineage": ["https://openalex.org/I18014758"],
+                    "ror": "https://ror.org/0213rcc28",
+                    "type": "funder",
+                },
+                {
                     "country_code": None,
-                    "type": "other",
+                    "display_name": "Public Knowledge Project",
+                    "id": "https://openalex.org/I4387153203",
                     "lineage": [
                         "https://openalex.org/I18014758",
                         "https://openalex.org/I4387153203",
                     ],
+                    "ror": "https://ror.org/05ek4tb53",
+                    "type": "other",
                 },
             ],
-            "countries": ["CA"],
             "is_corresponding": False,
-            "raw_author_name": "Juan Pablo Alperin",
             "raw_affiliation_strings": [
-                "Canadian Institute for Studies in Publishing, Simon Fraser University, Vancouver, BC, Canada",
+                "Canadian Institute for Studies in Publishing, Simon Fraser "
+                "University, Vancouver, BC, Canada",
                 "Public Knowledge Project, Canada",
             ],
-            "affiliations": [
-                {
-                    "raw_affiliation_string": "Canadian Institute for Studies in Publishing, Simon Fraser University, Vancouver, BC, Canada",
-                    "institution_ids": ["https://openalex.org/I18014758"],
-                },
-                {
-                    "raw_affiliation_string": "Public Knowledge Project, Canada",
-                    "institution_ids": ["https://openalex.org/I4387153203"],
-                },
-            ],
+            "raw_author_name": "Juan Pablo Alperin",
         },
         {
-            "author_position": "middle",
+            "affiliations": [
+                {
+                    "institution_ids": ["https://openalex.org/I18014758"],
+                    "raw_affiliation_string": "Scholarly Communications Lab, Simon "
+                    "Fraser University, Vancouver, Canada",
+                }
+            ],
             "author": {
-                "id": "https://openalex.org/A5066880338",
                 "display_name": "Lisa Matthias",
+                "id": "https://openalex.org/A5066880338",
                 "orcid": "https://orcid.org/0000-0002-2612-2132",
             },
+            "author_position": "middle",
+            "countries": ["CA"],
             "institutions": [
                 {
-                    "id": "https://openalex.org/I18014758",
-                    "display_name": "Simon Fraser University",
-                    "ror": "https://ror.org/0213rcc28",
                     "country_code": "CA",
-                    "type": "funder",
+                    "display_name": "Simon Fraser University",
+                    "id": "https://openalex.org/I18014758",
                     "lineage": ["https://openalex.org/I18014758"],
+                    "ror": "https://ror.org/0213rcc28",
+                    "type": "funder",
                 }
             ],
-            "countries": ["CA"],
             "is_corresponding": False,
-            "raw_author_name": "Lisa Matthias",
             "raw_affiliation_strings": [
-                "Scholarly Communications Lab, Simon Fraser University, Vancouver, Canada"
+                "Scholarly Communications Lab, Simon Fraser University, "
+                "Vancouver, Canada"
             ],
-            "affiliations": [
-                {
-                    "raw_affiliation_string": "Scholarly Communications Lab, Simon Fraser University, Vancouver, Canada",
-                    "institution_ids": ["https://openalex.org/I18014758"],
-                }
-            ],
+            "raw_author_name": "Lisa Matthias",
         },
         {
-            "author_position": "middle",
+            "affiliations": [
+                {
+                    "institution_ids": [
+                        "https://openalex.org/I201448701",
+                        "https://openalex.org/I58610484",
+                    ],
+                    "raw_affiliation_string": "Information School, University of "
+                    "Washington, Seattle, USA",
+                },
+                {
+                    "institution_ids": [],
+                    "raw_affiliation_string": "FlourishOA, USA",
+                },
+            ],
             "author": {
-                "id": "https://openalex.org/A5015414792",
                 "display_name": "Bree Norlander",
+                "id": "https://openalex.org/A5015414792",
                 "orcid": "https://orcid.org/0000-0002-0431-4221",
             },
+            "author_position": "middle",
+            "countries": ["US"],
             "institutions": [
                 {
-                    "id": "https://openalex.org/I201448701",
-                    "display_name": "University of Washington",
-                    "ror": "https://ror.org/00cvxb145",
                     "country_code": "US",
-                    "type": "funder",
+                    "display_name": "University of Washington",
+                    "id": "https://openalex.org/I201448701",
                     "lineage": ["https://openalex.org/I201448701"],
+                    "ror": "https://ror.org/00cvxb145",
+                    "type": "funder",
                 },
                 {
-                    "id": "https://openalex.org/I58610484",
-                    "display_name": "Seattle University",
-                    "ror": "https://ror.org/02jqc0m91",
                     "country_code": "US",
-                    "type": "education",
+                    "display_name": "Seattle University",
+                    "id": "https://openalex.org/I58610484",
                     "lineage": ["https://openalex.org/I58610484"],
+                    "ror": "https://ror.org/02jqc0m91",
+                    "type": "education",
                 },
             ],
-            "countries": ["US"],
             "is_corresponding": False,
-            "raw_author_name": "Bree Norlander",
             "raw_affiliation_strings": [
                 "FlourishOA, USA",
                 "Information School, University of Washington, Seattle, USA",
             ],
+            "raw_author_name": "Bree Norlander",
+        },
+        {
             "affiliations": [
                 {
-                    "raw_affiliation_string": "Information School, University of Washington, Seattle, USA",
                     "institution_ids": [
                         "https://openalex.org/I201448701",
                         "https://openalex.org/I58610484",
                     ],
+                    "raw_affiliation_string": "Information School, University of "
+                    "Washington, Seattle, USA",
                 },
                 {
-                    "raw_affiliation_string": "FlourishOA, USA",
                     "institution_ids": [],
+                    "raw_affiliation_string": "FlourishOA, USA",
                 },
             ],
-        },
-        {
-            "author_position": "middle",
             "author": {
-                "id": "https://openalex.org/A5062989025",
                 "display_name": "Ashley Farley",
+                "id": "https://openalex.org/A5062989025",
                 "orcid": "https://orcid.org/0000-0001-9310-6944",
             },
+            "author_position": "middle",
+            "countries": ["US"],
             "institutions": [
                 {
-                    "id": "https://openalex.org/I201448701",
-                    "display_name": "University of Washington",
-                    "ror": "https://ror.org/00cvxb145",
                     "country_code": "US",
-                    "type": "funder",
+                    "display_name": "University of Washington",
+                    "id": "https://openalex.org/I201448701",
                     "lineage": ["https://openalex.org/I201448701"],
+                    "ror": "https://ror.org/00cvxb145",
+                    "type": "funder",
                 },
                 {
-                    "id": "https://openalex.org/I58610484",
-                    "display_name": "Seattle University",
-                    "ror": "https://ror.org/02jqc0m91",
                     "country_code": "US",
-                    "type": "education",
+                    "display_name": "Seattle University",
+                    "id": "https://openalex.org/I58610484",
                     "lineage": ["https://openalex.org/I58610484"],
+                    "ror": "https://ror.org/02jqc0m91",
+                    "type": "education",
                 },
             ],
-            "countries": ["US"],
             "is_corresponding": False,
-            "raw_author_name": "Ashley Farley",
             "raw_affiliation_strings": [
                 "FlourishOA, USA",
                 "Information School, University of Washington, Seattle, USA",
             ],
+            "raw_author_name": "Ashley Farley",
+        },
+        {
             "affiliations": [
                 {
-                    "raw_affiliation_string": "Information School, University of Washington, Seattle, USA",
                     "institution_ids": [
                         "https://openalex.org/I201448701",
                         "https://openalex.org/I58610484",
                     ],
-                },
-                {
-                    "raw_affiliation_string": "FlourishOA, USA",
-                    "institution_ids": [],
-                },
+                    "raw_affiliation_string": "Information School, University of "
+                    "Washington, Seattle, USA",
+                }
             ],
-        },
-        {
-            "author_position": "middle",
             "author": {
-                "id": "https://openalex.org/A5046879461",
                 "display_name": "Jevin D. West",
+                "id": "https://openalex.org/A5046879461",
                 "orcid": "https://orcid.org/0000-0002-4118-0322",
             },
+            "author_position": "middle",
+            "countries": ["US"],
             "institutions": [
                 {
-                    "id": "https://openalex.org/I201448701",
-                    "display_name": "University of Washington",
-                    "ror": "https://ror.org/00cvxb145",
                     "country_code": "US",
-                    "type": "funder",
+                    "display_name": "University of Washington",
+                    "id": "https://openalex.org/I201448701",
                     "lineage": ["https://openalex.org/I201448701"],
+                    "ror": "https://ror.org/00cvxb145",
+                    "type": "funder",
                 },
                 {
-                    "id": "https://openalex.org/I58610484",
-                    "display_name": "Seattle University",
-                    "ror": "https://ror.org/02jqc0m91",
                     "country_code": "US",
-                    "type": "education",
+                    "display_name": "Seattle University",
+                    "id": "https://openalex.org/I58610484",
                     "lineage": ["https://openalex.org/I58610484"],
+                    "ror": "https://ror.org/02jqc0m91",
+                    "type": "education",
                 },
             ],
-            "countries": ["US"],
             "is_corresponding": False,
-            "raw_author_name": "Jevin West",
             "raw_affiliation_strings": [
                 "Information School, University of Washington, Seattle, USA"
             ],
-            "affiliations": [
-                {
-                    "raw_affiliation_string": "Information School, University of Washington, Seattle, USA",
-                    "institution_ids": [
-                        "https://openalex.org/I201448701",
-                        "https://openalex.org/I58610484",
-                    ],
-                }
-            ],
+            "raw_author_name": "Jevin West",
         },
         {
-            "author_position": "last",
+            "affiliations": [
+                {
+                    "institution_ids": ["https://openalex.org/I159129438"],
+                    "raw_affiliation_string": "Observatoire des Sciences et des "
+                    "Technologies (OST), Centre "
+                    "Interuniversitaire de Recherche sur la "
+                    "Science et la Technologie (CIRST), "
+                    "Université du Québec à Montréal, "
+                    "Montréal, QC, Canada",
+                },
+                {
+                    "institution_ids": ["https://openalex.org/I153718931"],
+                    "raw_affiliation_string": "School of Information Studies, "
+                    "University of Ottawa, Ottawa, ON, "
+                    "Canada",
+                },
+            ],
             "author": {
-                "id": "https://openalex.org/A5014077037",
                 "display_name": "Stefanie Haustein",
+                "id": "https://openalex.org/A5014077037",
                 "orcid": "https://orcid.org/0000-0003-0157-1430",
             },
+            "author_position": "last",
+            "countries": ["CA"],
             "institutions": [
                 {
-                    "id": "https://openalex.org/I159129438",
-                    "display_name": "Université du Québec à Montréal",
-                    "ror": "https://ror.org/002rjbv21",
                     "country_code": "CA",
-                    "type": "funder",
+                    "display_name": "Université du Québec à Montréal",
+                    "id": "https://openalex.org/I159129438",
                     "lineage": [
                         "https://openalex.org/I159129438",
                         "https://openalex.org/I49663120",
                     ],
-                },
-                {
-                    "id": "https://openalex.org/I153718931",
-                    "display_name": "University of Ottawa",
-                    "ror": "https://ror.org/03c4mmv16",
-                    "country_code": "CA",
+                    "ror": "https://ror.org/002rjbv21",
                     "type": "funder",
+                },
+                {
+                    "country_code": "CA",
+                    "display_name": "University of Ottawa",
+                    "id": "https://openalex.org/I153718931",
                     "lineage": ["https://openalex.org/I153718931"],
+                    "ror": "https://ror.org/03c4mmv16",
+                    "type": "funder",
                 },
             ],
-            "countries": ["CA"],
             "is_corresponding": False,
-            "raw_author_name": "Stefanie Haustein",
             "raw_affiliation_strings": [
-                "Observatoire des Sciences et des Technologies (OST), Centre Interuniversitaire de Recherche sur la Science et la Technologie (CIRST), Université du Québec à Montréal, Montréal, QC, Canada",
-                "School of Information Studies, University of Ottawa, Ottawa, ON, Canada",
+                "Observatoire des Sciences et des Technologies (OST), Centre "
+                "Interuniversitaire de Recherche sur la Science et la "
+                "Technologie (CIRST), Université du Québec à Montréal, "
+                "Montréal, QC, Canada",
+                "School of Information Studies, University of Ottawa, "
+                "Ottawa, ON, Canada",
             ],
-            "affiliations": [
-                {
-                    "raw_affiliation_string": "Observatoire des Sciences et des Technologies (OST), Centre Interuniversitaire de Recherche sur la Science et la Technologie (CIRST), Université du Québec à Montréal, Montréal, QC, Canada",
-                    "institution_ids": ["https://openalex.org/I159129438"],
-                },
-                {
-                    "raw_affiliation_string": "School of Information Studies, University of Ottawa, Ottawa, ON, Canada",
-                    "institution_ids": ["https://openalex.org/I153718931"],
-                },
-            ],
+            "raw_author_name": "Stefanie Haustein",
         },
     ],
-    "institution_assertions": [],
-    "countries_distinct_count": 2,
-    "institutions_distinct_count": 8,
-    "corresponding_author_ids": [],
-    "corresponding_institution_ids": [],
-    "apc_list": {"value": 1395, "currency": "USD", "value_usd": 1395},
-    "apc_paid": {"value": 1395, "currency": "USD", "value_usd": 1395},
-    "fwci": 76.282,
-    "has_fulltext": True,
-    "fulltext_origin": "pdf",
-    "cited_by_count": 960,
-    "citation_normalized_percentile": {
-        "value": 0.999768,
-        "is_in_top_1_percent": True,
-        "is_in_top_10_percent": True,
+    "best_oa_location": {
+        "is_accepted": True,
+        "is_oa": True,
+        "is_published": True,
+        "landing_page_url": "https://doi.org/10.7717/peerj.4375",
+        "license": "cc-by",
+        "license_id": "https://openalex.org/licenses/cc-by",
+        "pdf_url": "https://peerj.com/articles/4375.pdf",
+        "source": {
+            "display_name": "PeerJ",
+            "host_organization": "https://openalex.org/P4310320104",
+            "host_organization_lineage": ["https://openalex.org/P4310320104"],
+            "host_organization_lineage_names": ["PeerJ, Inc."],
+            "host_organization_name": "PeerJ, Inc.",
+            "id": "https://openalex.org/S1983995261",
+            "is_core": True,
+            "is_in_doaj": True,
+            "is_indexed_in_scopus": True,
+            "is_oa": True,
+            "issn": ["2167-8359"],
+            "issn_l": "2167-8359",
+            "type": "journal",
+        },
+        "version": "publishedVersion",
     },
-    "cited_by_percentile_year": {"min": 99, "max": 100},
     "biblio": {
-        "volume": "6",
-        "issue": None,
         "first_page": "e4375",
+        "issue": None,
         "last_page": "e4375",
+        "volume": "6",
     },
-    "is_retracted": False,
-    "is_paratext": False,
-    "primary_topic": {
-        "id": "https://openalex.org/T10102",
-        "display_name": "scientometrics and bibliometrics research",
-        "score": 0.9969,
-        "subfield": {
-            "id": "https://openalex.org/subfields/1804",
-            "display_name": "Statistics, Probability and Uncertainty",
-        },
-        "field": {
-            "id": "https://openalex.org/fields/18",
-            "display_name": "Decision Sciences",
-        },
-        "domain": {
-            "id": "https://openalex.org/domains/2",
-            "display_name": "Social Sciences",
-        },
+    "citation_normalized_percentile": {
+        "is_in_top_10_percent": True,
+        "is_in_top_1_percent": True,
+        "value": 0.999768,
     },
-    "topics": [
-        {
-            "id": "https://openalex.org/T10102",
-            "display_name": "scientometrics and bibliometrics research",
-            "score": 0.9969,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1804",
-                "display_name": "Statistics, Probability and Uncertainty",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/18",
-                "display_name": "Decision Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T13607",
-            "display_name": "Academic Publishing and Open Access",
-            "score": 0.9807,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1802",
-                "display_name": "Information Systems and Management",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/18",
-                "display_name": "Decision Sciences",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/2",
-                "display_name": "Social Sciences",
-            },
-        },
-        {
-            "id": "https://openalex.org/T11937",
-            "display_name": "Research Data Management Practices",
-            "score": 0.9185,
-            "subfield": {
-                "id": "https://openalex.org/subfields/1710",
-                "display_name": "Information Systems",
-            },
-            "field": {
-                "id": "https://openalex.org/fields/17",
-                "display_name": "Computer Science",
-            },
-            "domain": {
-                "id": "https://openalex.org/domains/3",
-                "display_name": "Physical Sciences",
-            },
-        },
-    ],
-    "keywords": [
-        {
-            "id": "https://openalex.org/keywords/scholarly-communication",
-            "display_name": "Scholarly Communication",
-            "score": 0.5683152,
-        },
-        {
-            "id": "https://openalex.org/keywords/web-of-science",
-            "display_name": "Web of science",
-            "score": 0.5055373,
-        },
-        {
-            "id": "https://openalex.org/keywords/open-science",
-            "display_name": "Open Science",
-            "score": 0.48734793,
-        },
-        {
-            "id": "https://openalex.org/keywords/citation-analysis",
-            "display_name": "Citation analysis",
-            "score": 0.43920913,
-        },
-    ],
+    "cited_by_api_url": "https://api.openalex.org/works?filter=cites:W2741809807",
+    "cited_by_count": 960,
+    "cited_by_percentile_year": {"max": 100, "min": 99},
     "concepts": [
         {
-            "id": "https://openalex.org/C2778805511",
-            "wikidata": "https://www.wikidata.org/wiki/Q1713",
             "display_name": "Citation",
+            "id": "https://openalex.org/C2778805511",
             "level": 2,
             "score": 0.68818974,
+            "wikidata": "https://www.wikidata.org/wiki/Q1713",
         },
         {
-            "id": "https://openalex.org/C2780560020",
-            "wikidata": "https://www.wikidata.org/wiki/Q79719",
             "display_name": "License",
+            "id": "https://openalex.org/C2780560020",
             "level": 2,
             "score": 0.5919564,
+            "wikidata": "https://www.wikidata.org/wiki/Q79719",
         },
         {
-            "id": "https://openalex.org/C2777462167",
-            "wikidata": "https://www.wikidata.org/wiki/Q7432048",
             "display_name": "Scholarly communication",
+            "id": "https://openalex.org/C2777462167",
             "level": 3,
+            "score": 0.5683152,
+            "wikidata": "https://www.wikidata.org/wiki/Q7432048",
+        },
+        {
+            "display_name": "Web of science",
+            "id": "https://openalex.org/C3020774429",
+            "level": 3,
+            "score": 0.5055373,
+            "wikidata": "https://www.wikidata.org/wiki/Q1201886",
+        },
+        {
+            "display_name": "Bibliometrics",
+            "id": "https://openalex.org/C178315738",
+            "level": 2,
+            "score": 0.4962271,
+            "wikidata": "https://www.wikidata.org/wiki/Q603441",
+        },
+        {
+            "display_name": "Open science",
+            "id": "https://openalex.org/C2778149293",
+            "level": 2,
+            "score": 0.48734793,
+            "wikidata": "https://www.wikidata.org/wiki/Q309823",
+        },
+        {
+            "display_name": "Computer science",
+            "id": "https://openalex.org/C41008148",
+            "level": 0,
+            "score": 0.45299834,
+            "wikidata": "https://www.wikidata.org/wiki/Q21198",
+        },
+        {
+            "display_name": "World Wide Web",
+            "id": "https://openalex.org/C136764020",
+            "level": 1,
+            "score": 0.45292723,
+            "wikidata": "https://www.wikidata.org/wiki/Q466",
+        },
+        {
+            "display_name": "Citation analysis",
+            "id": "https://openalex.org/C105345328",
+            "level": 3,
+            "score": 0.43920913,
+            "wikidata": "https://www.wikidata.org/wiki/Q206276",
+        },
+        {
+            "display_name": "Medicine",
+            "id": "https://openalex.org/C71924100",
+            "level": 0,
+            "score": 0.38992488,
+            "wikidata": "https://www.wikidata.org/wiki/Q11190",
+        },
+        {
+            "display_name": "Library science",
+            "id": "https://openalex.org/C161191863",
+            "level": 1,
+            "score": 0.37244928,
+            "wikidata": "https://www.wikidata.org/wiki/Q199655",
+        },
+        {
+            "display_name": "Political science",
+            "id": "https://openalex.org/C17744445",
+            "level": 0,
+            "score": 0.24154112,
+            "wikidata": "https://www.wikidata.org/wiki/Q36442",
+        },
+        {
+            "display_name": "Meta-analysis",
+            "id": "https://openalex.org/C95190672",
+            "level": 2,
+            "score": 0.15993848,
+            "wikidata": "https://www.wikidata.org/wiki/Q815382",
+        },
+        {
+            "display_name": "Internal medicine",
+            "id": "https://openalex.org/C126322002",
+            "level": 1,
+            "score": 0.1485905,
+            "wikidata": "https://www.wikidata.org/wiki/Q11180",
+        },
+        {
+            "display_name": "Statistics",
+            "id": "https://openalex.org/C105795698",
+            "level": 1,
+            "score": 0.13449502,
+            "wikidata": "https://www.wikidata.org/wiki/Q12483",
+        },
+        {
+            "display_name": "Mathematics",
+            "id": "https://openalex.org/C33923547",
+            "level": 0,
+            "score": 0.11654329,
+            "wikidata": "https://www.wikidata.org/wiki/Q395",
+        },
+        {
+            "display_name": "Publishing",
+            "id": "https://openalex.org/C151719136",
+            "level": 2,
+            "score": 0.0,
+            "wikidata": "https://www.wikidata.org/wiki/Q3972943",
+        },
+        {
+            "display_name": "Law",
+            "id": "https://openalex.org/C199539241",
+            "level": 1,
+            "score": 0.0,
+            "wikidata": "https://www.wikidata.org/wiki/Q7748",
+        },
+        {
+            "display_name": "Operating system",
+            "id": "https://openalex.org/C111919701",
+            "level": 1,
+            "score": 0.0,
+            "wikidata": "https://www.wikidata.org/wiki/Q9135",
+        },
+    ],
+    "corresponding_author_ids": [],
+    "corresponding_institution_ids": [],
+    "countries_distinct_count": 2,
+    "counts_by_year": [
+        {"cited_by_count": 30, "year": 2025},
+        {"cited_by_count": 118, "year": 2024},
+        {"cited_by_count": 142, "year": 2023},
+        {"cited_by_count": 147, "year": 2022},
+        {"cited_by_count": 146, "year": 2021},
+        {"cited_by_count": 179, "year": 2020},
+        {"cited_by_count": 130, "year": 2019},
+        {"cited_by_count": 59, "year": 2018},
+        {"cited_by_count": 9, "year": 2017},
+    ],
+    "created_date": "2017-08-08",
+    "datasets": [],
+    "display_name": "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles",
+    "doi": "https://doi.org/10.7717/peerj.4375",
+    "fulltext_origin": "pdf",
+    "fwci": 76.282,
+    "grants": [],
+    "has_fulltext": True,
+    "id": "https://openalex.org/W2741809807",
+    "ids": {
+        "doi": "https://doi.org/10.7717/peerj.4375",
+        "mag": "2741809807",
+        "openalex": "https://openalex.org/W2741809807",
+        "pmcid": "https://www.ncbi.nlm.nih.gov/pmc/articles/5815332",
+        "pmid": "https://pubmed.ncbi.nlm.nih.gov/29456894",
+    },
+    "indexed_in": ["crossref", "doaj", "pubmed"],
+    "institution_assertions": [],
+    "institutions_distinct_count": 8,
+    "is_paratext": False,
+    "is_retracted": False,
+    "keywords": [
+        {
+            "display_name": "Scholarly Communication",
+            "id": "https://openalex.org/keywords/scholarly-communication",
             "score": 0.5683152,
         },
         {
-            "id": "https://openalex.org/C3020774429",
-            "wikidata": "https://www.wikidata.org/wiki/Q1201886",
             "display_name": "Web of science",
-            "level": 3,
+            "id": "https://openalex.org/keywords/web-of-science",
             "score": 0.5055373,
         },
         {
-            "id": "https://openalex.org/C178315738",
-            "wikidata": "https://www.wikidata.org/wiki/Q603441",
-            "display_name": "Bibliometrics",
-            "level": 2,
-            "score": 0.4962271,
-        },
-        {
-            "id": "https://openalex.org/C2778149293",
-            "wikidata": "https://www.wikidata.org/wiki/Q309823",
-            "display_name": "Open science",
-            "level": 2,
+            "display_name": "Open Science",
+            "id": "https://openalex.org/keywords/open-science",
             "score": 0.48734793,
         },
         {
-            "id": "https://openalex.org/C41008148",
-            "wikidata": "https://www.wikidata.org/wiki/Q21198",
-            "display_name": "Computer science",
-            "level": 0,
-            "score": 0.45299834,
-        },
-        {
-            "id": "https://openalex.org/C136764020",
-            "wikidata": "https://www.wikidata.org/wiki/Q466",
-            "display_name": "World Wide Web",
-            "level": 1,
-            "score": 0.45292723,
-        },
-        {
-            "id": "https://openalex.org/C105345328",
-            "wikidata": "https://www.wikidata.org/wiki/Q206276",
             "display_name": "Citation analysis",
-            "level": 3,
+            "id": "https://openalex.org/keywords/citation-analysis",
             "score": 0.43920913,
         },
-        {
-            "id": "https://openalex.org/C71924100",
-            "wikidata": "https://www.wikidata.org/wiki/Q11190",
-            "display_name": "Medicine",
-            "level": 0,
-            "score": 0.38992488,
-        },
-        {
-            "id": "https://openalex.org/C161191863",
-            "wikidata": "https://www.wikidata.org/wiki/Q199655",
-            "display_name": "Library science",
-            "level": 1,
-            "score": 0.37244928,
-        },
-        {
-            "id": "https://openalex.org/C17744445",
-            "wikidata": "https://www.wikidata.org/wiki/Q36442",
-            "display_name": "Political science",
-            "level": 0,
-            "score": 0.24154112,
-        },
-        {
-            "id": "https://openalex.org/C95190672",
-            "wikidata": "https://www.wikidata.org/wiki/Q815382",
-            "display_name": "Meta-analysis",
-            "level": 2,
-            "score": 0.15993848,
-        },
-        {
-            "id": "https://openalex.org/C126322002",
-            "wikidata": "https://www.wikidata.org/wiki/Q11180",
-            "display_name": "Internal medicine",
-            "level": 1,
-            "score": 0.1485905,
-        },
-        {
-            "id": "https://openalex.org/C105795698",
-            "wikidata": "https://www.wikidata.org/wiki/Q12483",
-            "display_name": "Statistics",
-            "level": 1,
-            "score": 0.13449502,
-        },
-        {
-            "id": "https://openalex.org/C33923547",
-            "wikidata": "https://www.wikidata.org/wiki/Q395",
-            "display_name": "Mathematics",
-            "level": 0,
-            "score": 0.11654329,
-        },
-        {
-            "id": "https://openalex.org/C151719136",
-            "wikidata": "https://www.wikidata.org/wiki/Q3972943",
-            "display_name": "Publishing",
-            "level": 2,
-            "score": 0.0,
-        },
-        {
-            "id": "https://openalex.org/C199539241",
-            "wikidata": "https://www.wikidata.org/wiki/Q7748",
-            "display_name": "Law",
-            "level": 1,
-            "score": 0.0,
-        },
-        {
-            "id": "https://openalex.org/C111919701",
-            "wikidata": "https://www.wikidata.org/wiki/Q9135",
-            "display_name": "Operating system",
-            "level": 1,
-            "score": 0.0,
-        },
     ],
-    "mesh": [],
-    "locations_count": 7,
+    "language": "en",
     "locations": [
         {
+            "is_accepted": True,
             "is_oa": True,
+            "is_published": True,
             "landing_page_url": "https://doi.org/10.7717/peerj.4375",
+            "license": "cc-by",
+            "license_id": "https://openalex.org/licenses/cc-by",
             "pdf_url": "https://peerj.com/articles/4375.pdf",
             "source": {
-                "id": "https://openalex.org/S1983995261",
                 "display_name": "PeerJ",
-                "issn_l": "2167-8359",
-                "issn": ["2167-8359"],
-                "is_oa": True,
-                "is_in_doaj": True,
-                "is_indexed_in_scopus": True,
-                "is_core": True,
                 "host_organization": "https://openalex.org/P4310320104",
-                "host_organization_name": "PeerJ, Inc.",
                 "host_organization_lineage": [
                     "https://openalex.org/P4310320104"
                 ],
                 "host_organization_lineage_names": ["PeerJ, Inc."],
+                "host_organization_name": "PeerJ, Inc.",
+                "id": "https://openalex.org/S1983995261",
+                "is_core": True,
+                "is_in_doaj": True,
+                "is_indexed_in_scopus": True,
+                "is_oa": True,
+                "issn": ["2167-8359"],
+                "issn_l": "2167-8359",
                 "type": "journal",
             },
-            "license": "cc-by",
-            "license_id": "https://openalex.org/licenses/cc-by",
             "version": "publishedVersion",
-            "is_accepted": True,
-            "is_published": True,
         },
         {
+            "is_accepted": False,
             "is_oa": False,
+            "is_published": False,
             "landing_page_url": "https://doaj.org/article/13b0006802e745a6973c19b2ecb9b97a",
-            "pdf_url": None,
-            "source": {
-                "id": "https://openalex.org/S4306401280",
-                "display_name": "DOAJ (DOAJ: Directory of Open Access Journals)",
-                "issn_l": None,
-                "issn": None,
-                "is_oa": True,
-                "is_in_doaj": False,
-                "is_indexed_in_scopus": False,
-                "is_core": False,
-                "host_organization": None,
-                "host_organization_name": None,
-                "host_organization_lineage": [],
-                "host_organization_lineage_names": [],
-                "type": "repository",
-            },
             "license": None,
             "license_id": None,
-            "version": None,
-            "is_accepted": False,
-            "is_published": False,
-        },
-        {
-            "is_oa": True,
-            "landing_page_url": "https://europepmc.org/articles/pmc5815332",
-            "pdf_url": "https://europepmc.org/articles/pmc5815332?pdf=render",
+            "pdf_url": None,
             "source": {
-                "id": "https://openalex.org/S4306400806",
-                "display_name": "Europe PMC (PubMed Central)",
-                "issn_l": None,
-                "issn": None,
-                "is_oa": True,
+                "display_name": "DOAJ (DOAJ: Directory of Open Access Journals)",
+                "host_organization": None,
+                "host_organization_lineage": [],
+                "host_organization_lineage_names": [],
+                "host_organization_name": None,
+                "id": "https://openalex.org/S4306401280",
+                "is_core": False,
                 "is_in_doaj": False,
                 "is_indexed_in_scopus": False,
-                "is_core": False,
+                "is_oa": True,
+                "issn": None,
+                "issn_l": None,
+                "type": "repository",
+            },
+            "version": None,
+        },
+        {
+            "is_accepted": True,
+            "is_oa": True,
+            "is_published": True,
+            "landing_page_url": "https://europepmc.org/articles/pmc5815332",
+            "license": "cc-by",
+            "license_id": "https://openalex.org/licenses/cc-by",
+            "pdf_url": "https://europepmc.org/articles/pmc5815332?pdf=render",
+            "source": {
+                "display_name": "Europe PMC (PubMed Central)",
                 "host_organization": "https://openalex.org/I1303153112",
-                "host_organization_name": "European Bioinformatics Institute",
                 "host_organization_lineage": [
                     "https://openalex.org/I1303153112"
                 ],
                 "host_organization_lineage_names": [
                     "European Bioinformatics Institute"
                 ],
-                "type": "repository",
-            },
-            "license": "cc-by",
-            "license_id": "https://openalex.org/licenses/cc-by",
-            "version": "publishedVersion",
-            "is_accepted": True,
-            "is_published": True,
-        },
-        {
-            "is_oa": True,
-            "landing_page_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5815332",
-            "pdf_url": None,
-            "source": {
-                "id": "https://openalex.org/S2764455111",
-                "display_name": "PubMed Central",
-                "issn_l": None,
-                "issn": None,
-                "is_oa": True,
+                "host_organization_name": "European Bioinformatics Institute",
+                "id": "https://openalex.org/S4306400806",
+                "is_core": False,
                 "is_in_doaj": False,
                 "is_indexed_in_scopus": False,
-                "is_core": False,
+                "is_oa": True,
+                "issn": None,
+                "issn_l": None,
+                "type": "repository",
+            },
+            "version": "publishedVersion",
+        },
+        {
+            "is_accepted": True,
+            "is_oa": True,
+            "is_published": True,
+            "landing_page_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5815332",
+            "license": None,
+            "license_id": None,
+            "pdf_url": None,
+            "source": {
+                "display_name": "PubMed Central",
                 "host_organization": "https://openalex.org/I1299303238",
-                "host_organization_name": "National Institutes of Health",
                 "host_organization_lineage": [
                     "https://openalex.org/I1299303238"
                 ],
                 "host_organization_lineage_names": [
                     "National Institutes of Health"
                 ],
-                "type": "repository",
-            },
-            "license": None,
-            "license_id": None,
-            "version": "publishedVersion",
-            "is_accepted": True,
-            "is_published": True,
-        },
-        {
-            "is_oa": True,
-            "landing_page_url": "https://digitalcommons.unl.edu/cgi/viewcontent.cgi?article=1143&context=scholcom",
-            "pdf_url": "https://digitalcommons.unl.edu/cgi/viewcontent.cgi?article=1143&context=scholcom",
-            "source": {
-                "id": "https://openalex.org/S4377196105",
-                "display_name": "Digital Commons - University of Nebraska Lincoln (University of Nebraska–Lincoln)",
-                "issn_l": None,
-                "issn": None,
-                "is_oa": False,
+                "host_organization_name": "National Institutes of Health",
+                "id": "https://openalex.org/S2764455111",
+                "is_core": False,
                 "is_in_doaj": False,
                 "is_indexed_in_scopus": False,
-                "is_core": False,
+                "is_oa": True,
+                "issn": None,
+                "issn_l": None,
+                "type": "repository",
+            },
+            "version": "publishedVersion",
+        },
+        {
+            "is_accepted": False,
+            "is_oa": True,
+            "is_published": False,
+            "landing_page_url": "https://digitalcommons.unl.edu/cgi/viewcontent.cgi?article=1143&context=scholcom",
+            "license": "cc-by",
+            "license_id": "https://openalex.org/licenses/cc-by",
+            "pdf_url": "https://digitalcommons.unl.edu/cgi/viewcontent.cgi?article=1143&context=scholcom",
+            "source": {
+                "display_name": "Digital Commons - University of Nebraska Lincoln (University "
+                "of Nebraska–Lincoln)",
                 "host_organization": "https://openalex.org/I114395901",
-                "host_organization_name": "University of Nebraska–Lincoln",
                 "host_organization_lineage": [
                     "https://openalex.org/I114395901"
                 ],
                 "host_organization_lineage_names": [
                     "University of Nebraska–Lincoln"
                 ],
+                "host_organization_name": "University of Nebraska–Lincoln",
+                "id": "https://openalex.org/S4377196105",
+                "is_core": False,
+                "is_in_doaj": False,
+                "is_indexed_in_scopus": False,
+                "is_oa": False,
+                "issn": None,
+                "issn_l": None,
                 "type": "repository",
             },
-            "license": "cc-by",
-            "license_id": "https://openalex.org/licenses/cc-by",
             "version": "submittedVersion",
-            "is_accepted": False,
-            "is_published": False,
         },
         {
+            "is_accepted": False,
             "is_oa": True,
+            "is_published": False,
             "landing_page_url": "http://hdl.handle.net/1866/23242",
+            "license": "cc-by",
+            "license_id": "https://openalex.org/licenses/cc-by",
             "pdf_url": "https://papyrus.bib.umontreal.ca/xmlui/bitstream/1866/23242/1/peerj-06-4375.pdf",
             "source": {
-                "id": "https://openalex.org/S4306402422",
                 "display_name": "Papyrus : Institutional Repository (Université de Montréal)",
-                "issn_l": None,
-                "issn": None,
-                "is_oa": True,
-                "is_in_doaj": False,
-                "is_indexed_in_scopus": False,
-                "is_core": False,
                 "host_organization": "https://openalex.org/I70931966",
-                "host_organization_name": "Université de Montréal",
                 "host_organization_lineage": ["https://openalex.org/I70931966"],
                 "host_organization_lineage_names": ["Université de Montréal"],
-                "type": "repository",
-            },
-            "license": "cc-by",
-            "license_id": "https://openalex.org/licenses/cc-by",
-            "version": "submittedVersion",
-            "is_accepted": False,
-            "is_published": False,
-        },
-        {
-            "is_oa": False,
-            "landing_page_url": "https://pubmed.ncbi.nlm.nih.gov/29456894",
-            "pdf_url": None,
-            "source": {
-                "id": "https://openalex.org/S4306525036",
-                "display_name": "PubMed",
-                "issn_l": None,
-                "issn": None,
-                "is_oa": False,
+                "host_organization_name": "Université de Montréal",
+                "id": "https://openalex.org/S4306402422",
+                "is_core": False,
                 "is_in_doaj": False,
                 "is_indexed_in_scopus": False,
-                "is_core": False,
+                "is_oa": True,
+                "issn": None,
+                "issn_l": None,
+                "type": "repository",
+            },
+            "version": "submittedVersion",
+        },
+        {
+            "is_accepted": False,
+            "is_oa": False,
+            "is_published": False,
+            "landing_page_url": "https://pubmed.ncbi.nlm.nih.gov/29456894",
+            "license": None,
+            "license_id": None,
+            "pdf_url": None,
+            "source": {
+                "display_name": "PubMed",
                 "host_organization": "https://openalex.org/I1299303238",
-                "host_organization_name": "National Institutes of Health",
                 "host_organization_lineage": [
                     "https://openalex.org/I1299303238"
                 ],
                 "host_organization_lineage_names": [
                     "National Institutes of Health"
                 ],
+                "host_organization_name": "National Institutes of Health",
+                "id": "https://openalex.org/S4306525036",
+                "is_core": False,
+                "is_in_doaj": False,
+                "is_indexed_in_scopus": False,
+                "is_oa": False,
+                "issn": None,
+                "issn_l": None,
                 "type": "repository",
             },
-            "license": None,
-            "license_id": None,
             "version": None,
-            "is_accepted": False,
-            "is_published": False,
         },
     ],
-    "best_oa_location": {
+    "locations_count": 7,
+    "mesh": [],
+    "open_access": {
+        "any_repository_has_fulltext": True,
         "is_oa": True,
+        "oa_status": "gold",
+        "oa_url": "https://peerj.com/articles/4375.pdf",
+    },
+    "primary_location": {
+        "is_accepted": True,
+        "is_oa": True,
+        "is_published": True,
         "landing_page_url": "https://doi.org/10.7717/peerj.4375",
-        "pdf_url": "https://peerj.com/articles/4375.pdf",
-        "source": {
-            "id": "https://openalex.org/S1983995261",
-            "display_name": "PeerJ",
-            "issn_l": "2167-8359",
-            "issn": ["2167-8359"],
-            "is_oa": True,
-            "is_in_doaj": True,
-            "is_indexed_in_scopus": True,
-            "is_core": True,
-            "host_organization": "https://openalex.org/P4310320104",
-            "host_organization_name": "PeerJ, Inc.",
-            "host_organization_lineage": ["https://openalex.org/P4310320104"],
-            "host_organization_lineage_names": ["PeerJ, Inc."],
-            "type": "journal",
-        },
         "license": "cc-by",
         "license_id": "https://openalex.org/licenses/cc-by",
+        "pdf_url": "https://peerj.com/articles/4375.pdf",
+        "source": {
+            "display_name": "PeerJ",
+            "host_organization": "https://openalex.org/P4310320104",
+            "host_organization_lineage": ["https://openalex.org/P4310320104"],
+            "host_organization_lineage_names": ["PeerJ, Inc."],
+            "host_organization_name": "PeerJ, Inc.",
+            "id": "https://openalex.org/S1983995261",
+            "is_core": True,
+            "is_in_doaj": True,
+            "is_indexed_in_scopus": True,
+            "is_oa": True,
+            "issn": ["2167-8359"],
+            "issn_l": "2167-8359",
+            "type": "journal",
+        },
         "version": "publishedVersion",
-        "is_accepted": True,
-        "is_published": True,
     },
-    "sustainable_development_goals": [],
-    "grants": [],
-    "datasets": [],
-    "versions": [],
-    "referenced_works_count": 45,
+    "primary_topic": {
+        "display_name": "scientometrics and bibliometrics research",
+        "domain": {
+            "display_name": "Social Sciences",
+            "id": "https://openalex.org/domains/2",
+        },
+        "field": {
+            "display_name": "Decision Sciences",
+            "id": "https://openalex.org/fields/18",
+        },
+        "id": "https://openalex.org/T10102",
+        "score": 0.9969,
+        "subfield": {
+            "display_name": "Statistics, Probability and Uncertainty",
+            "id": "https://openalex.org/subfields/1804",
+        },
+    },
+    "publication_date": "2018-02-13",
+    "publication_year": 2018,
     "referenced_works": [
         "https://openalex.org/W1560783210",
         "https://openalex.org/W1724212071",
@@ -4274,6 +4429,7 @@ MOCK_W2741809807_DATA = {
         "https://openalex.org/W4298108315",
         "https://openalex.org/W4301734034",
     ],
+    "referenced_works_count": 45,
     "related_works": [
         "https://openalex.org/W3203790917",
         "https://openalex.org/W3201736257",
@@ -4286,215 +4442,165 @@ MOCK_W2741809807_DATA = {
         "https://openalex.org/W2060904856",
         "https://openalex.org/W203102807",
     ],
-    "abstract_inverted_index": {
-        "Despite": [0],
-        "growing": [1],
-        "interest": [2],
-        "in": [3, 57, 73, 110, 122],
-        "Open": [4, 201],
-        "Access": [5],
-        "(OA)": [6],
-        "to": [7, 54, 252],
-        "scholarly": [8, 105],
-        "literature,": [9],
-        "there": [10],
-        "is": [11, 107, 116, 176],
-        "an": [12, 34, 85, 185, 199, 231],
-        "unmet": [13],
-        "need": [14, 31],
-        "for": [15, 42, 174, 219],
-        "large-scale,": [16],
-        "up-to-date,": [17],
-        "and": [18, 24, 77, 112, 124, 144, 221, 237, 256],
-        "reproducible": [19],
-        "studies": [20],
-        "assessing": [21],
-        "the": [22, 104, 134, 145, 170, 195, 206, 213, 245],
-        "prevalence": [23],
-        "characteristics": [25],
-        "of": [26, 51, 75, 83, 103, 137, 141, 163, 209],
-        "OA.": [27, 168, 239],
-        "We": [28, 46, 97, 203, 240],
-        "address": [29],
-        "this": [30, 114, 142],
-        "using": [32, 95, 244],
-        "oaDOI,": [33],
-        "open": [35],
-        "online": [36],
-        "service": [37],
-        "that": [38, 89, 99, 113, 147, 155],
-        "determines": [39],
-        "OA": [40, 56, 93, 108, 138, 159, 175, 210, 223, 254],
-        "status": [41],
-        "67": [43],
-        "million": [44],
-        "articles.": [45],
-        "use": [47],
-        "three": [48, 58],
-        "samples,": [49],
-        "each": [50],
-        "100,000": [52],
-        "articles,": [53, 152, 211],
-        "investigate": [55],
-        "populations:": [59],
-        "(1)": [60],
-        "all": [61],
-        "journal": [62, 70],
-        "articles": [63, 71, 79, 94, 164, 191, 224],
-        "assigned": [64],
-        "a": [65, 250],
-        "Crossref": [66],
-        "DOI,": [67],
-        "(2)": [68],
-        "recent": [69, 128],
-        "indexed": [72],
-        "Web": [74],
-        "Science,": [76],
-        "(3)": [78],
-        "viewed": [80],
-        "by": [81, 120, 235],
-        "users": [82, 91, 157],
-        "Unpaywall,": [84],
-        "open-source": [86],
-        "browser": [87],
-        "extension": [88],
-        "lets": [90],
-        "find": [92, 154],
-        "oaDOI.": [96],
-        "estimate": [98],
-        "at": [100],
-        "least": [101],
-        "28%": [102],
-        "literature": [106],
-        "(19M": [109],
-        "total)": [111],
-        "proportion": [115],
-        "growing,": [117],
-        "driven": [118, 233],
-        "particularly": [119],
-        "growth": [121],
-        "Gold": [123],
-        "Hybrid.": [125],
-        "The": [126],
-        "most": [127, 171],
-        "year": [129],
-        "analyzed": [130],
-        "(2015)": [131],
-        "also": [132, 204],
-        "has": [133],
-        "highest": [135],
-        "percentage": [136],
-        "(45%).": [139],
-        "Because": [140],
-        "growth,": [143],
-        "fact": [146],
-        "readers": [148],
-        "disproportionately": [149],
-        "access": [150],
-        "newer": [151],
-        "we": [153, 188],
-        "Unpaywall": [156],
-        "encounter": [158],
-        "quite": [160],
-        "frequently:": [161],
-        "47%": [162],
-        "they": [165],
-        "view": [166],
-        "are": [167],
-        "Notably,": [169],
-        "common": [172],
-        "mechanism": [173],
-        "not": [177],
-        "Gold,": [178],
-        "Green,": [179],
-        "or": [180],
-        "Hybrid": [181, 238],
-        "OA,": [182],
-        "but": [183],
-        "rather": [184],
-        "under-discussed": [186],
-        "category": [187],
-        "dub": [189],
-        "Bronze:": [190],
-        "made": [192],
-        "free-to-read": [193],
-        "on": [194],
-        "publisher": [196],
-        "website,": [197],
-        "without": [198],
-        "explicit": [200],
-        "license.": [202],
-        "examine": [205],
-        "citation": [207, 216],
-        "impact": [208],
-        "corroborating": [212],
-        "so-called": [214],
-        "open-access": [215],
-        "advantage:": [217],
-        "accounting": [218],
-        "age": [220],
-        "discipline,": [222],
-        "receive": [225],
-        "18%": [226],
-        "more": [227],
-        "citations": [228],
-        "than": [229],
-        "average,": [230],
-        "effect": [232],
-        "primarily": [234],
-        "Green": [236],
-        "encourage": [241],
-        "further": [242],
-        "research": [243],
-        "free": [246],
-        "oaDOI": [247],
-        "service,": [248],
-        "as": [249],
-        "way": [251],
-        "inform": [253],
-        "policy": [255],
-        "practice.": [257],
-    },
-    "abstract_inverted_index_v3": None,
-    "cited_by_api_url": "https://api.openalex.org/works?filter=cites:W2741809807",
-    "counts_by_year": [
-        {"year": 2025, "cited_by_count": 30},
-        {"year": 2024, "cited_by_count": 118},
-        {"year": 2023, "cited_by_count": 142},
-        {"year": 2022, "cited_by_count": 147},
-        {"year": 2021, "cited_by_count": 146},
-        {"year": 2020, "cited_by_count": 179},
-        {"year": 2019, "cited_by_count": 130},
-        {"year": 2018, "cited_by_count": 59},
-        {"year": 2017, "cited_by_count": 9},
+    "sustainable_development_goals": [],
+    "title": "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles",
+    "topics": [
+        {
+            "display_name": "scientometrics and bibliometrics research",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Decision Sciences",
+                "id": "https://openalex.org/fields/18",
+            },
+            "id": "https://openalex.org/T10102",
+            "score": 0.9969,
+            "subfield": {
+                "display_name": "Statistics, Probability and Uncertainty",
+                "id": "https://openalex.org/subfields/1804",
+            },
+        },
+        {
+            "display_name": "Academic Publishing and Open Access",
+            "domain": {
+                "display_name": "Social Sciences",
+                "id": "https://openalex.org/domains/2",
+            },
+            "field": {
+                "display_name": "Decision Sciences",
+                "id": "https://openalex.org/fields/18",
+            },
+            "id": "https://openalex.org/T13607",
+            "score": 0.9807,
+            "subfield": {
+                "display_name": "Information Systems and Management",
+                "id": "https://openalex.org/subfields/1802",
+            },
+        },
+        {
+            "display_name": "Research Data Management Practices",
+            "domain": {
+                "display_name": "Physical Sciences",
+                "id": "https://openalex.org/domains/3",
+            },
+            "field": {
+                "display_name": "Computer Science",
+                "id": "https://openalex.org/fields/17",
+            },
+            "id": "https://openalex.org/T11937",
+            "score": 0.9185,
+            "subfield": {
+                "display_name": "Information Systems",
+                "id": "https://openalex.org/subfields/1710",
+            },
+        },
     ],
+    "type": "article",
+    "type_crossref": "journal-article",
     "updated_date": "2025-06-01T11:32:56.709091",
-    "created_date": "2017-08-08",
+    "versions": [],
 }
 
 MOCK_C71924100_DATA = {
-    "id": "https://openalex.org/C71924100",
-    "wikidata": "https://www.wikidata.org/wiki/Q11190",
-    "display_name": "Medicine",
-    "level": 0,
-    "description": "field of study for diagnosing, treating and preventing disease",
-    "works_count": 64992842,
+    "ancestors": [],
     "cited_by_count": 856329809,
-    "summary_stats": {
-        "2yr_mean_citedness": 1.7869663176673092,
-        "h_index": 3292,
-        "i10_index": 14227920,
-    },
+    "counts_by_year": [
+        {"cited_by_count": 19492777, "works_count": 891805, "year": 2025},
+        {"cited_by_count": 56321433, "works_count": 2478295, "year": 2024},
+        {"cited_by_count": 57543459, "works_count": 2663452, "year": 2023},
+        {"cited_by_count": 56561452, "works_count": 2453552, "year": 2022},
+        {"cited_by_count": 56977246, "works_count": 2666876, "year": 2021},
+        {"cited_by_count": 50992242, "works_count": 2762902, "year": 2020},
+        {"cited_by_count": 40688762, "works_count": 2366932, "year": 2019},
+        {"cited_by_count": 36531109, "works_count": 2281452, "year": 2018},
+        {"cited_by_count": 34717261, "works_count": 2170018, "year": 2017},
+        {"cited_by_count": 33009135, "works_count": 2147597, "year": 2016},
+        {"cited_by_count": 32563326, "works_count": 2117418, "year": 2015},
+        {"cited_by_count": 31288138, "works_count": 2047075, "year": 2014},
+        {"cited_by_count": 29274544, "works_count": 1985218, "year": 2013},
+        {"cited_by_count": 27356904, "works_count": 1890046, "year": 2012},
+    ],
+    "created_date": "2016-06-24",
+    "description": "field of study for diagnosing, treating and preventing disease",
+    "display_name": "Medicine",
+    "id": "https://openalex.org/C71924100",
     "ids": {
-        "openalex": "https://openalex.org/C71924100",
-        "wikidata": "https://www.wikidata.org/wiki/Q11190",
         "mag": "71924100",
-        "wikipedia": "https://en.wikipedia.org/wiki/Medicine",
+        "openalex": "https://openalex.org/C71924100",
         "umls_cui": ["C0013227"],
+        "wikidata": "https://www.wikidata.org/wiki/Q11190",
+        "wikipedia": "https://en.wikipedia.org/wiki/Medicine",
     },
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d2/Asklepios.3.jpg",
     "image_thumbnail_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Asklepios.3.jpg/66px-Asklepios.3.jpg",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d2/Asklepios.3.jpg",
     "international": {
+        "description": {
+            "aeb-arab": "علم و صنعة تطليع المرض و مداويته",
+            "ar": "مجال لدراسة التشخيص والعلاج والوقاية من المرض",
+            "ast": "campu d'estudios pa diagnosticar, tratar y prevenir les "
+            "enfermedaes humanes",
+            "be": "Навука пра лячэнне хвароб",
+            "be-tarask": "навука па выяўленьні, пазьбяганьні і лячэньні хваробаў",
+            "bg": "наука за диагностициране, лечение и предотвратяване на болести и "
+            "наранявания",
+            "ca": "camp d'estudi per diagnosticar, tractar i prevenir la malaltia",
+            "cs": "věda, zabývající se diagnostikou, léčením a prevencí vzniku nemocí",
+            "da": "videnskaben og praksis afsat til at forebygge, diagnosticere og "
+            "behandle sygdomme, og for at bevare menneskers sundhed og for at "
+            "undgå døden",
+            "de": "Lehre der Vorbeugung, Erkennung und Behandlung von Krankheiten",
+            "el": "επιστήμη και τέχνη που ασχολείται με την έρευνα και την εφαρμογή "
+            "μεθόδων και τεχνικών για την πρόληψη, τη διάγνωση και τη θεραπεία "
+            "των ασθενειών του ανθρώπου",
+            "en": "field of study for diagnosing, treating and preventing disease",
+            "eo": "scienco kaj arto pri la sano de homoj kaj bestoj",
+            "es": "estudio de la vida, la salud, las enfermedades y la muerte del ser "
+            "humano",
+            "fa": "شاخه مطالعاتی در مورد تشخیص، درمان و پیشگیری بیماری",
+            "fi": "tieteen ja terveydenhuollon ala, joka tutkii ja hoitaa ihmisen "
+            "terveysongelmia",
+            "fr": "science et pratique étudiant l'organisation du corps humain, son "
+            "fonctionnement normal et cherchant à soigner et prévenir ses "
+            "pathologies",
+            "gl": "ciencia dedicada ao estudo da vida, a saúde, as enfermidades e a "
+            "morte do ser humano",
+            "he": "תחום ידע כללי המאגד דרכים בכדי לשמר את הבריאות מפני מחלות הפוגעות "
+            "בגוף",
+            "hi": "मानव शरीर के अध्ययन व उसकी व्याधियों के निदान का विज्ञान",
+            "hr": "znanost o sprječavanju, otkrivanju i liječenju bolesti",
+            "hsb": "wědomosć profylaksy, spóznawanja a lěkowanja chorosćow",
+            "hu": "tudományág",
+            "id": "kajian atau praktik diagnosis, pengobatan, dan pencegahan penyakit",
+            "ilo": "arte iti panangagas",
+            "it": "scienza che si occupa della salute delle persone",
+            "ja": "生体（人体）の構造や機能、疾病について研究し、疾病を診断・治療・予防する方法を開発する学問",
+            "ko": "질병의 진료와 치료를 목적으로 하는 학문",
+            "la": "scientia",
+            "ms": "sains tentang pengesanan, rawatan dan pencegahan penyakit",
+            "nl": "wetenschap die zich bezighoudt met voorkomen, diagnosticeren en "
+            "behandelen van ziekten",
+            "pl": "nauka empiryczna o diagnozowaniu, leczeniu i zapobieganiu chorobom",
+            "pt": "ciência que busca a prevenção e cura de enfermidades",
+            "pt-br": "ciência ou prática do diagnóstico, tratamento e prevenção das "
+            "doenças",
+            "ro": "domeniul de studiu pentru diagnosticarea, tratarea și prevenirea "
+            "bolilor",
+            "ru": "область деятельности и знаний о лечении болезней",
+            "sk": "veda, ktorá sa zaoberá rozpoznávaním, liečením a prevenciou chorôb",
+            "sq": "fushë e studimit për diagnostifikimin, trajtimin dhe parandalimin e "
+            "sëmundjeve",
+            "sv": "den vetenskap och praktik som ägnar sig åt att förhindra, "
+            "diagnostisera och behandla sjukdomar, samt att upprätthålla "
+            "mänsklig hälsa och att undvika död",
+            "tr": "hastalıkların teşhisi, tedavisi ve önlenmesi için çalışma alanı",
+            "uk": "галузь діяльності, наука чи практика діагностики, лікування, "
+            "запобігання хвороб, переважно людини",
+            "uz": "aperatsiya",
+            "vec": "Siensa che ła se ocupa de ła sałute dei esari viventi",
+            "zh": "診斷，治療和預防疾病的研究領域",
+        },
         "display_name": {
             "aeb-arab": "طب",
             "af": "geneeskunde",
@@ -4649,7 +4755,7 @@ MOCK_C71924100_DATA = {
             "sgs": "Medėcėna",
             "sh": "medicina",
             "shi": "amjjay",
-            "si": "වෛද්‍ය විද්‍යාව",
+            "si": "වෛද්\u200dය විද්\u200dයාව",
             "sk": "Medicína",
             "sl": "medicina",
             "so": "Daawo",
@@ -4690,438 +4796,399 @@ MOCK_C71924100_DATA = {
             "zh-hant": "醫學",
             "zh-hk": "醫學",
         },
-        "description": {
-            "aeb-arab": "علم و صنعة تطليع المرض و مداويته",
-            "ar": "مجال لدراسة التشخيص والعلاج والوقاية من المرض",
-            "ast": "campu d'estudios pa diagnosticar, tratar y prevenir les enfermedaes humanes",
-            "be": "Навука пра лячэнне хвароб",
-            "be-tarask": "навука па выяўленьні, пазьбяганьні і лячэньні хваробаў",
-            "bg": "наука за диагностициране, лечение и предотвратяване на болести и наранявания",
-            "ca": "camp d'estudi per diagnosticar, tractar i prevenir la malaltia",
-            "cs": "věda, zabývající se diagnostikou, léčením a prevencí vzniku nemocí",
-            "da": "videnskaben og praksis afsat til at forebygge, diagnosticere og behandle sygdomme, og for at bevare menneskers sundhed og for at undgå døden",
-            "de": "Lehre der Vorbeugung, Erkennung und Behandlung von Krankheiten",
-            "el": "επιστήμη και τέχνη που ασχολείται με την έρευνα και την εφαρμογή μεθόδων και τεχνικών για την πρόληψη, τη διάγνωση και τη θεραπεία των ασθενειών του ανθρώπου",
-            "en": "field of study for diagnosing, treating and preventing disease",
-            "eo": "scienco kaj arto pri la sano de homoj kaj bestoj",
-            "es": "estudio de la vida, la salud, las enfermedades y la muerte del ser humano",
-            "fa": "شاخه مطالعاتی در مورد تشخیص، درمان و پیشگیری بیماری",
-            "fi": "tieteen ja terveydenhuollon ala, joka tutkii ja hoitaa ihmisen terveysongelmia",
-            "fr": "science et pratique étudiant l'organisation du corps humain, son fonctionnement normal et cherchant à soigner et prévenir ses pathologies",
-            "gl": "ciencia dedicada ao estudo da vida, a saúde, as enfermidades e a morte do ser humano",
-            "he": "תחום ידע כללי המאגד דרכים בכדי לשמר את הבריאות מפני מחלות הפוגעות בגוף",
-            "hi": "मानव शरीर के अध्ययन व उसकी व्याधियों के निदान का विज्ञान",
-            "hr": "znanost o sprječavanju, otkrivanju i liječenju bolesti",
-            "hsb": "wědomosć profylaksy, spóznawanja a lěkowanja chorosćow",
-            "hu": "tudományág",
-            "id": "kajian atau praktik diagnosis, pengobatan, dan pencegahan penyakit",
-            "ilo": "arte iti panangagas",
-            "it": "scienza che si occupa della salute delle persone",
-            "ja": "生体（人体）の構造や機能、疾病について研究し、疾病を診断・治療・予防する方法を開発する学問",
-            "ko": "질병의 진료와 치료를 목적으로 하는 학문",
-            "la": "scientia",
-            "ms": "sains tentang pengesanan, rawatan dan pencegahan penyakit",
-            "nl": "wetenschap die zich bezighoudt met voorkomen, diagnosticeren en behandelen van ziekten",
-            "pl": "nauka empiryczna o diagnozowaniu, leczeniu i zapobieganiu chorobom",
-            "pt": "ciência que busca a prevenção e cura de enfermidades",
-            "pt-br": "ciência ou prática do diagnóstico, tratamento e prevenção das doenças",
-            "ro": "domeniul de studiu pentru diagnosticarea, tratarea și prevenirea bolilor",
-            "ru": "область деятельности и знаний о лечении болезней",
-            "sk": "veda, ktorá sa zaoberá rozpoznávaním, liečením a prevenciou chorôb",
-            "sq": "fushë e studimit për diagnostifikimin, trajtimin dhe parandalimin e sëmundjeve",
-            "sv": "den vetenskap och praktik som ägnar sig åt att förhindra, diagnostisera och behandla sjukdomar, samt att upprätthålla mänsklig hälsa och att undvika död",
-            "tr": "hastalıkların teşhisi, tedavisi ve önlenmesi için çalışma alanı",
-            "uk": "галузь діяльності, наука чи практика діагностики, лікування, запобігання хвороб, переважно людини",
-            "uz": "aperatsiya",
-            "vec": "Siensa che ła se ocupa de ła sałute dei esari viventi",
-            "zh": "診斷，治療和預防疾病的研究領域",
-        },
     },
-    "ancestors": [],
+    "level": 0,
     "related_concepts": [
         {
-            "id": "https://openalex.org/C141071460",
-            "wikidata": None,
             "display_name": "Surgery",
+            "id": "https://openalex.org/C141071460",
             "level": 1,
             "score": 104.96226,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C159110408",
-            "wikidata": None,
             "display_name": "Nursing",
+            "id": "https://openalex.org/C159110408",
             "level": 1,
             "score": 79.02369,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C127413603",
-            "wikidata": None,
             "display_name": "Engineering",
+            "id": "https://openalex.org/C127413603",
             "level": 0,
             "score": 69.63139,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C199539241",
-            "wikidata": None,
             "display_name": "Law",
+            "id": "https://openalex.org/C199539241",
             "level": 1,
             "score": 67.21371,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C86803240",
-            "wikidata": None,
             "display_name": "Biology",
+            "id": "https://openalex.org/C86803240",
             "level": 0,
             "score": 66.43467,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C138885662",
-            "wikidata": None,
             "display_name": "Philosophy",
+            "id": "https://openalex.org/C138885662",
             "level": 0,
             "score": 61.929935,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C187212893",
-            "wikidata": None,
             "display_name": "Pediatrics",
+            "id": "https://openalex.org/C187212893",
             "level": 1,
             "score": 57.680614,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C142724271",
-            "wikidata": None,
             "display_name": "Pathology",
+            "id": "https://openalex.org/C142724271",
             "level": 1,
             "score": 55.289818,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C118552586",
-            "wikidata": None,
             "display_name": "Psychiatry",
+            "id": "https://openalex.org/C118552586",
             "level": 1,
             "score": 54.235756,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C185592680",
-            "wikidata": None,
             "display_name": "Chemistry",
+            "id": "https://openalex.org/C185592680",
             "level": 0,
             "score": 52.84301,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C15744967",
-            "wikidata": None,
             "display_name": "Psychology",
+            "id": "https://openalex.org/C15744967",
             "level": 0,
             "score": 52.07612,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C199343813",
-            "wikidata": None,
             "display_name": "Dentistry",
+            "id": "https://openalex.org/C199343813",
             "level": 1,
             "score": 51.967052,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C33923547",
-            "wikidata": None,
             "display_name": "Mathematics",
+            "id": "https://openalex.org/C33923547",
             "level": 0,
             "score": 50.313683,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C121332964",
-            "wikidata": None,
             "display_name": "Physics",
+            "id": "https://openalex.org/C121332964",
             "level": 0,
             "score": 49.542545,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C42407357",
-            "wikidata": None,
             "display_name": "Physiology",
+            "id": "https://openalex.org/C42407357",
             "level": 1,
             "score": 43.246902,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C126322002",
-            "wikidata": None,
             "display_name": "Internal medicine",
+            "id": "https://openalex.org/C126322002",
             "level": 1,
             "score": 38.005802,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C42972112",
-            "wikidata": None,
             "display_name": "Veterinary medicine",
+            "id": "https://openalex.org/C42972112",
             "level": 1,
             "score": 37.586826,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C1862650",
-            "wikidata": None,
             "display_name": "Physical therapy",
+            "id": "https://openalex.org/C1862650",
             "level": 1,
             "score": 35.260742,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C105702510",
-            "wikidata": None,
             "display_name": "Anatomy",
+            "id": "https://openalex.org/C105702510",
             "level": 1,
             "score": 34.528137,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C118487528",
-            "wikidata": None,
             "display_name": "Ophthalmology",
+            "id": "https://openalex.org/C118487528",
             "level": 1,
             "score": 34.469727,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C36289849",
-            "wikidata": None,
             "display_name": "Social science",
+            "id": "https://openalex.org/C36289849",
             "level": 1,
             "score": 32.23799,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C29456083",
-            "wikidata": None,
             "display_name": "Gynecology",
+            "id": "https://openalex.org/C29456083",
             "level": 1,
             "score": 30.138542,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C98274493",
-            "wikidata": None,
             "display_name": "Pharmacology",
+            "id": "https://openalex.org/C98274493",
             "level": 1,
             "score": 28.947195,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C131872663",
-            "wikidata": None,
             "display_name": "Obstetrics",
+            "id": "https://openalex.org/C131872663",
             "level": 1,
             "score": 28.515833,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C15708023",
-            "wikidata": None,
             "display_name": "Humanities",
+            "id": "https://openalex.org/C15708023",
             "level": 1,
             "score": 25.8888,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C150903083",
-            "wikidata": None,
             "display_name": "Biotechnology",
+            "id": "https://openalex.org/C150903083",
             "level": 1,
             "score": 25.69762,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C169760540",
-            "wikidata": None,
             "display_name": "Neuroscience",
+            "id": "https://openalex.org/C169760540",
             "level": 1,
             "score": 21.594986,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C126838900",
-            "wikidata": None,
             "display_name": "Radiology",
+            "id": "https://openalex.org/C126838900",
             "level": 1,
             "score": 19.822334,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C556039675",
-            "wikidata": None,
             "display_name": "Traditional medicine",
+            "id": "https://openalex.org/C556039675",
             "level": 1,
             "score": 19.685818,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C512399662",
-            "wikidata": None,
             "display_name": "Family medicine",
+            "id": "https://openalex.org/C512399662",
             "level": 1,
             "score": 18.738947,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C143998085",
-            "wikidata": None,
             "display_name": "Oncology",
+            "id": "https://openalex.org/C143998085",
             "level": 1,
             "score": 18.646305,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C42219234",
-            "wikidata": None,
             "display_name": "Anesthesia",
+            "id": "https://openalex.org/C42219234",
             "level": 1,
             "score": 18.243666,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C89423630",
-            "wikidata": None,
             "display_name": "Microbiology",
+            "id": "https://openalex.org/C89423630",
             "level": 1,
             "score": 17.219149,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C16005928",
-            "wikidata": None,
             "display_name": "Dermatology",
+            "id": "https://openalex.org/C16005928",
             "level": 1,
             "score": 17.12297,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C194828623",
-            "wikidata": None,
             "display_name": "Emergency medicine",
+            "id": "https://openalex.org/C194828623",
             "level": 1,
             "score": 16.548315,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C203014093",
-            "wikidata": None,
             "display_name": "Immunology",
+            "id": "https://openalex.org/C203014093",
             "level": 1,
             "score": 15.333414,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C136229726",
-            "wikidata": None,
             "display_name": "Biomedical engineering",
+            "id": "https://openalex.org/C136229726",
             "level": 1,
             "score": 13.724577,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C177713679",
-            "wikidata": None,
             "display_name": "Intensive care medicine",
+            "id": "https://openalex.org/C177713679",
             "level": 1,
             "score": 11.984015,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C509550671",
-            "wikidata": None,
             "display_name": "Medical education",
+            "id": "https://openalex.org/C509550671",
             "level": 1,
             "score": 10.960836,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C99508421",
-            "wikidata": None,
             "display_name": "Physical medicine and rehabilitation",
+            "id": "https://openalex.org/C99508421",
             "level": 1,
             "score": 10.425153,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C39432304",
-            "wikidata": None,
             "display_name": "Environmental science",
+            "id": "https://openalex.org/C39432304",
             "level": 0,
             "score": 8.721579,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C33070731",
-            "wikidata": None,
             "display_name": "Toxicology",
+            "id": "https://openalex.org/C33070731",
             "level": 1,
             "score": 7.1652966,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C19417346",
-            "wikidata": None,
             "display_name": "Pedagogy",
+            "id": "https://openalex.org/C19417346",
             "level": 1,
             "score": 7.150355,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C119767625",
-            "wikidata": None,
             "display_name": "Optometry",
+            "id": "https://openalex.org/C119767625",
             "level": 1,
             "score": 5.244981,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C74909509",
-            "wikidata": None,
             "display_name": "Gerontology",
+            "id": "https://openalex.org/C74909509",
             "level": 1,
             "score": 4.942619,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C155647269",
-            "wikidata": None,
             "display_name": "Medicinal chemistry",
+            "id": "https://openalex.org/C155647269",
             "level": 1,
             "score": 4.4052873,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C37621935",
-            "wikidata": None,
             "display_name": "Agricultural science",
+            "id": "https://openalex.org/C37621935",
             "level": 1,
             "score": 4.359523,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C548259974",
-            "wikidata": None,
             "display_name": "Audiology",
+            "id": "https://openalex.org/C548259974",
             "level": 1,
             "score": 3.0096674,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C545542383",
-            "wikidata": None,
             "display_name": "Medical emergency",
+            "id": "https://openalex.org/C545542383",
             "level": 1,
             "score": 2.987898,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C186060115",
-            "wikidata": None,
             "display_name": "Biological system",
+            "id": "https://openalex.org/C186060115",
             "level": 1,
             "score": 2.4660628,
+            "wikidata": None,
         },
         {
-            "id": "https://openalex.org/C16685009",
-            "wikidata": None,
             "display_name": "Andrology",
+            "id": "https://openalex.org/C16685009",
             "level": 1,
             "score": 1.6032703,
+            "wikidata": None,
         },
     ],
-    "counts_by_year": [
-        {"year": 2025, "works_count": 891805, "cited_by_count": 19492777},
-        {"year": 2024, "works_count": 2478295, "cited_by_count": 56321433},
-        {"year": 2023, "works_count": 2663452, "cited_by_count": 57543459},
-        {"year": 2022, "works_count": 2453552, "cited_by_count": 56561452},
-        {"year": 2021, "works_count": 2666876, "cited_by_count": 56977246},
-        {"year": 2020, "works_count": 2762902, "cited_by_count": 50992242},
-        {"year": 2019, "works_count": 2366932, "cited_by_count": 40688762},
-        {"year": 2018, "works_count": 2281452, "cited_by_count": 36531109},
-        {"year": 2017, "works_count": 2170018, "cited_by_count": 34717261},
-        {"year": 2016, "works_count": 2147597, "cited_by_count": 33009135},
-        {"year": 2015, "works_count": 2117418, "cited_by_count": 32563326},
-        {"year": 2014, "works_count": 2047075, "cited_by_count": 31288138},
-        {"year": 2013, "works_count": 1985218, "cited_by_count": 29274544},
-        {"year": 2012, "works_count": 1890046, "cited_by_count": 27356904},
-    ],
-    "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C71924100",
+    "summary_stats": {
+        "2yr_mean_citedness": 1.7869663176673092,
+        "h_index": 3292,
+        "i10_index": 14227920,
+    },
     "updated_date": "2025-06-08T13:52:58.056174",
-    "created_date": "2016-06-24",
+    "wikidata": "https://www.wikidata.org/wiki/Q11190",
+    "works_api_url": "https://api.openalex.org/works?filter=concepts.id:C71924100",
+    "works_count": 64992842,
 }
 
 MOCK_T11636_DATA = {
-    "id": "https://openalex.org/T11636",
+    "cited_by_count": 468006,
+    "created_date": "2024-01-23",
+    "description": "This cluster of papers explores the intersection of artificial intelligence and medicine, focusing "
+    "on applications in healthcare, medical imaging, clinical decision support, and the ethical "
+    "challenges associated with AI implementation. It delves into topics such as machine learning, big "
+    "data, precision medicine, and the potential impact of AI on health equity.",
     "display_name": "Artificial Intelligence in Healthcare and Education",
-    "description": "This cluster of papers explores the intersection of artificial intelligence and medicine, focusing on applications in healthcare, medical imaging, clinical decision support, and the ethical challenges associated with AI implementation. It delves into topics such as machine learning, big data, precision medicine, and the potential impact of AI on health equity.",
+    "domain": {
+        "display_name": "Health Sciences",
+        "id": "https://openalex.org/domains/4",
+    },
+    "field": {
+        "display_name": "Medicine",
+        "id": "https://openalex.org/fields/27",
+    },
+    "id": "https://openalex.org/T11636",
+    "ids": {
+        "openalex": "https://openalex.org/T11636",
+        "wikipedia": "https://en.wikipedia.org/wiki/Artificial_intelligence_in_healthcare",
+    },
     "keywords": [
         "Artificial Intelligence",
         "Machine Learning",
@@ -5134,165 +5201,153 @@ MOCK_T11636_DATA = {
         "Radiology",
         "Health Equity",
     ],
-    "ids": {
-        "openalex": "https://openalex.org/T11636",
-        "wikipedia": "https://en.wikipedia.org/wiki/Artificial_intelligence_in_healthcare",
-    },
-    "subfield": {
-        "id": "https://openalex.org/subfields/2718",
-        "display_name": "Health Informatics",
-    },
-    "field": {
-        "id": "https://openalex.org/fields/27",
-        "display_name": "Medicine",
-    },
-    "domain": {
-        "id": "https://openalex.org/domains/4",
-        "display_name": "Health Sciences",
-    },
     "siblings": [],
-    "works_count": 42251,
-    "cited_by_count": 468006,
+    "subfield": {
+        "display_name": "Health Informatics",
+        "id": "https://openalex.org/subfields/2718",
+    },
     "updated_date": "2025-06-09T06:09:11.895608",
-    "created_date": "2024-01-23",
+    "works_count": 42251,
 }
 
 MOCK_CARDIAC_IMAGING_DATA = {
-    "id": "https://openalex.org/keywords/cardiac-imaging",
-    "display_name": "Cardiac Imaging",
-    "works_count": 0,
     "cited_by_count": 0,
-    "works_api_url": "https://api.openalex.org/works?filter=keywords.id:keywords/cardiac-imaging",
-    "updated_date": "2024-05-31T06:34:16.527592",
     "created_date": "2024-04-10",
+    "display_name": "Cardiac Imaging",
+    "id": "https://openalex.org/keywords/cardiac-imaging",
+    "updated_date": "2024-05-31T06:34:16.527592",
+    "works_api_url": "https://api.openalex.org/works?filter=keywords.id:keywords/cardiac-imaging",
+    "works_count": 0,
 }
 
 MOCK_P4310319965_DATA = {
-    "id": "https://openalex.org/P4310319965",
-    "display_name": "Springer Nature",
     "alternate_titles": [
         "エイプレス",
         "Springer Nature Group",
         "施普林格-自然出版集团",
     ],
-    "hierarchy_level": 0,
-    "parent_publisher": None,
-    "lineage": ["https://openalex.org/P4310319965"],
-    "country_codes": ["DE"],
-    "homepage_url": "https://www.springernature.com",
-    "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Springer Nature Logo.svg",
-    "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Springer Nature Logo.svg&width=300",
-    "works_count": 10535865,
     "cited_by_count": 253954672,
-    "summary_stats": {
-        "2yr_mean_citedness": 2.4417943212795215,
-        "h_index": 2059,
-        "i10_index": 4240274,
-    },
+    "country_codes": ["DE"],
+    "counts_by_year": [
+        {"cited_by_count": 3713193, "works_count": 137188, "year": 2023},
+        {"cited_by_count": 13004211, "works_count": 591311, "year": 2022},
+        {"cited_by_count": 12840277, "works_count": 637902, "year": 2021},
+        {"cited_by_count": 11200288, "works_count": 586353, "year": 2020},
+        {"cited_by_count": 9484225, "works_count": 536692, "year": 2019},
+        {"cited_by_count": 8360485, "works_count": 531043, "year": 2018},
+        {"cited_by_count": 7705998, "works_count": 497689, "year": 2017},
+        {"cited_by_count": 7471295, "works_count": 483643, "year": 2016},
+        {"cited_by_count": 7347462, "works_count": 486511, "year": 2015},
+        {"cited_by_count": 7029755, "works_count": 595223, "year": 2014},
+        {"cited_by_count": 6510117, "works_count": 574275, "year": 2013},
+        {"cited_by_count": 5864915, "works_count": 434788, "year": 2012},
+    ],
+    "created_date": "2023-01-01",
+    "display_name": "Springer Nature",
+    "hierarchy_level": 0,
+    "homepage_url": "https://www.springernature.com",
+    "id": "https://openalex.org/P4310319965",
     "ids": {
         "openalex": "https://openalex.org/P4310319965",
         "ror": "https://ror.org/0117jxy09",
         "wikidata": "https://www.wikidata.org/entity/Q21096327",
     },
-    "counts_by_year": [
-        {"year": 2023, "works_count": 137188, "cited_by_count": 3713193},
-        {"year": 2022, "works_count": 591311, "cited_by_count": 13004211},
-        {"year": 2021, "works_count": 637902, "cited_by_count": 12840277},
-        {"year": 2020, "works_count": 586353, "cited_by_count": 11200288},
-        {"year": 2019, "works_count": 536692, "cited_by_count": 9484225},
-        {"year": 2018, "works_count": 531043, "cited_by_count": 8360485},
-        {"year": 2017, "works_count": 497689, "cited_by_count": 7705998},
-        {"year": 2016, "works_count": 483643, "cited_by_count": 7471295},
-        {"year": 2015, "works_count": 486511, "cited_by_count": 7347462},
-        {"year": 2014, "works_count": 595223, "cited_by_count": 7029755},
-        {"year": 2013, "works_count": 574275, "cited_by_count": 6510117},
-        {"year": 2012, "works_count": 434788, "cited_by_count": 5864915},
-    ],
+    "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Springer Nature "
+    "Logo.svg&width=300",
+    "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Springer Nature Logo.svg",
+    "lineage": ["https://openalex.org/P4310319965"],
+    "parent_publisher": None,
     "roles": [
         {
-            "role": "institution",
             "id": "https://openalex.org/I1313014049",
+            "role": "institution",
             "works_count": 10187,
         },
         {
-            "role": "institution",
             "id": "https://openalex.org/I4210131128",
+            "role": "institution",
             "works_count": 36,
         },
         {
-            "role": "publisher",
             "id": "https://openalex.org/P4310319965",
+            "role": "publisher",
             "works_count": 10535865,
         },
     ],
     "sources_api_url": "https://api.openalex.org/sources?filter=host_organization.id:P4310319965",
+    "summary_stats": {
+        "2yr_mean_citedness": 2.4417943212795215,
+        "h_index": 2059,
+        "i10_index": 4240274,
+    },
     "updated_date": "2025-06-11T09:19:54.954165",
-    "created_date": "2023-01-01",
+    "works_count": 10535865,
 }
 
 MOCK_F4320332161_DATA = {
-    "id": "https://openalex.org/F4320332161",
-    "display_name": "National Institutes of Health",
     "alternate_titles": [
         "US National Institutes of Health",
         "Institutos Nacionales de la Salud",
         "NIH",
     ],
-    "country_code": "US",
-    "description": "US government medical research agency",
-    "homepage_url": "http://www.nih.gov",
-    "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/NIH 2013 logo vertical.svg",
-    "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/NIH 2013 logo vertical.svg&width=300",
-    "grants_count": 273197,
-    "works_count": 386464,
     "cited_by_count": 15223472,
+    "country_code": "US",
+    "counts_by_year": [
+        {"cited_by_count": 846731, "works_count": 10542, "year": 2025},
+        {"cited_by_count": 2207207, "works_count": 29900, "year": 2024},
+        {"cited_by_count": 2145090, "works_count": 31437, "year": 2023},
+        {"cited_by_count": 2035154, "works_count": 35112, "year": 2022},
+        {"cited_by_count": 1921445, "works_count": 40674, "year": 2021},
+        {"cited_by_count": 1523074, "works_count": 37647, "year": 2020},
+        {"cited_by_count": 1049270, "works_count": 34296, "year": 2019},
+        {"cited_by_count": 775842, "works_count": 32896, "year": 2018},
+        {"cited_by_count": 573399, "works_count": 29488, "year": 2017},
+        {"cited_by_count": 413067, "works_count": 25354, "year": 2016},
+        {"cited_by_count": 301876, "works_count": 19154, "year": 2015},
+        {"cited_by_count": 228290, "works_count": 14863, "year": 2014},
+        {"cited_by_count": 192491, "works_count": 6257, "year": 2013},
+        {"cited_by_count": 164370, "works_count": 5734, "year": 2012},
+    ],
+    "created_date": "2023-02-13",
+    "description": "US government medical research agency",
+    "display_name": "National Institutes of Health",
+    "grants_count": 273197,
+    "homepage_url": "http://www.nih.gov",
+    "id": "https://openalex.org/F4320332161",
+    "ids": {
+        "crossref": "100000002",
+        "doi": "https://doi.org/10.13039/100000002",
+        "openalex": "https://openalex.org/F4320332161",
+        "ror": "https://ror.org/01cwqze88",
+        "wikidata": "https://www.wikidata.org/entity/Q390551",
+    },
+    "image_thumbnail_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/NIH 2013 logo "
+    "vertical.svg&width=300",
+    "image_url": "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/NIH 2013 logo vertical.svg",
+    "roles": [
+        {
+            "id": "https://openalex.org/P4310316754",
+            "role": "publisher",
+            "works_count": 38485,
+        },
+        {
+            "id": "https://openalex.org/F4320332161",
+            "role": "funder",
+            "works_count": 386464,
+        },
+        {
+            "id": "https://openalex.org/I1299303238",
+            "role": "institution",
+            "works_count": 280579,
+        },
+    ],
     "summary_stats": {
         "2yr_mean_citedness": 5.326992141129093,
         "h_index": 855,
         "i10_index": 232869,
     },
-    "ids": {
-        "openalex": "https://openalex.org/F4320332161",
-        "ror": "https://ror.org/01cwqze88",
-        "wikidata": "https://www.wikidata.org/entity/Q390551",
-        "crossref": "100000002",
-        "doi": "https://doi.org/10.13039/100000002",
-    },
-    "counts_by_year": [
-        {"year": 2025, "works_count": 10542, "cited_by_count": 846731},
-        {"year": 2024, "works_count": 29900, "cited_by_count": 2207207},
-        {"year": 2023, "works_count": 31437, "cited_by_count": 2145090},
-        {"year": 2022, "works_count": 35112, "cited_by_count": 2035154},
-        {"year": 2021, "works_count": 40674, "cited_by_count": 1921445},
-        {"year": 2020, "works_count": 37647, "cited_by_count": 1523074},
-        {"year": 2019, "works_count": 34296, "cited_by_count": 1049270},
-        {"year": 2018, "works_count": 32896, "cited_by_count": 775842},
-        {"year": 2017, "works_count": 29488, "cited_by_count": 573399},
-        {"year": 2016, "works_count": 25354, "cited_by_count": 413067},
-        {"year": 2015, "works_count": 19154, "cited_by_count": 301876},
-        {"year": 2014, "works_count": 14863, "cited_by_count": 228290},
-        {"year": 2013, "works_count": 6257, "cited_by_count": 192491},
-        {"year": 2012, "works_count": 5734, "cited_by_count": 164370},
-    ],
-    "roles": [
-        {
-            "role": "publisher",
-            "id": "https://openalex.org/P4310316754",
-            "works_count": 38485,
-        },
-        {
-            "role": "funder",
-            "id": "https://openalex.org/F4320332161",
-            "works_count": 386464,
-        },
-        {
-            "role": "institution",
-            "id": "https://openalex.org/I1299303238",
-            "works_count": 280579,
-        },
-    ],
     "updated_date": "2025-06-10T03:57:16.922600",
-    "created_date": "2023-02-13",
+    "works_count": 386464,
 }
 
 
@@ -5355,26 +5410,51 @@ def mock_f4320332161_data():
 
 # Common fixtures for API mocking
 @pytest.fixture
-def mock_requests():
-    """Mock requests library for API calls."""
-    with responses.RequestsMock() as rsps:
-        yield rsps
+def mock_http_get():
+    """Mock HTTP GET requests without external dependencies."""
+    with patch("requests.get") as mock_get:
+        yield mock_get
 
 
 @pytest.fixture
-def mock_api_get(mock_requests):
-    """Mock API GET requests with predefined responses."""
+def mock_api_response():
+    """Create mock API response objects."""
 
-    def add_mock(url, json_data=None, status=200):
-        mock_requests.add(
-            responses.GET,
-            url,
-            json=json_data,
-            status=status,
-            content_type="application/json",
-        )
+    def create_response(json_data=None, status_code=200, text="", headers=None):
+        response = Mock()
+        response.status_code = status_code
+        response.text = text
+        response.headers = headers or {}
+        response.json.return_value = json_data
+        response.raise_for_status = Mock()
+        if status_code >= 400:
+            response.raise_for_status.side_effect = Exception(
+                f"HTTP {status_code}"
+            )
+        return response
 
-    return add_mock
+    return create_response
+
+
+@pytest.fixture
+def setup_mock_api(mock_http_get, mock_api_response):
+    """Setup mock API responses for common endpoints."""
+
+    def setup(responses_dict):
+        def side_effect(url, *args, **kwargs):
+            for pattern, response_data in responses_dict.items():
+                if pattern in url:
+                    if isinstance(response_data, dict):
+                        return mock_api_response(json_data=response_data)
+                    if isinstance(response_data, int):
+                        return mock_api_response(status_code=response_data)
+                    return response_data
+            return mock_api_response(status_code=404)
+
+        mock_http_get.side_effect = side_effect
+        return mock_http_get
+
+    return setup
 
 
 @pytest.fixture
@@ -5474,10 +5554,10 @@ def mock_institution_entity(mock_institution_data):
 
 
 @pytest.fixture
-def mock_api_response():
-    """Mock API response structure."""
+def mock_paginated_response():
+    """Mock paginated API response structure."""
 
-    def create_response(results=None, meta=None):
+    def create_response(results=None, meta=None, group_by=None):
         if results is None:
             results = []
         if meta is None:
@@ -5486,8 +5566,10 @@ def mock_api_response():
                 "db_response_time_ms": 23,
                 "page": 1,
                 "per_page": 25,
+                "per_page_options": [25, 50, 100, 200],
+                "group_count": None,
             }
-        return {"results": results, "meta": meta, "group_by": []}
+        return {"results": results, "meta": meta, "group_by": group_by or []}
 
     return create_response
 
@@ -5497,65 +5579,49 @@ def mock_api_client():
     """Mock OpenAlex API client."""
     client = Mock()
     client.base_url = "https://api.openalex.org"
+    client.email = "test@example.com"
+    client.api_key = None
+    client.user_agent = "openalex-python"
     client.session = Mock()
-    client.session.get = Mock()
+
+    # Mock the get method
+    def mock_get(endpoint, params=None):
+        response = Mock()
+        response.status_code = 200
+        response.json.return_value = {"results": [], "meta": {"count": 0}}
+        return response
+
+    client.get = mock_get
     return client
 
 
 # Fixtures for testing different API endpoints
 @pytest.fixture
-def setup_mock_api_calls(
-    mock_requests,
+def setup_all_api_mocks(
+    setup_mock_api,
     mock_work_data,
     mock_author_data,
     mock_institution_data,
     mock_venue_data,
+    mock_paginated_response,
 ):
     """Setup common API mock calls."""
     base_url = "https://api.openalex.org"
 
-    # Mock work endpoint
-    mock_requests.add(
-        responses.GET,
-        f"{base_url}/works/W2741809807",
-        json=mock_work_data,
-        status=200,
-    )
+    responses = {
+        f"{base_url}/works/W2741809807": mock_work_data,
+        f"{base_url}/authors/A5023888391": mock_author_data,
+        f"{base_url}/institutions/I27837315": mock_institution_data,
+        f"{base_url}/sources/S137773608": mock_venue_data,
+        f"{base_url}/works?": mock_paginated_response([mock_work_data]),
+        f"{base_url}/authors?": mock_paginated_response([mock_author_data]),
+        f"{base_url}/institutions?": mock_paginated_response(
+            [mock_institution_data]
+        ),
+        f"{base_url}/sources?": mock_paginated_response([mock_venue_data]),
+    }
 
-    # Mock author endpoint
-    mock_requests.add(
-        responses.GET,
-        f"{base_url}/authors/A5023888391",
-        json=mock_author_data,
-        status=200,
-    )
-
-    # Mock institution endpoint
-    mock_requests.add(
-        responses.GET,
-        f"{base_url}/institutions/I27837315",
-        json=mock_institution_data,
-        status=200,
-    )
-
-    # Mock venue endpoint
-    mock_requests.add(
-        responses.GET,
-        f"{base_url}/sources/S137773608",
-        json=mock_venue_data,
-        status=200,
-    )
-
-    # Mock search endpoints
-    mock_requests.add(
-        responses.GET,
-        f"{base_url}/works",
-        json={
-            "results": [mock_work_data],
-            "meta": {"count": 1, "page": 1, "per_page": 25},
-        },
-        status=200,
-    )
+    return setup_mock_api(responses)
 
 
 # Fixtures for testing edge cases
@@ -5564,7 +5630,12 @@ def mock_empty_response():
     """Mock empty API response."""
     return {
         "results": [],
-        "meta": {"count": 0, "page": 1, "per_page": 25},
+        "meta": {
+            "count": 0,
+            "db_response_time_ms": 15,
+            "page": 1,
+            "per_page": 25,
+        },
         "group_by": [],
     }
 
@@ -5578,7 +5649,16 @@ def mock_error_response():
 @pytest.fixture
 def mock_rate_limit_response():
     """Mock rate limit response."""
-    return {"error": "Too Many Requests", "message": "Rate limit exceeded"}
+    return {
+        "error": "Too Many Requests",
+        "message": "Rate limit exceeded. Please retry after 60 seconds.",
+    }
+
+
+@pytest.fixture
+def mock_not_found_response():
+    """Mock 404 not found response."""
+    return {"error": "Not Found", "message": "Entity not found"}
 
 
 # Utility fixtures
@@ -5591,11 +5671,12 @@ def temp_cache_dir(tmp_path):
 
 
 @pytest.fixture
-def mock_datetime():
-    """Mock datetime for consistent testing."""
+def mock_datetime_now():
+    """Mock datetime.now() for consistent testing."""
     with patch("datetime.datetime") as mock_dt:
         mock_dt.now.return_value = datetime(2024, 1, 1, 12, 0, 0)
         mock_dt.utcnow.return_value = datetime(2024, 1, 1, 12, 0, 0)
+        mock_dt.side_effect = lambda *args, **kwargs: datetime(*args, **kwargs)
         yield mock_dt
 
 
@@ -5606,8 +5687,73 @@ def mock_config():
     config = Mock()
     config.api_key = "test-api-key"
     config.email = "test@example.com"
+    config.user_agent = "openalex-python-tests"
     config.retries = 3
+    config.retry_backoff_factor = 0.1
+    config.retry_status_codes = [429, 500, 502, 503, 504]
     config.timeout = 30
-    config.cache_enabled = True
-    config.cache_dir = "/tmp/openalex_cache"
     return config
+
+
+@pytest.fixture
+def mock_session():
+    """Mock requests session."""
+    session = Mock()
+    session.get = Mock()
+    session.post = Mock()
+    session.headers = {}
+    return session
+
+
+# Helper fixtures for common test patterns
+@pytest.fixture
+def assert_valid_openalex_id():
+    """Helper to assert valid OpenAlex ID format."""
+
+    def assert_id(entity_id, entity_type):
+        prefixes = {
+            "work": "W",
+            "author": "A",
+            "institution": "I",
+            "venue": "S",
+            "source": "S",
+            "publisher": "P",
+            "funder": "F",
+            "topic": "T",
+            "concept": "C",
+            "keyword": "keywords/",
+        }
+        prefix = prefixes.get(entity_type)
+        if prefix and prefix != "keywords/":
+            assert entity_id.startswith(f"https://openalex.org/{prefix}")
+        elif prefix == "keywords/":
+            assert "/keywords/" in entity_id
+        else:
+            assert entity_id.startswith("https://openalex.org/")
+
+    return assert_id
+
+
+@pytest.fixture
+def sample_filter_params():
+    """Sample filter parameters for testing."""
+    return {
+        "display_name.search": "climate change",
+        "publication_year": ">2020",
+        "is_oa": "true",
+        "type": "article",
+        "institutions.country_code": "US",
+    }
+
+
+@pytest.fixture
+def sample_search_params():
+    """Sample search parameters for testing."""
+    return {
+        "page": 1,
+        "per_page": 25,
+        "filter": "display_name.search:machine learning",
+        "sort": "cited_by_count:desc",
+        "sample": 100,
+        "seed": 42,
+    }
