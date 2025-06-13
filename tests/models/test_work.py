@@ -42,6 +42,7 @@ class TestWork:
             "cited_by_count": 50000,
             "is_retracted": False,
             "is_paratext": False,
+            "institution_assertions": [],
             "cited_by_api_url": "https://api.openalex.org/works?filter=cites:W2741809807",
             "abstract_inverted_index": {
                 "Generalized": [0, 87],
@@ -132,15 +133,21 @@ class TestWork:
                             "lineage": ["https://openalex.org/I131249849"],
                         }
                     ],
-                    "countries": ["US"],
-                    "is_corresponding": True,
-                    "raw_author_name": "John P. Perdew",
-                    "raw_affiliation_strings": [
-                        "Department of Physics and Quantum Theory Group, Tulane University, New Orleans, Louisiana 70118"
-                    ],
-                },
-                {
-                    "author_position": "middle",
+                "countries": ["US"],
+                "is_corresponding": True,
+                "raw_author_name": "John P. Perdew",
+                "raw_affiliation_strings": [
+                    "Department of Physics and Quantum Theory Group, Tulane University, New Orleans, Louisiana 70118"
+                ],
+                "affiliations": [
+                    {
+                        "raw_affiliation_string": "Department of Physics and Quantum Theory Group, Tulane University, New Orleans, Louisiana 70118",
+                        "institution_ids": ["https://openalex.org/I131249849"],
+                    }
+                ],
+            },
+            {
+                "author_position": "middle",
                     "author": {
                         "id": "https://openalex.org/A5082186243",
                         "display_name": "Kieron Burke",
@@ -157,14 +164,20 @@ class TestWork:
                         }
                     ],
                     "countries": ["US"],
-                    "is_corresponding": False,
-                    "raw_author_name": "Kieron Burke",
-                    "raw_affiliation_strings": [
-                        "Department of Chemistry, Rutgers University, Camden, New Jersey 08102"
-                    ],
-                },
-                {
-                    "author_position": "last",
+                "is_corresponding": False,
+                "raw_author_name": "Kieron Burke",
+                "raw_affiliation_strings": [
+                    "Department of Chemistry, Rutgers University, Camden, New Jersey 08102"
+                ],
+                "affiliations": [
+                    {
+                        "raw_affiliation_string": "Department of Chemistry, Rutgers University, Camden, New Jersey 08102",
+                        "institution_ids": ["https://openalex.org/I131249849"],
+                    }
+                ],
+            },
+            {
+                "author_position": "last",
                     "author": {
                         "id": "https://openalex.org/A5100600542",
                         "display_name": "Matthias Ernzerhof",
@@ -181,14 +194,21 @@ class TestWork:
                         }
                     ],
                     "countries": ["CA"],
-                    "is_corresponding": False,
-                    "raw_author_name": "Matthias Ernzerhof",
-                    "raw_affiliation_strings": [
-                        "Département de Chimie, Université de Montréal, Montréal, Québec, Canada H3C 3J7"
-                    ],
-                },
+                "is_corresponding": False,
+                "raw_author_name": "Matthias Ernzerhof",
+                "raw_affiliation_strings": [
+                    "Département de Chimie, Université de Montréal, Montréal, Québec, Canada H3C 3J7"
+                ],
+                "affiliations": [
+                    {
+                        "raw_affiliation_string": "Département de Chimie, Université de Montréal, Montréal, Québec, Canada H3C 3J7",
+                        "institution_ids": ["https://openalex.org/I70931966"],
+                    }
+                ],
+            },
             ],
             "countries_distinct_count": 2,
+            "institutions_distinct_count": 3,
             "corresponding_author_ids": ["https://openalex.org/A5023888391"],
             "corresponding_institution_ids": [
                 "https://openalex.org/I131249849"
@@ -223,6 +243,7 @@ class TestWork:
                 "is_in_top_1_percent": True,
                 "is_in_top_10_percent": True,
             },
+            "cited_by_percentile_year": {"min": 99, "max": 100},
             "concepts": [
                 {
                     "id": "https://openalex.org/C71924100",
@@ -448,6 +469,8 @@ class TestWork:
                 "openalex": "https://openalex.org/W2741809807",
                 "doi": "https://doi.org/10.1103/physrevlett.77.3865",
                 "pmid": "https://pubmed.ncbi.nlm.nih.gov/10062328",
+                "pmcid": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1234567",
+                "mag": "2741809807",
             },
             "indexed_in": ["crossref", "pubmed"],
             "ngrams_url": "https://api.openalex.org/works/W2741809807/ngrams",
@@ -478,6 +501,9 @@ class TestWork:
         assert work.citation_normalized_percentile.value == 0.999969
         assert work.citation_normalized_percentile.is_in_top_1_percent is True
         assert work.citation_normalized_percentile.is_in_top_10_percent is True
+        assert work.cited_by_percentile_year is not None
+        assert work.cited_by_percentile_year.min == 99
+        assert work.cited_by_percentile_year.max == 100
 
         # Open Access
         assert work.is_oa is True
@@ -496,6 +522,10 @@ class TestWork:
         assert work.biblio.issue == "18"
         assert work.biblio.first_page == "3865"
         assert work.biblio.last_page == "3868"
+
+        assert work.ids is not None
+        assert work.ids.pmcid == "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1234567"
+        assert work.ids.mag == "2741809807"
 
     def test_authorship_details(
         self, comprehensive_work_data: dict[str, Any]
@@ -517,18 +547,25 @@ class TestWork:
         assert first_author.institutions[0].display_name == "Tulane University"
         assert first_author.countries == ["US"]
         assert first_author.raw_author_name == "John P. Perdew"
+        assert len(first_author.affiliations) == 1
+        assert (
+            first_author.affiliations[0].institution_ids[0]
+            == "https://openalex.org/I131249849"
+        )
 
         # Middle author
         middle_author = work.authorships[1]
         assert middle_author.author_position == "middle"
         assert middle_author.is_corresponding is False
         assert middle_author.author.orcid is None
+        assert len(middle_author.affiliations) == 1
 
         # Last author
         last_author = work.authorships[2]
         assert last_author.author_position == "last"
         assert last_author.author.display_name == "Matthias Ernzerhof"
         assert last_author.institutions[0].country_code == "CA"
+        assert len(last_author.affiliations) == 1
 
         # Check corresponding IDs
         assert work.corresponding_author_ids == [
@@ -538,6 +575,7 @@ class TestWork:
             "https://openalex.org/I131249849"
         ]
         assert work.countries_distinct_count == 2
+        assert work.institutions_distinct_count == 3
 
     def test_abstract_reconstruction(
         self, comprehensive_work_data: dict[str, Any]

@@ -36,6 +36,7 @@ def mock_work_response() -> dict[str, Any]:
         "cited_by_count": 50000,
         "is_retracted": False,
         "is_paratext": False,
+        "institution_assertions": [],
         "open_access": {
             "is_oa": True,
             "oa_status": "bronze",
@@ -60,6 +61,12 @@ def mock_work_response() -> dict[str, Any]:
                 ],
                 "countries": ["US"],
                 "is_corresponding": True,
+                "affiliations": [
+                    {
+                        "raw_affiliation_string": "Tulane University",
+                        "institution_ids": ["https://openalex.org/I456789"],
+                    }
+                ],
             }
         ],
         "counts_by_year": [
@@ -71,6 +78,8 @@ def mock_work_response() -> dict[str, Any]:
             "openalex": "https://openalex.org/W2741809807",
             "doi": "https://doi.org/10.1103/physrevlett.77.3865",
             "pmid": "https://pubmed.ncbi.nlm.nih.gov/10062328",
+            "pmcid": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1234567",
+            "mag": "2741809807",
         },
     }
 

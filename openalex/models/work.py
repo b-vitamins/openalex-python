@@ -11,7 +11,9 @@ from pydantic import BaseModel, Field, HttpUrl, field_validator, model_validator
 from ..utils.text import invert_abstract
 
 __all__ = [
+    "CitedByPercentileYear",
     "Work",
+    "WorkAffiliation",
     "WorkIds",
     "WorkType",
     "WorksFilter",
@@ -197,12 +199,28 @@ class SustainableDevelopmentGoal(OpenAlexBase):
     score: float | None = None
 
 
+class WorkAffiliation(OpenAlexBase):
+    """Author affiliation details within a work."""
+
+    raw_affiliation_string: str | None = None
+    institution_ids: list[str] = Field(default_factory=list)
+
+
+class CitedByPercentileYear(OpenAlexBase):
+    """Citation percentile year range."""
+
+    min: int | None = None
+    max: int | None = None
+
+
 class WorkIds(OpenAlexBase):
     """External identifiers for a work."""
 
     openalex: str | None = None
     doi: HttpUrl | None = None
     pmid: str | None = None
+    pmcid: str | None = None
+    mag: str | None = None
 
 
 class Authorship(OpenAlexBase):
@@ -215,6 +233,7 @@ class Authorship(OpenAlexBase):
     is_corresponding: bool | None = None
     raw_author_name: str | None = None
     raw_affiliation_strings: list[str] = Field(default_factory=list)
+    affiliations: list[WorkAffiliation] = Field(default_factory=list)
 
 
 class Work(OpenAlexEntity):
@@ -235,6 +254,7 @@ class Work(OpenAlexEntity):
     corresponding_author_ids: list[str] = Field(default_factory=list)
     corresponding_institution_ids: list[str] = Field(default_factory=list)
     countries_distinct_count: int | None = None
+    institutions_distinct_count: int | None = None
     concepts: list[DehydratedConcept] = Field(default_factory=list)
     primary_topic: DehydratedTopic | None = None
     topics: list[DehydratedTopic] = Field(default_factory=list)
@@ -249,11 +269,16 @@ class Work(OpenAlexEntity):
     apc_list: APC | None = None
     apc_paid: APC | None = None
     grants: list[Grant] = Field(default_factory=list)
+    datasets: list[str] = Field(default_factory=list)
+    versions: list[str] = Field(default_factory=list)
     citation_normalized_percentile: CitationNormalizedPercentile | None = None
+    cited_by_percentile_year: CitedByPercentileYear | None = None
     counts_by_year: list[CountsByYear] = Field(default_factory=list)
     abstract_inverted_index: dict[str, list[int]] | None = None
     created_date: str | None = None
+    cited_by_api_url: str | None = None
     ids: WorkIds | None = None
+    institution_assertions: list[dict[str, Any]] = Field(default_factory=list)
     referenced_works: list[str] = Field(default_factory=list)
     referenced_works_count: int | None = None
     related_works: list[str] = Field(default_factory=list)
@@ -517,5 +542,7 @@ APC.model_rebuild()
 Biblio.model_rebuild()
 CitationNormalizedPercentile.model_rebuild()
 SustainableDevelopmentGoal.model_rebuild()
+WorkAffiliation.model_rebuild()
+CitedByPercentileYear.model_rebuild()
 Work.model_rebuild()
 Ngram.model_rebuild()

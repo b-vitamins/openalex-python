@@ -37,6 +37,7 @@ from .work import (
     Authorship,
     Biblio,
     CitationNormalizedPercentile,
+    CitedByPercentileYear,
     DehydratedAuthor,
     DehydratedConcept,
     DehydratedInstitution,
@@ -50,6 +51,7 @@ from .work import (
     OpenAccessStatus,
     SustainableDevelopmentGoal,
     Work,
+    WorkAffiliation,
     WorkIds,
     WorkType,
 )
@@ -66,6 +68,7 @@ __all__ = [
     "BaseFilter",
     "Biblio",
     "CitationNormalizedPercentile",
+    "CitedByPercentileYear",
     "Concept",
     "ConceptAncestor",
     "ConceptIds",
@@ -116,6 +119,7 @@ __all__ = [
     "TopicIds",
     "TopicLevel",
     "Work",
+    "WorkAffiliation",
     "WorkIds",
     "WorkType",
 ]
