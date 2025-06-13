@@ -213,7 +213,7 @@ class TestInstitutionModel:
 
         institution = Institution(**mock_institution_data)
 
-        assert len(institution.counts_by_year) == 13
+        assert len(institution.counts_by_year) == 14
 
         # Most recent year
         recent = institution.counts_by_year[0]

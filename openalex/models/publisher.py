@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from pydantic import Field, HttpUrl
+from typing import Any
+
+from pydantic import Field, HttpUrl, TypeAdapter, field_validator
 
 __all__ = ["Publisher", "PublisherIds"]
 
@@ -13,8 +15,17 @@ class PublisherIds(OpenAlexBase):
     """External identifiers for a publisher."""
 
     openalex: str | None = None
-    ror: HttpUrl | None = None
-    wikidata: HttpUrl | None = None
+    ror: str | None = None
+    wikidata: str | None = None
+
+    @field_validator("ror", "wikidata")
+    @classmethod
+    def validate_urls(cls, v: str | None) -> str | None:
+        """Ensure external IDs are valid URLs."""
+        if v is None:
+            return None
+        TypeAdapter(HttpUrl).validate_python(v)
+        return v
 
 
 class Publisher(OpenAlexEntity):
@@ -42,27 +53,54 @@ class Publisher(OpenAlexEntity):
         default_factory=list, description="Publisher hierarchy"
     )
 
-    homepage_url: HttpUrl | None = None
-    image_url: HttpUrl | None = None
-    image_thumbnail_url: HttpUrl | None = None
+    homepage_url: str | None = None
+    image_url: str | None = None
+    image_thumbnail_url: str | None = None
+
+    @field_validator("homepage_url", "image_url", "image_thumbnail_url")
+    @classmethod
+    def validate_url_fields(cls, v: str | None) -> str | None:
+        """Ensure URL fields contain valid URLs."""
+        if v is None:
+            return None
+        TypeAdapter(HttpUrl).validate_python(v)
+        return v
 
     works_count: int = Field(0, description="Number of works")
     cited_by_count: int = Field(0, description="Total citations")
 
     summary_stats: SummaryStats | None = None
 
-    sources_api_url: HttpUrl | None = Field(
+    sources_api_url: str | None = Field(
         None, description="API URL for publisher's sources"
     )
+
+    @field_validator("sources_api_url")
+    @classmethod
+    def validate_sources_api_url(cls, v: str | None) -> str | None:
+        """Ensure sources API URL is valid."""
+        if v is None:
+            return None
+        TypeAdapter(HttpUrl).validate_python(v)
+        return v
 
     roles: list[Role] = Field(
         default_factory=list, description="Roles in publishing ecosystem"
     )
 
+    @field_validator("roles", mode="before")
+    @classmethod
+    def sort_roles(cls, v: Any) -> Any:
+        """Sort roles so those with higher counts appear last."""
+        if isinstance(v, list):
+            return sorted(v, key=lambda r: r.get("works_count", 0))
+        return v
+
     counts_by_year: list[CountsByYear] = Field(
         default_factory=list,
         description="Yearly publication and citation counts",
     )
+
 
     ids: PublisherIds | None = None
 
@@ -110,4 +148,23 @@ class Publisher(OpenAlexEntity):
         """Return list of years with publications."""
         return sorted(
             [y.year for y in self.counts_by_year if y.works_count > 0]
+        )
+
+    @property
+    def h_index(self) -> int | None:
+        """Return h-index from summary stats."""
+        return self.summary_stats.h_index if self.summary_stats else None
+
+    @property
+    def i10_index(self) -> int | None:
+        """Return i10-index from summary stats."""
+        return self.summary_stats.i10_index if self.summary_stats else None
+
+    @property
+    def two_year_mean_citedness(self) -> float | None:
+        """Return the 2-year mean citedness from summary stats."""
+        return (
+            self.summary_stats.two_year_mean_citedness
+            if self.summary_stats
+            else None
         )

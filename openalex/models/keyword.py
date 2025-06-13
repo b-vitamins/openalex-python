@@ -6,7 +6,7 @@ from pydantic import Field
 
 __all__ = ["Keyword"]
 
-from .base import CountsByYear, OpenAlexEntity
+from .base import OpenAlexEntity
 
 
 class Keyword(OpenAlexEntity):
@@ -26,9 +26,6 @@ class Keyword(OpenAlexEntity):
         0,
         ge=0,
         description="Total citations",
-    )
-    counts_by_year: list[CountsByYear] = Field(
-        default_factory=list, description="Yearly statistics"
     )
     works_api_url: str | None = Field(
         None, description="API endpoint for works using this keyword"

@@ -87,7 +87,7 @@ class TestFunderModel:
 
         funder = Funder(**mock_funder_data)
 
-        assert len(funder.counts_by_year) == 13
+        assert len(funder.counts_by_year) == 14
 
         # Most recent year
         recent = funder.counts_by_year[0]

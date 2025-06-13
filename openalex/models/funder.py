@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any
 
 from ..constants import (
@@ -13,7 +13,7 @@ from ..constants import (
 
 __all__ = ["Funder", "FunderIds"]
 
-from pydantic import Field, HttpUrl, field_validator
+from pydantic import Field, field_validator
 
 from .base import CountsByYear, OpenAlexBase, OpenAlexEntity, Role, SummaryStats
 
@@ -22,10 +22,10 @@ class FunderIds(OpenAlexBase):
     """External identifiers for a funder."""
 
     openalex: str | None = None
-    ror: HttpUrl | None = None
-    wikidata: HttpUrl | None = None
+    ror: str | None = None
+    wikidata: str | None = None
     crossref: str | None = None
-    doi: HttpUrl | None = None
+    doi: str | None = None
 
 
 class Funder(OpenAlexEntity):
@@ -39,11 +39,11 @@ class Funder(OpenAlexEntity):
 
     description: str | None = None
 
-    homepage_url: HttpUrl | None = None
-    image_url: HttpUrl | None = None
-    image_thumbnail_url: HttpUrl | None = None
+    homepage_url: str | None = None
+    image_url: str | None = None
+    image_thumbnail_url: str | None = None
 
-    ror: HttpUrl | None = None
+    ror: str | None = None
 
     grants_count: int = Field(0, ge=0, description="Number of grants")
     works_count: int = Field(0, ge=0, description="Number of funded works")
@@ -74,13 +74,13 @@ class Funder(OpenAlexEntity):
 
     @field_validator("updated_date", mode="before")
     @classmethod
-    def parse_updated_date(cls, v: Any) -> datetime | Any:
+    def parse_updated_date(cls, v: Any) -> date | Any:
         """Parse updated_date allowing out-of-range seconds."""
-        if v is None or isinstance(v, datetime):
+        if v is None or isinstance(v, date):
             return v
         if isinstance(v, str):
             try:
-                return datetime.fromisoformat(v)
+                return datetime.fromisoformat(v).date()
             except ValueError:
                 try:
                     date_part, time_part = v.split("T")
@@ -94,7 +94,7 @@ class Funder(OpenAlexEntity):
                     if rest:
                         new_time += f".{rest[0]}"
                     fixed = f"{date_part}T{new_time}"
-                    return datetime.fromisoformat(fixed)
+                    return datetime.fromisoformat(fixed).date()
                 except ValueError as exc:  # pragma: no cover - defensive
                     msg = "Invalid datetime format"
                     raise ValueError(msg) from exc
@@ -139,3 +139,13 @@ class Funder(OpenAlexEntity):
         return sorted(
             [y.year for y in self.counts_by_year if y.works_count > 0]
         )
+
+    @property
+    def h_index(self) -> int | None:
+        """Return h-index from summary stats."""
+        return self.summary_stats.h_index if self.summary_stats else None
+
+    @property
+    def i10_index(self) -> int | None:
+        """Return i10-index from summary stats."""
+        return self.summary_stats.i10_index if self.summary_stats else None

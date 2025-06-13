@@ -192,7 +192,7 @@ class TestSourceModel:
 
         source = Source(**mock_source_data)
 
-        assert len(source.counts_by_year) == 13
+        assert len(source.counts_by_year) == 14
 
         # Most recent year
         recent = source.counts_by_year[0]
