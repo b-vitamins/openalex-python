@@ -114,7 +114,7 @@ class RateLimiter:
 
     def __exit__(self, *args: Any) -> None:
         """Exit the context manager."""
-        return
+        return None
 
 
 class SlidingWindowRateLimiter:
@@ -198,7 +198,7 @@ class SlidingWindowRateLimiter:
 
     def __exit__(self, *args: Any) -> None:
         """Context manager exit."""
-        return
+        return None
 
 
 class AsyncRateLimiter:
@@ -260,7 +260,7 @@ class AsyncRateLimiter:
 
     async def __aexit__(self, *args: Any) -> None:
         """Exit the async context manager."""
-        return
+        return None
 
 
 def rate_limited(

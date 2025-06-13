@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import time
 from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
 from typing import Any, TypeVar
 
 import xxhash
@@ -13,6 +14,12 @@ from structlog import get_logger
 logger = get_logger(__name__)
 
 T = TypeVar("T")
+
+__all__ = [
+    "BaseCache",
+    "CacheEntry",
+    "CacheKeyBuilder",
+]
 
 
 class CacheKeyBuilder:
@@ -39,14 +46,19 @@ class CacheKeyBuilder:
         return f"openalex:{xxhash.xxh64(key_str).hexdigest()}"
 
 
+@dataclass(slots=True)
 class CacheEntry:
     """A cache entry with metadata."""
 
-    def __init__(self, data: Any, ttl: int) -> None:
-        self.data = data
-        self.expires_at = time.time() + ttl
-        self.created_at = time.time()
-        self.hit_count = 0
+    data: Any
+    expires_at: float
+    created_at: float = field(default_factory=time.time)
+    hit_count: int = 0
+
+    @classmethod
+    def create(cls, data: Any, ttl: int) -> CacheEntry:
+        now = time.time()
+        return cls(data=data, expires_at=now + ttl, created_at=now)
 
     def is_expired(self) -> bool:
         """Check if this entry has expired."""

@@ -6,6 +6,14 @@ from typing import TYPE_CHECKING, Any
 import httpx
 from structlog import get_logger
 
+__all__ = [
+    "AsyncConnection",
+    "Connection",
+    "close_all_async_connections",
+    "get_async_connection",
+    "get_connection",
+]
+
 if TYPE_CHECKING:  # pragma: no cover
     from .config import OpenAlexConfig
 from .exceptions import (
