@@ -5476,8 +5476,8 @@ def mock_institution_data():
 
 
 @pytest.fixture
-def mock_venue_data():
-    """Comprehensive mock venue/source data."""
+def mock_source_data():
+    """Comprehensive mock source data."""
     return MOCK_S137773608_DATA
 
 
@@ -5602,7 +5602,7 @@ def setup_all_api_mocks(
     mock_work_data,
     mock_author_data,
     mock_institution_data,
-    mock_venue_data,
+    mock_source_data,
     mock_paginated_response,
 ):
     """Setup common API mock calls."""
@@ -5612,13 +5612,13 @@ def setup_all_api_mocks(
         f"{base_url}/works/W2741809807": mock_work_data,
         f"{base_url}/authors/A5023888391": mock_author_data,
         f"{base_url}/institutions/I27837315": mock_institution_data,
-        f"{base_url}/sources/S137773608": mock_venue_data,
+        f"{base_url}/sources/S137773608": mock_source_data,
         f"{base_url}/works?": mock_paginated_response([mock_work_data]),
         f"{base_url}/authors?": mock_paginated_response([mock_author_data]),
         f"{base_url}/institutions?": mock_paginated_response(
             [mock_institution_data]
         ),
-        f"{base_url}/sources?": mock_paginated_response([mock_venue_data]),
+        f"{base_url}/sources?": mock_paginated_response([mock_source_data]),
     }
 
     return setup_mock_api(responses)
@@ -5715,7 +5715,7 @@ def assert_valid_openalex_id():
             "work": "W",
             "author": "A",
             "institution": "I",
-            "venue": "S",
+            "source": "S",
             "source": "S",
             "publisher": "P",
             "funder": "F",
