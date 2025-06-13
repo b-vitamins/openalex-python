@@ -1,0 +1,351 @@
+"""
+Test async functionality behavior with proper mocking.
+Tests async operations work correctly, not implementation details.
+"""
+
+import pytest
+import asyncio
+from unittest.mock import Mock, patch, AsyncMock
+
+
+@pytest.mark.asyncio
+class TestAsyncBehavior:
+    """Test async client behavior matches sync behavior."""
+
+    async def test_async_client_fetches_single_entity(self, mock_work_data):
+        """Async client should fetch entities like sync client."""
+        from openalex import AsyncWorks
+
+        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = Mock(
+                status_code=200,
+                json=Mock(return_value=mock_work_data)
+            )
+
+            works = AsyncWorks()
+            work = await works.get("W2741809807")
+
+            assert work.id == "https://openalex.org/W2741809807"
+            assert work.title == mock_work_data["title"]
+
+    async def test_async_search_returns_results(self, mock_author_data):
+        """Async search should return paginated results."""
+        from openalex import AsyncAuthors
+
+        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = Mock(
+                status_code=200,
+                json=Mock(return_value={
+                    "results": [mock_author_data],
+                    "meta": {"count": 1}
+                })
+            )
+
+            authors = AsyncAuthors()
+            results = await authors.search("Jason Priem").get()
+
+            assert len(results.results) == 1
+            assert results.results[0].display_name == "Jason Priem"
+
+    async def test_async_filter_chains_correctly(self):
+        """Async filter chains should build correct parameters."""
+        from openalex import AsyncInstitutions
+
+        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = Mock(
+                status_code=200,
+                json=Mock(return_value={
+                    "results": [],
+                    "meta": {"count": 0}
+                })
+            )
+
+            institutions = AsyncInstitutions()
+            await (institutions
+                   .filter(country_code="US")
+                   .filter_gt(works_count=1000)
+                   .sort(cited_by_count="desc")
+                   .get())
+
+            _, kwargs = mock_request.call_args
+            params = kwargs.get("params", {})
+
+            assert "filter" in params
+            assert "country_code:US" in params["filter"]
+            assert "works_count:>1000" in params["filter"]
+            assert params["sort"] == "cited_by_count:desc"
+
+    async def test_async_pagination_iterates_all_results(self, mock_source_data):
+        """Async pagination should iterate through all pages."""
+        from openalex import AsyncSources
+
+        page1_called = False
+        page2_called = False
+
+        async def mock_response(*args, **kwargs):
+            nonlocal page1_called, page2_called
+
+            if not page1_called:
+                page1_called = True
+                return Mock(
+                    status_code=200,
+                    json=Mock(return_value={
+                        "results": [mock_source_data],
+                        "meta": {"count": 2, "page": 1, "next_cursor": "page2"}
+                    })
+                )
+            else:
+                page2_called = True
+                return Mock(
+                    status_code=200,
+                    json=Mock(return_value={
+                        "results": [mock_source_data],
+                        "meta": {"count": 2, "page": 2, "next_cursor": None}
+                    })
+                )
+
+        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+            mock_request.side_effect = mock_response
+
+            sources = AsyncSources()
+            all_sources = []
+
+            async for source in sources.filter(type="journal").all():
+                all_sources.append(source)
+
+            assert len(all_sources) == 2
+            assert page1_called and page2_called
+
+    async def test_async_concurrent_requests_execute_in_parallel(self):
+        """Multiple async requests should execute concurrently."""
+        from openalex import AsyncWorks
+        import time
+
+        call_times = []
+
+        async def mock_response(*args, **kwargs):
+            call_times.append(time.time())
+            # Simulate network delay
+            await asyncio.sleep(0.1)
+            return Mock(
+                status_code=200,
+                json=Mock(return_value={
+                    "id": f"W{len(call_times)}",
+                    "title": f"Work {len(call_times)}"
+                })
+            )
+
+        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+            mock_request.side_effect = mock_response
+
+            works = AsyncWorks()
+
+            # Launch multiple concurrent requests
+            start_time = time.time()
+            tasks = [
+                works.get(f"W{i}")
+                for i in range(3)
+            ]
+            results = await asyncio.gather(*tasks)
+            total_time = time.time() - start_time
+
+            # Should complete in ~0.1s (parallel) not ~0.3s (sequential)
+            assert total_time < 0.2
+            assert len(results) == 3
+
+            # Verify calls were made concurrently (all started within 50ms)
+            assert max(call_times) - min(call_times) < 0.05
+
+    async def test_async_random_endpoint(self, mock_concept_data):
+        """Async random should return random entity."""
+        from openalex import AsyncConcepts
+
+        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = Mock(
+                status_code=200,
+                json=Mock(return_value=mock_concept_data)
+            )
+
+            concepts = AsyncConcepts()
+            concept = await concepts.random()
+
+            _, kwargs = mock_request.call_args
+            assert kwargs["url"].endswith("/concepts/random")
+            assert concept.display_name == "Medicine"
+
+    async def test_async_autocomplete(self):
+        """Async autocomplete should return suggestions."""
+        from openalex import AsyncPublishers
+
+        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = Mock(
+                status_code=200,
+                json=Mock(return_value={
+                    "results": [
+                        {
+                            "id": "P123",
+                            "display_name": "Springer Nature",
+                            "entity_type": "publisher",
+                            "works_count": 1000000
+                        }
+                    ],
+                    "meta": {"count": 1}
+                })
+            )
+
+            publishers = AsyncPublishers()
+            results = await publishers.autocomplete("springer")
+
+            _, kwargs = mock_request.call_args
+            assert kwargs["url"].endswith("/publishers/autocomplete")
+            assert kwargs["params"]["q"] == "springer"
+
+    async def test_async_first_helper(self):
+        """Async first() should return first result or None."""
+        from openalex import AsyncFunders
+
+        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+            # Has results
+            mock_request.return_value = Mock(
+                status_code=200,
+                json=Mock(return_value={
+                    "results": [{"id": "F1", "display_name": "NSF"}],
+                    "meta": {"count": 5}
+                })
+            )
+
+            funders = AsyncFunders()
+            funder = await funders.filter(country_code="US").first()
+            assert funder is not None
+            assert funder.display_name == "NSF"
+
+            # No results
+            mock_request.return_value = Mock(
+                status_code=200,
+                json=Mock(return_value={
+                    "results": [],
+                    "meta": {"count": 0}
+                })
+            )
+
+            no_funder = await funders.filter(country_code="XX").first()
+            assert no_funder is None
+
+    async def test_async_count_efficient(self):
+        """Async count should use minimal page size."""
+        from openalex import AsyncTopics
+
+        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = Mock(
+                status_code=200,
+                json=Mock(return_value={
+                    "results": [],
+                    "meta": {"count": 12345}
+                })
+            )
+
+            topics = AsyncTopics()
+            count = await topics.filter(domain={"id": "D123"}).count()
+
+            _, kwargs = mock_request.call_args
+            assert kwargs["params"]["per-page"] == "1"
+            assert count == 12345
+
+    async def test_async_error_handling(self):
+        """Async client should handle errors like sync client."""
+        from openalex import AsyncKeywords
+        from openalex.exceptions import NotFoundError
+
+        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = Mock(
+                status_code=404,
+                json=Mock(return_value={
+                    "error": "Not Found",
+                    "message": "Keyword not found"
+                })
+            )
+
+            keywords = AsyncKeywords()
+
+            with pytest.raises(NotFoundError):
+                await keywords.get("nonexistent-keyword")
+
+    async def test_async_cache_behavior(self):
+        """Async client should use cache when enabled."""
+        from openalex import AsyncWorks, OpenAlexConfig
+
+        config = OpenAlexConfig(cache_enabled=True)
+
+        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = Mock(
+                status_code=200,
+                json=Mock(return_value={
+                    "id": "W123",
+                    "title": "Cached Work"
+                })
+            )
+
+            works = AsyncWorks(config=config)
+
+            # Multiple identical requests
+            work1 = await works.get("W123")
+            work2 = await works.get("W123")
+            work3 = await works.get("W123")
+
+            # All should return same data
+            assert work1.title == work2.title == work3.title == "Cached Work"
+
+            # But only one API call
+            assert mock_request.call_count == 1
+
+    async def test_async_paginator_gather(self):
+        """Async paginator gather should fetch multiple pages concurrently."""
+        from openalex import AsyncAuthors
+
+        pages_data = []
+
+        async def mock_response(*args, **kwargs):
+            page = int(kwargs["params"].get("page", 1))
+            return Mock(
+                status_code=200,
+                json=Mock(return_value={
+                    "results": [{"id": f"A{page}", "display_name": f"Author {page}"}],
+                    "meta": {"count": 10, "page": page}
+                })
+            )
+
+        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+            mock_request.side_effect = mock_response
+
+            authors = AsyncAuthors()
+            paginator = authors.filter(works_count=">10").paginate(per_page=1)
+
+            # Gather first 3 pages
+            results = await paginator.gather(pages=3)
+
+            assert len(results) == 3
+            assert results[0].display_name == "Author 1"
+            assert results[2].display_name == "Author 3"
+
+    async def test_async_connection_cleanup(self):
+        """Async connections should be cleanable."""
+        from openalex import AsyncWorks, close_all_async_connections
+
+        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = Mock(
+                status_code=200,
+                json=Mock(return_value={"results": [], "meta": {"count": 0}})
+            )
+
+            # Create multiple clients
+            works1 = AsyncWorks()
+            works2 = AsyncWorks()
+
+            await works1.filter(is_oa=True).count()
+            await works2.filter(is_oa=False).count()
+
+            # Clean up all connections
+            await close_all_async_connections()
+
+            # Verify cleanup was called (implementation dependent)
+            # Main point is it doesn't raise an error
