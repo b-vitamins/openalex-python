@@ -89,6 +89,9 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
+# The behavior and utility tests use patterns that intentionally violate
+# several Ruff rules. Rather than modify these files, we ignore the
+# corresponding codes so CI passes without altering test semantics.
 "tests/*" = [
     "ARG",
     "FBT",
