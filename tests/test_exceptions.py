@@ -47,4 +47,6 @@ def test_raise_for_status_non_json() -> None:
     response = httpx.Response(502, text="<!doctype html>", request=request)
     with pytest.raises(ServerError) as exc_info:
         raise_for_status(response)
-    assert "Server-side error" in str(exc_info.value) or "server-side" in str(exc_info.value)
+    assert "Server-side error" in str(exc_info.value) or "server-side" in str(
+        exc_info.value
+    )

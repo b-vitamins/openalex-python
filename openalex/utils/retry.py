@@ -320,7 +320,7 @@ def retry_with_rate_limit(func: Callable[..., T]) -> Callable[..., T]:
                 if attempt >= max_attempts:
                     raise
 
-                wait_time = e.retry_after or (2 ** attempt)
+                wait_time = e.retry_after or (2**attempt)
                 logger.warning(
                     "rate_limit_hit",
                     retry_after=e.retry_after,
@@ -333,7 +333,7 @@ def retry_with_rate_limit(func: Callable[..., T]) -> Callable[..., T]:
                 if attempt >= max_attempts:
                     raise
 
-                wait_time = min(60, 2 ** attempt)
+                wait_time = min(60, 2**attempt)
                 logger.warning(
                     "server_error",
                     error=str(e),
@@ -345,4 +345,3 @@ def retry_with_rate_limit(func: Callable[..., T]) -> Callable[..., T]:
         raise RuntimeError(RETRY_FAIL_MSG)
 
     return wrapper
-

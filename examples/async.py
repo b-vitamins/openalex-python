@@ -66,7 +66,9 @@ async def stream_all_results():
 
     count = 0
     try:
-        async for _work in works.filter(publication_year=2024, is_oa=True).all():
+        async for _work in works.filter(
+            publication_year=2024, is_oa=True
+        ).all():
             count += 1
             if count % 100 == 0:
                 print(f"Processed {count} papers...")

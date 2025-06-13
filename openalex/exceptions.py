@@ -150,11 +150,13 @@ class TimeoutError(NetworkError):
 
 class RetryableError(OpenAlexError):
     """Base class for errors that can be retried."""
+
     __slots__ = ()
 
 
 class ServerError(RetryableError):
     """Server-side errors (5xx status codes)."""
+
     __slots__ = ()
 
 
@@ -175,11 +177,13 @@ class RateLimitExceededError(RetryableError):
 
 class TemporaryError(RetryableError):
     """Temporary errors that may succeed on retry."""
+
     __slots__ = ()
 
 
 class ConfigurationError(OpenAlexError):
     """Configuration-related errors."""
+
     __slots__ = ()
 
 

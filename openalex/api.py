@@ -291,7 +291,9 @@ class AsyncBaseAPI(Generic[T]):
                 self.endpoint, entity_id, params
             )
             cached = (
-                cache_manager.cache.get(cache_key) if cache_manager.cache else None
+                cache_manager.cache.get(cache_key)
+                if cache_manager.cache
+                else None
             )
             if cached is not None:
                 return cast("dict[str, Any]", cached)

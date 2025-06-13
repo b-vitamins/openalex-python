@@ -135,4 +135,3 @@ class TestCacheManager:
         manager.get_or_fetch("works", fetch_func, entity_id="W789")
 
         assert fetch_func.call_count == 2
-

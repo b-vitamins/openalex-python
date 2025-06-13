@@ -186,9 +186,7 @@ class AsyncConnection:
                     _raise(ServerError(msg))
 
                 if response.status_code in (502, 503, 504):
-                    msg = (
-                        f"Temporary error {response.status_code}: Service unavailable"
-                    )
+                    msg = f"Temporary error {response.status_code}: Service unavailable"
                     _raise(TemporaryError(msg))
 
             except (RateLimitExceededError, ServerError, TemporaryError) as e:

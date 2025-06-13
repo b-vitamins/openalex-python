@@ -23,8 +23,7 @@ def performance_optimized_queries():
     # 1. Select only needed fields to reduce payload
     print("=== Minimal field selection ===")
     minimal_works = (
-        works
-        .filter(publication_year=2024)
+        works.filter(publication_year=2024)
         .select(["id", "title", "cited_by_count", "doi"])
         .get(per_page=100)
     )
@@ -41,17 +40,17 @@ def performance_optimized_queries():
 
     # 3. Batch similar queries
     print("\n=== Batch processing ===")
-    institution_ids = ["I136199984", "I63966007", "I97018004"]  # Harvard, MIT, Stanford
+    institution_ids = [
+        "I136199984",
+        "I63966007",
+        "I97018004",
+    ]  # Harvard, MIT, Stanford
 
     # Instead of multiple queries, pass a list of institution IDs
-    batch_results = (
-        works
-        .filter(
-            institutions={"id": institution_ids},
-            publication_year=2024,
-        )
-        .get()
-    )
+    batch_results = works.filter(
+        institutions={"id": institution_ids},
+        publication_year=2024,
+    ).get()
     print(f"Batch query returned {batch_results.meta.count} works")
 
 
@@ -63,22 +62,17 @@ def complex_filtering_examples():
     # 1. Date range queries
     print("=== Date range filtering ===")
     last_month = datetime.now() - timedelta(days=30)
-    recent_works = (
-        works
-        .filter(
-            from_publication_date=last_month.strftime("%Y-%m-%d"),
-            to_publication_date=datetime.now().strftime("%Y-%m-%d")
-        )
-        .get()
-    )
+    recent_works = works.filter(
+        from_publication_date=last_month.strftime("%Y-%m-%d"),
+        to_publication_date=datetime.now().strftime("%Y-%m-%d"),
+    ).get()
     print(f"Works published in last 30 days: {recent_works.meta.count}")
 
     # 2. Complex institutional filtering
     print("\n=== Complex institutional queries ===")
     # Find works where Harvard and MIT collaborated
     collaborations = (
-        works
-        .filter(
+        works.filter(
             institutions={"id": "I136199984"},
             authorships={"institutions": {"id": "I63966007"}},
         )
@@ -90,8 +84,7 @@ def complex_filtering_examples():
     # 3. Citation-based filtering
     print("\n=== Citation analysis ===")
     highly_cited_recent = (
-        works
-        .filter(publication_year="2020-2024")
+        works.filter(publication_year="2020-2024")
         .filter_gt(cited_by_count=100)
         .sort(cited_by_count="desc")
         .get()
@@ -101,8 +94,7 @@ def complex_filtering_examples():
     # 4. Language and region filtering
     print("\n=== Language and region ===")
     chinese_ml_papers = (
-        works
-        .filter(language="zh", institutions={"country_code": "CN"})
+        works.filter(language="zh", institutions={"country_code": "CN"})
         .search("machine learning")
         .get()
     )
@@ -138,8 +130,7 @@ def author_career_analysis():
 
     # Publications by year
     yearly_stats = (
-        works
-        .filter(author={"id": author.id})
+        works.filter(author={"id": author.id})
         .group_by("publication_year")
         .get()
     )
@@ -163,7 +154,9 @@ def author_career_analysis():
                 collaborators[name] = collaborators.get(name, 0) + 1
 
     print("Top collaborators:")
-    for name, count in sorted(collaborators.items(), key=lambda x: x[1], reverse=True)[:5]:
+    for name, count in sorted(
+        collaborators.items(), key=lambda x: x[1], reverse=True
+    )[:5]:
         print(f"  {name}: {count} papers")
 
 
@@ -175,8 +168,7 @@ def institutional_rankings():
     # Top institutions by recent paper count
     print("=== Top institutions by output ===")
     top_institutions = (
-        institutions
-        .filter_gt(works_count=1000)  # Minimum threshold
+        institutions.filter_gt(works_count=1000)  # Minimum threshold
         .sort(works_count="desc")
         .get(per_page=10)
     )
@@ -185,8 +177,7 @@ def institutional_rankings():
     works = Works(config=CONFIG)
     for inst in top_institutions.results[:5]:
         recent_works = works.filter(
-            institutions={"id": inst.id},
-            publication_year=2024
+            institutions={"id": inst.id}, publication_year=2024
         ).get(per_page=1)
 
         print(f"{inst.display_name}: {recent_works.meta.count} papers in 2024")
@@ -203,7 +194,7 @@ def research_trend_analysis():
         "reinforcement learning",
         "natural language processing",
         "computer vision",
-        "generative AI"
+        "generative AI",
     ]
 
     print("=== AI Research Trends (2020-2024) ===")
@@ -222,7 +213,10 @@ def research_trend_analysis():
 
         # Calculate growth
         if yearly_counts[2020] > 0:
-            growth = ((yearly_counts[2024] - yearly_counts[2020]) / yearly_counts[2020]) * 100
+            growth = (
+                (yearly_counts[2024] - yearly_counts[2020])
+                / yearly_counts[2020]
+            ) * 100
         else:
             growth = 0
 
@@ -242,12 +236,7 @@ def open_access_analysis():
     # OA percentage by year
     for year in range(2020, 2025):
         try:
-            stats = (
-                works
-                .filter(publication_year=year)
-                .group_by("is_oa")
-                .get()
-            )
+            stats = works.filter(publication_year=year).group_by("is_oa").get()
         except Exception as exc:  # pragma: no cover - example
             print(f"Failed to fetch OA stats for {year}: {exc}")
             return
@@ -260,14 +249,15 @@ def open_access_analysis():
         print(f"{year}: {oa_percentage:.1f}% OA ({oa_count:,}/{total:,})")
 
 
-
 def cache_performance_demo():
     """Demonstrate cache performance benefits."""
 
     import time
 
     # Without cache
-    config_no_cache = OpenAlexConfig(email="test@example.com", cache_enabled=False)
+    config_no_cache = OpenAlexConfig(
+        email="test@example.com", cache_enabled=False
+    )
     works_no_cache = Works(config=config_no_cache)
 
     # With cache
@@ -302,7 +292,7 @@ def cache_performance_demo():
     time4 = time.time() - start
     print(f"Second fetch (from cache): {time4:.3f}s")
 
-    print(f"\nCache speedup: {time2/time4:.0f}x faster!")
+    print(f"\nCache speedup: {time2 / time4:.0f}x faster!")
 
     # Show cache stats
     stats = works_cache.cache_stats()
@@ -328,4 +318,3 @@ if __name__ == "__main__":
         except Exception as exc:  # pragma: no cover - example
             print(f"Example {example.__name__} failed: {exc}")
         print("\n" + "=" * 50 + "\n")
-
