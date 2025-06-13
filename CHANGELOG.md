@@ -14,11 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Extended documentation with advanced usage examples
 - Performance monitoring and metrics collection
 - Development guidelines for contributors in `AGENTS.md`
+- Behavior-driven test suite covering async, caching, config, pagination, etc.
 
 ### Changed
 - License clarification: Now consistently MIT licensed
 - Improved error messages with more context
 - Pytest configuration skips docs-based examples
+- Refactored test suite for maintainability and clarity
 
 ### Fixed
 - License inconsistency between LICENSE file and pyproject.toml
