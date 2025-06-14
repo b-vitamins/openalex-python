@@ -135,7 +135,9 @@ class Paginator(Generic[T]):
             if result.meta.next_cursor:
                 cursor = result.meta.next_cursor
                 page = None
-            elif page is not None and page * self.per_page < result.meta.count:
+            elif len(result.results) == 0:
+                break
+            elif page is not None:
                 page += 1
             else:
                 break
@@ -251,7 +253,9 @@ class AsyncPaginator(Generic[T]):
             if result.meta.next_cursor:
                 cursor = result.meta.next_cursor
                 page = None
-            elif page is not None and page * self.per_page < result.meta.count:
+            elif len(result.results) == 0:
+                break
+            elif page is not None:
                 page += 1
             else:
                 break
@@ -285,7 +289,12 @@ class AsyncPaginator(Generic[T]):
             if result.meta.next_cursor:
                 cursor = result.meta.next_cursor
                 page = None
-            elif page is not None and page * self.per_page < result.meta.count:
+            elif len(result.results) == 0:
+                break
+            elif page is not None:
+                if len(result.results) < self.per_page:
+                    page = None
+                    break
                 page += 1
             else:
                 break
@@ -321,12 +330,11 @@ class AsyncPaginator(Generic[T]):
         Returns:
             List of all results
         """
-        # First, get the total count
-        count = await self.count()
-        total_pages = (count + self.per_page - 1) // self.per_page
-
         if pages is not None:
-            total_pages = min(pages, total_pages)
+            total_pages = pages
+        else:
+            count = await self.count()
+            total_pages = (count + self.per_page - 1) // self.per_page
 
         # Create tasks for all pages
         tasks = [

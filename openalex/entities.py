@@ -296,9 +296,15 @@ class BaseEntity(Generic[T, F]):
 
     def all(self, **kwargs: Any) -> Iterator[T]:
         """Iterate over all results for this entity."""
+        max_results = kwargs.get("max_results")
         paginator = self.paginate(**kwargs)
+        yielded = 0
         for page in paginator:
-            yield from page.results
+            for item in page.results:
+                yield item
+                yielded += 1
+                if max_results is not None and yielded >= max_results:
+                    return
 
     def filter(self, **kwargs: Any) -> Query[T, F]:
         return self.query().filter(**kwargs)
