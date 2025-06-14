@@ -34,6 +34,7 @@ You can filter using these attributes of the [`Concept`](concept-object.md) obje
 ### Basic attribute filters
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Filter by cited_by_count
 highly_cited = Concepts().filter(cited_by_count=1000000).get()  # Exactly 1M
@@ -57,6 +58,7 @@ specific_ids = Concepts().filter(
 ### Hierarchical filters
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Filter by ancestors
 # Get all descendants of Computer Science (C41008148)
@@ -82,6 +84,7 @@ interdisciplinary = (
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 # Filter by h-index
 high_h_index = Concepts().filter_gt(summary_stats={"h_index": 200}).get()
 
@@ -110,6 +113,7 @@ These filters aren't attributes of the Concept object, but they're handy:
 ### Boolean filters
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Has Wikidata ID (currently all concepts have one)
 with_wikidata = Concepts().filter(has_wikidata=True).get()
@@ -123,6 +127,7 @@ print(f"Without Wikidata: {without_wikidata.meta.count:,}")  # Should be 0
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 # Search in display names
 ai_search = Concepts().filter(
     display_name={"search": "artificial intelligence"}
@@ -142,6 +147,7 @@ default_search = Concepts().filter(
 ### Combining filters (AND operations)
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # High-impact computer science concepts
 high_impact_cs = (
@@ -176,6 +182,7 @@ ml_concepts = (
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Concepts NOT under Computer Science
+from openalex import Concepts
 non_cs = Concepts().filter_not(ancestors={"id": "C41008148"}).get()
 
 # Non-root concepts
@@ -191,6 +198,7 @@ low_impact = Concepts().filter_not(
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 # Mid-level concepts (levels 2-4)
 mid_levels = (
     Concepts()
@@ -213,6 +221,7 @@ moderate_activity = (
 ### Example 1: Navigate concept tree
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 def explore_concept_branch(concept_id, max_depth=3):
     """Explore a branch of the concept tree."""
@@ -250,6 +259,7 @@ explore_concept_branch("C41008148")
 ### Example 2: Find interdisciplinary concepts
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 def find_interdisciplinary_concepts():
     """Find concepts that bridge multiple fields."""
@@ -281,6 +291,7 @@ find_interdisciplinary_concepts()
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 def analyze_research_trends(min_works=50000):
     """Find rapidly growing research areas."""
     
@@ -329,6 +340,7 @@ analyze_research_trends()
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 def find_similar_concepts(concept_id):
     """Find concepts similar to a given concept."""
     
@@ -369,6 +381,7 @@ Since there are ~65,000 concepts:
 4. **Use ancestors for branches**: Efficiently get entire subtrees
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Example: Efficiently analyze concept distribution
 def concept_distribution_summary():

@@ -28,8 +28,8 @@ for group in level_stats.group_by:
 ## Understanding group_by results
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
-# The result structure is different from regular queries
 result = Concepts().group_by("level").get()
 
 print(result.results)  # Empty list - no individual concepts returned!
@@ -48,6 +48,7 @@ for group in result.group_by:
 ### Hierarchical grouping
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Group by level (0-5)
 by_level = Concepts().group_by("level").get()
@@ -66,6 +67,7 @@ by_wikidata = Concepts().group_by("has_wikidata").get()
 ### Activity-based grouping
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Works count distribution
 works_dist = Concepts().group_by("works_count").get()
@@ -90,6 +92,7 @@ impact_dist = Concepts().group_by("summary_stats.2yr_mean_citedness").get()
 Group_by becomes more insightful when combined with filters:
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Level distribution for Computer Science descendants
 cs_levels = (
@@ -127,6 +130,7 @@ high_impact_levels = (
 You can group by two dimensions:
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Level and ancestor combination
 level_ancestor = Concepts().group_by("level", "ancestors.id").get()
@@ -144,6 +148,7 @@ for group in level_ancestor.group_by[:20]:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 def analyze_concept_hierarchy():
     """Comprehensive analysis of the concept tree structure."""
     
@@ -174,6 +179,7 @@ analyze_concept_hierarchy()
 ### Example 2: Research activity distribution
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 def analyze_research_activity():
     """Analyze how research activity is distributed across concepts."""
@@ -221,6 +227,7 @@ analyze_research_activity()
 ### Example 3: Impact analysis
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 def analyze_concept_impact():
     """Analyze impact metrics across the concept hierarchy."""
@@ -266,9 +273,9 @@ analyze_concept_impact()
 ### Example 4: Domain comparison
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 def compare_domains():
-    """Compare research domains (root concepts)."""
     
     # Get all root concepts
     roots = Concepts().filter(level=0).get(per_page=25)
@@ -317,6 +324,7 @@ compare_domains()
 Control how results are ordered:
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Default: sorted by count (descending)
 default_sort = Concepts().group_by("level").get()
