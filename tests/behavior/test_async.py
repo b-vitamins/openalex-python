@@ -77,44 +77,54 @@ class TestAsyncBehavior:
 
     async def test_async_pagination_iterates_all_results(self, mock_source_data):
         """Async pagination should iterate through all pages."""
-        from openalex import AsyncSources
-
-        page1_called = False
-        page2_called = False
+        from openalex import AsyncAuthors
 
         async def mock_response(*args, **kwargs):
-            nonlocal page1_called, page2_called
+            cursor = kwargs["params"].get("cursor")
+            if cursor is None:
+                page = 1
+            elif cursor == "next":
+                page = 2
+            else:
+                page = int(kwargs["params"].get("page", 1))
 
-            if not page1_called:
-                page1_called = True
+            if page <= 2:
                 return Mock(
                     status_code=200,
                     json=Mock(return_value={
-                        "results": [mock_source_data],
-                        "meta": {"count": 2, "page": 1, "next_cursor": "page2"}
+                        "results": [{"id": f"A{page}"}],
+                        "meta": {
+                            "count": 2,
+                            "page": page,
+                            "next_cursor": "next" if page < 2 else None,
+                        },
                     })
                 )
             else:
-                page2_called = True
                 return Mock(
                     status_code=200,
                     json=Mock(return_value={
-                        "results": [mock_source_data],
-                        "meta": {"count": 2, "page": 2, "next_cursor": None}
+                        "results": [],
+                        "meta": {
+                            "count": 2,
+                            "page": page,
+                            "next_cursor": None,
+                        },
                     })
                 )
 
         with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
             mock_request.side_effect = mock_response
 
-            sources = AsyncSources()
-            all_sources = []
+            authors = AsyncAuthors()
+            all_authors = []
 
-            async for source in sources.filter(type="journal").all():
-                all_sources.append(source)
+            async for author in authors.filter(works_count=">10").all():
+                all_authors.append(author)
 
-            assert len(all_sources) == 2
-            assert page1_called and page2_called
+            assert len(all_authors) == 2
+            assert all_authors[0].id == "A1"
+            assert all_authors[1].id == "A2"
 
     async def test_async_concurrent_requests_execute_in_parallel(self):
         """Multiple async requests should execute concurrently."""
@@ -261,8 +271,9 @@ class TestAsyncBehavior:
                 status_code=404,
                 json=Mock(return_value={
                     "error": "Not Found",
-                    "message": "Keyword not found"
-                })
+                    "message": "Keyword not found",
+                }),
+                is_success=False,
             )
 
             keywords = AsyncKeywords()
@@ -273,6 +284,9 @@ class TestAsyncBehavior:
     async def test_async_cache_behavior(self):
         """Async client should use cache when enabled."""
         from openalex import AsyncWorks, OpenAlexConfig
+        import openalex.cache.manager as cache_manager
+
+        cache_manager._cache_manager = None
 
         config = OpenAlexConfig(cache_enabled=True)
 

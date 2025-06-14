@@ -12,7 +12,8 @@ if TYPE_CHECKING:  # pragma: no cover - for type checking only
 
     from .config import OpenAlexConfig
     from .entities import AsyncBaseEntity, BaseEntity
-from .models import BaseFilter, GroupByResult, ListResult
+from .models import BaseFilter, GroupByResult
+from .models.base import ListResult, Meta
 from .utils.pagination import MAX_PER_PAGE, AsyncPaginator, Paginator
 
 __all__ = [
@@ -69,15 +70,31 @@ def _build_list_result(data: dict[str, Any], model: type[T]) -> ListResult[T]:
         except ValidationError:
             results.append(model.model_construct(**item))  # type: ignore
 
+    meta_data = data.get("meta", {})
+    per_page_value = meta_data.get("per_page", len(results))
+    meta_defaults = {
+        "count": meta_data.get("count", 0),
+        "db_response_time_ms": meta_data.get("db_response_time_ms", 0),
+        "page": meta_data.get("page", 1),
+        "per_page": per_page_value,
+        "groups_count": meta_data.get("groups_count"),
+        "next_cursor": meta_data.get("next_cursor"),
+    }
+
     try:
-        return ListResult[T](
-            meta=data.get("meta", {}),
+        meta = Meta.model_validate(meta_defaults)
+    except ValidationError:
+        meta = Meta.model_construct(**meta_defaults)
+
+    try:
+        return ListResult[model](  # type: ignore
+            meta=meta,
             results=results,
             group_by=data.get("group_by"),
         )
     except ValidationError:
-        return ListResult[T].model_construct(
-            meta=data.get("meta", {}),
+        return ListResult[model].model_construct(  # type: ignore
+            meta=meta,
             results=results,
             group_by=data.get("group_by"),
         )
@@ -371,21 +388,10 @@ class AsyncQuery(Generic[T, F]):
         return _build_list_result(data, self._model_class)
 
     async def all(self) -> AsyncIterator[T]:
-        page = 1
-        while True:
-            results = await self.get(page=page)
-
-            if isinstance(results, GroupByResult):
-                msg = "Cannot iterate over grouped results"
-                raise TypeError(msg)
-
-            for item in results.results:
-                yield item
-
-            if not results.results:
-                break
-
-            page += 1
+        """Iterate over all results using proper pagination."""
+        paginator = self.paginate(per_page=1)
+        async for item in paginator:
+            yield item
 
     async def count(self) -> int:
         results = await self.get(per_page=1)
