@@ -24,6 +24,8 @@ The search checks both primary and alternate names:
 
 ```python
 # This searches both display_name and alternate_titles
+from openalex import Publishers
+
 elsevier_results = Publishers().search("elsevier").get()
 
 # Example matches might include:
@@ -40,6 +42,8 @@ Read more about search relevance, stemming, and boolean searches in the [search 
 You can also use search as a filter:
 
 ```python
+from openalex import Publishers
+
 # Search only in display_name (not alternate_titles)
 display_only = Publishers().filter(
     display_name={"search": "elsevier"}
@@ -68,6 +72,8 @@ Available search fields:
 Create a fast type-ahead search experience:
 
 ```python
+from openalex import Publishers
+
 # Get autocomplete suggestions
 suggestions = Publishers().autocomplete("els")
 
@@ -98,6 +104,8 @@ Else Kr\u00f6ner-Fresenius Foundation
 Search is most powerful when combined with filters:
 
 ```python
+from openalex import Publishers
+
 # Search for US university presses
 us_uni_presses = (
     Publishers()
@@ -138,6 +146,8 @@ medical_publishers = (
 
 ```python
 # When searching for a publisher group, check hierarchy
+from openalex import Publishers
+
 def find_publisher_family(search_term):
     # First, find potential matches
     matches = Publishers().search(search_term).get(per_page=20)
@@ -170,6 +180,8 @@ for parent_id, members in nature_families.items():
 
 ```python
 # Search for publishers in specific regions
+from openalex import Publishers
+
 def find_regional_publishers(search_term, country_codes):
     return (
         Publishers()
@@ -198,6 +210,8 @@ eu_oa_publishers = find_regional_publishers(
 
 ```python
 # Many publishers have similar names
+from openalex import Publishers
+
 cambridge_search = Publishers().search("Cambridge").get()
 
 # Distinguish between them using additional filters
@@ -221,6 +235,8 @@ major_cambridge = (
 
 ```python
 # Find all Springer-related entities
+from openalex import Publishers
+
 springer_all = Publishers().search("Springer").get(per_page=50)
 
 # Separate parents from children
@@ -249,6 +265,8 @@ for pub in springer_all.results:
 
 ```python
 # Example: Find the "real" publisher among many matches
+from openalex import Publishers
+
 def find_main_publisher(search_term):
     results = Publishers().search(search_term).get(per_page=10)
     

@@ -28,6 +28,8 @@ You can filter using these attributes of the [`Publisher`](publisher-object.md) 
 ### Basic attribute filters
 
 ```python
+from openalex import Publishers
+
 # Filter by cited_by_count
 highly_cited = Publishers().filter(cited_by_count=1000000).get()  # Exactly 1M
 very_highly_cited = Publishers().filter_gt(cited_by_count=10000000).get()  # More than 10M
@@ -50,6 +52,8 @@ specific_ids = Publishers().filter(
 ### Geographic filters
 
 ```python
+from openalex import Publishers
+
 # Filter by country
 us_publishers = Publishers().filter(country_codes="US").get()
 uk_publishers = Publishers().filter(country_codes="GB").get()
@@ -63,6 +67,8 @@ european_publishers = Publishers().filter(
 ### Hierarchy filters
 
 ```python
+from openalex import Publishers
+
 # Find all subsidiaries of a publisher using lineage
 springer_nature_id = "P4310319965"
 springer_family = Publishers().filter(lineage=springer_nature_id).get()
@@ -81,6 +87,8 @@ wikidata_publisher = Publishers().filter(wikidata="Q746413").get()
 ### Summary statistics filters
 
 ```python
+from openalex import Publishers
+
 # Filter by h-index
 high_impact = Publishers().filter_gt(summary_stats={"h_index": 500}).get()
 
@@ -109,6 +117,8 @@ These filters aren't attributes of the Publisher object, but they're handy for c
 ### Geographic convenience filters
 
 ```python
+from openalex import Publishers
+
 # Filter by continent
 european_publishers = Publishers().filter(continent="europe").get()
 asian_publishers = Publishers().filter(continent="asia").get()
@@ -117,6 +127,8 @@ asian_publishers = Publishers().filter(continent="asia").get()
 ### Text search filters
 
 ```python
+from openalex import Publishers
+
 # Search in display names
 elsevier_search = Publishers().filter(
     display_name={"search": "elsevier"}
@@ -136,6 +148,8 @@ default_search = Publishers().filter(
 ### Combining filters (AND operations)
 
 ```python
+from openalex import Publishers
+
 # Large US publishers
 large_us_publishers = (
     Publishers()
@@ -158,6 +172,8 @@ european_elite = (
 ### NOT operations
 
 ```python
+from openalex import Publishers
+
 # Publishers NOT from the US
 non_us_publishers = Publishers().filter_not(country_codes="US").get()
 
@@ -168,6 +184,8 @@ subsidiaries = Publishers().filter_not(hierarchy_level=0).get()
 ### Range queries
 
 ```python
+from openalex import Publishers
+
 # Mid-size publishers (10k-100k works)
 mid_size = (
     Publishers()
@@ -190,6 +208,8 @@ moderate_impact = (
 ### Example 1: Analyze publisher families
 
 ```python
+from openalex import Publishers
+
 # Get a major publisher
 elsevier = Publishers().search("Elsevier BV").get().results[0]
 
@@ -206,6 +226,8 @@ for pub in elsevier_family.results:
 ### Example 2: Compare publishers by region
 
 ```python
+from openalex import Publishers
+
 # Get top publishers by continent
 def top_publishers_by_continent(continent, limit=5):
     return (
@@ -226,6 +248,8 @@ for continent in ["north_america", "europe", "asia"]:
 ### Example 3: Find university presses
 
 ```python
+from openalex import Publishers
+
 # University presses often have "University Press" in the name
 uni_presses = Publishers().search("University Press").get(per_page=50)
 
@@ -256,6 +280,8 @@ Since there are only ~10,000 publishers:
 
 ```python
 # Example: Get summary of all publishers efficiently
+from openalex import Publishers
+
 def get_publisher_summary():
     # Use group_by for statistics
     by_country = Publishers().group_by("country_codes").get()

@@ -27,7 +27,10 @@ The response contains:
 
 ```python
 # Each result shows publisher information
-for publisher in first_page.results[:5]:  # First 5 publishers
+from openalex import Publishers
+
+first_page = Publishers().get()
+for publisher in first_page.results[:5]:
     print(f"\n{publisher.display_name}")
     print(f"  ID: {publisher.id}")
     print(f"  Works: {publisher.works_count:,}")
@@ -43,6 +46,8 @@ You can control pagination and sorting:
 
 ```python
 # Get a specific page with custom page size
+from openalex import Publishers
+
 page2 = Publishers().get(per_page=50, page=2)
 # This returns publishers 51-100
 
@@ -69,6 +74,8 @@ print(f"Fetched all {len(all_publishers)} publishers")
 Get a random sample of publishers:
 
 ```python
+from openalex import Publishers
+
 # Get 10 random publishers
 random_sample = Publishers().sample(10).get()
 
@@ -90,9 +97,11 @@ Limit the fields returned to improve performance:
 
 ```python
 # Request only specific fields
+from openalex import Publishers
+
 minimal_publishers = Publishers().select([
-    "id", 
-    "display_name", 
+    "id",
+    "display_name",
     "alternate_titles"
 ]).get()
 
@@ -105,6 +114,8 @@ for publisher in minimal_publishers.results:
 ## Practical example: Publisher hierarchy
 
 ```python
+from openalex import Publishers
+
 # Get all top-level publishers
 parent_publishers = Publishers().filter(hierarchy_level=0).get()
 print(f"Found {parent_publishers.meta.count} parent publishers")

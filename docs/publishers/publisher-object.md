@@ -16,6 +16,11 @@ print(type(publisher))  # <class 'openalex.models.publisher.Publisher'>
 
 ```python
 # Identifiers
+from openalex import Publishers
+
+publisher = Publishers()["P4310320990"]
+
+# Identifiers
 print(publisher.id)  # "https://openalex.org/P4310320990"
 print(publisher.display_name)  # "Elsevier BV"
 
@@ -44,6 +49,10 @@ print(publisher.updated_date)  # "2024-12-25T14:04:30.578837"
 Publishers can have parent-child relationships:
 
 ```python
+from openalex import Publishers
+
+publisher = Publishers()["P4310320990"]
+
 # Hierarchy level (0 = top parent, 1 = child, 2 = grandchild, etc.)
 print(f"Hierarchy level: {publisher.hierarchy_level}")
 
@@ -70,6 +79,10 @@ for i, ancestor_id in enumerate(publisher.lineage):
 Citation and productivity metrics:
 
 ```python
+from openalex import Publishers
+
+publisher = Publishers()["P4310320990"]
+
 stats = publisher.summary_stats
 if stats:
     print(f"H-index: {stats.h_index}")  # e.g., 985
@@ -86,6 +99,10 @@ if stats:
 Track publication trends over the last 10 years:
 
 ```python
+from openalex import Publishers
+
+publisher = Publishers()["P4310320990"]
+
 print("Publication trends:")
 for count in publisher.counts_by_year:
     print(f"  {count.year}: {count.works_count:,} works, "
@@ -105,6 +122,10 @@ if len(publisher.counts_by_year) >= 2:
 Access all known IDs:
 
 ```python
+from openalex import Publishers
+
+publisher = Publishers()["P4310320990"]
+
 ids = publisher.ids
 print(f"OpenAlex: {ids.openalex}")
 if ids.ror:
@@ -125,6 +146,10 @@ print(f"Available IDs: {', '.join(available_ids)}")
 Publisher logos and seals:
 
 ```python
+from openalex import Publishers
+
+publisher = Publishers()["P4310320990"]
+
 # Full-size image (usually from Wikimedia)
 if publisher.image_url:
     print(f"Logo URL: {publisher.image_url}")
@@ -141,6 +166,10 @@ if publisher.image_thumbnail_url:
 Publishers can have multiple roles in the academic ecosystem:
 
 ```python
+from openalex import Publishers
+
+publisher = Publishers()["P4310320990"]
+
 # A publisher might also be a funder or institution
 print(f"This organization has {len(publisher.roles)} roles:")
 
@@ -160,11 +189,14 @@ for role in publisher.roles:
 Get all journals/sources from this publisher:
 
 ```python
+from openalex import Publishers, Sources
+
+publisher = Publishers()["P4310320990"]
+
 # This is the API URL to get all sources
 print(f"Sources URL: {publisher.sources_api_url}")
 
 # To actually fetch the sources using the client:
-from openalex import Sources
 
 # Get all sources published by this publisher
 publisher_sources = Sources().filter(
@@ -185,6 +217,10 @@ for source in publisher_sources.results[:5]:
 ### Get all subsidiaries
 
 ```python
+from openalex import Publishers
+
+publisher = Publishers()["P4310320990"]
+
 # Find all children of this publisher
 children = Publishers().filter(parent_publisher=publisher.id).get()
 
@@ -200,6 +236,9 @@ print(f"Entire family: {family.meta.count} publishers")
 ### Navigate up the hierarchy
 
 ```python
+from openalex import Publishers
+
+# Helper to walk up the hierarchy
 def get_publisher_chain(publisher_id):
     """Get the full chain from publisher to top parent."""
     chain = []
@@ -213,6 +252,9 @@ def get_publisher_chain(publisher_id):
     return chain
 
 # Example usage
+from openalex import Publishers
+
+publisher = Publishers()["P4310320990"]
 chain = get_publisher_chain(publisher.id)
 print("Publisher hierarchy (child to parent):")
 for i, pub in enumerate(chain):
@@ -224,7 +266,9 @@ for i, pub in enumerate(chain):
 
 ```python
 # Get a sample of recent works from this publisher
-from openalex import Works
+from openalex import Publishers, Works
+
+publisher = Publishers()["P4310320990"]
 
 recent_works = (
     Works()
@@ -252,6 +296,10 @@ print(f"\nOpen Access rate: {oa_percentage:.1f}%")
 ## Geographic analysis
 
 ```python
+from openalex import Publishers
+
+publisher = Publishers()["P4310320990"]
+
 # For publishers with multiple country codes
 if len(publisher.country_codes) > 1:
     print(f"International publisher with presence in:")
@@ -271,6 +319,10 @@ print(f"\nOther publishers in {publisher.country_codes[0]}: "
 Many fields can be None or empty:
 
 ```python
+from openalex import Publishers
+
+publisher = Publishers()["P4310320990"]
+
 # Safe access patterns
 if publisher.parent_publisher:
     print(f"Has parent: {publisher.parent_publisher}")
