@@ -62,7 +62,10 @@ class TestOpenAlexClient:
         from openalex.client import OpenAlexClient
         from openalex.exceptions import RateLimitError
 
-        client = OpenAlexClient()
+        from openalex import OpenAlexConfig
+
+        config = OpenAlexConfig(max_retries=1)
+        client = OpenAlexClient(config)
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = mock_response(
