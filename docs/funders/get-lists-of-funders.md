@@ -25,9 +25,12 @@ The response contains:
 ## Understanding the results
 
 ```python
-# Each result shows funder information
-for funder in first_page.results[:5]:  # First 5 funders
-    print(f"\n{funder.display_name}")
+from openalex import Funders
+
+first_page = Funders().get()
+for funder in first_page.results[:5]:
+    print(f"
+{funder.display_name}")
     print(f"  Country: {funder.country_code}")
     print(f"  Grants: {funder.grants_count:,}")
     print(f"  Funded works: {funder.works_count:,}")
@@ -41,6 +44,8 @@ for funder in first_page.results[:5]:  # First 5 funders
 You can control pagination and sorting:
 
 ```python
+from openalex import Funders
+
 # Get a specific page with custom page size
 page2 = Funders().get(per_page=50, page=2)
 # This returns funders 51-100
@@ -68,6 +73,8 @@ print(f"Fetched all {len(all_funders)} funders")
 Get a random sample of funders:
 
 ```python
+from openalex import Funders
+
 # Get 10 random funders
 random_sample = Funders().sample(10).get(per_page=10)
 
@@ -87,8 +94,10 @@ us_funder_sample = (
 
 Limit the fields returned to improve performance:
 
+
 ```python
 # Request only specific fields
+from openalex import Funders
 minimal_funders = Funders().select([
     "id", 
     "display_name",
@@ -108,6 +117,8 @@ for funder in minimal_funders.results:
 ### Example: Analyze funding landscape
 
 ```python
+from openalex import Funders
+
 # Get major funding agencies
 major_funders = (
     Funders()
@@ -127,6 +138,7 @@ for i, funder in enumerate(major_funders.results, 1):
 ### Example: Geographic distribution
 
 ```python
+from openalex import Funders
 # Analyze funders by region
 def analyze_funding_by_region():
     regions = {
@@ -159,6 +171,7 @@ analyze_funding_by_region()
 ### Example: Funding impact analysis
 
 ```python
+from openalex import Funders
 # Find high-impact funders
 def find_high_impact_funders(min_h_index=200):
     """Find funders supporting high-impact research."""

@@ -25,6 +25,7 @@ for funder in results.results[:5]:
 The search checks multiple fields:
 
 ```python
+from openalex import Funders
 # This searches display_name, alternate_titles, AND description
 nih_results = Funders().search("NIH").get()
 
@@ -45,6 +46,7 @@ Read more about search relevance, stemming, and boolean searches in the [search 
 You can also use search as a filter:
 
 ```python
+from openalex import Funders
 # Search only in display_name
 name_only = Funders().filter(
     display_name={"search": "florida"}
@@ -79,6 +81,7 @@ Available search fields:
 Create a fast type-ahead search experience:
 
 ```python
+from openalex import Funders
 # Get autocomplete suggestions
 suggestions = Funders().autocomplete("national sci")
 
@@ -112,6 +115,7 @@ Swiss National Science Foundation
 Search is most powerful when combined with filters:
 
 ```python
+from openalex import Funders
 # Search for US health-related funders
 us_health_funders = (
     Funders()
@@ -155,6 +159,7 @@ cancer_funders = (
 ### Finding government funders
 
 ```python
+from openalex import Funders
 def find_government_funders(country_code=None):
     """Find government funding agencies."""
     
@@ -183,6 +188,7 @@ find_government_funders("GB")
 ### Finding foundation funders
 
 ```python
+from openalex import Funders
 def find_foundations(focus_area=None):
     """Find private foundations and charities."""
     
@@ -213,6 +219,7 @@ find_foundations("education")
 ### International funder search
 
 ```python
+from openalex import Funders
 def search_international_funders(search_term):
     """Search for funders across multiple languages/variations."""
     
@@ -245,6 +252,7 @@ search_international_funders("Research")
 ### Finding funding opportunities by field
 
 ```python
+from openalex import Funders
 # Medical research funders
 medical_funders = (
     Funders()
@@ -273,6 +281,7 @@ env_funders = (
 ### Regional funder discovery
 
 ```python
+from openalex import Funders
 # Find funders in specific regions
 def find_regional_funders(region, min_grants=50):
     if region == "EU":
@@ -314,6 +323,7 @@ apac_funders = find_regional_funders("Asia-Pacific")
 5. **Use boolean operators**: "cancer AND research" for more specific results
 
 ```python
+from openalex import Funders
 # Example: Comprehensive funder search
 def comprehensive_funder_search(keywords, country=None, min_impact=None):
     """Search with multiple strategies."""

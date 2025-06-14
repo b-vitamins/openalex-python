@@ -29,6 +29,7 @@ You can filter using these attributes of the [`Funder`](funder-object.md) object
 ### Basic attribute filters
 
 ```python
+from openalex import Funders
 # Filter by cited_by_count
 highly_cited = Funders().filter(cited_by_count=1000000).get()  # Exactly 1M
 very_highly_cited = Funders().filter_gt(cited_by_count=10000000).get()  # More than 10M
@@ -65,6 +66,7 @@ wiki_funder = Funders().filter(wikidata="Q390551").get()
 ### Summary statistics filters
 
 ```python
+from openalex import Funders
 # Filter by h-index
 high_h_index = Funders().filter_gt(summary_stats={"h_index": 500}).get()
 
@@ -93,6 +95,7 @@ These filters aren't attributes of the Funder object, but they're handy:
 ### Geographic convenience filters
 
 ```python
+from openalex import Funders
 # Filter by continent
 north_american = Funders().filter(continent="north_america").get()
 european = Funders().filter(continent="europe").get()
@@ -109,6 +112,7 @@ print(f"Global North funders: {global_north.meta.count:,}")
 ### Text search filters
 
 ```python
+from openalex import Funders
 # Search in display names
 health_search = Funders().filter(
     display_name={"search": "health"}
@@ -133,6 +137,7 @@ default_search = Funders().filter(
 ### Combining filters (AND operations)
 
 ```python
+from openalex import Funders
 # Large US government funders
 us_gov_funders = (
     Funders()
@@ -165,6 +170,7 @@ global_south_research = (
 ### NOT operations
 
 ```python
+from openalex import Funders
 # Funders NOT from the US
 non_us = Funders().filter_not(country_code="US").get()
 
@@ -177,6 +183,7 @@ low_grant_volume = Funders().filter_not(
 ### Range queries
 
 ```python
+from openalex import Funders
 # Mid-size funders (100-1000 grants)
 mid_size = (
     Funders()
@@ -199,6 +206,7 @@ moderate_impact = (
 ### Example 1: Find peer funders
 
 ```python
+from openalex import Funders
 def find_peer_funders(funder_id, radius=0.2):
     """Find funders similar to a given funder."""
     # First get the reference funder
@@ -231,6 +239,7 @@ for funder in nsf_peers.results:
 ### Example 2: Regional funding analysis
 
 ```python
+from openalex import Funders
 def analyze_regional_funding():
     """Compare funding landscapes across regions."""
     
@@ -266,6 +275,7 @@ analyze_regional_funding()
 ### Example 3: Funding specialization
 
 ```python
+from openalex import Funders
 def find_specialized_funders(search_term, min_focus_score=0.8):
     """Find funders specialized in a particular area."""
     
@@ -297,6 +307,7 @@ find_specialized_funders("climate")
 ### Example 4: Multi-role organizations
 
 ```python
+from openalex import Funders
 def find_multi_role_organizations():
     """Find organizations that are funders, institutions, and/or publishers."""
     
@@ -337,6 +348,7 @@ Since there are only ~32,000 funders:
 4. **Consider caching**: The funder list changes slowly
 
 ```python
+from openalex import Funders
 # Example: Efficiently analyze global funding distribution
 def global_funding_summary():
     # Use group_by instead of fetching all funders
