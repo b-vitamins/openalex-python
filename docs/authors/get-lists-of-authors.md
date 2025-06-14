@@ -27,6 +27,11 @@ The response contains:
 ## Understanding the results
 
 ```python
+from openalex import Authors
+
+# Recreate the first page for this example
+first_page = Authors().get()
+
 # Each result shows author information
 for author in first_page.results[:5]:  # First 5 authors
     print(f"\n{author.display_name}")
@@ -43,6 +48,8 @@ for author in first_page.results[:5]:  # First 5 authors
 You can control pagination and sorting:
 
 ```python
+from openalex import Authors
+
 # Get a specific page with custom page size (max 200 per page)
 page2 = Authors().get(per_page=50, page=2)
 # This returns authors 51-100 out of millions
@@ -68,6 +75,8 @@ top_cited_page2 = (
 Get a random sample instead of paginated results:
 
 ```python
+from openalex import Authors
+
 # Get 25 random authors from the entire database
 random_sample = Authors().sample(25).get()
 
@@ -89,6 +98,8 @@ orcid_sample = (
 Limit the fields returned to improve performance:
 
 ```python
+from openalex import Authors
+
 # Request only specific fields for each author
 minimal_authors = Authors().select(["id", "display_name", "orcid"]).get()
 

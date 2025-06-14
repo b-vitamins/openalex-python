@@ -15,6 +15,10 @@ print(type(author))  # <class 'openalex.models.author.Author'>
 ## Basic properties
 
 ```python
+from openalex import Authors
+
+author = Authors()["A5023888391"]
+
 # Identifiers
 print(author.id)  # "https://openalex.org/A5023888391"
 print(author.orcid)  # "https://orcid.org/0000-0001-6187-6610"
@@ -40,6 +44,10 @@ print(author.works_api_url)  # URL to get all works by this author
 Authors have institutional affiliations over time:
 
 ```python
+from openalex import Authors
+
+author = Authors()["A5023888391"]
+
 # All known affiliations throughout career
 print(f"Known affiliations: {len(author.affiliations)}")
 
@@ -62,6 +70,10 @@ for affiliation in author.affiliations:
 The most recent institutional affiliation(s):
 
 ```python
+from openalex import Authors
+
+author = Authors()["A5023888391"]
+
 # Can be multiple if author had multiple affiliations in latest work
 if author.last_known_institutions:
     print(f"Last known at {len(author.last_known_institutions)} institution(s):")
@@ -81,6 +93,10 @@ else:
 Citation and productivity metrics:
 
 ```python
+from openalex import Authors
+
+author = Authors()["A5023888391"]
+
 stats = author.summary_stats
 if stats:
     print(f"H-index: {stats.h_index}")  # e.g., 45
@@ -99,6 +115,10 @@ if stats:
 Track citation trends:
 
 ```python
+from openalex import Authors
+
+author = Authors()["A5023888391"]
+
 # Get citations for the last 10 years
 print("Citations by year:")
 for count in author.counts_by_year:
@@ -119,6 +139,10 @@ print(f"Citations since 2020: {recent_citations}")
 Access all known IDs:
 
 ```python
+from openalex import Authors
+
+author = Authors()["A5023888391"]
+
 ids = author.ids
 print(f"OpenAlex: {ids.openalex}")
 print(f"ORCID: {ids.orcid}")
@@ -142,6 +166,10 @@ print(f"Available IDs: {', '.join(available_ids)}")
 Research areas associated with this author:
 
 ```python
+from openalex import Authors
+
+author = Authors()["A5023888391"]
+
 # Note: x_concepts will be deprecated soon, replaced by Topics
 if author.x_concepts:
     print("Top research areas:")
@@ -160,6 +188,11 @@ if author.x_concepts:
 ### Get all works by an author
 
 ```python
+# Import both Authors and Works for this example
+from openalex import Authors, Works
+
+author = Authors()["A5023888391"]
+
 # Option 1: Use the works_api_url
 # This is just the URL - you'd need to fetch it separately
 
@@ -182,6 +215,11 @@ for work in Works().filter(
 ### Find co-authors
 
 ```python
+# Import required classes
+from openalex import Authors, Works
+
+author = Authors()["A5023888391"]
+
 # Get a sample of works to find co-authors
 sample_works = (
     Works()
@@ -208,6 +246,11 @@ for co_id, co_name in list(co_authors)[:10]:
 ### Analyze author trajectory
 
 ```python
+# Import Authors for this analysis
+from openalex import Authors
+
+author = Authors()["A5023888391"]
+
 # Get yearly productivity
 yearly_works = author.counts_by_year
 
@@ -239,6 +282,11 @@ if early_career and recent:
 Many fields can be None or empty:
 
 ```python
+# Import Authors for missing-data examples
+from openalex import Authors
+
+author = Authors()["A5023888391"]
+
 # Safe access patterns
 if author.orcid:
     print(f"ORCID: {author.orcid}")
@@ -270,7 +318,7 @@ When authors appear in other objects (like in work authorships), you get a simpl
 
 ```python
 # Get a work to see dehydrated authors
-from openalex import Works
+from openalex import Works, Authors
 work = Works()["W2741809807"]
 
 # Access dehydrated authors in authorships

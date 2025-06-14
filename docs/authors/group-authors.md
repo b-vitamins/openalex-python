@@ -25,6 +25,8 @@ for group in continent_stats.group_by:
 ## Understanding group_by results
 
 ```python
+from openalex import Authors
+
 # The result structure is different from regular queries
 result = Authors().group_by("has_orcid").get()
 
@@ -42,6 +44,9 @@ for group in result.group_by:
 ### Basic grouping
 
 ```python
+# Ensure imports for runnable example
+from openalex import Authors
+
 # Group by whether authors have ORCID
 orcid_stats = Authors().group_by("has_orcid").get()
 # Shows ORCID adoption rate
@@ -58,6 +63,9 @@ citation_distribution = Authors().group_by("cited_by_count").get()
 ### Institutional analysis
 
 ```python
+# Include imports so each block can run independently
+from openalex import Authors
+
 # Top institutions by author count
 top_institutions = Authors().group_by("last_known_institutions.id").get()
 # Returns thousands of institutions ranked by affiliated authors
@@ -77,6 +85,9 @@ continents = Authors().group_by("last_known_institutions.continent").get()
 ### Research impact analysis
 
 ```python
+# Include imports
+from openalex import Authors
+
 # Distribution of h-index values
 h_index_dist = Authors().group_by("summary_stats.h_index").get()
 # See how h-indices are distributed
@@ -91,6 +102,9 @@ citation_impact = Authors().group_by("summary_stats.2yr_mean_citedness").get()
 ### Geographic analysis
 
 ```python
+# Import Authors for this example
+from openalex import Authors
+
 # Global South representation
 global_south = Authors().group_by(
     "last_known_institutions.is_global_south"
@@ -110,6 +124,9 @@ country_and_type = Authors().group_by(
 Group_by becomes very powerful when combined with filters:
 
 ```python
+# Import Authors again for a complete example
+from openalex import Authors
+
 # ORCID adoption by country (for top countries only)
 orcid_by_country = (
     Authors()
@@ -152,6 +169,9 @@ early_career_institutions = (
 You can group by up to two fields:
 
 ```python
+# Import Authors for this multi-dimensional example
+from openalex import Authors
+
 # ORCID adoption by continent
 orcid_by_continent = Authors().group_by(
     "has_orcid",
@@ -177,7 +197,7 @@ productivity_by_inst = Authors().group_by(
 
 ```python
 # First, find your institution ID
-from openalex import Institutions
+from openalex import Institutions, Authors
 inst = Institutions().search("MIT").get().results[0]
 
 # Author statistics for MIT
@@ -209,6 +229,9 @@ mit_impact = (
 ### Example 2: Geographic analysis
 
 ```python
+# Import Authors for geographic examples
+from openalex import Authors
+
 # ORCID adoption by region
 orcid_geography = (
     Authors()
@@ -237,6 +260,9 @@ global_south_productivity = (
 ### Example 3: Career stage analysis
 
 ```python
+# Import Authors for career stage analysis
+from openalex import Authors
+
 # Define career stages by works count
 def analyze_career_stages():
     # Early career (1-10 works)
@@ -281,6 +307,9 @@ mobile_authors = (
 Control how results are ordered:
 
 ```python
+# Import Authors to sort grouped data
+from openalex import Authors
+
 # Default: sorted by count (descending)
 default_sort = Authors().group_by("last_known_institutions.id").get()
 # MIT first (most authors), then Harvard, etc.

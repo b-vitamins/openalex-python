@@ -20,6 +20,8 @@ Remember: `.filter()` builds the query, `.get()` executes it and returns one pag
 ## Understanding filters vs. results
 
 ```python
+from openalex import Authors
+
 # This creates a QUERY for millions of authors with ORCID
 query_orcid = Authors().filter(has_orcid=True)
 
@@ -42,6 +44,8 @@ You can filter using these attributes of the [`Author`](author-object.md) object
 ### Basic attribute filters
 
 ```python
+from openalex import Authors
+
 # Filter by cited_by_count
 highly_cited = Authors().filter(cited_by_count=1000).get()  # Exactly 1000
 very_highly_cited = Authors().filter_gt(cited_by_count=10000).get()  # More than 10k
@@ -67,6 +71,8 @@ specific_ids = Authors().filter(
 ### Institutional affiliation filters
 
 ```python
+from openalex import Authors
+
 # Filter by last known institution
 mit_authors = Authors().filter(
     last_known_institutions={"id": "I63966007"}
@@ -98,6 +104,8 @@ ever_at_stanford = Authors().filter(
 ### Geographic filters
 
 ```python
+from openalex import Authors
+
 # Filter by continent
 african_authors = Authors().filter(
     last_known_institutions={"continent": "africa"}
@@ -112,6 +120,8 @@ global_south_authors = Authors().filter(
 ### Summary statistics filters
 
 ```python
+from openalex import Authors
+
 # Filter by h-index
 high_impact = Authors().filter_gt(summary_stats={"h_index": 50}).get()
 # Authors with h-index > 50
@@ -141,6 +151,8 @@ These filters aren't attributes of the Author object, but they're handy for comm
 ### Text search filters
 
 ```python
+from openalex import Authors
+
 # Search in display names
 smith_authors = Authors().filter(
     display_name={"search": "smith"}
@@ -159,6 +171,8 @@ default_search = Authors().filter(
 ### Boolean filters
 
 ```python
+from openalex import Authors
+
 # Has ORCID
 authors_with_orcid = Authors().filter(has_orcid=True).get()
 authors_without_orcid = Authors().filter(has_orcid=False).get()
@@ -169,6 +183,8 @@ authors_without_orcid = Authors().filter(has_orcid=False).get()
 ### Combining filters (AND operations)
 
 ```python
+from openalex import Authors
+
 # US authors at universities with high impact
 us_university_stars = (
     Authors()
@@ -193,6 +209,8 @@ harvard_with_orcid = (
 ### NOT operations
 
 ```python
+from openalex import Authors
+
 # Authors NOT from the US
 non_us_authors = Authors().filter_not(
     last_known_institutions={"country_code": "US"}
@@ -205,6 +223,8 @@ no_orcid = Authors().filter_not(has_orcid=True).get()
 ### Range queries
 
 ```python
+from openalex import Authors
+
 # Mid-career authors (10-50 works)
 mid_career = (
     Authors()
@@ -254,6 +274,8 @@ ever_at_yale = Authors().filter(
 4. **Avoid paginating large result sets**: Use group_by for analytics
 
 ```python
+from openalex import Authors
+
 # Check result count before deciding to paginate
 query = Authors().filter(last_known_institutions={"country_code": "US"})
 first_page = query.get()
