@@ -29,6 +29,7 @@ for group in level_stats.group_by:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 # The result structure is different from regular queries
 result = Concepts().group_by("level").get()
 
@@ -49,6 +50,7 @@ for group in result.group_by:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 # Group by level (0-5)
 by_level = Concepts().group_by("level").get()
 # Shows how concepts are distributed across hierarchy levels
@@ -67,6 +69,7 @@ by_wikidata = Concepts().group_by("has_wikidata").get()
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 # Works count distribution
 works_dist = Concepts().group_by("works_count").get()
 # Note: Creates many groups (one per unique count)
@@ -91,6 +94,7 @@ Group_by becomes more insightful when combined with filters:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 # Level distribution for Computer Science descendants
 cs_levels = (
     Concepts()
@@ -128,6 +132,7 @@ You can group by two dimensions:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 # Level and ancestor combination
 level_ancestor = Concepts().group_by("level", "ancestors.id").get()
 
@@ -144,6 +149,7 @@ for group in level_ancestor.group_by[:20]:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 def analyze_concept_hierarchy():
     """Comprehensive analysis of the concept tree structure."""
     
@@ -175,6 +181,7 @@ analyze_concept_hierarchy()
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 def analyze_research_activity():
     """Analyze how research activity is distributed across concepts."""
     
@@ -222,6 +229,7 @@ analyze_research_activity()
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 def analyze_concept_impact():
     """Analyze impact metrics across the concept hierarchy."""
     
@@ -267,6 +275,7 @@ analyze_concept_impact()
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 def compare_domains():
     """Compare research domains (root concepts)."""
     
@@ -318,6 +327,7 @@ Control how results are ordered:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 # Default: sorted by count (descending)
 default_sort = Concepts().group_by("level").get()
 # Most populous levels first

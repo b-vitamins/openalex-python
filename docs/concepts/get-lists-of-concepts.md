@@ -31,6 +31,10 @@ The response contains:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
+
+first_page = Concepts().get()
+
 # Each result shows concept information
 for concept in first_page.results[:5]:  # First 5 concepts
     print(f"\n{concept.display_name} (Level {concept.level})")
@@ -47,6 +51,8 @@ You can control pagination and sorting:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+# Import the Concepts helper
+from openalex import Concepts
 # Get a specific page with custom page size
 page2 = Concepts().get(per_page=50, page=2)
 # This returns concepts 51-100
@@ -76,6 +82,7 @@ Get a random sample of concepts:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 # Get 10 random concepts
 random_sample = Concepts().sample(10).get(per_page=10)
 
@@ -97,6 +104,7 @@ Limit the fields returned to improve performance:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 # Request only specific fields
 minimal_concepts = Concepts().select([
     "id",
@@ -118,6 +126,7 @@ for concept in minimal_concepts.results:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 def explore_concept_hierarchy():
     """Explore the 6-level concept hierarchy."""
     
@@ -147,6 +156,7 @@ explore_concept_hierarchy()
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 def analyze_concept_levels():
     """Analyze how concepts are distributed across levels."""
     
@@ -175,6 +185,7 @@ analyze_concept_levels()
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 def find_research_hotspots(min_works=10000):
     """Find highly active research concepts."""
     

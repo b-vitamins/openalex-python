@@ -21,6 +21,10 @@ print(type(concept))  # <class 'openalex.models.concept.Concept'>
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
+
+concept = Concepts()["C71924100"]
+
 # Identifiers
 print(concept.id)  # "https://openalex.org/C71924100"
 print(concept.wikidata)  # "https://www.wikidata.org/wiki/Q11190" (canonical ID)
@@ -43,6 +47,10 @@ print(concept.updated_date)  # "2021-12-25T14:04:30.578837"
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
+
+concept = Concepts()["C71924100"]
+
 # Ancestors (concepts this descends from)
 if concept.ancestors:
     print(f"Ancestors ({len(concept.ancestors)}):")
@@ -63,6 +71,9 @@ if concept.related_concepts:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
+
+concept = Concepts()["C71924100"]
 stats = concept.summary_stats
 if stats:
     print(f"H-index: {stats.h_index}")
@@ -78,6 +89,9 @@ if stats:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
+
+concept = Concepts()["C71924100"]
 # Track output over the last 10 years
 print("Publication trends:")
 for count in concept.counts_by_year[:5]:  # Last 5 years
@@ -98,6 +112,9 @@ if len(concept.counts_by_year) >= 2:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
+
+concept = Concepts()["C71924100"]
 ids = concept.ids
 print(f"OpenAlex: {ids.openalex}")
 print(f"Wikidata: {ids.wikidata}")  # Always present (canonical ID)
@@ -115,6 +132,9 @@ if ids.umls_aui:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
+
+concept = Concepts()["C71924100"]
 # Concept visualization (usually from Wikipedia)
 if concept.image_url:
     print(f"Image URL: {concept.image_url}")
@@ -127,6 +147,9 @@ if concept.image_thumbnail_url:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
+
+concept = Concepts()["C71924100"]
 # Names in different languages
 if hasattr(concept, 'international') and concept.international:
     if hasattr(concept.international, 'display_name'):
@@ -139,6 +162,9 @@ if hasattr(concept, 'international') and concept.international:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
+
+concept = Concepts()["C71924100"]
 # URL to get all works tagged with this concept
 print(f"Works URL: {concept.works_api_url}")
 
@@ -165,6 +191,7 @@ for work in concept_works.results[:5]:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 def explore_concept_tree(concept_id):
     """Navigate up and down the concept hierarchy."""
     
@@ -208,6 +235,7 @@ explore_concept_tree("C41008148")  # Computer Science
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 def analyze_concept_impact(concept_id):
     """Comprehensive impact analysis of a concept."""
     concept = Concepts()[concept_id]
@@ -252,6 +280,7 @@ analyze_concept_impact("C154945302")  # Machine learning
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 def compare_concepts(concept_ids):
     """Compare multiple concepts side by side."""
     concepts = []
@@ -284,6 +313,7 @@ compare_concepts([
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 def find_concept_relationships(concept_id):
     """Find various relationships for a concept."""
     
@@ -337,6 +367,9 @@ Many fields can be None or empty:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
+
+concept = Concepts()["C71924100"]
 # Safe access patterns
 if concept.description:
     print(f"Description: {concept.description}")
@@ -371,6 +404,7 @@ When concepts appear in other objects (like in work concepts or ancestors), you 
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Get a work to see dehydrated concepts
 from openalex import Works
+from openalex import Concepts
 work = Works()["W2741809807"]
 
 # Access dehydrated concepts in works
