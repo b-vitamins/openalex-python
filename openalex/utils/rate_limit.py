@@ -121,9 +121,9 @@ class SlidingWindowRateLimiter:
     """Sliding window rate limiter."""
 
     __slots__ = (
+        "_window",
         "lock",
         "max_requests",
-        "_window",
         "window_seconds",
     )
 
@@ -131,14 +131,14 @@ class SlidingWindowRateLimiter:
         self,
         max_requests: int,
         window_seconds: float,
-        buffer: float = DEFAULT_BUFFER,
+        _buffer: float = DEFAULT_BUFFER,
     ) -> None:
         """Initialize sliding window rate limiter.
 
         Args:
             max_requests: Maximum requests in window
             window_seconds: Window size in seconds
-            buffer: Safety buffer (0-1)
+            _buffer: Safety buffer (0-1)
         """
         self.max_requests = max_requests
         self.window_seconds = window_seconds

@@ -3,10 +3,42 @@ Test utility functions behavior.
 Tests what utilities should do, not how they're implemented.
 """
 
-import pytest
-import time
 import asyncio
-from unittest.mock import Mock, patch
+import time
+from unittest.mock import Mock
+
+import pytest
+
+
+class FakeClock:
+    """Simple timekeeper for testing."""
+
+    def __init__(self) -> None:
+        self.current = 0.0
+
+    def time(self) -> float:
+        return self.current
+
+    def monotonic(self) -> float:
+        return self.current
+
+    def sleep(self, seconds: float) -> None:
+        self.current += seconds
+
+    async def async_sleep(self, seconds: float) -> None:
+        self.current += seconds
+
+
+@pytest.fixture(autouse=True)
+def mock_time(monkeypatch: pytest.MonkeyPatch) -> FakeClock:
+    """Provide a fake clock to avoid real delays."""
+
+    clock = FakeClock()
+    monkeypatch.setattr(time, "time", clock.time)
+    monkeypatch.setattr(time, "monotonic", clock.monotonic)
+    monkeypatch.setattr(time, "sleep", clock.sleep)
+    monkeypatch.setattr(asyncio, "sleep", clock.async_sleep)
+    return clock
 
 
 class TestPaginationBehavior:
@@ -20,8 +52,12 @@ class TestPaginationBehavior:
             page = int(params.get("page", 1))
             if page <= 3:
                 return Mock(
-                    meta=Mock(count=30, page=page, per_page=10, next_cursor=None),
-                    results=[f"item{i}" for i in range((page-1)*10, page*10)]
+                    meta=Mock(
+                        count=30, page=page, per_page=10, next_cursor=None
+                    ),
+                    results=[
+                        f"item{i}" for i in range((page - 1) * 10, page * 10)
+                    ],
                 )
             return Mock(meta=Mock(count=30, page=page, per_page=10), results=[])
 
@@ -40,7 +76,7 @@ class TestPaginationBehavior:
             page = int(params.get("page", 1))
             return Mock(
                 meta=Mock(count=100, page=page, per_page=10),
-                results=[f"item{i}" for i in range((page-1)*10, page*10)]
+                results=[f"item{i}" for i in range((page - 1) * 10, page * 10)],
             )
 
         paginator = Paginator(fetch_page, per_page=10, max_results=25)
@@ -61,17 +97,17 @@ class TestPaginationBehavior:
             if cursor is None:
                 return Mock(
                     meta=Mock(count=20, page=1, next_cursor="cursor1"),
-                    results=["item1", "item2"]
+                    results=["item1", "item2"],
                 )
             elif cursor == "cursor1":
                 return Mock(
                     meta=Mock(count=20, page=2, next_cursor="cursor2"),
-                    results=["item3", "item4"]
+                    results=["item3", "item4"],
                 )
             else:
                 return Mock(
                     meta=Mock(count=20, page=3, next_cursor=None),
-                    results=["item5", "item6"]
+                    results=["item5", "item6"],
                 )
 
         paginator = Paginator(fetch_page)
@@ -104,7 +140,10 @@ class TestPaginationBehavior:
             page = int(params.get("page", 1))
             return Mock(
                 meta=Mock(count=30, page=page, per_page=10),
-                results=[f"item{i}" for i in range((page-1)*10, min(page*10, 30))]
+                results=[
+                    f"item{i}"
+                    for i in range((page - 1) * 10, min(page * 10, 30))
+                ],
             )
 
         paginator = AsyncPaginator(fetch_page, per_page=10, concurrency=3)
@@ -234,11 +273,7 @@ class TestRetryBehavior:
         """Retry delays should increase exponentially."""
         from openalex.utils import RetryHandler, RetryConfig
 
-        config = RetryConfig(
-            initial_wait=0.1,
-            max_wait=1.0,
-            multiplier=2.0
-        )
+        config = RetryConfig(initial_wait=0.1, max_wait=1.0, multiplier=2.0)
         handler = RetryHandler(config)
 
         # Calculate wait times for attempts
@@ -307,7 +342,7 @@ class TestParameterHandling:
             "per_page": 50,
             "select": ["id", "title", "doi"],
             "group_by": "is_oa",
-            "unknown_param": "value"
+            "unknown_param": "value",
         }
 
         normalized = normalize_params(params)
@@ -341,7 +376,7 @@ class TestParameterHandling:
         filters = {
             "authorships": {
                 "author": {"id": "A123"},
-                "institutions": {"country_code": "US"}
+                "institutions": {"country_code": "US"},
             }
         }
 
@@ -390,7 +425,7 @@ class TestTextProcessing:
             "a": [2],
             "test": [3],
             "abstract": [4],
-            "simple": [6]
+            "simple": [6],
         }
 
         abstract = invert_abstract(inverted_index)
