@@ -88,17 +88,20 @@ class TestPaginationBehavior:
             pages = list(institutions.filter(country_code="US").paginate(per_page=1))
 
             assert len(pages) == 3
-            assert pages[0].results[0]["id"] == "I1"
-            assert pages[2].results[0]["id"] == "I3"
+            assert pages[0].results[0].id == "I1"
+            assert pages[2].results[0].id == "I3"
 
     def test_all_iterates_through_items(self):
         """all() should iterate through individual items, not pages."""
         from openalex import Sources
 
-        def mock_response(*args, **kwargs):
-            page = int(kwargs["params"].get("page", 1))
+        page_count = 0
 
-            if page == 1:
+        def mock_response(*args, **kwargs):
+            nonlocal page_count
+            page_count += 1
+
+            if page_count == 1:
                 return Mock(
                     status_code=200,
                     json=Mock(return_value={
@@ -109,7 +112,7 @@ class TestPaginationBehavior:
                         "meta": {"count": 3, "page": 1, "next_cursor": "page2"}
                     })
                 )
-            elif page == 2:
+            elif page_count == 2:
                 return Mock(
                     status_code=200,
                     json=Mock(return_value={
@@ -355,18 +358,21 @@ class TestPaginationBehavior:
         """Async pagination should work like sync pagination."""
         from openalex import AsyncAuthors
 
-        async def mock_response(*args, **kwargs):
-            page = int(kwargs["params"].get("page", 1))
+        page_count = 0
 
-            if page <= 2:
+        async def mock_response(*args, **kwargs):
+            nonlocal page_count
+            page_count += 1
+
+            if page_count <= 2:
                 return Mock(
                     status_code=200,
                     json=Mock(return_value={
-                        "results": [{"id": f"A{page}"}],
+                        "results": [{"id": f"A{page_count}"}],
                         "meta": {
                             "count": 2,
-                            "page": page,
-                            "next_cursor": "next" if page < 2 else None
+                            "page": page_count,
+                            "next_cursor": "next" if page_count < 2 else None
                         }
                     })
                 )
@@ -400,7 +406,7 @@ class TestPaginationBehavior:
             return Mock(
                 status_code=200,
                 json=Mock(return_value={
-                    "results": [{"id": f"W{page}"}],
+                    "results": [{"id": f"W{page}", "display_name": f"Work {page}"}],
                     "meta": {"count": 5, "page": page}
                 })
             )

@@ -58,5 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Retry logic interprets ``max_retries`` as the number of retries
 - Paginator iteration now yields pages and ``ListResult`` exposes ``groups``
   for group-by queries
+- Pagination utilities no longer loop indefinitely when cursors are ignored and
+  now respect ``max_results`` across sync and async iterators.
 
 [Unreleased]: https://github.com/b-vitamins/openalex-python/compare/HEAD
