@@ -112,6 +112,7 @@ class APIConnection:
                 timeout=self.config.timeout,
                 **kwargs,
             )
+            raise_for_status(response)
         except httpx.TimeoutException as e:
             msg = f"Request timed out after {self.config.timeout}s"
             raise TimeoutError(msg) from e

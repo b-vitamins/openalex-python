@@ -281,9 +281,9 @@ def retry_with_rate_limit(func: Callable[..., T]) -> Callable[..., T]:
         if hasattr(self, "config"):
             config = self.config
             if getattr(config, "retry_enabled", True):
-                # ``retry_max_attempts`` already includes the initial attempt,
-                # so use it directly without adding one.
-                max_attempts = getattr(config, "retry_max_attempts", 5)
+                # ``retry_max_attempts`` represents the number of retries in
+                # addition to the initial attempt.
+                max_attempts = getattr(config, "retry_max_attempts", 5) + 1
             else:
                 max_attempts = 1
         attempt = 0

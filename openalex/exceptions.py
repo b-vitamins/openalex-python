@@ -271,10 +271,25 @@ def raise_for_status(response: httpx.Response) -> None:
             "This is a server-side error. The request may succeed if retried."
         )
         if status_code == 503:
-            raise TemporaryError(
+            retry_header = (
+                response.headers.get("Retry-After") if hasattr(response, "headers") else None
+            )
+            if isinstance(retry_header, str) and retry_header:
+                try:
+                    header_str = retry_header
+                    retry_after_val = int(header_str) if header_str.isdigit() else 0
+                except Exception:
+                    retry_after_val = 0
+                raise TemporaryError(
+                    msg,
+                    status_code=status_code,
+                    retry_after=retry_after_val,
+                )
+            raise ServerError(
                 msg,
                 status_code=status_code,
-                retry_after=int(response.headers.get("Retry-After", "0") or 0),
+                response=response,
+                details=error_extra,
             )
         raise ServerError(
             msg,
