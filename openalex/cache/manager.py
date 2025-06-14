@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import threading
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from structlog import get_logger
@@ -26,6 +27,7 @@ class CacheManager:
     def __init__(self, config: OpenAlexConfig) -> None:
         self.config = config
         self._cache: BaseCache | None = None
+        self._locks: dict[str, threading.Lock] = {}
 
         if config.cache_enabled:
             self._cache = SmartMemoryCache(
@@ -61,27 +63,29 @@ class CacheManager:
 
         cache_key = CacheKeyBuilder.build_key(endpoint, entity_id, params)
 
-        cached_data = self._cache.get(cache_key)
-        if cached_data is not None:
+        lock = self._locks.setdefault(cache_key, threading.Lock())
+        with lock:
+            cached_data = self._cache.get(cache_key)
+            if cached_data is not None:
+                logger.debug(
+                    "cache_hit",
+                    endpoint=endpoint,
+                    entity_id=entity_id,
+                    from_cache=True,
+                )
+                return cast("T", cached_data)
+
             logger.debug(
-                "cache_hit",
+                "cache_miss",
                 endpoint=endpoint,
                 entity_id=entity_id,
-                from_cache=True,
+                from_cache=False,
             )
-            return cast("T", cached_data)
 
-        logger.debug(
-            "cache_miss",
-            endpoint=endpoint,
-            entity_id=entity_id,
-            from_cache=False,
-        )
-
-        data = fetch_func()
-        cache_ttl = ttl or self._get_ttl_for_endpoint(endpoint)
-        self._cache.set(cache_key, data, cache_ttl)
-        return data
+            data = fetch_func()
+            cache_ttl = ttl or self._get_ttl_for_endpoint(endpoint)
+            self._cache.set(cache_key, data, cache_ttl)
+            return data
 
     def invalidate(
         self,
@@ -115,19 +119,21 @@ class CacheManager:
         return float(self.config.cache_ttl)
 
 
-_cache_manager: CacheManager | None = None
+_cache_managers: dict[str, CacheManager] = {}
 
 
 def get_cache_manager(config: OpenAlexConfig) -> CacheManager:
-    global _cache_manager
-
-    if _cache_manager is None:
-        _cache_manager = CacheManager(config)
-
-    return _cache_manager
+    """Return a shared :class:`CacheManager` for ``config``."""
+    key = str(config)
+    manager = _cache_managers.get(key)
+    if manager is None:
+        manager = CacheManager(config)
+        _cache_managers[key] = manager
+    return manager
 
 
 def clear_cache() -> None:
-    if _cache_manager is not None:
-        _cache_manager.clear()
+    """Clear all managed caches."""
+    for manager in _cache_managers.values():
+        manager.clear()
 

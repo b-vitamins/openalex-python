@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Synchronous ``OpenAlexClient`` for simple API access
 
 ### Changed
+- Fixed caching logic to handle list queries and thread safety
 - License clarification: Now consistently MIT licensed
 - Request caching disabled by default
 

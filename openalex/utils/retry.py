@@ -276,7 +276,14 @@ def retry_with_rate_limit(func: Callable[..., T]) -> Callable[..., T]:
 
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> T:
+        self = args[0]
         max_attempts = 5
+        if hasattr(self, "config"):
+            config = self.config
+            if getattr(config, "retry_enabled", True):
+                max_attempts = getattr(config, "retry_max_attempts", 5)
+            else:
+                max_attempts = 1
         attempt = 0
 
         while attempt < max_attempts:

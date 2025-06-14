@@ -140,30 +140,8 @@ class BaseEntity(Generic[T, F]):
                 group_by=data.get("group_by"),
             )
 
-
-def _build_list_result(data: dict[str, Any], model: type[_T]) -> ListResult[_T]:
-    """Construct a :class:`ListResult` from raw data."""
-    results: list[_T] = []
-    for item in data.get("results", []):
-        try:
-            results.append(model(**item))
-        except ValidationError:
-            results.append(model.model_construct(**item))  # type: ignore
-
-    try:
-        return ListResult[_T](
-            meta=data.get("meta", {}),
-            results=results,
-            group_by=data.get("group_by"),
-        )
-    except ValidationError:
-        return ListResult[_T].model_construct(
-            meta=data.get("meta", {}),
-            results=results,
-            group_by=data.get("group_by"),
-        )
-
     def query(self, **filter_params: Any) -> Query[T, F]:
+        """Return a new :class:`Query` for this entity."""
         from .query import Query
 
         params: dict[str, Any] = {}
@@ -171,11 +149,11 @@ def _build_list_result(data: dict[str, Any], model: type[_T]) -> ListResult[_T]:
             params["filter"] = filter_params
         return Query(self, params)
 
-    def __getitem__(self, record_id: str | list[str]) -> T | ListResult[T]:  # noqa: N807
+    def __getitem__(self, record_id: str | list[str]) -> T | ListResult[T]:
         return self.query()[record_id]
 
     def _get_single_entity(
-        self, entity_id: str, params: dict[str, Any] | None = None
+        self, entity_id: str, params: dict[str, Any] | None = None,
     ) -> T:
         cache_manager = get_cache_manager(self._config)
         entity_id = strip_id_prefix(entity_id)
@@ -184,7 +162,9 @@ def _build_list_result(data: dict[str, Any], model: type[_T]) -> ListResult[_T]:
             url = self._build_url(entity_id)
             norm_params = normalize_params(params or {})
             response = self._connection.request(
-                HTTP_METHOD_GET, url, params=norm_params
+                HTTP_METHOD_GET,
+                url,
+                params=norm_params,
             )
             raise_for_status(response)
             return cast("dict[str, Any]", response.json())
@@ -198,23 +178,40 @@ def _build_list_result(data: dict[str, Any], model: type[_T]) -> ListResult[_T]:
         return self._parse_response(data)
 
     def get(self, id: str | None = None, **params: Any) -> T | ListResult[T]:
+        """Retrieve a single entity or list results."""
         if id is not None:
             return self._get_single_entity(id, params)
         return self.query().get(**params)
 
     def list(
-        self, filter: dict[str, Any] | None = None, **params: Any
+        self,
+        filter: dict[str, Any] | None = None,
+        **params: Any,
     ) -> ListResult[T]:
         if filter:
             params["filter"] = filter
         params = normalize_params(params)
         url = self._build_url()
-        response = self._connection.request(HTTP_METHOD_GET, url, params=params)
-        raise_for_status(response)
-        return self._parse_list_response(response.json())
+
+        cache_manager = get_cache_manager(self._config)
+
+        def fetch() -> dict[str, Any]:
+            response = self._connection.request(HTTP_METHOD_GET, url, params=params)
+            raise_for_status(response)
+            return cast("dict[str, Any]", response.json())
+
+        data = cache_manager.get_or_fetch(
+            endpoint=self.endpoint,
+            fetch_func=fetch,
+            params=params,
+        )
+        return self._parse_list_response(data)
 
     def search(
-        self, query: str, filter: dict[str, Any] | None = None, **params: Any
+        self,
+        query: str,
+        filter: dict[str, Any] | None = None,
+        **params: Any,
     ) -> Query[T, F]:
         """Return a :class:`Query` with a search term applied."""
         q = self.query()
@@ -222,7 +219,6 @@ def _build_list_result(data: dict[str, Any], model: type[_T]) -> ListResult[_T]:
             q = q.filter(**filter)
         q = q.search(query)
         if params:
-            # create a new query with any additional parameters
             q = Query(q.entity, {**q.params, **params})
         return q
 
@@ -235,7 +231,6 @@ def _build_list_result(data: dict[str, Any], model: type[_T]) -> ListResult[_T]:
 
     def autocomplete(self, query: str, **params: Any) -> ListResult[AutocompleteResult]:
         """Return autocomplete suggestions for this entity."""
-        # The autocomplete endpoint follows ``/{entity}/autocomplete``
         url = self._build_url(f"{AUTOCOMPLETE_PATH}")
         params_norm = normalize_params(params)
         params_norm[PARAM_Q] = query
@@ -255,7 +250,9 @@ def _build_list_result(data: dict[str, Any], model: type[_T]) -> ListResult[_T]:
             )
 
     def paginate(
-        self, filter: dict[str, Any] | None = None, **kwargs: Any
+        self,
+        filter: dict[str, Any] | None = None,
+        **kwargs: Any,
     ) -> Paginator[T]:
         if filter:
             kwargs["filter"] = filter
@@ -310,10 +307,33 @@ def _build_list_result(data: dict[str, Any], model: type[_T]) -> ListResult[_T]:
         cache_manager.clear()
         return
 
-    def cache_stats(self) -> dict[str, Any]:  # noqa: RET503
+    def cache_stats(self) -> dict[str, Any]:
         """Get cache statistics for this entity type."""
         cache_manager = get_cache_manager(self._config)
         return cache_manager.stats()
+
+
+def _build_list_result(data: dict[str, Any], model: type[_T]) -> ListResult[_T]:
+    """Construct a :class:`ListResult` from raw data."""
+    results: list[_T] = []
+    for item in data.get("results", []):
+        try:
+            results.append(model(**item))
+        except ValidationError:
+            results.append(model.model_construct(**item))  # type: ignore
+
+    try:
+        return ListResult[_T](
+            meta=data.get("meta", {}),
+            results=results,
+            group_by=data.get("group_by"),
+        )
+    except ValidationError:
+        return ListResult[_T].model_construct(
+            meta=data.get("meta", {}),
+            results=results,
+            group_by=data.get("group_by"),
+        )
 
 
 class AsyncBaseEntity(AsyncBaseAPI[T], Generic[T, F]):
