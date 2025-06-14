@@ -134,7 +134,15 @@ class Query(Generic[T, F]):
                 and isinstance(filt, dict)
                 and not isinstance(filt, or_)
             ):
-                current.update(filt)
+                for key, value in filt.items():
+                    if key in current:
+                        existing = current[key]
+                        if isinstance(existing, tuple):
+                            current[key] = (*existing, value)
+                        else:
+                            current[key] = (existing, value)
+                    else:
+                        current[key] = value
                 params["filter"] = current
             else:
                 params["filter"] = filt

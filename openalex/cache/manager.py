@@ -119,12 +119,12 @@ class CacheManager:
         return float(self.config.cache_ttl)
 
 
-_cache_managers: dict[str, CacheManager] = {}
+_cache_managers: dict[int, CacheManager] = {}
 
 
 def get_cache_manager(config: OpenAlexConfig) -> CacheManager:
     """Return a shared :class:`CacheManager` for ``config``."""
-    key = str(config)
+    key = id(config)
     manager = _cache_managers.get(key)
     if manager is None:
         manager = CacheManager(config)

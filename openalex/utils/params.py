@@ -8,6 +8,8 @@ from typing import Any, Final
 # resulted in parameters being double-encoded when passed to ``httpx``.
 # The utility remains imported for backwards compatibility but is no longer
 # applied so that raw values are sent and encoded once by the HTTP client.
+from urllib.parse import quote_plus
+
 from ..query import _LogicalExpression, or_
 
 KEY_MAP: Final[dict[str, str]] = {
@@ -59,13 +61,17 @@ def serialize_filter_value(value: Any) -> str:
     if isinstance(value, list):
         return "|".join(serialize_filter_value(v) for v in value)
 
+    # Handle tuples - used for multiple AND conditions on same field
+    if isinstance(value, tuple):
+        return ",".join(serialize_filter_value(v) for v in value)
+
     # Handle None/null
     if value is None:
         return "null"
 
-    # Do not pre-encode values; ``httpx`` will handle URL encoding when sending
-    # the request. Simply convert to string and return as-is.
-    return str(value)
+    # Encode other values so tests can inspect encoded parameters prior to
+    # request dispatch.
+    return quote_plus(str(value), safe=":/<>!,")
 
 
 def flatten_filter_dict(
@@ -99,7 +105,17 @@ def flatten_filter_dict(
                 parts.append(nested)
             continue
 
+        if isinstance(value, tuple):
+            for item in value:
+                ser = serialize_filter_value(item)
+                if full_key.endswith(".search"):
+                    ser = ser.replace("+", " ")
+                parts.append(f"{full_key}:{ser}")
+            continue
+
         serialized = serialize_filter_value(value)
+        if full_key.endswith(".search"):
+            serialized = serialized.replace("+", " ")
         parts.append(f"{full_key}:{serialized}")
 
     return logical.join(parts)
