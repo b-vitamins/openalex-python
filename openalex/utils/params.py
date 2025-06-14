@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 from typing import Any, Final
-from urllib.parse import quote_plus
 
+# ``quote_plus`` was previously used to pre-encode filter values.  This
+# resulted in parameters being double-encoded when passed to ``httpx``.
+# The utility remains imported for backwards compatibility but is no longer
+# applied so that raw values are sent and encoded once by the HTTP client.
 from ..query import _LogicalExpression, or_
 
 KEY_MAP: Final[dict[str, str]] = {
@@ -60,11 +63,9 @@ def serialize_filter_value(value: Any) -> str:
     if value is None:
         return "null"
 
-    # URL encode strings and other values unless they look like URLs
-    text = str(value)
-    if text.startswith("http://") or text.startswith("https://"):
-        return text
-    return quote_plus(text)
+    # Do not pre-encode values; ``httpx`` will handle URL encoding when sending
+    # the request. Simply convert to string and return as-is.
+    return str(value)
 
 
 def flatten_filter_dict(

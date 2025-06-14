@@ -60,15 +60,17 @@ from .models import (
     Topic,
     Work,
 )
+from .query import Query
 from .utils import Paginator, strip_id_prefix
 from .utils.params import normalize_params
 
 if TYPE_CHECKING:  # pragma: no cover
     from .config import OpenAlexConfig
-    from .query import AsyncQuery, Query
+    from .query import AsyncQuery
 
 T = TypeVar("T")
 F = TypeVar("F", bound="BaseFilter")
+_T = TypeVar("_T")
 
 
 class BaseEntity(Generic[T, F]):
@@ -125,7 +127,37 @@ class BaseEntity(Generic[T, F]):
 
     def _parse_list_response(self, data: dict[str, Any]) -> ListResult[T]:
         results = [self._parse_response(it) for it in data.get("results", [])]
-        return ListResult[T](
+        try:
+            return ListResult[T](
+                meta=data.get("meta", {}),
+                results=results,
+                group_by=data.get("group_by"),
+            )
+        except ValidationError:
+            return ListResult[T].model_construct(
+                meta=data.get("meta", {}),
+                results=results,
+                group_by=data.get("group_by"),
+            )
+
+
+def _build_list_result(data: dict[str, Any], model: type[_T]) -> ListResult[_T]:
+    """Construct a :class:`ListResult` from raw data."""
+    results: list[_T] = []
+    for item in data.get("results", []):
+        try:
+            results.append(model(**item))
+        except ValidationError:
+            results.append(model.model_construct(**item))  # type: ignore
+
+    try:
+        return ListResult[_T](
+            meta=data.get("meta", {}),
+            results=results,
+            group_by=data.get("group_by"),
+        )
+    except ValidationError:
+        return ListResult[_T].model_construct(
             meta=data.get("meta", {}),
             results=results,
             group_by=data.get("group_by"),
@@ -139,7 +171,7 @@ class BaseEntity(Generic[T, F]):
             params["filter"] = filter_params
         return Query(self, params)
 
-    def __getitem__(self, record_id: str | list[str]) -> T | ListResult[T]:
+    def __getitem__(self, record_id: str | list[str]) -> T | ListResult[T]:  # noqa: N807
         return self.query()[record_id]
 
     def _get_single_entity(
@@ -183,9 +215,16 @@ class BaseEntity(Generic[T, F]):
 
     def search(
         self, query: str, filter: dict[str, Any] | None = None, **params: Any
-    ) -> ListResult[T]:
-        params["search"] = query
-        return self.list(filter=filter, **params)
+    ) -> Query[T, F]:
+        """Return a :class:`Query` with a search term applied."""
+        q = self.query()
+        if filter:
+            q = q.filter(**filter)
+        q = q.search(query)
+        if params:
+            # create a new query with any additional parameters
+            q = Query(q.entity, {**q.params, **params})
+        return q
 
     def random(self, **params: Any) -> T:
         url = self._build_url(RANDOM_PATH)
@@ -194,13 +233,26 @@ class BaseEntity(Generic[T, F]):
         raise_for_status(response)
         return self._parse_response(response.json())
 
-    def autocomplete(self, query: str, **params: Any) -> ListResult[Any]:
-        params[PARAM_Q] = query
-        url = f"{self._connection.base_url}/{AUTOCOMPLETE_PATH}/{self.endpoint}"
-        params = normalize_params(params)
-        response = self._connection.request(HTTP_METHOD_GET, url, params=params)
+    def autocomplete(self, query: str, **params: Any) -> ListResult[AutocompleteResult]:
+        """Return autocomplete suggestions for this entity."""
+        # The autocomplete endpoint follows ``/{entity}/autocomplete``
+        url = self._build_url(f"{AUTOCOMPLETE_PATH}")
+        params_norm = normalize_params(params)
+        params_norm[PARAM_Q] = query
+        response = self._connection.request(HTTP_METHOD_GET, url, params=params_norm)
         raise_for_status(response)
-        return self._parse_list_response(response.json())
+        data = response.json()
+        results = [AutocompleteResult(**item) for item in data.get("results", [])]
+        try:
+            return ListResult[AutocompleteResult](
+                meta=data.get("meta", {}),
+                results=results,
+            )
+        except ValidationError:
+            return ListResult[AutocompleteResult].model_construct(
+                meta=data.get("meta", {}),
+                results=results,
+            )
 
     def paginate(
         self, filter: dict[str, Any] | None = None, **kwargs: Any
@@ -256,8 +308,9 @@ class BaseEntity(Generic[T, F]):
         """Clear cache for this entity type."""
         cache_manager = get_cache_manager(self._config)
         cache_manager.clear()
+        return
 
-    def cache_stats(self) -> dict[str, Any]:
+    def cache_stats(self) -> dict[str, Any]:  # noqa: RET503
         """Get cache statistics for this entity type."""
         cache_manager = get_cache_manager(self._config)
         return cache_manager.stats()
@@ -289,7 +342,10 @@ class AsyncBaseEntity(AsyncBaseAPI[T], Generic[T, F]):
 
     async def get(self, entity_id: str) -> T:
         data = await self.get_single_entity(entity_id)
-        return self.model_class(**data)
+        try:
+            return self.model_class(**data)
+        except ValidationError:
+            return self.model_class.model_construct(**data)  # type: ignore
 
     def filter(self, **kwargs: Any) -> AsyncQuery[T, F]:
         from .query import AsyncQuery
@@ -316,12 +372,7 @@ class AsyncBaseEntity(AsyncBaseAPI[T], Generic[T, F]):
         page = 1
         while True:
             data = await self.get_list(params={"page": page})
-            results = ListResult[T](
-                meta=data.get("meta", {}),
-                results=[
-                    self.model_class(**item) for item in data.get("results", [])
-                ],
-            )
+            results = _build_list_result(data, self.model_class)
 
             for item in results.results:
                 yield item
@@ -333,7 +384,10 @@ class AsyncBaseEntity(AsyncBaseAPI[T], Generic[T, F]):
 
     async def random(self) -> T:  # type: ignore[override]
         data = await super().random()
-        return self.model_class(**data)
+        try:
+            return self.model_class(**data)
+        except ValidationError:
+            return self.model_class.model_construct(**data)  # type: ignore
 
     async def autocomplete(  # type: ignore[override]
         self,
@@ -341,18 +395,14 @@ class AsyncBaseEntity(AsyncBaseAPI[T], Generic[T, F]):
         params: dict[str, Any] | None = None,
     ) -> ListResult[AutocompleteResult]:
         data = await super().autocomplete(query, params)
-        return ListResult[AutocompleteResult](
-            meta=data.get("meta", {}),
-            results=[
-                AutocompleteResult(**item) for item in data.get("results", [])
-            ],
-        )
+        return _build_list_result(data, AutocompleteResult)
 
     def clear_cache(self) -> None:
         from .cache.manager import get_cache_manager
 
         cache_manager = get_cache_manager(self._config)
         cache_manager.clear()
+        return
 
     def cache_stats(self) -> dict[str, Any]:
         from .cache.manager import get_cache_manager
@@ -457,10 +507,7 @@ class AsyncWorks(AsyncBaseEntity[Work, BaseFilter]):
         )
         raise_for_status(response)
         data = response.json()
-        return ListResult[Ngram](
-            meta=data.get("meta", {}),
-            results=[Ngram(**item) for item in data.get("ngrams", [])],
-        )
+        return _build_list_result(data, Ngram)
 
 
 class AsyncAuthors(AsyncBaseEntity[Author, BaseFilter]):
