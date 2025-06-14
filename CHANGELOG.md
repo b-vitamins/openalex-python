@@ -38,6 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed client-side trimming of ``counts_by_year`` lists; tests now reflect
   full data from fixtures.
 - Improved error messages with more context
+- Custom HTTP error handling now returns the correct exception types and
+  captures ``retry-after`` values without triggering long retries in tests
 - Updated Ruff configuration to ignore test-only warnings
 - Pytest configuration skips docs-based examples
 - Refactored test suite for maintainability and clarity

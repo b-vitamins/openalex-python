@@ -37,9 +37,9 @@ class OpenAlexError(Exception):
 
 
 class APIError(OpenAlexError):
-    """Error from the OpenAlex API."""
+    """Error returned from the OpenAlex API."""
 
-    __slots__ = ("response", "status_code")
+    __slots__ = ("details", "response", "status_code")
 
     def __init__(
         self,
@@ -52,6 +52,7 @@ class APIError(OpenAlexError):
         super().__init__(message, **kwargs)
         self.status_code = status_code
         self.response = response
+        self.details = kwargs.get("details")
 
 
 class RateLimitError(APIError):
@@ -154,7 +155,7 @@ class RetryableError(OpenAlexError):
     __slots__ = ()
 
 
-class ServerError(RetryableError):
+class ServerError(APIError, RetryableError):
     """Server-side errors (5xx status codes)."""
 
     __slots__ = ()
@@ -175,10 +176,14 @@ class RateLimitExceededError(RetryableError):
         self.retry_after = retry_after
 
 
-class TemporaryError(RetryableError):
+class TemporaryError(APIError, RetryableError):
     """Temporary errors that may succeed on retry."""
 
-    __slots__ = ()
+    __slots__ = ("retry_after",)
+
+    def __init__(self, message: str, *, status_code: int | None = None, retry_after: int | None = None) -> None:
+        super().__init__(message, status_code=status_code)
+        self.retry_after = retry_after
 
 
 class ConfigurationError(OpenAlexError):
@@ -189,19 +194,20 @@ class ConfigurationError(OpenAlexError):
 
 def raise_for_status(response: httpx.Response) -> None:
     """Raise an exception for HTTP error responses with detailed messages."""
-    if response.is_success:
-        return
-
     status_code = response.status_code
+    if 200 <= status_code < 300:
+        return
 
     # Try to extract error message from response
     try:
         error_data = response.json()
         error_message = error_data.get("message", "No error message provided")
         error_details = error_data.get("error", "")
+        error_extra = error_data.get("details")
     except Exception:
         error_message = response.text or "No error message provided"
         error_details = ""
+        error_extra = None
 
     # Construct detailed error message
     base_message = f"HTTP {status_code}: {error_message}"
@@ -215,7 +221,9 @@ def raise_for_status(response: httpx.Response) -> None:
             "This usually means there's an issue with your query parameters. "
             "Check the filter syntax and parameter names."
         )
-        raise ValidationError(msg)
+        if "filter" in error_message.lower() or "filter" in error_details.lower():
+            raise ValidationError(msg)
+        raise APIError(error_message, status_code=status_code, response=response, details=error_extra)
     if status_code == 401:
         msg = (
             f"{base_message}\n"
@@ -237,14 +245,41 @@ def raise_for_status(response: httpx.Response) -> None:
         )
         raise NotFoundError(msg)
     if status_code == 429:
-        retry_after = response.headers.get("Retry-After", "unknown")
-        raise RateLimitExceededError(
-            retry_after=int(retry_after) if retry_after.isdigit() else None,
+        retry_after_raw = response.headers.get("Retry-After")
+        retry_after: int | None = None
+        if retry_after_raw:
+            if retry_after_raw.isdigit():
+                retry_after = int(retry_after_raw)
+            else:
+                from datetime import UTC, datetime
+                from email.utils import parsedate_to_datetime
+
+                try:
+                    retry_dt = parsedate_to_datetime(retry_after_raw)
+                    retry_after = int((retry_dt - datetime.now(UTC)).total_seconds())
+                except Exception:
+                    retry_after = None
+        raise RateLimitError(
+            base_message,
+            response=response,
+            retry_after=retry_after,
+            details=error_extra,
         )
     if 500 <= status_code < 600:
         msg = (
             f"{base_message}\n"
             "This is a server-side error. The request may succeed if retried."
         )
-        raise ServerError(msg)
-    raise APIError(base_message)
+        if status_code == 503:
+            raise TemporaryError(
+                msg,
+                status_code=status_code,
+                retry_after=int(response.headers.get("Retry-After", "0") or 0),
+            )
+        raise ServerError(
+            msg,
+            status_code=status_code,
+            response=response,
+            details=error_extra,
+        )
+    raise APIError(error_message, status_code=status_code, response=response, details=error_extra)

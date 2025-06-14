@@ -23,9 +23,6 @@ from .constants import (
 from .exceptions import (
     APIError,
     NetworkError,
-    RateLimitExceededError,
-    ServerError,
-    TemporaryError,
     TimeoutError,
     raise_for_status,
 )
@@ -115,21 +112,6 @@ class APIConnection:
                 timeout=self.config.timeout,
                 **kwargs,
             )
-
-            status_code = getattr(response, "status_code", 200)
-            if isinstance(status_code, int) and status_code == 429:
-                retry_after = response.headers.get("Retry-After")
-                retry_after_int = int(retry_after) if retry_after else None
-                raise RateLimitExceededError(retry_after=retry_after_int)
-
-            if isinstance(status_code, int) and 500 <= status_code < 600:
-                msg = f"Server error {status_code}: {getattr(response, 'text', '')}"
-                raise ServerError(msg)
-
-            if isinstance(status_code, int) and status_code in (502, 503, 504):
-                msg = f"Temporary error {status_code}: Service unavailable"
-                raise TemporaryError(msg)
-
         except httpx.TimeoutException as e:
             msg = f"Request timed out after {self.config.timeout}s"
             raise TimeoutError(msg) from e
