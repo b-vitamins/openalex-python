@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   pass unit tests
 - Query builder now correctly handles search and group_by parameters
   and autocomplete results no longer raise validation errors
+- Async query methods align with sync API and handle partial metadata
 
 ### Fixed
 - License inconsistency between LICENSE file and pyproject.toml

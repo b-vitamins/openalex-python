@@ -5,13 +5,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
 
+from pydantic import ValidationError
+
 if TYPE_CHECKING:  # pragma: no cover - for type checking only
     from collections.abc import AsyncIterator
 
     from .config import OpenAlexConfig
     from .entities import AsyncBaseEntity, BaseEntity
 from .models import BaseFilter, GroupByResult, ListResult
-from .utils.pagination import MAX_PER_PAGE, Paginator
+from .utils.pagination import MAX_PER_PAGE, AsyncPaginator, Paginator
 
 __all__ = [
     "Query",
@@ -58,6 +60,29 @@ class lt_(_LogicalExpression):  # noqa: N801
     token = "<"
 
 
+def _build_list_result(data: dict[str, Any], model: type[T]) -> ListResult[T]:
+    """Construct a :class:`ListResult` from raw data."""
+    results: list[T] = []
+    for item in data.get("results", []):
+        try:
+            results.append(model(**item))
+        except ValidationError:
+            results.append(model.model_construct(**item))  # type: ignore
+
+    try:
+        return ListResult[T](
+            meta=data.get("meta", {}),
+            results=results,
+            group_by=data.get("group_by"),
+        )
+    except ValidationError:
+        return ListResult[T].model_construct(
+            meta=data.get("meta", {}),
+            results=results,
+            group_by=data.get("group_by"),
+        )
+
+
 class Query(Generic[T, F]):
     """Fluent interface for building API queries."""
 
@@ -77,7 +102,7 @@ class Query(Generic[T, F]):
             return self.filter(openalex_id=record_id).get(
                 per_page=len(record_id)
             )
-        return self.entity.get(record_id)
+        return self.entity.get(record_id)  # type: ignore[attr-defined,no-any-return]
 
     # internal helper
     def _clone(self, **updates: Any) -> Query[T, F]:
@@ -183,7 +208,7 @@ class Query(Generic[T, F]):
         """Execute query and return results (alias for list())."""
         params = {**self.params, **kwargs}
         filter_param = params.pop("filter", None)
-        return self.entity.list(filter=filter_param, **params)
+        return self.entity.list(filter=filter_param, **params)  # type: ignore[attr-defined,no-any-return]
 
     def list(self, **kwargs: Any) -> ListResult[T]:
         """Alias for :meth:`get`."""
@@ -198,7 +223,7 @@ class Query(Generic[T, F]):
         """Return a paginator for this query."""
         params = {**self.params, **kwargs}
         filter_param = params.pop("filter", None)
-        return self.entity.paginate(
+        return self.entity.paginate(  # type: ignore[attr-defined,no-any-return]
             filter=filter_param,
             per_page=per_page,
             max_results=max_results,
@@ -217,11 +242,11 @@ class Query(Generic[T, F]):
 
     def random(self) -> T:
         """Get a random entity."""
-        return self.entity.random()
+        return self.entity.random()  # type: ignore[attr-defined,no-any-return]
 
     def autocomplete(self, query: str, **kwargs: Any) -> ListResult[Any]:
         """Autocomplete search."""
-        return self.entity.autocomplete(query, **kwargs)
+        return self.entity.autocomplete(query, **kwargs)  # type: ignore[attr-defined,no-any-return]
 
     def __repr__(self) -> str:
         """String representation of query."""
@@ -262,6 +287,27 @@ class AsyncQuery(Generic[T, F]):
             self._params["filter"] = kwargs
         return self
 
+    def filter_or(self, **kwargs: Any) -> AsyncQuery[T, F]:
+        current = self._params.get("filter")
+        if isinstance(current, or_):
+            current.update(kwargs)
+            self._params["filter"] = current
+        elif isinstance(current, dict):
+            new_filter = or_(current | kwargs)
+            self._params["filter"] = new_filter
+        else:
+            self._params["filter"] = or_(kwargs)
+        return self
+
+    def filter_not(self, **kwargs: Any) -> AsyncQuery[T, F]:
+        return self.filter(**{k: not_(v) for k, v in kwargs.items()})
+
+    def filter_gt(self, **kwargs: Any) -> AsyncQuery[T, F]:
+        return self.filter(**{k: gt_(v) for k, v in kwargs.items()})
+
+    def filter_lt(self, **kwargs: Any) -> AsyncQuery[T, F]:
+        return self.filter(**{k: lt_(v) for k, v in kwargs.items()})
+
     def search(self, query: str) -> AsyncQuery[T, F]:
         self._params["search"] = query
         return self
@@ -273,8 +319,9 @@ class AsyncQuery(Generic[T, F]):
             self._params["filter"][f"{field}.search"] = value
         return self
 
-    def sort(self, field: str, order: str = "desc") -> AsyncQuery[T, F]:
-        self._params["sort"] = f"{field}:{order}"
+    def sort(self, **kwargs: str) -> AsyncQuery[T, F]:
+        sort_parts = [f"{k}:{v}" for k, v in kwargs.items()]
+        self._params["sort"] = ",".join(sort_parts)
         return self
 
     def group_by(self, field: str) -> AsyncQuery[T, F]:
@@ -284,6 +331,26 @@ class AsyncQuery(Generic[T, F]):
     def select(self, *fields: str) -> AsyncQuery[T, F]:
         self._params["select"] = ",".join(fields)
         return self
+
+    def paginate(
+        self,
+        per_page: int = MAX_PER_PAGE,
+        max_results: int | None = None,
+        **kwargs: Any,
+    ) -> AsyncPaginator[T]:
+        params = {**self._params, **kwargs}
+
+        async def fetch_page(page_params: dict[str, Any]) -> ListResult[T]:
+            all_params = {**params, **page_params}
+            data = await self._entity.get_list(params=all_params)
+            return _build_list_result(data, self._model_class)
+
+        return AsyncPaginator(
+            fetch_func=fetch_page,
+            params=params,
+            per_page=per_page,
+            max_results=max_results,
+        )
 
     async def get(
         self,
@@ -301,12 +368,7 @@ class AsyncQuery(Generic[T, F]):
         if "group_by" in self._params:
             return GroupByResult(**data)
 
-        return ListResult[T](
-            meta=data.get("meta", {}),
-            results=[
-                self._model_class(**item) for item in data.get("results", [])
-            ],
-        )
+        return _build_list_result(data, self._model_class)
 
     async def all(self) -> AsyncIterator[T]:
         page = 1

@@ -70,6 +70,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 T = TypeVar("T")
 F = TypeVar("F", bound="BaseFilter")
+_T = TypeVar("_T")
 
 
 class BaseEntity(Generic[T, F]):
@@ -139,6 +140,29 @@ class BaseEntity(Generic[T, F]):
                 group_by=data.get("group_by"),
             )
 
+
+def _build_list_result(data: dict[str, Any], model: type[_T]) -> ListResult[_T]:
+    """Construct a :class:`ListResult` from raw data."""
+    results: list[_T] = []
+    for item in data.get("results", []):
+        try:
+            results.append(model(**item))
+        except ValidationError:
+            results.append(model.model_construct(**item))  # type: ignore
+
+    try:
+        return ListResult[_T](
+            meta=data.get("meta", {}),
+            results=results,
+            group_by=data.get("group_by"),
+        )
+    except ValidationError:
+        return ListResult[_T].model_construct(
+            meta=data.get("meta", {}),
+            results=results,
+            group_by=data.get("group_by"),
+        )
+
     def query(self, **filter_params: Any) -> Query[T, F]:
         from .query import Query
 
@@ -147,7 +171,7 @@ class BaseEntity(Generic[T, F]):
             params["filter"] = filter_params
         return Query(self, params)
 
-    def __getitem__(self, record_id: str | list[str]) -> T | ListResult[T]:
+    def __getitem__(self, record_id: str | list[str]) -> T | ListResult[T]:  # noqa: N807
         return self.query()[record_id]
 
     def _get_single_entity(
@@ -284,8 +308,9 @@ class BaseEntity(Generic[T, F]):
         """Clear cache for this entity type."""
         cache_manager = get_cache_manager(self._config)
         cache_manager.clear()
+        return
 
-    def cache_stats(self) -> dict[str, Any]:
+    def cache_stats(self) -> dict[str, Any]:  # noqa: RET503
         """Get cache statistics for this entity type."""
         cache_manager = get_cache_manager(self._config)
         return cache_manager.stats()
@@ -317,7 +342,10 @@ class AsyncBaseEntity(AsyncBaseAPI[T], Generic[T, F]):
 
     async def get(self, entity_id: str) -> T:
         data = await self.get_single_entity(entity_id)
-        return self.model_class(**data)
+        try:
+            return self.model_class(**data)
+        except ValidationError:
+            return self.model_class.model_construct(**data)  # type: ignore
 
     def filter(self, **kwargs: Any) -> AsyncQuery[T, F]:
         from .query import AsyncQuery
@@ -344,12 +372,7 @@ class AsyncBaseEntity(AsyncBaseAPI[T], Generic[T, F]):
         page = 1
         while True:
             data = await self.get_list(params={"page": page})
-            results = ListResult[T](
-                meta=data.get("meta", {}),
-                results=[
-                    self.model_class(**item) for item in data.get("results", [])
-                ],
-            )
+            results = _build_list_result(data, self.model_class)
 
             for item in results.results:
                 yield item
@@ -361,7 +384,10 @@ class AsyncBaseEntity(AsyncBaseAPI[T], Generic[T, F]):
 
     async def random(self) -> T:  # type: ignore[override]
         data = await super().random()
-        return self.model_class(**data)
+        try:
+            return self.model_class(**data)
+        except ValidationError:
+            return self.model_class.model_construct(**data)  # type: ignore
 
     async def autocomplete(  # type: ignore[override]
         self,
@@ -369,18 +395,14 @@ class AsyncBaseEntity(AsyncBaseAPI[T], Generic[T, F]):
         params: dict[str, Any] | None = None,
     ) -> ListResult[AutocompleteResult]:
         data = await super().autocomplete(query, params)
-        return ListResult[AutocompleteResult](
-            meta=data.get("meta", {}),
-            results=[
-                AutocompleteResult(**item) for item in data.get("results", [])
-            ],
-        )
+        return _build_list_result(data, AutocompleteResult)
 
     def clear_cache(self) -> None:
         from .cache.manager import get_cache_manager
 
         cache_manager = get_cache_manager(self._config)
         cache_manager.clear()
+        return
 
     def cache_stats(self) -> dict[str, Any]:
         from .cache.manager import get_cache_manager
@@ -485,10 +507,7 @@ class AsyncWorks(AsyncBaseEntity[Work, BaseFilter]):
         )
         raise_for_status(response)
         data = response.json()
-        return ListResult[Ngram](
-            meta=data.get("meta", {}),
-            results=[Ngram(**item) for item in data.get("ngrams", [])],
-        )
+        return _build_list_result(data, Ngram)
 
 
 class AsyncAuthors(AsyncBaseEntity[Author, BaseFilter]):
