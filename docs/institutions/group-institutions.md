@@ -41,6 +41,8 @@ for group in result.group_by:
 ### Basic grouping
 
 ```python
+from openalex import Institutions
+
 # Group by institution type
 type_dist = Institutions().group_by("type").get()
 # Shows distribution: education, healthcare, company, etc.
@@ -69,6 +71,8 @@ ror_coverage = Institutions().group_by("has_ror").get()
 ### Research metrics grouping
 
 ```python
+from openalex import Institutions
+
 # Distribution of citation counts
 citation_ranges = Institutions().group_by("cited_by_count").get()
 # Note: This creates many groups (one per unique count)
@@ -81,11 +85,19 @@ productivity_dist = Institutions().group_by("works_count").get()
 
 # 2-year mean citedness
 impact_dist = Institutions().group_by("summary_stats.2yr_mean_citedness").get()
+
+# Works count buckets in 10k increments
+size_buckets = Institutions().group_by("works_count", interval=10000).get()
+for bucket in size_buckets.group_by[:5]:
+    print(f"{bucket.key}: {bucket.count} institutions")
 ```
 
 ### Repository analysis
 
 ```python
+# Repository grouping examples
+from openalex import Institutions
+
 # Institutions that host repositories
 has_repos = Institutions().group_by(
     "repositories.host_organization"
@@ -98,6 +110,9 @@ has_repos = Institutions().group_by(
 Group_by becomes more insightful when combined with filters:
 
 ```python
+# Combining filtering with grouping
+from openalex import Institutions
+
 # Type distribution by continent
 europe_types = (
     Institutions()
@@ -143,6 +158,9 @@ elite_by_country = (
 You can group by two dimensions:
 
 ```python
+# Group by two dimensions
+from openalex import Institutions
+
 # Type and continent
 type_continent = Institutions().group_by("type", "continent").get()
 
@@ -161,6 +179,8 @@ for group in country_type.group_by[:20]:
 ### Example 1: Global research landscape
 
 ```python
+from openalex import Institutions
+
 def analyze_global_research():
     """Analyze the global distribution of research institutions."""
     
@@ -198,6 +218,8 @@ analyze_global_research()
 ### Example 2: Institution type analysis
 
 ```python
+from openalex import Institutions
+
 def analyze_institution_ecosystem():
     """Understand the mix of institution types globally."""
     
@@ -243,6 +265,8 @@ analyze_institution_ecosystem()
 ### Example 3: Research concentration
 
 ```python
+from openalex import Institutions
+
 def analyze_research_concentration():
     """Analyze how research is concentrated globally."""
     
@@ -293,6 +317,8 @@ analyze_research_concentration()
 ### Example 4: Repository hosting
 
 ```python
+from openalex import Institutions
+
 def analyze_repository_landscape():
     """Analyze which institutions host repositories."""
     
@@ -323,6 +349,9 @@ def analyze_repository_landscape():
 Control how results are ordered:
 
 ```python
+# Sorting options for grouped results
+from openalex import Institutions
+
 # Default: sorted by count (descending)
 default_sort = Institutions().group_by("country_code").get()
 # US first (most institutions), then CN, GB, etc.

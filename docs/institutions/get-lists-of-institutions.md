@@ -5,29 +5,15 @@ You can get lists of institutions using the Python client:
 ```python
 from openalex import Institutions
 
-# Create a query for all institutions (no filters applied)
-all_institutions_query = Institutions()
+# Fetch the first page of institutions (25 results by default)
+first_page = Institutions().get()
 
-# Execute the query to get the FIRST PAGE of results
-first_page = all_institutions_query.get()
-
-# Note: With ~109,000 total institutions, this is manageable
-# (unlike works with 240M+ or authors with 93M+)
 print(f"Total institutions: {first_page.meta.count:,}")  # ~109,000
 print(f"Institutions in this response: {len(first_page.results)}")  # 25
 print(f"Current page: {first_page.meta.page}")  # 1
-```
 
-The response contains:
-- **meta**: Information about pagination and total results
-- **results**: List of Institution objects for the current page
-- **group_by**: Empty list (used only when grouping results)
-
-## Understanding the results
-
-```python
-# Each result shows institution information
-for institution in first_page.results[:5]:  # First 5 institutions
+# Show the first few institutions
+for institution in first_page.results[:5]:
     print(f"\n{institution.display_name}")
     print(f"  Type: {institution.type}")
     print(f"  Country: {institution.country_code}")
@@ -36,6 +22,11 @@ for institution in first_page.results[:5]:  # First 5 institutions
     if institution.geo:
         print(f"  Location: {institution.geo.city}, {institution.geo.country}")
 ```
+
+The response contains:
+- **meta**: Information about pagination and total results
+- **results**: List of Institution objects for the current page
+- **group_by**: Empty list (used only when grouping results)
 
 ## Page and sort institutions
 
@@ -102,6 +93,30 @@ minimal_institutions = Institutions().select([
 for institution in minimal_institutions.results:
     print(f"{institution.display_name} ({institution.country_code})")
     print(institution.cited_by_count)  # None - not selected
+```
+
+```python
+from openalex import Institutions
+
+# Universities in the United States
+us_universities = (
+    Institutions()
+    .filter(country_code="US")
+    .filter(type="education")
+    .get(per_page=5)
+)
+for inst in us_universities.results:
+    print(f"- {inst.display_name} ({inst.country_code})")
+```
+
+```python
+from openalex import Institutions
+
+# Institutions in Cambridge, Massachusetts
+cambridge_ma = Institutions().filter(
+    geo={"city": "Cambridge", "region": "Massachusetts"}
+).get()
+print(f"Institutions in Cambridge, MA: {cambridge_ma.meta.count}")
 ```
 
 ## Practical examples
