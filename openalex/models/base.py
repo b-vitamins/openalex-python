@@ -191,6 +191,11 @@ class ListResult(OpenAlexBase, Generic[T]):
     results: list[T] = Field(default_factory=list)
     group_by: list[GroupByResult] | None = None
 
+    @property
+    def groups(self) -> list[GroupByResult] | None:
+        """Alias for ``group_by`` for backward compatibility."""
+        return self.group_by
+
     def __len__(self) -> int:
         """Return the number of results."""
         return len(self.results)

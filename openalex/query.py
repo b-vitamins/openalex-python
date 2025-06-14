@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
 
@@ -246,6 +247,18 @@ class Query(Generic[T, F]):
             max_results=max_results,
             **params,
         )
+
+    def all(
+        self,
+        per_page: int = 1,
+        max_results: int | None = None,
+        **kwargs: Any,
+    ) -> Iterator[T]:
+        """Iterate over all results of the query."""
+        paginator = self.paginate(per_page=per_page, max_results=max_results, **kwargs)
+        for page in paginator:
+            for item in page.results:
+                yield item
 
     def count(self) -> int:
         """Get count of results without fetching them."""

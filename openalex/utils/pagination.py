@@ -101,8 +101,7 @@ class Paginator(Generic[T]):
         """Number of results yielded so far."""
         return self._total_fetched
 
-    def __iter__(self) -> Iterator[T]:
-        """Iterate over all results."""
+    def _page_iterator(self) -> Iterator[ListResult[T]]:
         page: int | None = FIRST_PAGE
         cursor = self.params.get(PARAM_CURSOR)
         base_params = {k: v for k, v in self.params.items() if k != PARAM_CURSOR}
@@ -115,7 +114,6 @@ class Paginator(Generic[T]):
                 base_params, cursor=cursor, page=page, per_page=self.per_page
             )
 
-            # Fetch page
             try:
                 result = self.fetch_func(params)
             except APIError as e:
@@ -127,51 +125,13 @@ class Paginator(Generic[T]):
                 )
                 raise
 
-            # Yield results
             items = _pad_results(result.results, result.meta.per_page)
-
-            for item in items:
-                if self.max_results and self._total_fetched >= self.max_results:
-                    return
-                self._total_fetched += 1
-                yield item
-
-            # Check if there are more pages
-            if result.meta.next_cursor:
-                cursor = result.meta.next_cursor
-                page = None  # Use cursor pagination
-            elif page is not None and page * self.per_page < result.meta.count:
-                page += 1
-            else:
-                # No more results
-                break
-
-    def pages(self) -> Iterator[ListResult[T]]:
-        """Iterate over pages instead of individual results."""
-        page: int | None = FIRST_PAGE
-        cursor = self.params.get(PARAM_CURSOR)
-        base_params = {k: v for k, v in self.params.items() if k != PARAM_CURSOR}
-
-        while True:
-            params = _build_params(
-                base_params, cursor=cursor, page=page, per_page=self.per_page
-            )
-
-            # Fetch page
-            try:
-                result = self.fetch_func(params)
-            except APIError as e:
-                logger.exception(
-                    "Error fetching page",
-                    page=page,
-                    cursor=cursor,
-                    error=str(e),
-                )
-                raise
+            self._total_fetched += len(items)
+            if self.max_results and self._total_fetched > self.max_results:
+                self._total_fetched = self.max_results
 
             yield result
 
-            # Check if there are more pages
             if result.meta.next_cursor:
                 cursor = result.meta.next_cursor
                 page = None
@@ -180,16 +140,35 @@ class Paginator(Generic[T]):
             else:
                 break
 
+    def __iter__(self) -> Iterator[ListResult[T]]:
+        self._iterator = self._page_iterator()
+        return self
+
+    def __next__(self) -> ListResult[T]:
+        if not hasattr(self, "_iterator"):
+            self._iterator = self._page_iterator()
+        return next(self._iterator)
+
+    def pages(self) -> Iterator[ListResult[T]]:
+        """Iterate over pages instead of individual results."""
+        return self._page_iterator()
+
     def first(self) -> T | None:
-        """Get the first result."""
-        try:
-            return next(iter(self))
-        except StopIteration:
-            return None
+        """Get the first result from the first page."""
+        for page in self:
+            if page.results:
+                return page.results[0]
+        return None
 
     def all(self) -> list[T]:
-        """Get all results as a list."""
-        return list(self)
+        """Get all results as a flat list of items."""
+        items: list[T] = []
+        for page in self:
+            for item in page.results:
+                items.append(item)
+                if self.max_results and len(items) >= self.max_results:
+                    return items[: self.max_results]
+        return items
 
     def count(self) -> int:
         """Get total count without fetching all results."""
