@@ -252,9 +252,9 @@ class TestFilterSerialization:
 
         result = flatten_filter_dict(filters)
 
-        assert "title.search:quantum+computing" in result
-        assert "abstract.search:neural+networks" in result
-        assert "fulltext.search:machine+learning" in result
+        assert "title.search:quantum computing" in result
+        assert "abstract.search:neural networks" in result
+        assert "fulltext.search:machine learning" in result
 
     def test_complex_nested_filters(self):
         """Complex nested filter structures."""

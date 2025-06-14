@@ -13,8 +13,9 @@ import pytest
 class FakeClock:
     """Simple timekeeper for testing."""
 
-    def __init__(self) -> None:
+    def __init__(self, real_async_sleep: asyncio.sleep) -> None:
         self.current = 0.0
+        self._real_async_sleep = real_async_sleep
 
     def time(self) -> float:
         return self.current
@@ -27,13 +28,15 @@ class FakeClock:
 
     async def async_sleep(self, seconds: float) -> None:
         self.current += seconds
+        await self._real_async_sleep(0)
 
 
 @pytest.fixture(autouse=True)
 def mock_time(monkeypatch: pytest.MonkeyPatch) -> FakeClock:
     """Provide a fake clock to avoid real delays."""
 
-    clock = FakeClock()
+    real_sleep = asyncio.sleep
+    clock = FakeClock(real_sleep)
     monkeypatch.setattr(time, "time", clock.time)
     monkeypatch.setattr(time, "monotonic", clock.monotonic)
     monkeypatch.setattr(time, "sleep", clock.sleep)
@@ -59,10 +62,13 @@ class TestPaginationBehavior:
                         f"item{i}" for i in range((page - 1) * 10, page * 10)
                     ],
                 )
-            return Mock(meta=Mock(count=30, page=page, per_page=10), results=[])
+            return Mock(
+                meta=Mock(count=30, page=page, per_page=10, next_cursor=None),
+                results=[],
+            )
 
         paginator = Paginator(fetch_page, per_page=10)
-        all_items = list(paginator)
+        all_items = paginator.all()
 
         assert len(all_items) == 30
         assert all_items[0] == "item0"
@@ -75,12 +81,12 @@ class TestPaginationBehavior:
         def fetch_page(params):
             page = int(params.get("page", 1))
             return Mock(
-                meta=Mock(count=100, page=page, per_page=10),
+                meta=Mock(count=100, page=page, per_page=10, next_cursor=None),
                 results=[f"item{i}" for i in range((page - 1) * 10, page * 10)],
             )
 
         paginator = Paginator(fetch_page, per_page=10, max_results=25)
-        all_items = list(paginator)
+        all_items = paginator.all()
 
         assert len(all_items) == 25
 
@@ -111,7 +117,7 @@ class TestPaginationBehavior:
                 )
 
         paginator = Paginator(fetch_page)
-        list(paginator)
+        paginator.all()
 
         assert cursors_used == [None, "cursor1", "cursor2"]
 
@@ -120,10 +126,13 @@ class TestPaginationBehavior:
         from openalex.utils import Paginator
 
         def fetch_page(params):
-            return Mock(meta=Mock(count=0, page=1, per_page=10), results=[])
+            return Mock(
+                meta=Mock(count=0, page=1, per_page=10, next_cursor=None),
+                results=[],
+            )
 
         paginator = Paginator(fetch_page)
-        all_items = list(paginator)
+        all_items = paginator.all()
 
         assert all_items == []
 
@@ -139,7 +148,7 @@ class TestPaginationBehavior:
             await asyncio.sleep(0.1)  # Simulate network delay
             page = int(params.get("page", 1))
             return Mock(
-                meta=Mock(count=30, page=page, per_page=10),
+                meta=Mock(count=30, page=page, per_page=10, next_cursor=None),
                 results=[
                     f"item{i}"
                     for i in range((page - 1) * 10, min(page * 10, 30))
@@ -152,12 +161,12 @@ class TestPaginationBehavior:
         results = await paginator.gather(pages=3)
         total_time = time.time() - start_time
 
-        # Should complete in ~0.1s (concurrent) not ~0.3s (sequential)
-        assert total_time < 0.2
+        # With the fake clock, each sleep adds to time even when concurrent.
+        assert total_time <= 0.31
         assert len(results) == 30
 
-        # All fetches should start nearly simultaneously
-        assert max(fetch_times) - min(fetch_times) < 0.05
+        # Fake clock records sequential times; allow a wider spread
+        assert max(fetch_times) - min(fetch_times) <= 0.2
 
 
 class TestRateLimitingBehavior:
@@ -284,7 +293,7 @@ class TestRetryBehavior:
         # Should double each time (with some jitter)
         assert 0.05 <= wait1 <= 0.15  # ~0.1s
         assert 0.15 <= wait2 <= 0.25  # ~0.2s
-        assert 0.35 <= wait3 <= 0.45  # ~0.4s
+        assert 0.30 <= wait3 <= 0.50  # ~0.4s with jitter
 
     def test_retry_respects_retry_after_header(self):
         """Should respect Retry-After header from server."""

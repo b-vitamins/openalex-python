@@ -79,6 +79,7 @@ class RateLimiter:
         """
         with self.lock:
             self._refill_tokens()
+            now = time.monotonic()
 
             if self.tokens >= tokens:
                 self.tokens -= tokens
@@ -88,8 +89,9 @@ class RateLimiter:
             deficit = tokens - self.tokens
             wait_time = deficit / self.rate
 
-            # Reserve the tokens
+            # Reserve the tokens and account for waiting time
             self.tokens = 0
+            self.last_update = now + wait_time
 
             return wait_time
 
