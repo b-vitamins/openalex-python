@@ -117,7 +117,7 @@ class TestPaginationBehavior:
                 )
 
         paginator = Paginator(fetch_page)
-        list(paginator)
+        paginator.all()
 
         assert cursors_used == [None, "cursor1", "cursor2"]
 
