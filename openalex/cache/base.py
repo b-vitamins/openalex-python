@@ -56,7 +56,7 @@ class CacheEntry:
     hit_count: int = 0
 
     @classmethod
-    def create(cls, data: Any, ttl: int) -> CacheEntry:
+    def create(cls, data: Any, ttl: float) -> CacheEntry:
         now = time.time()
         return cls(data=data, expires_at=now + ttl, created_at=now)
 
@@ -77,7 +77,7 @@ class BaseCache(ABC):
         """Get a value from the cache."""
 
     @abstractmethod
-    def set(self, key: str, value: Any, ttl: int) -> None:
+    def set(self, key: str, value: Any, ttl: float) -> None:
         """Set a value in the cache with TTL in seconds."""
 
     @abstractmethod

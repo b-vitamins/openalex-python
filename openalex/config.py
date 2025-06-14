@@ -56,7 +56,7 @@ class OpenAlexConfig(BaseModel):
         description="Custom user agent string",
     )
     cache_enabled: bool = Field(
-        default=True,
+        default=False,
         description="Enable request caching",
     )
     cache_maxsize: int = Field(
@@ -65,11 +65,11 @@ class OpenAlexConfig(BaseModel):
         ge=100,
         le=10000,
     )
-    cache_ttl: int = Field(
+    cache_ttl: float = Field(
         default=DEFAULT_CACHE_TTL,
         description="Default cache TTL in seconds",
-        ge=60,
-        le=86400,
+        ge=0.0,
+        le=86400.0,
     )
     rate_limit_buffer: float = Field(
         default=DEFAULT_BUFFER,
@@ -88,6 +88,7 @@ class OpenAlexConfig(BaseModel):
         description="Maximum number of retry attempts",
         ge=1,
         le=10,
+        alias="max_retries",
     )
     retry_initial_wait: float = Field(
         default=1.0,
@@ -146,4 +147,4 @@ class OpenAlexConfig(BaseModel):
             params["api_key"] = self.api_key
         return params
 
-    model_config = ConfigDict(frozen=True)
+    model_config = ConfigDict(frozen=True, populate_by_name=True)

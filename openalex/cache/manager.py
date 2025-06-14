@@ -42,7 +42,7 @@ class CacheManager:
         """Expose the underlying cache object, if enabled."""
         return self._cache
 
-    def get_ttl_for_endpoint(self, endpoint: str) -> int:
+    def get_ttl_for_endpoint(self, endpoint: str) -> float:
         """Public wrapper for ``_get_ttl_for_endpoint``."""
         return self._get_ttl_for_endpoint(endpoint)
 
@@ -52,7 +52,7 @@ class CacheManager:
         fetch_func: Callable[[], T],
         entity_id: str | None = None,
         params: dict[str, Any] | None = None,
-        ttl: int | None = None,
+        ttl: float | None = None,
     ) -> T:
         if not self.enabled:
             return fetch_func()
@@ -111,20 +111,8 @@ class CacheManager:
             **self._cache.stats(),
         }
 
-    def _get_ttl_for_endpoint(self, endpoint: str) -> int:
-        ttl_map = {
-            "works": 3600,
-            "authors": 7200,
-            "institutions": 14400,
-            "sources": 86400,
-            "topics": 86400,
-            "publishers": 86400,
-            "funders": 86400,
-            "concepts": 86400,
-        }
-
-        base_endpoint = endpoint.split("/")[0]
-        return ttl_map.get(base_endpoint, self.config.cache_ttl)
+    def _get_ttl_for_endpoint(self, _endpoint: str) -> float:
+        return float(self.config.cache_ttl)
 
 
 _cache_manager: CacheManager | None = None
