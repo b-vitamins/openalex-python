@@ -22,6 +22,8 @@ To see the full list of authors, get the individual work record, which is never 
 
 ```python
 # Get complete work with all 249 authors
+from openalex import Works
+
 full_work = Works()["W2168909179"]
 print(f"Total authors: {len(full_work.authorships)}")  # All 249 available
 
@@ -34,6 +36,8 @@ This affects filtering as well. So if you filter works using an author ID or ROR
 
 ```python
 # This might miss works where the author is listed after position 100
+from openalex import Works
+
 author_works = Works().filter(
     authorships={"author": {"id": "A5023888391"}}
 ).get()

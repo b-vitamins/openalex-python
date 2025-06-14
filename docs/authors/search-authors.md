@@ -24,6 +24,8 @@ The search is intelligent about name variations:
 
 ```python
 # Searching without middle initial returns names with AND without
+from openalex import Authors
+
 smiths = Authors().search("John Smith").get()
 # Returns: "John Smith", "John W. Smith", "John William Smith", etc.
 
@@ -41,6 +43,8 @@ Read more about search relevance, stemming, and boolean searches in the [search 
 You can also use search as a filter:
 
 ```python
+from openalex import Authors
+
 # Search using filter syntax
 filter_search = Authors().filter(
     display_name={"search": "john smith"}
@@ -69,6 +73,8 @@ Create a fast type-ahead search experience:
 
 ```python
 # Get autocomplete suggestions
+from openalex import Authors
+
 suggestions = Authors().autocomplete("ronald sw")
 
 # Returns fast, lightweight results with institutional hints
@@ -100,6 +106,8 @@ Ronald Swoboda
 Search is most powerful when combined with filters:
 
 ```python
+from openalex import Authors
+
 # Search for John Smith at Harvard
 harvard_smiths = (
     Authors()
@@ -147,6 +155,8 @@ recent_authors = (
 
 ```python
 # Find potential duplicates for an author
+from openalex import Authors
+
 def find_similar_authors(name, institution_id=None):
     query = Authors().search(name)
     if institution_id:
@@ -181,6 +191,8 @@ For common names, add context:
 
 ```python
 # Too broad - many results
+from openalex import Authors
+
 broad_search = Authors().search("J Smith").get()
 print(f"Found {broad_search.meta.count:,} 'J Smith' authors")
 
@@ -195,6 +207,7 @@ specific_search = (
 print(f"Found {specific_search.meta.count} specific matches")
 
 # Best - use known identifiers when possible
+known_orcid = "orcid:0000-0001-6187-6610"
 if known_orcid:
     author = Authors()[known_orcid]  # Direct lookup
 ```
