@@ -15,9 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Performance monitoring and metrics collection
 - Development guidelines for contributors in `AGENTS.md`
 - Behavior-driven test suite covering async, caching, config, pagination, etc.
+- Synchronous ``OpenAlexClient`` for simple API access
 
 ### Changed
 - License clarification: Now consistently MIT licensed
+- Request caching disabled by default
 
 ### Fixed
 - Updated Pydantic models for works and related entities to match OpenAlex data

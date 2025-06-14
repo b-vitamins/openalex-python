@@ -10,6 +10,7 @@ __version__ = "0.1.0"
 __author__ = "OpenAlex Python Contributors"
 __license__ = "MIT"
 
+from .client import OpenAlexClient
 from .config import OpenAlexConfig
 from .connection import close_all_async_connections
 from .entities import (
@@ -179,6 +180,7 @@ __all__ = [
     "OpenAccess",
     "OpenAccessStatus",
     "OpenAlexBase",
+    "OpenAlexClient",
     "OpenAlexConfig",
     "OpenAlexEntity",
     "OpenAlexError",

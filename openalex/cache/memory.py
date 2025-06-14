@@ -23,7 +23,7 @@ class MemoryCache(BaseCache):
 
     __slots__ = ("_cache", "_default_ttl", "_lock", "_maxsize", "_stats")
 
-    def __init__(self, maxsize: int = 1000, ttl: int = 3600) -> None:
+    def __init__(self, maxsize: int = 1000, ttl: float = 3600.0) -> None:
         self._cache: dict[str, CacheEntry] = {}
         self._lock = threading.RLock()
         self._maxsize = maxsize
@@ -61,7 +61,7 @@ class MemoryCache(BaseCache):
 
             return entry.data
 
-    def set(self, key: str, value: Any, ttl: int | None = None) -> None:
+    def set(self, key: str, value: Any, ttl: float | None = None) -> None:
         if ttl is None:
             ttl = self._default_ttl
 
