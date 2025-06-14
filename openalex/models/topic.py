@@ -5,11 +5,10 @@ from __future__ import annotations
 import re
 from datetime import date, datetime
 from enum import IntEnum
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 __all__ = ["Topic", "TopicHierarchy", "TopicIds", "TopicLevel"]
 
-from dateutil import parser  # type: ignore
 from pydantic import Field, field_validator, model_validator
 
 from ..constants import MAX_SECONDS_IN_MINUTE
@@ -91,7 +90,7 @@ class Topic(OpenAlexEntity):
     @field_validator("updated_date", mode="before")
     @classmethod
     def parse_updated_date(cls, v: datetime | str | None) -> date | None:
-        """Parse potentially malformed datetime strings."""
+        """Parse potentially malformed datetime strings without dateutil."""
         if v is None:
             return None
         if isinstance(v, date) and not isinstance(v, datetime):
@@ -99,21 +98,24 @@ class Topic(OpenAlexEntity):
         if isinstance(v, datetime):
             return v.date()
 
+        text = str(v)
+        if text.endswith("Z"):
+            text = text[:-1] + "+00:00"
+
         try:
-            return datetime.fromisoformat(v).date()
+            return datetime.fromisoformat(text).date()
         except ValueError:
-            try:
-                return cast("datetime", parser.parse(v)).date()
-            except (ValueError, TypeError):
-                match = MALFORMED_DATETIME_REGEX.match(v)
-                if match:
-                    sec = int(match.group("sec"))
-                    sec = min(sec, MAX_SECONDS_IN_MINUTE)
-                    new_v = f"{match.group('prefix')}:{sec:02d}{match.group('rest')}"
-                    try:
-                        return datetime.fromisoformat(new_v).date()
-                    except ValueError:
-                        return cast("datetime", parser.parse(new_v)).date()
+            match = MALFORMED_DATETIME_REGEX.match(text)
+            if match:
+                sec = int(match.group("sec"))
+                sec = min(sec, MAX_SECONDS_IN_MINUTE)
+                new_text = f"{match.group('prefix')}:{sec:02d}{match.group('rest')}"
+                if new_text.endswith("Z"):
+                    new_text = new_text[:-1] + "+00:00"
+                try:
+                    return datetime.fromisoformat(new_text).date()
+                except ValueError:
+                    return None
 
         return None
 
