@@ -30,6 +30,9 @@ The response contains:
 ## Understanding the results
 
 ```python
+from openalex import Concepts
+
+first_page = Concepts().get()
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Each result shows concept information
 for concept in first_page.results[:5]:  # First 5 concepts
@@ -75,6 +78,7 @@ print(f"Fetched all {len(all_concepts)} concepts")
 Get a random sample of concepts:
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Get 10 random concepts
 random_sample = Concepts().sample(10).get(per_page=10)
@@ -96,6 +100,7 @@ level2_sample = (
 Limit the fields returned to improve performance:
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Request only specific fields
 minimal_concepts = Concepts().select([
@@ -117,6 +122,7 @@ for concept in minimal_concepts.results:
 ### Example: Explore the concept tree
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 def explore_concept_hierarchy():
     """Explore the 6-level concept hierarchy."""
@@ -146,6 +152,7 @@ explore_concept_hierarchy()
 ### Example: Analyze concept distribution by level
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 def analyze_concept_levels():
     """Analyze how concepts are distributed across levels."""
@@ -174,6 +181,7 @@ analyze_concept_levels()
 ### Example: Find research hotspots
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 def find_research_hotspots(min_works=10000):
     """Find highly active research concepts."""

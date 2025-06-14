@@ -29,6 +29,7 @@ for concept in results.results[:5]:
 The search checks multiple fields:
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # This searches display_name AND description
 ml_results = Concepts().search("machine learning").get()
@@ -50,6 +51,7 @@ You can also use search as a filter:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 # Search only in display_name
 name_only = Concepts().filter(
     display_name={"search": "medical"}
@@ -79,6 +81,7 @@ Create a fast type-ahead search experience:
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 # Get autocomplete suggestions
 suggestions = Concepts().autocomplete("comp")
 
@@ -112,6 +115,7 @@ Computational biology
 Search is most powerful when combined with filters:
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Search for AI concepts at specific levels
 ai_subfields = (
@@ -157,6 +161,7 @@ emerging = (
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 def search_in_domain(search_term, domain_concept_id):
     """Search for concepts within a specific domain."""
     
@@ -186,6 +191,7 @@ search_in_domain("therapy", "C71924100")
 ### Multi-level search
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 def hierarchical_search(search_term):
     """Search at different levels of the hierarchy."""
@@ -212,6 +218,7 @@ hierarchical_search("network")
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 def discover_related_concepts(concept_id):
     """Find concepts related to a given concept through various methods."""
     
@@ -254,6 +261,7 @@ discover_related_concepts("C154945302")  # Machine learning
 ### Finding interdisciplinary concepts
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Bioinformatics, computational biology, etc.
 bio_comp = (
@@ -283,6 +291,7 @@ env_econ = (
 ### Research trend discovery
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Find emerging concepts with specific terms
 emerging_tech = (
@@ -314,6 +323,7 @@ climate_concepts = (
 
 ```python
 # ⚠️ DEPRECATED: Consider using Topics instead
+from openalex import Concepts
 # Example: Comprehensive concept search
 def comprehensive_search(search_terms, min_works=1000):
     """Search with multiple strategies."""

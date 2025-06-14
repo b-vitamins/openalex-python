@@ -20,6 +20,9 @@ concept = Concepts().get("C71924100")
 That will return a [`Concept`](concept-object.md) object, describing everything OpenAlex knows about the concept with that ID:
 
 ```python
+from openalex import Concepts
+
+concept = Concepts()["C71924100"]
 # Access concept properties directly as Python attributes
 print(concept.id)  # "https://openalex.org/C71924100"
 print(concept.wikidata)  # "https://www.wikidata.org/wiki/Q11190" (canonical ID)
@@ -36,6 +39,7 @@ print(f"Level in hierarchy: {concept.level}")  # 0-5, where 0 is root
 You can make up to 50 of these queries at once by requesting a list of entities and filtering on IDs:
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Fetch multiple specific concepts in one API call
 concept_ids = ["C71924100", "C41008148", "C86803240"]
@@ -52,6 +56,7 @@ for c in multiple_concepts.results:
 You can look up concepts using external IDs such as a Wikidata ID:
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Get concept by Wikidata ID (canonical external ID)
 medicine = Concepts()["wikidata:Q11190"]
@@ -73,6 +78,7 @@ Available external IDs for concepts are:
 You can use `select` to limit the fields that are returned in a concept object:
 
 ```python
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Fetch only specific fields to reduce response size
 minimal_concept = Concepts().select([
