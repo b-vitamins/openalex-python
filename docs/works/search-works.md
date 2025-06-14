@@ -5,16 +5,18 @@ The best way to search for works is to use the `search` method, which searches a
 ```python
 from openalex import Works
 
-# Create a search query for works mentioning "dna"
-dna_search = Works().search("dna")
+# Search works mentioning "dna" published in 2023
+results = (
+    Works()
+    .search("dna")
+    .filter(publication_year=2023)
+    .sort(relevance_score="desc")
+    .get()
+)
 
-# Execute to get the first page of results (25 works)
-results = dna_search.get()
+print(f"Total works matching 'dna': {results.meta.count:,}")
+print(f"Showing first {len(results.results)} results")
 
-print(f"Total works matching 'dna': {results.meta.count:,}")  # e.g., 3,456,789
-print(f"Showing first {len(results.results)} results")  # 25
-
-# Results are ranked by relevance
 for i, work in enumerate(results.results[:5], 1):
     print(f"{i}. {work.display_name}")
     print(f"   Relevance score: {work.relevance_score}")
@@ -30,31 +32,48 @@ You can search within specific fields for more precise results:
 
 ```python
 # Search only in titles
-cubist_titles = Works().search_filter(title="cubist").get()
+cubist_titles = (
+    Works()
+    .search_filter(title="cubist")
+    .filter(publication_year=2023)
+    .get()
+)
 # Finds works with "cubist" in the title field only
 
-# Search only in abstracts  
-ai_abstracts = Works().search_filter(
-    abstract="artificial intelligence"
-).get()
+# Search only in abstracts
+ai_abstracts = (
+    Works()
+    .search_filter(abstract="artificial intelligence")
+    .filter(publication_year=2023)
+    .get()
+)
 # More specific than general search
 
 # Search in fulltext (when available)
-climate_fulltext = Works().search_filter(
-    fulltext="climate change mitigation strategies"
-).get()
+climate_fulltext = (
+    Works()
+    .search_filter(fulltext="climate change mitigation strategies")
+    .filter(publication_year=2023)
+    .get()
+)
 # Searches the complete text of works where we have it
 
 # Search in author affiliation strings
-sfu_affiliations = Works().search_filter(
-    raw_affiliation_strings="Simon Fraser University"
-).get()
+sfu_affiliations = (
+    Works()
+    .search_filter(raw_affiliation_strings="Simon Fraser University")
+    .filter(publication_year=2023)
+    .get()
+)
 # Finds works where author affiliations mention SFU
 
 # Search in both title and abstract
-quantum_papers = Works().search_filter(
-    title_and_abstract="quantum computing"
-).get()
+quantum_papers = (
+    Works()
+    .search_filter(title_and_abstract="quantum computing")
+    .filter(publication_year=2023)
+    .get()
+)
 # Searches both fields simultaneously
 ```
 
@@ -73,18 +92,31 @@ The following fields can be searched:
 
 ```python
 # Option 1: General search (searches title, abstract, fulltext)
-general_search = Works().search("machine learning").get()
+general_search = (
+    Works()
+    .search("machine learning")
+    .filter(publication_year=2023)
+    .get()
+)
 
 # Option 2: Field-specific search using filter
-title_only = Works().filter(
-    default={"search": "machine learning"}
-).get()
+title_only = (
+    Works()
+    .filter(default={"search": "machine learning"})
+    .filter(publication_year=2023)
+    .get()
+)
 
 # Option 3: Multiple field searches
-specific_search = Works().search_filter(
-    title="neural networks",
-    abstract="deep learning"
-).get()
+specific_search = (
+    Works()
+    .search_filter(
+        title="neural networks",
+        abstract="deep learning"
+    )
+    .filter(publication_year=2023)
+    .get()
+)
 # Must match "neural networks" in title AND "deep learning" in abstract
 ```
 
@@ -104,7 +136,7 @@ recent_ml_papers = (
     .get(per_page=100)  # Get top 100
 )
 
-print(f"Found {results.meta.count} highly-cited 2023 ML papers")
+print(f"Found {recent_ml_papers.meta.count:,} highly-cited 2023 ML papers")
 
 # Search specific fields with additional filters  
 quantum_2023 = (
@@ -168,7 +200,7 @@ Create a fast type-ahead search experience:
 
 ```python
 # Get autocomplete suggestions for works
-suggestions = Works().autocomplete("quantum comp")
+suggestions = Works().filter(publication_year=2023).autocomplete("quantum comp")
 
 # Returns fast, lightweight results
 for work in suggestions.results:
@@ -210,8 +242,8 @@ good_query = (
     .get()
 )
 
-# Less ideal: Too broad
-broad_query = Works().search("science").get()  # Millions of results!
+# Less ideal: Still quite broad
+broad_query = Works().search("science").filter(publication_year=2023).get()
 
 # Better: Add context
 better_query = (
