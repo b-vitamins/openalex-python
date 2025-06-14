@@ -25,7 +25,10 @@ The response contains:
 ## Understanding the results
 
 ```python
+from openalex import Funders
+
 # Each result shows funder information
+first_page = Funders().get()
 for funder in first_page.results[:5]:  # First 5 funders
     print(f"\n{funder.display_name}")
     print(f"  Country: {funder.country_code}")
@@ -41,6 +44,8 @@ for funder in first_page.results[:5]:  # First 5 funders
 You can control pagination and sorting:
 
 ```python
+from openalex import Funders
+
 # Get a specific page with custom page size
 page2 = Funders().get(per_page=50, page=2)
 # This returns funders 51-100
@@ -68,6 +73,8 @@ print(f"Fetched all {len(all_funders)} funders")
 Get a random sample of funders:
 
 ```python
+from openalex import Funders
+
 # Get 10 random funders
 random_sample = Funders().sample(10).get(per_page=10)
 
@@ -88,6 +95,8 @@ us_funder_sample = (
 Limit the fields returned to improve performance:
 
 ```python
+from openalex import Funders
+
 # Request only specific fields
 minimal_funders = Funders().select([
     "id", 
@@ -109,6 +118,7 @@ for funder in minimal_funders.results:
 
 ```python
 # Get major funding agencies
+from openalex import Funders
 major_funders = (
     Funders()
     .filter_gt(grants_count=1000)
@@ -128,6 +138,7 @@ for i, funder in enumerate(major_funders.results, 1):
 
 ```python
 # Analyze funders by region
+from openalex import Funders
 def analyze_funding_by_region():
     regions = {
         "North America": ["US", "CA"],
@@ -160,6 +171,7 @@ analyze_funding_by_region()
 
 ```python
 # Find high-impact funders
+from openalex import Funders
 def find_high_impact_funders(min_h_index=200):
     """Find funders supporting high-impact research."""
     
