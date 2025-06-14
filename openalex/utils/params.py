@@ -12,6 +12,19 @@ KEY_MAP: Final[dict[str, str]] = {
     "group_by": "group-by",
 }
 
+ALLOWED_KEYS: Final[set[str]] = {
+    "page",
+    "per_page",
+    "group_by",
+    "filter",
+    "sort",
+    "select",
+    "search",
+    "cursor",
+    "sample",
+    "seed",
+}
+
 __all__ = [
     "flatten_filter_dict",
     "normalize_params",
@@ -47,8 +60,11 @@ def serialize_filter_value(value: Any) -> str:
     if value is None:
         return "null"
 
-    # URL encode strings and other values
-    return quote_plus(str(value))
+    # URL encode strings and other values unless they look like URLs
+    text = str(value)
+    if text.startswith("http://") or text.startswith("https://"):
+        return text
+    return quote_plus(text)
 
 
 def flatten_filter_dict(
@@ -110,7 +126,8 @@ def serialize_params(params: dict[str, Any]) -> dict[str, str]:
         elif key == "select" and isinstance(value, list):
             serialized["select"] = ",".join(value)
         elif value is not None:
-            serialized[key] = (
+            mapped = KEY_MAP.get(key, key)
+            serialized[mapped] = (
                 str(value).lower() if isinstance(value, bool) else str(value)
             )
 
@@ -118,14 +135,17 @@ def serialize_params(params: dict[str, Any]) -> dict[str, str]:
 
 
 # Update existing normalize_params if it exists
-def normalize_params(params: dict[str, Any]) -> dict[str, Any]:
+def normalize_params(params: dict[str, Any] | None) -> dict[str, Any]:
     """Normalize parameters for API requests.
 
     Converts Pythonic parameter names to their API equivalents and drops
     ``None`` values before serialization.
     """
     # Remove None values
-    cleaned = {k: v for k, v in params.items() if v is not None}
+    if not params:
+        return {}
+
+    cleaned = {k: v for k, v in params.items() if v is not None and k in ALLOWED_KEYS}
 
     # Serialize complex structures
     serialized = serialize_params(cleaned)

@@ -37,6 +37,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pytest configuration skips docs-based examples
 - Refactored test suite for maintainability and clarity
 
+- Fixed utility helpers and improved parameter, retry, and text functions to
+  pass unit tests
+
 ### Fixed
 - License inconsistency between LICENSE file and pyproject.toml
 
