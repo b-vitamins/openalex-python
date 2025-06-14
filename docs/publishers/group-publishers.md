@@ -23,6 +23,8 @@ for group in country_stats.group_by[:10]:  # Top 10 countries
 ## Understanding group_by results
 
 ```python
+from openalex import Publishers
+
 # The result structure is different from regular queries
 result = Publishers().group_by("hierarchy_level").get()
 
@@ -40,6 +42,8 @@ for group in result.group_by:
 ### Basic grouping
 
 ```python
+from openalex import Publishers
+
 # Group by hierarchy level
 hierarchy_dist = Publishers().group_by("hierarchy_level").get()
 # Shows how many parent vs. subsidiary publishers
@@ -56,6 +60,8 @@ by_lineage = Publishers().group_by("lineage").get()
 ### Summary statistics grouping
 
 ```python
+from openalex import Publishers
+
 # Distribution of h-index values
 h_index_dist = Publishers().group_by("summary_stats.h_index").get()
 # See how research impact is distributed
@@ -72,6 +78,8 @@ impact_dist = Publishers().group_by("summary_stats.2yr_mean_citedness").get()
 Group_by becomes more insightful when combined with filters:
 
 ```python
+from openalex import Publishers
+
 # Country distribution for large publishers only
 large_pub_countries = (
     Publishers()
@@ -105,6 +113,8 @@ parent_by_continent = (
 While the API supports grouping by two dimensions, it's less common for publishers:
 
 ```python
+from openalex import Publishers
+
 # Publishers by country and hierarchy level
 country_hierarchy = Publishers().group_by(
     "country_codes",
@@ -122,6 +132,8 @@ for group in country_hierarchy.group_by[:20]:
 ### Example 1: Analyze publisher market concentration
 
 ```python
+from openalex import Publishers
+
 # Get top countries by publisher count
 def analyze_market_concentration():
     # Total publishers by country
@@ -169,6 +181,8 @@ analyze_market_concentration()
 ### Example 2: Publisher hierarchy analysis
 
 ```python
+from openalex import Publishers
+
 # Analyze publisher organizational structures
 def analyze_hierarchies():
     # Overall hierarchy distribution
@@ -198,6 +212,8 @@ analyze_hierarchies()
 ### Example 3: Impact analysis
 
 ```python
+from openalex import Publishers
+
 # Analyze research impact distribution
 def analyze_impact():
     # Group by h-index ranges
@@ -234,6 +250,8 @@ analyze_impact()
 Control how results are ordered:
 
 ```python
+from openalex import Publishers
+
 # Default: sorted by count (descending)
 default_sort = Publishers().group_by("country_codes").get()
 # US first (most publishers), then GB, DE, etc.
