@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 if TYPE_CHECKING:  # pragma: no cover
     import builtins
-    from collections.abc import AsyncIterator
+    from collections.abc import AsyncIterator, Iterator
 
     from .models.work import Ngram
     from .query import AsyncQuery
@@ -299,8 +298,7 @@ class BaseEntity(Generic[T, F]):
         """Iterate over all results for this entity."""
         paginator = self.paginate(**kwargs)
         for page in paginator:
-            for item in page.results:
-                yield item
+            yield from page.results
 
     def filter(self, **kwargs: Any) -> Query[T, F]:
         return self.query().filter(**kwargs)
