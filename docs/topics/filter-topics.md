@@ -29,6 +29,8 @@ You can filter using these attributes of the [`Topic`](topic-object.md) object:
 ### Basic attribute filters
 
 ```python
+from openalex import Topics
+
 # Filter by cited_by_count
 highly_cited = Topics().filter(cited_by_count=1000000).get()  # Exactly 1M
 very_highly_cited = Topics().filter_gt(cited_by_count=10000000).get()  # More than 10M
@@ -46,6 +48,8 @@ specific_ids = Topics().filter(
 ### Hierarchical filters
 
 ```python
+from openalex import Topics
+
 # Filter by domain
 health_topics = Topics().filter(domain={"id": 4}).get()  # Health Sciences
 
@@ -72,6 +76,8 @@ These filters aren't attributes of the Topic object, but they're handy:
 ### Text search filters
 
 ```python
+from openalex import Topics
+
 # Search in display names
 ai_search = Topics().filter(
     display_name={"search": "artificial intelligence"}
@@ -156,6 +162,8 @@ moderate_impact = (
 ### Example 1: Find interdisciplinary topics
 
 ```python
+from openalex import Topics
+
 def find_interdisciplinary_topics():
     """Find topics that might span multiple fields."""
     
@@ -191,6 +199,8 @@ find_interdisciplinary_topics()
 ### Example 2: Domain comparison
 
 ```python
+from openalex import Topics
+
 def compare_domains():
     """Compare research activity across domains."""
     
@@ -227,6 +237,8 @@ compare_domains()
 ### Example 3: Find emerging topics
 
 ```python
+from openalex import Topics
+
 def find_emerging_topics(min_works=500, max_works=5000):
     """Find topics that might be emerging (moderate activity)."""
     
@@ -268,6 +280,8 @@ find_emerging_topics()
 ### Example 4: Field deep dive
 
 ```python
+from openalex import Topics
+
 def analyze_field(field_id, field_name):
     """Deep analysis of a specific field."""
     
@@ -321,6 +335,8 @@ Since there are only ~4,500 topics:
 4. **Use group_by sparingly**: With small data, local grouping might be faster
 
 ```python
+from openalex import Topics
+
 # Example: Efficiently work with all topics
 def get_all_topics_cached():
     """Get all topics and cache them."""

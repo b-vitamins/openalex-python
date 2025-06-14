@@ -26,6 +26,7 @@ The search checks multiple fields:
 
 ```python
 # This searches display_name, description, AND keywords
+from openalex import Topics
 ml_results = Topics().search("machine learning").get()
 
 # This will find topics where:
@@ -45,6 +46,8 @@ Read more about search relevance, stemming, and boolean searches in the [search 
 You can also use search as a filter:
 
 ```python
+from openalex import Topics
+
 # Search only in display_name
 name_only = Topics().filter(
     display_name={"search": "medical"}
@@ -85,6 +88,8 @@ Available search fields:
 Search is most powerful when combined with filters:
 
 ```python
+from openalex import Topics
+
 # Search for AI topics in Computer Science
 cs_ai_topics = (
     Topics()
@@ -127,6 +132,8 @@ emerging_quantum = (
 ### Finding interdisciplinary topics
 
 ```python
+from openalex import Topics
+
 def find_interdisciplinary_topics(term1, term2):
     """Find topics that bridge two areas."""
     
@@ -149,6 +156,8 @@ find_interdisciplinary_topics("economics", "psychology")
 ### Keyword-based discovery
 
 ```python
+from openalex import Topics
+
 def discover_topics_by_keywords(keywords_list):
     """Find topics that match specific keywords."""
     
@@ -195,6 +204,8 @@ discover_topics_by_keywords([
 ### Hierarchical search
 
 ```python
+from openalex import Topics
+
 def search_within_hierarchy(search_term, domain_id=None, field_id=None):
     """Search for topics within a specific part of the hierarchy."""
     
@@ -231,6 +242,8 @@ search_within_hierarchy("learning", field_id=17)  # Computer Science only
 ### Finding research trends
 
 ```python
+from openalex import Topics
+
 # Emerging technology topics
 emerging_tech = (
     Topics()
@@ -260,6 +273,8 @@ health_crisis = (
 ### Topic similarity search
 
 ```python
+from openalex import Topics
+
 def find_similar_topics(topic_id):
     """Find topics similar to a given topic."""
     
@@ -291,6 +306,8 @@ find_similar_topics("T11636")  # AI in Medicine
 
 ```python
 # Example: Comprehensive topic search
+from openalex import Topics
+
 def comprehensive_topic_search(search_terms, min_works=100):
     """Search with multiple strategies."""
     
@@ -335,6 +352,8 @@ comprehensive_topic_search([
 Since there are only ~4,500 topics, you can also browse them all:
 
 ```python
+from openalex import Topics
+
 # Get all topics for browsing
 def browse_all_topics():
     """Load all topics for interactive browsing."""

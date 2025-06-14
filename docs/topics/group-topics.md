@@ -24,6 +24,7 @@ for group in domain_stats.group_by:
 
 ```python
 # The result structure is different from regular queries
+from openalex import Topics
 result = Topics().group_by("field.id").get()
 
 print(result.results)  # Empty list - no individual topics returned!
@@ -41,6 +42,8 @@ for group in result.group_by:
 ### Hierarchical grouping
 
 ```python
+from openalex import Topics
+
 # Group by domain (highest level)
 by_domain = Topics().group_by("domain.id").get()
 # Shows distribution across major research areas
@@ -62,6 +65,8 @@ print(f"Subfields: {len(by_subfield.group_by)}")
 ### Activity-based grouping
 
 ```python
+from openalex import Topics
+
 # Works count distribution
 works_dist = Topics().group_by("works_count").get()
 # Note: Creates many groups (one per unique count)
@@ -76,6 +81,8 @@ citation_dist = Topics().group_by("cited_by_count").get()
 Group_by becomes more insightful when combined with filters:
 
 ```python
+from openalex import Topics
+
 # Field distribution within a specific domain
 health_fields = (
     Topics()
@@ -112,6 +119,8 @@ high_impact_domains = (
 You can group by two dimensions:
 
 ```python
+from openalex import Topics
+
 # Domain and field combination
 domain_field = Topics().group_by("domain.id", "field.id").get()
 
@@ -130,6 +139,8 @@ for group in domain_field.group_by[:20]:
 ### Example 1: Analyze research landscape
 
 ```python
+from openalex import Topics
+
 def analyze_research_landscape():
     """Comprehensive analysis of the topic hierarchy."""
     
@@ -162,6 +173,8 @@ analyze_research_landscape()
 ### Example 2: Field concentration analysis
 
 ```python
+from openalex import Topics
+
 def analyze_field_concentration():
     """Analyze how topics are concentrated across fields."""
     
@@ -199,6 +212,8 @@ analyze_field_concentration()
 ### Example 3: Activity distribution
 
 ```python
+from openalex import Topics
+
 def analyze_topic_activity():
     """Analyze distribution of research activity across topics."""
     
@@ -243,6 +258,8 @@ analyze_topic_activity()
 ### Example 4: Hierarchical exploration
 
 ```python
+from openalex import Topics
+
 def explore_hierarchy(domain_id=None):
     """Explore the topic hierarchy starting from a domain."""
     
@@ -303,6 +320,8 @@ explore_hierarchy(domain_id=4)  # Health Sciences
 Control how results are ordered:
 
 ```python
+from openalex import Topics
+
 # Default: sorted by count (descending)
 default_sort = Topics().group_by("field.id").get()
 # Fields with most topics first
@@ -332,6 +351,7 @@ Since the dataset is so small, you can also do grouping locally:
 
 ```python
 # Get all topics once
+from openalex import Topics
 all_topics = list(Topics().paginate(per_page=200))
 
 # Now do local grouping
