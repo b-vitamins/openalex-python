@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from typing import Any
 
 __all__ = ["OpenAlexConfig"]
@@ -32,11 +33,11 @@ class OpenAlexConfig(BaseModel):
         description="Base URL for the OpenAlex API",
     )
     email: str | None = Field(
-        default=None,
+        default_factory=lambda: os.getenv("OPENALEX_EMAIL"),
         description="Email for polite pool access (recommended)",
     )
     api_key: str | None = Field(
-        default=None,
+        default_factory=lambda: os.getenv("OPENALEX_API_KEY"),
         description="Premium API key for higher rate limits",
     )
     timeout: float = Field(
@@ -85,7 +86,7 @@ class OpenAlexConfig(BaseModel):
     )
     retry_max_attempts: int = Field(
         default=3,
-        description="Maximum number of retry attempts",
+        description="Maximum number of retries after the initial request",
         ge=1,
         le=10,
         alias="max_retries",
@@ -148,3 +149,12 @@ class OpenAlexConfig(BaseModel):
         return params
 
     model_config = ConfigDict(frozen=True, populate_by_name=True)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        """Raise AttributeError when attempting to modify frozen fields."""
+        from pydantic import ValidationError
+
+        try:
+            super().__setattr__(name, value)
+        except ValidationError as exc:  # pragma: no cover - defensive
+            raise AttributeError(str(exc)) from exc

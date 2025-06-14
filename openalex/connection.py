@@ -157,7 +157,7 @@ class AsyncConnection:
         **kwargs: Any,
     ) -> httpx.Response:
         max_attempts = (
-            self._config.retry_max_attempts if self._config.retry_enabled else 1
+            self._config.retry_max_attempts + 1 if self._config.retry_enabled else 1
         )
         attempt = 0
 
