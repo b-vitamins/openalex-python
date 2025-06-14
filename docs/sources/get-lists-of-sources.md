@@ -25,7 +25,9 @@ The response contains:
 ## Understanding the results
 
 ```python
-# Each result shows source information
+from openalex import Sources
+
+first_page = Sources().get()
 for source in first_page.results[:5]:  # First 5 sources
     print(f"\n{source.display_name}")
     print(f"  Type: {source.type}")
@@ -72,6 +74,8 @@ print(f"Fetched all {len(all_sources)} sources")
 Get a random sample of sources:
 
 ```python
+from openalex import Sources
+
 # Get 10 random sources
 random_sample = Sources().sample(10).get(per_page=10)
 
@@ -93,6 +97,8 @@ oa_journal_sample = (
 Limit the fields returned to improve performance:
 
 ```python
+from openalex import Sources
+
 # Request only specific fields
 minimal_sources = Sources().select([
     "id", 
@@ -114,6 +120,8 @@ for source in minimal_sources.results:
 ### Example: Analyze source types
 
 ```python
+from openalex import Sources
+
 # Get different types of sources
 journals = Sources().filter(type="journal").get()
 repositories = Sources().filter(type="repository").get()
@@ -129,6 +137,8 @@ print(f"eBook platforms: {ebook_platforms.meta.count:,}")
 ### Example: Find high-impact journals
 
 ```python
+from openalex import Sources
+
 # Get top scientific journals by impact
 high_impact_journals = (
     Sources()
@@ -150,6 +160,8 @@ for i, journal in enumerate(high_impact_journals.results, 1):
 ### Example: Open Access landscape
 
 ```python
+from openalex import Sources
+
 # Analyze OA vs subscription sources
 def analyze_oa_landscape():
     # Get counts for different OA statuses

@@ -28,6 +28,8 @@ You can filter using these attributes of the [`Source`](source-object.md) object
 ### Basic attribute filters
 
 ```python
+from openalex import Sources
+
 # Filter by cited_by_count
 highly_cited = Sources().filter(cited_by_count=1000000).get()  # Exactly 1M
 very_highly_cited = Sources().filter_gt(cited_by_count=10000000).get()  # More than 10M
@@ -63,6 +65,8 @@ nature_journal = Sources().filter(issn="0028-0836").get()
 ### Host organization filters
 
 ```python
+from openalex import Sources
+
 # Filter by host organization (publisher or institution)
 elsevier_sources = Sources().filter(host_organization="P4310320595").get()
 
@@ -79,6 +83,8 @@ exact_publisher = Sources().filter(publisher="Elsevier BV").get()
 ### Open Access filters
 
 ```python
+from openalex import Sources
+
 # Open Access sources
 oa_sources = Sources().filter(is_oa=True).get()
 subscription_sources = Sources().filter(is_oa=False).get()
@@ -93,6 +99,8 @@ core_sources = Sources().filter(is_core=True).get()
 ### APC (Article Processing Charge) filters
 
 ```python
+from openalex import Sources
+
 # Filter by APC amount in USD
 expensive_apc = Sources().filter_gt(apc_usd=5000).get()
 affordable_apc = Sources().filter_lt(apc_usd=1000).get()
@@ -109,6 +117,8 @@ specific_price = Sources().filter(apc_prices={"price": 3000}).get()
 ### Summary statistics filters
 
 ```python
+from openalex import Sources
+
 # Filter by impact factor (2-year mean citedness)
 high_impact = Sources().filter_gt(summary_stats={"2yr_mean_citedness": 10.0}).get()
 medium_impact = Sources().filter_range(
@@ -134,6 +144,8 @@ elite_journals = (
 ### Concept filters (deprecated)
 
 ```python
+from openalex import Sources
+
 # Note: x_concepts will be deprecated soon, replaced by Topics
 # Filter by concept
 medical_sources = Sources().filter(
@@ -148,6 +160,8 @@ These filters aren't attributes of the Source object, but they're handy:
 ### Geographic convenience filters
 
 ```python
+from openalex import Sources
+
 # Filter by continent
 north_american = Sources().filter(continent="north_america").get()
 european = Sources().filter(continent="europe").get()
@@ -164,6 +178,8 @@ print(f"Global North sources: {global_north.meta.count:,}")
 ### Boolean filters
 
 ```python
+from openalex import Sources
+
 # Has ISSN
 with_issn = Sources().filter(has_issn=True).get()
 without_issn = Sources().filter(has_issn=False).get()
@@ -175,6 +191,8 @@ print(f"Without ISSN: {without_issn.meta.count:,}")
 ### Text search filters
 
 ```python
+from openalex import Sources
+
 # Search in display names
 neurology_search = Sources().filter(
     display_name={"search": "neurology"}
@@ -194,6 +212,8 @@ default_search = Sources().filter(
 ### Combining filters (AND operations)
 
 ```python
+from openalex import Sources
+
 # High-impact OA journals
 high_impact_oa = (
     Sources()
@@ -225,6 +245,8 @@ free_oa_journals = (
 ### NOT operations
 
 ```python
+from openalex import Sources
+
 # Sources NOT from the US
 non_us = Sources().filter_not(country_code="US").get()
 
@@ -240,6 +262,8 @@ no_apc = Sources().filter_not(
 ### Range queries
 
 ```python
+from openalex import Sources
+
 # Mid-range impact factor (2-5)
 mid_impact = (
     Sources()
@@ -262,6 +286,8 @@ moderate_output = (
 ### Example 1: Find affordable OA options
 
 ```python
+from openalex import Sources
+
 def find_affordable_oa_journals(max_apc=1500, min_impact=2.0):
     """Find OA journals with reasonable APCs and decent impact."""
     
@@ -293,6 +319,8 @@ find_affordable_oa_journals(max_apc=2000, min_impact=3.0)
 ### Example 2: Publisher analysis
 
 ```python
+from openalex import Sources
+
 def analyze_publisher_portfolio(publisher_id):
     """Analyze all sources from a publisher."""
     
@@ -329,6 +357,8 @@ analyze_publisher_portfolio("P4310320595")
 ### Example 3: Regional comparison
 
 ```python
+from openalex import Sources
+
 def compare_regions():
     """Compare sources across different regions."""
     
@@ -371,6 +401,8 @@ Since there are ~249,000 sources:
 4. **Consider source type**: Filter by type for more relevant results
 
 ```python
+from openalex import Sources
+
 # Example: Efficiently analyze journal landscape
 def journal_landscape_summary():
     # Use group_by instead of fetching all sources

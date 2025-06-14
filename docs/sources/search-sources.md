@@ -46,6 +46,8 @@ Read more about search relevance, stemming, and boolean searches in the [search 
 You can also use search as a filter:
 
 ```python
+from openalex import Sources
+
 # Search only in display_name (not alternatives or abbreviations)
 display_only = Sources().filter(
     display_name={"search": "nature"}
@@ -74,6 +76,8 @@ Available search fields:
 Create a fast type-ahead search experience:
 
 ```python
+from openalex import Sources
+
 # Get autocomplete suggestions
 suggestions = Sources().autocomplete("neuro")
 
@@ -110,6 +114,8 @@ Nature Neuroscience
 Search is most powerful when combined with filters:
 
 ```python
+from openalex import Sources
+
 # Search for open access journals with "medicine" in name
 oa_medical = (
     Sources()
@@ -154,6 +160,8 @@ elsevier_medical = (
 ### Handling journal variations
 
 ```python
+from openalex import Sources
+
 # Many journals have multiple names/abbreviations
 def find_journal_variations(journal_name):
     """Find all variations of a journal name."""
@@ -183,6 +191,8 @@ find_journal_variations("BMJ")
 ### Finding sources by topic
 
 ```python
+from openalex import Sources
+
 def find_sources_by_topic(topic, source_type=None):
     """Find sources related to a specific topic."""
     
@@ -212,6 +222,8 @@ find_sources_by_topic("COVID", "repository")
 ### Publisher catalog search
 
 ```python
+from openalex import Sources
+
 def search_publisher_catalog(publisher_id, search_term):
     """Search within a specific publisher's sources."""
     
@@ -278,6 +290,8 @@ ml_conferences = (
 ### Regional source discovery
 
 ```python
+from openalex import Sources
+
 # Find sources from specific regions
 def find_regional_sources(search_term, country_codes):
     return (
@@ -312,6 +326,8 @@ eu_oa = (
 5. **Consider publisher**: Search within specific publisher catalogs
 
 ```python
+from openalex import Sources
+
 # Example: Comprehensive journal search
 def comprehensive_journal_search(search_terms, min_impact=None):
     """Search for journals with multiple strategies."""
