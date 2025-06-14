@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - License clarification: Now consistently MIT licensed
 - Request caching disabled by default
 - Verified caching behavior with updated tests
+- Documentation examples for institutions are now self-contained
 
 ### Fixed
 - Retry logic now honors `max_retries` without exceeding the limit

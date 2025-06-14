@@ -28,6 +28,8 @@ You can filter using these attributes of the [`Institution`](institution-object.
 ### Basic attribute filters
 
 ```python
+from openalex import Institutions
+
 # Filter by cited_by_count
 highly_cited = Institutions().filter(cited_by_count=1000000).get()  # Exactly 1M
 very_highly_cited = Institutions().filter_gt(cited_by_count=10000000).get()  # More than 10M
@@ -64,6 +66,9 @@ ror_institution = Institutions().filter(ror="https://ror.org/00jmfr291").get()
 
 ```python
 # Find all institutions in a lineage (includes children)
+from openalex import Institutions
+
+# Find all institutions in a lineage (includes children)
 # For example, all University of California campuses
 uc_system_id = "I2803209242"
 uc_campuses = Institutions().filter(lineage=uc_system_id).get()
@@ -72,11 +77,18 @@ print(f"UC System has {uc_campuses.meta.count} entities")
 # Filter by super system status
 super_systems = Institutions().filter(is_super_system=True).get()
 print(f"Found {super_systems.meta.count} super systems")
+
+# Find child institutions of UC Berkeley
+berkeley_children = Institutions().filter(parent_institution="I40120149").get()
+print(f"UC Berkeley has {berkeley_children.meta.count} child institutions")
 ```
 
 ### Repository filters
 
 ```python
+# Find institutions with repositories
+from openalex import Institutions
+
 # Find institutions with repositories
 has_repository = Institutions().filter(
     repositories={"id": {"exists": True}}
@@ -96,6 +108,9 @@ repo_lineage = Institutions().filter(
 ### Summary statistics filters
 
 ```python
+# Filter by h-index
+from openalex import Institutions
+
 # Filter by h-index
 high_impact = Institutions().filter_gt(summary_stats={"h_index": 500}).get()
 
@@ -121,6 +136,9 @@ elite_institutions = (
 
 ```python
 # Note: x_concepts will be deprecated soon, replaced by Topics
+from openalex import Institutions
+
+# Note: x_concepts will be deprecated soon, replaced by Topics
 # Filter by concept
 biology_focused = Institutions().filter(
     x_concepts={"id": "C86803240"}  # Biology concept
@@ -134,6 +152,9 @@ These filters aren't attributes of the Institution object, but they're handy:
 ### Geographic convenience filters
 
 ```python
+# Filter by continent
+from openalex import Institutions
+
 # Filter by continent
 north_american = Institutions().filter(continent="north_america").get()
 european = Institutions().filter(continent="europe").get()
@@ -151,6 +172,9 @@ print(f"Global North institutions: {global_north.meta.count:,}")
 
 ```python
 # Has ROR ID (most institutions do)
+from openalex import Institutions
+
+# Has ROR ID (most institutions do)
 with_ror = Institutions().filter(has_ror=True).get()
 without_ror = Institutions().filter(has_ror=False).get()
 
@@ -161,6 +185,9 @@ print(f"Without ROR: {without_ror.meta.count:,}")
 ### Text search filters
 
 ```python
+# Search in display names
+from openalex import Institutions
+
 # Search in display names
 tech_search = Institutions().filter(
     display_name={"search": "technology"}
@@ -180,6 +207,9 @@ default_search = Institutions().filter(
 ### Combining filters (AND operations)
 
 ```python
+# Large US universities
+from openalex import Institutions
+
 # Large US universities
 large_us_universities = (
     Institutions()
@@ -214,6 +244,9 @@ global_south_leaders = (
 
 ```python
 # Institutions NOT from the US
+from openalex import Institutions
+
+# Institutions NOT from the US
 non_us = Institutions().filter_not(country_code="US").get()
 
 # Non-university institutions
@@ -228,6 +261,9 @@ no_repository = Institutions().filter_not(
 ### Range queries
 
 ```python
+# Mid-size institutions (1k-10k works)
+from openalex import Institutions
+
 # Mid-size institutions (1k-10k works)
 mid_size = (
     Institutions()
@@ -250,6 +286,8 @@ moderate_impact = (
 ### Example 1: Find peer institutions
 
 ```python
+from openalex import Institutions
+
 def find_peer_institutions(institution_id, radius=0.2):
     """Find institutions similar to a given institution."""
     # First get the reference institution
@@ -284,6 +322,9 @@ for inst in mit_peers.results:
 
 ```python
 # Compare research output by continent
+from openalex import Institutions
+
+# Compare research output by continent
 def analyze_continents():
     continents = ["north_america", "europe", "asia", "south_america", 
                   "africa", "oceania"]
@@ -309,6 +350,9 @@ analyze_continents()
 ### Example 3: Institution networks
 
 ```python
+# Find institutions with shared characteristics
+from openalex import Institutions
+
 # Find institutions with shared characteristics
 def find_institution_network(country, min_collaborations=1000):
     """Find highly collaborative institutions in a country."""
@@ -345,6 +389,9 @@ Since there are ~109,000 institutions:
 4. **Consider geography**: Filter by country/continent for regional analysis
 
 ```python
+# Example: Efficiently analyze global institution distribution
+from openalex import Institutions
+
 # Example: Efficiently analyze global institution distribution
 def global_institution_summary():
     # Use group_by instead of fetching all institutions

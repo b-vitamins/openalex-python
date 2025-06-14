@@ -15,19 +15,37 @@ institution = Institutions().get("I27837315")
 That will return an [`Institution`](institution-object.md) object, describing everything OpenAlex knows about the institution with that ID:
 
 ```python
-# Access institution properties directly as Python attributes
-print(institution.id)  # "https://openalex.org/I27837315"
-print(institution.ror)  # "https://ror.org/00jmfr291"
-print(institution.display_name)  # "University of Michigan–Ann Arbor"
-print(institution.country_code)  # "US"
-print(institution.type)  # "education"
-print(institution.works_count)  # Number of affiliated works
-print(institution.cited_by_count)  # Total citations
+from openalex import Institutions
+
+institution = Institutions()["I27837315"]  # University of Michigan–Ann Arbor
+
+print(f"OpenAlex ID: {institution.id}")
+print(f"ROR: {institution.ror}")
+print(f"GRID: {institution.grid}")
+print(f"Wikidata: {institution.wikidata}")
+print(f"Name: {institution.display_name}")
+print(f"Country: {institution.country_code}")
+print(f"Type: {institution.type}")
+print(f"Works: {institution.works_count:,}")
+print(f"Citations: {institution.cited_by_count:,}")
+if institution.geo:
+    print(
+        f"Location: {institution.geo.city}, {institution.geo.country}"
+    )
+    print(
+        f"Region: {institution.geo.region}"
+    )
+    print(
+        f"Coordinates: {institution.geo.latitude}, {institution.geo.longitude}"
+    )
 ```
 
 You can make up to 50 of these queries at once by requesting a list of entities and filtering on IDs:
 
 ```python
+# Example fetching multiple institutions
+from openalex import Institutions
+
 # Fetch multiple specific institutions in one API call
 institution_ids = ["I27837315", "I136199984", "I97018004"]
 multiple_institutions = Institutions().filter(openalex=institution_ids).get()
@@ -43,6 +61,8 @@ for inst in multiple_institutions.results:
 You can look up institutions using external IDs such as a ROR ID:
 
 ```python
+from openalex import Institutions
+
 # Get institution by ROR ID (multiple formats supported)
 institution = Institutions()["ror:https://ror.org/00cvxb145"]
 institution = Institutions()["ror:00cvxb145"]  # Shorter format
@@ -70,6 +90,8 @@ Available external IDs for institutions are:
 You can use `select` to limit the fields that are returned in an institution object:
 
 ```python
+from openalex import Institutions
+
 # Fetch only specific fields to reduce response size
 minimal_institution = Institutions().select([
     "id", 

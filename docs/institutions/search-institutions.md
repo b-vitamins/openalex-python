@@ -23,7 +23,9 @@ for institution in results.results[:5]:
 The search checks multiple name fields:
 
 ```python
-# This searches display_name, display_name_alternatives, AND display_name_acronyms
+# This searches display_name, display_name_alternatives, and display_name_acronyms
+from openalex import Institutions
+
 mit_results = Institutions().search("MIT").get()
 
 # This will find:
@@ -43,6 +45,8 @@ Read more about search relevance, stemming, and boolean searches in the [search 
 You can also use search as a filter:
 
 ```python
+from openalex import Institutions
+
 # Search only in display_name (not alternatives or acronyms)
 display_only = Institutions().filter(
     display_name={"search": "florida"}
@@ -71,6 +75,9 @@ Available search fields:
 Create a fast type-ahead search experience:
 
 ```python
+# Get autocomplete suggestions
+from openalex import Institutions
+
 # Get autocomplete suggestions
 suggestions = Institutions().autocomplete("harv")
 
@@ -104,6 +111,9 @@ Harvey Mudd College
 Search is most powerful when combined with filters:
 
 ```python
+# Search for US universities with "State" in name
+from openalex import Institutions
+
 # Search for US universities with "State" in name
 state_universities = (
     Institutions()
@@ -148,6 +158,9 @@ berkeley = (
 
 ```python
 # Many institutions have similar names
+from openalex import Institutions
+
+# Many institutions have similar names
 columbia_search = Institutions().search("Columbia").get()
 
 # Be more specific with filters
@@ -171,6 +184,8 @@ columbia_ny = (
 ### Finding all campuses/branches
 
 ```python
+from openalex import Institutions
+
 def find_all_campuses(university_name):
     """Find all campuses of a university system."""
     # First search broadly
@@ -199,6 +214,9 @@ find_all_campuses("University of California")
 
 ```python
 # Handle international name variations
+from openalex import Institutions
+
+# Handle international name variations
 def search_international(english_name):
     """Search for institutions including international variations."""
     results = Institutions().search(english_name).get(per_page=20)
@@ -223,6 +241,9 @@ search_international("Peking University")
 ### Finding specific institution types
 
 ```python
+# Research universities
+from openalex import Institutions
+
 # Research universities
 research_unis = (
     Institutions()
@@ -253,6 +274,9 @@ gov_research = (
 ### Regional searches
 
 ```python
+# Find all universities in a city
+from openalex import Institutions
+
 # Find all universities in a city
 def universities_in_city(city_name):
     return (
@@ -287,6 +311,8 @@ imperial_uk = find_pattern_in_country("Imperial", "GB")
 5. **Consider language**: International institutions may have multiple names
 
 ```python
+from openalex import Institutions
+
 # Example: Comprehensive institution search
 def comprehensive_search(name, country=None, type=None):
     """Search with fallback strategies."""
