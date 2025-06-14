@@ -142,26 +142,24 @@ module = "examples.*"
 ignore_errors = true
 
 [tool.pytest.ini_options]
-minversion = "8.0"
+minversion = "7.0"
 asyncio_default_fixture_loop_scope = "function"
-addopts = [
-    "-ra",
-    "--strict-markers",
-    "--asyncio-mode=auto",
-    "--cov=openalex",
-    "--cov-report=term-missing",
-    "--cov-fail-under=0",
-    "-k",
-    "not test_docs",
-]
 testpaths = ["tests"]
-python_files = ["test_*.py", "*_test.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+
 markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-    "integration: marks tests as integration tests",
-    "unit: marks tests as unit tests",
+    "docs: mark test as documentation test (deselect with '-m \"not docs\"')",
+    "slow: mark test as slow",
+    "requires_api: mark test as requiring real API access",
+]
+
+addopts = [
+    "-m",
+    "not docs",
+    "--strict-markers",
+    "-ra",
 ]
 
 [tool.coverage.run]
