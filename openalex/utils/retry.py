@@ -11,17 +11,14 @@ from typing import TYPE_CHECKING, Any, Final, TypeVar
 
 from structlog import get_logger
 from tenacity import (
-    AsyncRetrying,
     RetryError,
     Retrying,
-    retry_if_exception,
     retry_if_exception_type,
     stop_after_attempt,
     wait_exponential,
     wait_exponential_jitter,
 )
 
-from ..constants import UNREACHABLE_MSG
 from ..exceptions import (
     APIError,
     NetworkError,
@@ -45,22 +42,24 @@ T = TypeVar("T")
 
 __all__ = [
     "RetryConfig",
+    "RetryContext",
     "RetryHandler",
     "async_with_retry",
+    "constant_backoff",
+    "exponential_backoff",
     "is_retryable_error",
+    "linear_backoff",
     "retry_on_error",
     "retry_with_rate_limit",
     "with_retry",
-    "RetryContext",
-    "exponential_backoff",
-    "linear_backoff",
-    "constant_backoff",
 ]
 
 
 def is_retryable_error(error: BaseException) -> bool:
     """Return ``True`` if ``error`` should trigger a retry."""
-    if isinstance(error, RateLimitError | NetworkError | TimeoutError | RetryableError):
+    if isinstance(
+        error, RateLimitError | NetworkError | TimeoutError | RetryableError
+    ):
         return True
     if isinstance(error, APIError):
         return error.status_code is not None and error.status_code >= 500
@@ -106,7 +105,7 @@ def with_retry(
         while True:
             try:
                 return func(*args, **kwargs)
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 if not handler.should_retry(exc, attempt):
                     raise
                 wait_time = handler.get_wait_time(exc, attempt)
@@ -138,7 +137,7 @@ def async_with_retry(
         while True:
             try:
                 return await func(*args, **kwargs)
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 if not handler.should_retry(exc, attempt):
                     raise
                 wait_time = handler.get_wait_time(exc, attempt)
@@ -167,7 +166,9 @@ class RetryHandler:
 
     def calculate_wait(self, attempt: int) -> float:
         """Calculate base wait time for ``attempt``."""
-        base_wait = self.config.initial_wait * (self.config.multiplier ** (attempt - 1))
+        base_wait = self.config.initial_wait * (
+            self.config.multiplier ** (attempt - 1)
+        )
         wait_time = min(base_wait, self.config.max_wait)
 
         if self.config.jitter:
@@ -341,7 +342,7 @@ def linear_backoff(
     return wait
 
 
-def constant_backoff(attempt: int, *, wait: float = 1.0) -> float:
+def constant_backoff(_attempt: int, *, wait: float = 1.0) -> float:
     """Return a constant backoff regardless of ``attempt``."""
     return wait
 
@@ -355,7 +356,7 @@ class RetryContext:
         self.last_error: BaseException | None = None
         self.succeeded = False
 
-    def __enter__(self) -> "RetryContext":
+    def __enter__(self) -> RetryContext:
         return self
 
     def __exit__(
@@ -366,13 +367,13 @@ class RetryContext:
     ) -> None:
         if exc is not None:
             self.record_error(exc)
-            return None
+            return
 
         if not self.succeeded:
             if self.attempt >= self.config.max_attempts and self.last_error:
                 raise self.last_error
             self.succeeded = True
-        return None
+        return
 
     def should_retry(self) -> bool:
         return self.attempt < self.config.max_attempts and not self.succeeded

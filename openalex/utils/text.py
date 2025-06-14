@@ -5,18 +5,17 @@ from __future__ import annotations
 import html
 import re
 from collections import Counter
-from typing import Iterable
 
 __all__ = [
-    "invert_abstract",
+    "clean_html",
     "clean_title",
+    "count_words",
+    "detect_language",
     "extract_doi",
+    "extract_keywords",
+    "invert_abstract",
     "normalize_author_name",
     "truncate_abstract",
-    "count_words",
-    "extract_keywords",
-    "clean_html",
-    "detect_language",
 ]
 
 
@@ -35,7 +34,9 @@ def invert_abstract(inverted_index: dict[str, list[int]] | None) -> str | None:
         return ""
 
     word_positions = [
-        (word, pos) for word, positions in inverted_index.items() for pos in positions
+        (word, pos)
+        for word, positions in inverted_index.items()
+        for pos in positions
     ]
     word_positions.sort(key=lambda item: item[1])
     return " ".join(word for word, _ in word_positions)

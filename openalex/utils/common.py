@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
-import re
-from typing import Any, Iterable, overload
+from typing import TYPE_CHECKING, Any, overload
+
+if TYPE_CHECKING:  # pragma: no cover - for type checking only
+    from collections.abc import Iterable
 
 from ..constants import OPENALEX_ID_PREFIX
 from ..models import ListResult, Meta
@@ -12,15 +14,15 @@ __all__ = [
     "OPENALEX_ID_PREFIX",
     "empty_list_result",
     "ensure_prefix",
+    "extract_entity_type",
+    "id_to_url",
+    "ids_equal",
     "is_openalex_id",
     "normalize_entity_id",
-    "extract_entity_type",
-    "validate_id_format",
-    "parse_entity_ids",
-    "id_to_url",
     "normalize_id_batch",
-    "ids_equal",
+    "parse_entity_ids",
     "strip_id_prefix",
+    "validate_id_format",
 ]
 
 
@@ -32,7 +34,9 @@ def strip_id_prefix(value: None, prefix: str = OPENALEX_ID_PREFIX) -> None: ...
 def strip_id_prefix(value: str, prefix: str = OPENALEX_ID_PREFIX) -> str: ...
 
 
-def strip_id_prefix(value: str | None, prefix: str = OPENALEX_ID_PREFIX) -> str | None:
+def strip_id_prefix(
+    value: str | None, prefix: str = OPENALEX_ID_PREFIX
+) -> str | None:
     """Remove URL-style prefix from an OpenAlex identifier.
 
     If ``value`` is ``None`` an equivalent ``None`` is returned.  The
@@ -95,7 +99,8 @@ def normalize_entity_id(value: str, entity_type: str) -> str:
     """Normalize an entity ID for a specific ``entity_type``."""
     entity_type = entity_type.lower()
     if entity_type not in _TYPE_PREFIX:
-        raise ValueError(f"Unknown entity type: {entity_type}")
+        message = f"Unknown entity type: {entity_type}"
+        raise ValueError(message)
 
     prefix = _TYPE_PREFIX[entity_type]
 
@@ -146,7 +151,10 @@ def validate_id_format(value: str | None, entity_type: str) -> bool:
     id_part = strip_id_prefix(value)
 
     if entity_type == "keyword":
-        return id_part.startswith("keywords/") and len(id_part.split("/", 1)[1]) > 0
+        return (
+            id_part.startswith("keywords/")
+            and len(id_part.split("/", 1)[1]) > 0
+        )
 
     if len(id_part) <= 1 or not id_part[1:].isdigit():
         return False
@@ -163,9 +171,13 @@ def parse_entity_ids(
     for value in ids:
         if validate:
             id_part = strip_id_prefix(value)
-            if id_part and id_part[0].isalpha() and entity_type != "keyword":
-                if id_part[0].upper() != _TYPE_PREFIX[entity_type]:
-                    continue
+            if (
+                id_part
+                and id_part[0].isalpha()
+                and entity_type != "keyword"
+                and id_part[0].upper() != _TYPE_PREFIX[entity_type]
+            ):
+                continue
         result.append(normalize_entity_id(value, entity_type))
 
     return result
