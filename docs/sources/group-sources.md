@@ -23,6 +23,8 @@ for group in publisher_stats.group_by[:20]:
 ## Understanding group_by results
 
 ```python
+from openalex import Sources
+
 # The result structure is different from regular queries
 result = Sources().group_by("type").get()
 
@@ -41,6 +43,8 @@ for group in result.group_by:
 ### Basic grouping
 
 ```python
+from openalex import Sources
+
 # Group by source type
 type_dist = Sources().group_by("type").get()
 # Shows: journal, repository, conference, ebook platform, etc.
@@ -73,6 +77,8 @@ issn_coverage = Sources().group_by("has_issn").get()
 ### Financial grouping
 
 ```python
+from openalex import Sources
+
 # APC currency distribution
 apc_currencies = Sources().group_by("apc_prices.currency").get()
 # Shows which currencies are used for APCs
@@ -93,6 +99,8 @@ by_lineage = Sources().group_by("host_organization_lineage").get()
 ### Research metrics grouping
 
 ```python
+from openalex import Sources
+
 # Citation count distribution
 citation_dist = Sources().group_by("cited_by_count").get()
 # Note: Many unique values, consider filtering first
@@ -115,6 +123,8 @@ i10_dist = Sources().group_by("summary_stats.i10_index").get()
 Group_by becomes more insightful when combined with filters:
 
 ```python
+from openalex import Sources
+
 # Type distribution for OA sources only
 oa_types = (
     Sources()
@@ -160,6 +170,8 @@ european_publishers = (
 You can group by two dimensions:
 
 ```python
+from openalex import Sources
+
 # Type and OA status
 type_oa = Sources().group_by("type", "is_oa").get()
 
@@ -183,6 +195,8 @@ publisher_types = Sources().group_by("publisher", "type").get()
 ### Example 1: Open Access landscape analysis
 
 ```python
+from openalex import Sources
+
 def analyze_oa_landscape():
     """Analyze the global OA publishing landscape."""
     
@@ -242,6 +256,8 @@ analyze_oa_landscape()
 ### Example 2: Publisher concentration analysis
 
 ```python
+from openalex import Sources
+
 def analyze_publisher_concentration():
     """Analyze market concentration in academic publishing."""
     
@@ -297,6 +313,8 @@ analyze_publisher_concentration()
 ### Example 3: Journal quality metrics
 
 ```python
+from openalex import Sources
+
 def analyze_journal_quality_tiers():
     """Group journals into quality tiers based on impact factor."""
     
@@ -347,6 +365,8 @@ analyze_journal_quality_tiers()
 ### Example 4: Repository landscape
 
 ```python
+from openalex import Sources
+
 def analyze_repository_ecosystem():
     """Analyze the repository landscape."""
     
@@ -388,6 +408,8 @@ def analyze_repository_ecosystem():
 Control how results are ordered:
 
 ```python
+from openalex import Sources
+
 # Default: sorted by count (descending)
 default_sort = Sources().group_by("publisher").get()
 # Elsevier first (most sources), then Springer, etc.
