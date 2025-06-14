@@ -123,7 +123,7 @@ class SlidingWindowRateLimiter:
     __slots__ = (
         "lock",
         "max_requests",
-        "requests",
+        "_window",
         "window_seconds",
     )
 
@@ -140,9 +140,9 @@ class SlidingWindowRateLimiter:
             window_seconds: Window size in seconds
             buffer: Safety buffer (0-1)
         """
-        self.max_requests = int(max_requests * (1 - buffer))
+        self.max_requests = max_requests
         self.window_seconds = window_seconds
-        self.requests: deque[float] = deque()
+        self._window: deque[float] = deque()
         self.lock = Lock()
 
     def _clean_window(self) -> None:
@@ -150,8 +150,8 @@ class SlidingWindowRateLimiter:
         now = time.monotonic()
         cutoff = now - self.window_seconds
 
-        while self.requests and self.requests[0] < cutoff:
-            self.requests.popleft()
+        while self._window and self._window[0] < cutoff:
+            self._window.popleft()
 
     def acquire(self) -> float:
         """Acquire permission to make a request.
@@ -163,15 +163,21 @@ class SlidingWindowRateLimiter:
             now = time.monotonic()
             self._clean_window()
 
-            if len(self.requests) < self.max_requests:
-                self.requests.append(now)
+            if len(self._window) < self.max_requests:
+                self._window.append(now)
                 return 0.0
 
-            # Calculate wait time until oldest request expires
-            oldest = self.requests[0]
+            oldest = self._window[0]
             wait_time = self.window_seconds - (now - oldest)
 
-            return max(0, wait_time)
+        if wait_time > 0:
+            time.sleep(wait_time)
+
+        with self.lock:
+            self._clean_window()
+            self._window.append(time.monotonic())
+
+        return max(0.0, wait_time)
 
     def try_acquire(self) -> bool:
         """Try to acquire permission without blocking.
@@ -181,9 +187,9 @@ class SlidingWindowRateLimiter:
         """
         with self.lock:
             self._clean_window()
-            if len(self.requests) >= self.max_requests:
+            if len(self._window) >= self.max_requests:
                 return False
-            self.requests.append(time.monotonic())
+            self._window.append(time.monotonic())
             return True
 
     def __repr__(self) -> str:  # pragma: no cover - debugging aid

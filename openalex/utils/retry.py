@@ -51,12 +51,16 @@ __all__ = [
     "retry_on_error",
     "retry_with_rate_limit",
     "with_retry",
+    "RetryContext",
+    "exponential_backoff",
+    "linear_backoff",
+    "constant_backoff",
 ]
 
 
 def is_retryable_error(error: BaseException) -> bool:
     """Return ``True`` if ``error`` should trigger a retry."""
-    if isinstance(error, RateLimitError | NetworkError | TimeoutError):
+    if isinstance(error, RateLimitError | NetworkError | TimeoutError | RetryableError):
         return True
     if isinstance(error, APIError):
         return error.status_code is not None and error.status_code >= 500
@@ -70,7 +74,7 @@ class RetryConfig:
     max_attempts: int = 3
     initial_wait: float = 1.0
     max_wait: float = 60.0
-    exponential_base: float = 2.0
+    multiplier: float = 2.0
     jitter: bool = True
 
     def get_wait_strategy(self) -> Any:
@@ -79,59 +83,35 @@ class RetryConfig:
             wait_exponential_jitter(
                 initial=self.initial_wait,
                 max=self.max_wait,
-                exp_base=self.exponential_base,
+                exp_base=self.multiplier,
             )
             if self.jitter
             else wait_exponential(
                 multiplier=self.initial_wait,
                 max=self.max_wait,
-                exp_base=self.exponential_base,
+                exp_base=self.multiplier,
             )
         )
 
 
 def with_retry(
-    func: Callable[..., T],
-    config: RetryConfig | None = None,
+    func: Callable[..., T], config: RetryConfig | None = None
 ) -> Callable[..., T]:
-    """Decorator to add retry logic to a function.
+    """Decorator to add retry logic to a function."""
 
-    Args:
-        func: Function to retry
-        config: Retry configuration
-
-    Returns:
-        Wrapped function with retry logic
-    """
-    if config is None:
-        config = RetryConfig()
+    handler = RetryHandler(config)
 
     def wrapper(*args: Any, **kwargs: Any) -> T:
-        """Wrapper with retry logic."""
-        retrying = Retrying(
-            stop=stop_after_attempt(config.max_attempts),
-            wait=config.get_wait_strategy(),
-            retry=retry_if_exception(is_retryable_error),
-            before_sleep=lambda retry_state: logger.info(
-                "Retrying request",
-                attempt=retry_state.attempt_number,
-                wait=retry_state.next_action.sleep
-                if retry_state.next_action
-                else 0,
-            ),
-        )
-
-        try:
-            for attempt in retrying:
-                with attempt:
-                    return func(*args, **kwargs)
-        except RetryError as e:
-            if e.last_attempt.failed:
-                exc = e.last_attempt.result()
-                raise exc from e
-            raise
-
-        raise AssertionError(UNREACHABLE_MSG)
+        attempt = 1
+        while True:
+            try:
+                return func(*args, **kwargs)
+            except Exception as exc:  # noqa: BLE001
+                if not handler.should_retry(exc, attempt):
+                    raise
+                wait_time = handler.get_wait_time(exc, attempt)
+                handler.wait_sync(wait_time)
+                attempt += 1
 
     return wrapper
 
@@ -151,33 +131,19 @@ def async_with_retry(
     """
     if config is None:
         config = RetryConfig()
+    handler = RetryHandler(config)
 
     async def wrapper(*args: Any, **kwargs: Any) -> T:
-        """Async wrapper with retry logic."""
-        retrying = AsyncRetrying(
-            stop=stop_after_attempt(config.max_attempts),
-            wait=config.get_wait_strategy(),
-            retry=retry_if_exception(is_retryable_error),
-            before_sleep=lambda retry_state: logger.info(
-                "Retrying request",
-                attempt=retry_state.attempt_number,
-                wait=retry_state.next_action.sleep
-                if retry_state.next_action
-                else 0,
-            ),
-        )
-
-        try:
-            async for attempt in retrying:
-                with attempt:
-                    return await func(*args, **kwargs)
-        except RetryError as e:
-            if e.last_attempt.failed:
-                exc = e.last_attempt.result()
-                raise exc from e
-            raise
-
-        raise AssertionError(UNREACHABLE_MSG)
+        attempt = 1
+        while True:
+            try:
+                return await func(*args, **kwargs)
+            except Exception as exc:  # noqa: BLE001
+                if not handler.should_retry(exc, attempt):
+                    raise
+                wait_time = handler.get_wait_time(exc, attempt)
+                await handler.wait(wait_time)
+                attempt += 1
 
     return wrapper
 
@@ -199,23 +165,23 @@ class RetryHandler:
 
         return is_retryable_error(error)
 
-    def get_wait_time(self, error: Exception, attempt: int) -> float:
-        """Calculate wait time before next retry."""
-        # Handle rate limit errors specially
-        if isinstance(error, RateLimitError) and error.retry_after:
-            return float(error.retry_after)
-
-        # Exponential backoff with jitter
-        base_wait = self.config.initial_wait * (
-            self.config.exponential_base ** (attempt - 1)
-        )
+    def calculate_wait(self, attempt: int) -> float:
+        """Calculate base wait time for ``attempt``."""
+        base_wait = self.config.initial_wait * (self.config.multiplier ** (attempt - 1))
         wait_time = min(base_wait, self.config.max_wait)
 
         if self.config.jitter:
             jitter = wait_time * JITTER_FACTOR
             wait_time += random.uniform(-jitter, jitter)
 
-        return max(0, wait_time)
+        return max(0.0, wait_time)
+
+    def get_wait_time(self, error: Exception, attempt: int) -> float:
+        """Calculate wait time before next retry."""
+        if isinstance(error, RateLimitError) and error.retry_after:
+            return float(error.retry_after)
+
+        return self.calculate_wait(attempt)
 
     async def wait(self, seconds: float) -> None:
         """Wait for specified seconds."""
@@ -345,3 +311,72 @@ def retry_with_rate_limit(func: Callable[..., T]) -> Callable[..., T]:
         raise RuntimeError(RETRY_FAIL_MSG)
 
     return wrapper
+
+
+def exponential_backoff(
+    attempt: int,
+    *,
+    initial: float = 1.0,
+    multiplier: float = 2.0,
+    max_wait: float | None = None,
+) -> float:
+    """Calculate exponential backoff time."""
+    wait = initial * (multiplier ** (attempt - 1))
+    if max_wait is not None:
+        wait = min(wait, max_wait)
+    return wait
+
+
+def linear_backoff(
+    attempt: int,
+    *,
+    initial: float = 1.0,
+    increment: float = 1.0,
+    max_wait: float | None = None,
+) -> float:
+    """Calculate linear backoff time."""
+    wait = initial + increment * (attempt - 1)
+    if max_wait is not None:
+        wait = min(wait, max_wait)
+    return wait
+
+
+def constant_backoff(attempt: int, *, wait: float = 1.0) -> float:
+    """Return a constant backoff regardless of ``attempt``."""
+    return wait
+
+
+class RetryContext:
+    """Simple context manager to manually control retries."""
+
+    def __init__(self, config: RetryConfig | None = None) -> None:
+        self.config = config or RetryConfig()
+        self.attempt = 0
+        self.last_error: BaseException | None = None
+        self.succeeded = False
+
+    def __enter__(self) -> "RetryContext":
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: Any,
+    ) -> None:
+        if exc is not None:
+            self.record_error(exc)
+            return None
+
+        if not self.succeeded:
+            if self.attempt >= self.config.max_attempts and self.last_error:
+                raise self.last_error
+            self.succeeded = True
+        return None
+
+    def should_retry(self) -> bool:
+        return self.attempt < self.config.max_attempts and not self.succeeded
+
+    def record_error(self, error: BaseException) -> None:
+        self.last_error = error
+        self.attempt += 1

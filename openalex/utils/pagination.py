@@ -44,7 +44,12 @@ def _pad_results(results: list[T], per_page: int | None) -> list[T]:
     repeated so that the returned list always matches ``per_page``.  This
     avoids unexpected short pages when consumers rely on a fixed size.
     """
-    if per_page and results and len(results) < per_page:
+    if (
+        isinstance(per_page, int)
+        and per_page > 0
+        and results
+        and len(results) < per_page
+    ):
         padding = per_page - len(results)
         return [*results, *repeat(results[-1], padding)]
     return results
@@ -100,9 +105,7 @@ class Paginator(Generic[T]):
         """Iterate over all results."""
         page: int | None = FIRST_PAGE
         cursor = self.params.get(PARAM_CURSOR)
-        base_params = {
-            k: v for k, v in self.params.items() if k != PARAM_CURSOR
-        }
+        base_params = {k: v for k, v in self.params.items() if k != PARAM_CURSOR}
 
         while True:
             if self.max_results and self._total_fetched >= self.max_results:
@@ -147,9 +150,7 @@ class Paginator(Generic[T]):
         """Iterate over pages instead of individual results."""
         page: int | None = FIRST_PAGE
         cursor = self.params.get(PARAM_CURSOR)
-        base_params = {
-            k: v for k, v in self.params.items() if k != PARAM_CURSOR
-        }
+        base_params = {k: v for k, v in self.params.items() if k != PARAM_CURSOR}
 
         while True:
             params = _build_params(
@@ -236,9 +237,7 @@ class AsyncPaginator(Generic[T]):
         """Iterate over all results asynchronously."""
         page: int | None = FIRST_PAGE
         cursor = self.params.get(PARAM_CURSOR)
-        base_params = {
-            k: v for k, v in self.params.items() if k != PARAM_CURSOR
-        }
+        base_params = {k: v for k, v in self.params.items() if k != PARAM_CURSOR}
 
         while True:
             if self.max_results and self._total_fetched >= self.max_results:
@@ -282,9 +281,7 @@ class AsyncPaginator(Generic[T]):
         """Iterate over pages instead of individual results."""
         page: int | None = FIRST_PAGE
         cursor = self.params.get(PARAM_CURSOR)
-        base_params = {
-            k: v for k, v in self.params.items() if k != PARAM_CURSOR
-        }
+        base_params = {k: v for k, v in self.params.items() if k != PARAM_CURSOR}
 
         while True:
             params = _build_params(
