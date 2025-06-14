@@ -80,8 +80,11 @@ class OpenAlexClient:
         req_params = self._default_params(params)
 
         attempt = 0
+        # ``retry_max_attempts`` already represents the total number of attempts
+        # allowed (including the first request).  Do not add 1 here to avoid
+        # exceeding the configured retry limit.
         max_attempts = (
-            self.config.retry_max_attempts + 1 if self.config.retry_enabled else 1
+            self.config.retry_max_attempts if self.config.retry_enabled else 1
         )
         wait = self.config.retry_initial_wait
 

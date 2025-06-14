@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
 
 from pydantic import ValidationError
 
 if TYPE_CHECKING:  # pragma: no cover - for type checking only
-    from collections.abc import AsyncIterator
+    from collections.abc import AsyncIterator, Iterator
 
     from .config import OpenAlexConfig
     from .entities import AsyncBaseEntity, BaseEntity
@@ -257,8 +256,7 @@ class Query(Generic[T, F]):
         """Iterate over all results of the query."""
         paginator = self.paginate(per_page=per_page, max_results=max_results, **kwargs)
         for page in paginator:
-            for item in page.results:
-                yield item
+            yield from page.results
 
     def count(self) -> int:
         """Get count of results without fetching them."""

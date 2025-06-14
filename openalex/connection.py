@@ -156,8 +156,9 @@ class AsyncConnection:
         params: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> httpx.Response:
+        # ``retry_max_attempts`` already counts the first request; don't add one.
         max_attempts = (
-            self._config.retry_max_attempts + 1 if self._config.retry_enabled else 1
+            self._config.retry_max_attempts if self._config.retry_enabled else 1
         )
         attempt = 0
 

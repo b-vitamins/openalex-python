@@ -21,8 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed caching logic to handle list queries and thread safety
 - License clarification: Now consistently MIT licensed
 - Request caching disabled by default
+- Verified caching behavior with updated tests
 
 ### Fixed
+- Retry logic now honors `max_retries` without exceeding the limit
 - Updated Pydantic models for works and related entities to match OpenAlex data
   fixtures used in tests.
 - Expanded author model with topics, topic share, and ORCID validation.
