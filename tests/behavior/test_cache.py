@@ -15,7 +15,7 @@ class TestCacheBehavior:
         """Cache should prevent duplicate API calls for same request."""
         from openalex import Works, OpenAlexConfig
 
-        config = OpenAlexConfig(cache_enabled=True)
+        config = OpenAlexConfig(cache_enabled=True, retry_enabled=False)
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
@@ -109,7 +109,7 @@ class TestCacheBehavior:
         """Cache should create different keys for different parameters."""
         from openalex import Works, OpenAlexConfig
 
-        config = OpenAlexConfig(cache_enabled=True)
+        config = OpenAlexConfig(cache_enabled=True, retry_enabled=False)
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.side_effect = [
@@ -143,7 +143,7 @@ class TestCacheBehavior:
         """Cache should store different pages separately."""
         from openalex import Authors, OpenAlexConfig
 
-        config = OpenAlexConfig(cache_enabled=True)
+        config = OpenAlexConfig(cache_enabled=True, retry_enabled=False)
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.side_effect = [
@@ -287,7 +287,7 @@ class TestCacheBehavior:
         """Cache should not cache error responses."""
         from openalex import Publishers, OpenAlexConfig
 
-        config = OpenAlexConfig(cache_enabled=True)
+        config = OpenAlexConfig(cache_enabled=True, retry_enabled=False)
 
         with patch("httpx.Client.request") as mock_request:
             # First call fails

@@ -119,7 +119,7 @@ class Query(Generic[T, F]):
             return self.filter(openalex_id=record_id).get(
                 per_page=len(record_id)
             )
-        return self.entity.get(record_id)  # type: ignore[attr-defined,no-any-return]
+        return self.entity.get(record_id)
 
     # internal helper
     def _clone(self, **updates: Any) -> Query[T, F]:
@@ -225,7 +225,7 @@ class Query(Generic[T, F]):
         """Execute query and return results (alias for list())."""
         params = {**self.params, **kwargs}
         filter_param = params.pop("filter", None)
-        return self.entity.list(filter=filter_param, **params)  # type: ignore[attr-defined,no-any-return]
+        return self.entity.list(filter=filter_param, **params)
 
     def list(self, **kwargs: Any) -> ListResult[T]:
         """Alias for :meth:`get`."""
@@ -240,7 +240,7 @@ class Query(Generic[T, F]):
         """Return a paginator for this query."""
         params = {**self.params, **kwargs}
         filter_param = params.pop("filter", None)
-        return self.entity.paginate(  # type: ignore[attr-defined,no-any-return]
+        return self.entity.paginate(
             filter=filter_param,
             per_page=per_page,
             max_results=max_results,
@@ -259,11 +259,11 @@ class Query(Generic[T, F]):
 
     def random(self) -> T:
         """Get a random entity."""
-        return self.entity.random()  # type: ignore[attr-defined,no-any-return]
+        return self.entity.random()
 
     def autocomplete(self, query: str, **kwargs: Any) -> ListResult[Any]:
         """Autocomplete search."""
-        return self.entity.autocomplete(query, **kwargs)  # type: ignore[attr-defined,no-any-return]
+        return self.entity.autocomplete(query, **kwargs)
 
     def __repr__(self) -> str:
         """String representation of query."""

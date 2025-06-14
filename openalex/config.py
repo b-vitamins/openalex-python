@@ -62,7 +62,7 @@ class OpenAlexConfig(BaseModel):
     cache_maxsize: int = Field(
         default=1000,
         description="Maximum number of cached entries",
-        ge=100,
+        ge=1,
         le=10000,
     )
     cache_ttl: float = Field(
