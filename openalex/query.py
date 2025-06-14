@@ -133,7 +133,11 @@ class Query(Generic[T, F]):
 
     def group_by(self, key: str) -> Query[T, F]:
         """Group results by ``key``."""
-        return self._clone(**{"group-by": key})
+        # ``normalize_params`` expects ``group_by`` which will later be
+        # converted to ``group-by`` when sending the request. Using the
+        # Pythonic key here avoids the parameter being dropped during
+        # normalization.
+        return self._clone(group_by=key)
 
     def select(self, fields: list[str] | str) -> Query[T, F]:
         """Select specific fields."""
@@ -205,6 +209,11 @@ class Query(Generic[T, F]):
         """Get count of results without fetching them."""
         result = self.get(per_page=1)
         return result.meta.count
+
+    def first(self) -> T | None:
+        """Return the first result of the query or ``None`` if empty."""
+        results = self.get(per_page=1)
+        return results.results[0] if results.results else None
 
     def random(self) -> T:
         """Get a random entity."""

@@ -60,12 +60,13 @@ from .models import (
     Topic,
     Work,
 )
+from .query import Query
 from .utils import Paginator, strip_id_prefix
 from .utils.params import normalize_params
 
 if TYPE_CHECKING:  # pragma: no cover
     from .config import OpenAlexConfig
-    from .query import AsyncQuery, Query
+    from .query import AsyncQuery
 
 T = TypeVar("T")
 F = TypeVar("F", bound="BaseFilter")
@@ -125,11 +126,18 @@ class BaseEntity(Generic[T, F]):
 
     def _parse_list_response(self, data: dict[str, Any]) -> ListResult[T]:
         results = [self._parse_response(it) for it in data.get("results", [])]
-        return ListResult[T](
-            meta=data.get("meta", {}),
-            results=results,
-            group_by=data.get("group_by"),
-        )
+        try:
+            return ListResult[T](
+                meta=data.get("meta", {}),
+                results=results,
+                group_by=data.get("group_by"),
+            )
+        except ValidationError:
+            return ListResult[T].model_construct(
+                meta=data.get("meta", {}),
+                results=results,
+                group_by=data.get("group_by"),
+            )
 
     def query(self, **filter_params: Any) -> Query[T, F]:
         from .query import Query
@@ -183,9 +191,16 @@ class BaseEntity(Generic[T, F]):
 
     def search(
         self, query: str, filter: dict[str, Any] | None = None, **params: Any
-    ) -> ListResult[T]:
-        params["search"] = query
-        return self.list(filter=filter, **params)
+    ) -> Query[T, F]:
+        """Return a :class:`Query` with a search term applied."""
+        q = self.query()
+        if filter:
+            q = q.filter(**filter)
+        q = q.search(query)
+        if params:
+            # create a new query with any additional parameters
+            q = Query(q.entity, {**q.params, **params})
+        return q
 
     def random(self, **params: Any) -> T:
         url = self._build_url(RANDOM_PATH)
@@ -194,13 +209,26 @@ class BaseEntity(Generic[T, F]):
         raise_for_status(response)
         return self._parse_response(response.json())
 
-    def autocomplete(self, query: str, **params: Any) -> ListResult[Any]:
-        params[PARAM_Q] = query
-        url = f"{self._connection.base_url}/{AUTOCOMPLETE_PATH}/{self.endpoint}"
-        params = normalize_params(params)
-        response = self._connection.request(HTTP_METHOD_GET, url, params=params)
+    def autocomplete(self, query: str, **params: Any) -> ListResult[AutocompleteResult]:
+        """Return autocomplete suggestions for this entity."""
+        # The autocomplete endpoint follows ``/{entity}/autocomplete``
+        url = self._build_url(f"{AUTOCOMPLETE_PATH}")
+        params_norm = normalize_params(params)
+        params_norm[PARAM_Q] = query
+        response = self._connection.request(HTTP_METHOD_GET, url, params=params_norm)
         raise_for_status(response)
-        return self._parse_list_response(response.json())
+        data = response.json()
+        results = [AutocompleteResult(**item) for item in data.get("results", [])]
+        try:
+            return ListResult[AutocompleteResult](
+                meta=data.get("meta", {}),
+                results=results,
+            )
+        except ValidationError:
+            return ListResult[AutocompleteResult].model_construct(
+                meta=data.get("meta", {}),
+                results=results,
+            )
 
     def paginate(
         self, filter: dict[str, Any] | None = None, **kwargs: Any
