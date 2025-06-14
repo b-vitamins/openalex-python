@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -52,9 +53,11 @@ from .models import (
     BaseFilter,
     Concept,
     Funder,
+    GroupByResult,
     Institution,
     Keyword,
     ListResult,
+    Meta,
     Publisher,
     Source,
     Topic,
@@ -127,17 +130,41 @@ class BaseEntity(Generic[T, F]):
 
     def _parse_list_response(self, data: dict[str, Any]) -> ListResult[T]:
         results = [self._parse_response(it) for it in data.get("results", [])]
+
+        group_items = []
+        for grp in data.get("group_by", []) or []:
+            try:
+                group_items.append(GroupByResult(**grp))
+            except ValidationError:
+                group_items.append(GroupByResult.model_construct(**grp))
+
+        meta_data = data.get("meta", {})
+        per_page_value = meta_data.get("per_page", len(results))
+        meta_defaults = {
+            "count": meta_data.get("count", 0),
+            "db_response_time_ms": meta_data.get("db_response_time_ms", 0),
+            "page": meta_data.get("page", 1),
+            "per_page": per_page_value,
+            "groups_count": meta_data.get("groups_count"),
+            "next_cursor": meta_data.get("next_cursor"),
+        }
+
+        try:
+            meta = Meta.model_validate(meta_defaults)
+        except ValidationError:
+            meta = Meta.model_construct(**meta_defaults)
+
         try:
             return ListResult[T](
-                meta=data.get("meta", {}),
+                meta=meta,
                 results=results,
-                group_by=data.get("group_by"),
+                group_by=group_items or None,
             )
         except ValidationError:
             return ListResult[T].model_construct(
-                meta=data.get("meta", {}),
+                meta=meta,
                 results=results,
-                group_by=data.get("group_by"),
+                group_by=group_items or None,
             )
 
     def query(self, **filter_params: Any) -> Query[T, F]:
@@ -268,6 +295,13 @@ class BaseEntity(Generic[T, F]):
             max_results=kwargs.get("max_results"),
         )
 
+    def all(self, **kwargs: Any) -> Iterator[T]:
+        """Iterate over all results for this entity."""
+        paginator = self.paginate(**kwargs)
+        for page in paginator:
+            for item in page.results:
+                yield item
+
     def filter(self, **kwargs: Any) -> Query[T, F]:
         return self.query().filter(**kwargs)
 
@@ -322,17 +356,40 @@ def _build_list_result(data: dict[str, Any], model: type[_T]) -> ListResult[_T]:
         except ValidationError:
             results.append(model.model_construct(**item))  # type: ignore
 
+    group_items = []
+    for grp in data.get("group_by", []) or []:
+        try:
+            group_items.append(GroupByResult(**grp))
+        except ValidationError:
+            group_items.append(GroupByResult.model_construct(**grp))
+
+    meta_data = data.get("meta", {})
+    per_page_value = meta_data.get("per_page", len(results))
+    meta_defaults = {
+        "count": meta_data.get("count", 0),
+        "db_response_time_ms": meta_data.get("db_response_time_ms", 0),
+        "page": meta_data.get("page", 1),
+        "per_page": per_page_value,
+        "groups_count": meta_data.get("groups_count"),
+        "next_cursor": meta_data.get("next_cursor"),
+    }
+
+    try:
+        meta = Meta.model_validate(meta_defaults)
+    except ValidationError:
+        meta = Meta.model_construct(**meta_defaults)
+
     try:
         return ListResult[_T](
-            meta=data.get("meta", {}),
+            meta=meta,
             results=results,
-            group_by=data.get("group_by"),
+            group_by=group_items or None,
         )
     except ValidationError:
         return ListResult[_T].model_construct(
-            meta=data.get("meta", {}),
+            meta=meta,
             results=results,
-            group_by=data.get("group_by"),
+            group_by=group_items or None,
         )
 
 
