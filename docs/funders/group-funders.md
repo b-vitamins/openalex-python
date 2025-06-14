@@ -24,6 +24,7 @@ for group in country_stats.group_by[:20]:
 
 ```python
 # The result structure is different from regular queries
+from openalex import Funders
 result = Funders().group_by("continent").get()
 
 print(result.results)  # Empty list - no individual funders returned!
@@ -41,6 +42,8 @@ for group in result.group_by:
 ### Basic grouping
 
 ```python
+from openalex import Funders
+
 # Group by country
 by_country = Funders().group_by("country_code").get()
 # See which countries have the most funders
@@ -65,6 +68,8 @@ citation_dist = Funders().group_by("cited_by_count").get()
 ### Research metrics grouping
 
 ```python
+from openalex import Funders
+
 # H-index distribution
 h_index_dist = Funders().group_by("summary_stats.h_index").get()
 
@@ -83,6 +88,8 @@ productivity_dist = Funders().group_by("works_count").get()
 Group_by becomes more insightful when combined with filters:
 
 ```python
+from openalex import Funders
+
 # Country distribution for large funders only
 large_funder_countries = (
     Funders()
@@ -142,6 +149,8 @@ for group in country_grants.group_by[:20]:
 ### Example 1: Global funding landscape
 
 ```python
+from openalex import Funders
+
 def analyze_global_funding_landscape():
     """Analyze the global distribution of research funders."""
     
@@ -181,6 +190,8 @@ analyze_global_funding_landscape()
 ### Example 2: Funding concentration analysis
 
 ```python
+from openalex import Funders
+
 def analyze_funding_concentration():
     """Analyze how concentrated research funding is."""
     
@@ -238,6 +249,8 @@ analyze_funding_concentration()
 ### Example 3: Funding impact tiers
 
 ```python
+from openalex import Funders
+
 def analyze_funding_impact_tiers():
     """Group funders into impact tiers based on h-index."""
     
@@ -284,6 +297,8 @@ analyze_funding_impact_tiers()
 ### Example 4: Funding ecosystem comparison
 
 ```python
+from openalex import Funders
+
 def compare_funding_ecosystems():
     """Compare funding characteristics across regions."""
     
@@ -340,6 +355,8 @@ compare_funding_ecosystems()
 Control how results are ordered:
 
 ```python
+from openalex import Funders
+
 # Default: sorted by count (descending)
 default_sort = Funders().group_by("country_code").get()
 # US first (most funders), then CN, GB, etc.

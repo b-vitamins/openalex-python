@@ -25,6 +25,8 @@ for funder in results.results[:5]:
 The search checks multiple fields:
 
 ```python
+from openalex import Funders
+
 # This searches display_name, alternate_titles, AND description
 nih_results = Funders().search("NIH").get()
 
@@ -45,6 +47,8 @@ Read more about search relevance, stemming, and boolean searches in the [search 
 You can also use search as a filter:
 
 ```python
+from openalex import Funders
+
 # Search only in display_name
 name_only = Funders().filter(
     display_name={"search": "florida"}
@@ -79,6 +83,8 @@ Available search fields:
 Create a fast type-ahead search experience:
 
 ```python
+from openalex import Funders
+
 # Get autocomplete suggestions
 suggestions = Funders().autocomplete("national sci")
 
@@ -113,6 +119,7 @@ Search is most powerful when combined with filters:
 
 ```python
 # Search for US health-related funders
+from openalex import Funders
 us_health_funders = (
     Funders()
     .search("health")
@@ -155,6 +162,8 @@ cancer_funders = (
 ### Finding government funders
 
 ```python
+from openalex import Funders
+
 def find_government_funders(country_code=None):
     """Find government funding agencies."""
     
@@ -183,6 +192,8 @@ find_government_funders("GB")
 ### Finding foundation funders
 
 ```python
+from openalex import Funders
+
 def find_foundations(focus_area=None):
     """Find private foundations and charities."""
     
@@ -213,6 +224,8 @@ find_foundations("education")
 ### International funder search
 
 ```python
+from openalex import Funders
+
 def search_international_funders(search_term):
     """Search for funders across multiple languages/variations."""
     
@@ -274,6 +287,8 @@ env_funders = (
 
 ```python
 # Find funders in specific regions
+from openalex import Funders
+
 def find_regional_funders(region, min_grants=50):
     if region == "EU":
         results = (
@@ -315,6 +330,8 @@ apac_funders = find_regional_funders("Asia-Pacific")
 
 ```python
 # Example: Comprehensive funder search
+from openalex import Funders
+
 def comprehensive_funder_search(keywords, country=None, min_impact=None):
     """Search with multiple strategies."""
     
