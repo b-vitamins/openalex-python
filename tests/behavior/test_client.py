@@ -14,6 +14,7 @@ class TestOpenAlexClient:
     @pytest.fixture
     def mock_response(self):
         """Create a mock HTTP response."""
+
         def _mock_response(json_data=None, status_code=200, headers=None):
             response = Mock(spec=httpx.Response)
             response.status_code = status_code
@@ -21,9 +22,12 @@ class TestOpenAlexClient:
             response.headers = headers or {}
             response.text = ""
             return response
+
         return _mock_response
 
-    def test_client_makes_authenticated_request_with_api_key(self, mock_response):
+    def test_client_makes_authenticated_request_with_api_key(
+        self, mock_response
+    ):
         """Client should include API key in Authorization header when configured."""
         from openalex import OpenAlexConfig
         from openalex.client import OpenAlexClient
@@ -55,7 +59,9 @@ class TestOpenAlexClient:
 
             mock_request.assert_called_once()
             _, kwargs = mock_request.call_args
-            assert "researcher@university.edu" in kwargs["headers"]["User-Agent"]
+            assert (
+                "researcher@university.edu" in kwargs["headers"]["User-Agent"]
+            )
 
     def test_client_handles_rate_limit_response(self, mock_response):
         """Client should raise RateLimitError with retry_after from headers."""
@@ -71,7 +77,7 @@ class TestOpenAlexClient:
             mock_request.return_value = mock_response(
                 {"error": "Rate limit exceeded"},
                 status_code=429,
-                headers={"Retry-After": "60"}
+                headers={"Retry-After": "60"},
             )
 
             with pytest.raises(RateLimitError) as exc_info:
@@ -88,8 +94,7 @@ class TestOpenAlexClient:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = mock_response(
-                {"error": "Entity not found"},
-                status_code=404
+                {"error": "Entity not found"}, status_code=404
             )
 
             with pytest.raises(NotFoundError) as exc_info:
@@ -106,8 +111,7 @@ class TestOpenAlexClient:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = mock_response(
-                {"error": "Internal server error"},
-                status_code=500
+                {"error": "Internal server error"}, status_code=500
             )
 
             with pytest.raises(ServerError):
@@ -121,7 +125,9 @@ class TestOpenAlexClient:
         client = OpenAlexClient()
 
         with patch("httpx.Client.request") as mock_request:
-            mock_request.side_effect = httpx.TimeoutException("Request timed out")
+            mock_request.side_effect = httpx.TimeoutException(
+                "Request timed out"
+            )
 
             with pytest.raises(TimeoutError):
                 client.get("/works")
@@ -137,7 +143,7 @@ class TestOpenAlexClient:
             mock_request.side_effect = [
                 mock_response({"error": "Server error"}, status_code=503),
                 mock_response({"error": "Server error"}, status_code=503),
-                mock_response({"results": [{"id": "W123"}]}, status_code=200)
+                mock_response({"results": [{"id": "W123"}]}, status_code=200),
             ]
 
             response = client.get("/works")
@@ -156,8 +162,7 @@ class TestOpenAlexClient:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = mock_response(
-                {"error": "Server error"},
-                status_code=503
+                {"error": "Server error"}, status_code=503
             )
 
             with pytest.raises(ServerError):
@@ -173,14 +178,15 @@ class TestOpenAlexClient:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.side_effect = [
-                mock_response({
-                    "results": [{"id": "W1"}, {"id": "W2"}],
-                    "meta": {"next_cursor": "cursor123"}
-                }),
-                mock_response({
-                    "results": [{"id": "W3"}],
-                    "meta": {"next_cursor": None}
-                })
+                mock_response(
+                    {
+                        "results": [{"id": "W1"}, {"id": "W2"}],
+                        "meta": {"next_cursor": "cursor123"},
+                    }
+                ),
+                mock_response(
+                    {"results": [{"id": "W3"}], "meta": {"next_cursor": None}}
+                ),
             ]
 
             # Simulate paginated request
@@ -209,10 +215,9 @@ class TestOpenAlexClient:
         client = OpenAlexClient(config)
 
         with patch("httpx.Client.request") as mock_request:
-            mock_request.return_value = mock_response({
-                "id": "W123",
-                "title": "Cached Work"
-            })
+            mock_request.return_value = mock_response(
+                {"id": "W123", "title": "Cached Work"}
+            )
 
             # First request
             response1 = client.get("/works/W123")
@@ -237,7 +242,7 @@ class TestOpenAlexClient:
         with patch("httpx.Client.request") as mock_request:
             mock_request.side_effect = [
                 mock_response({"version": 1}),
-                mock_response({"version": 2})
+                mock_response({"version": 2}),
             ]
 
             # First request
@@ -260,10 +265,17 @@ class TestOpenAlexClient:
         client = OpenAlexClient()
 
         with patch("httpx.Client.request") as mock_request:
-            mock_request.return_value = mock_response({"id": "https://openalex.org/W123"})
+            mock_request.return_value = mock_response(
+                {"id": "https://openalex.org/W123"}
+            )
 
             # Test various ID formats
-            for id_format in ["W123", "https://openalex.org/W123", "w123", "W123 "]:
+            for id_format in [
+                "W123",
+                "https://openalex.org/W123",
+                "w123",
+                "W123 ",
+            ]:
                 client.get(f"/works/{id_format}")
 
             # All should normalize to the same endpoint

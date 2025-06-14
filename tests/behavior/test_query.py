@@ -19,8 +19,8 @@ class TestQueryBehavior:
                 "count": 0,
                 "db_response_time_ms": 10,
                 "page": 1,
-                "per_page": 25
-            }
+                "per_page": 25,
+            },
         }
 
     def test_filter_creates_correct_api_params(self, mock_api_response):
@@ -29,14 +29,11 @@ class TestQueryBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value=mock_api_response)
+                status_code=200, json=Mock(return_value=mock_api_response)
             )
 
             Works().filter(
-                publication_year=2023,
-                is_oa=True,
-                type="article"
+                publication_year=2023, is_oa=True, type="article"
             ).get()
 
             _, kwargs = mock_request.call_args
@@ -53,8 +50,7 @@ class TestQueryBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value=mock_api_response)
+                status_code=200, json=Mock(return_value=mock_api_response)
             )
 
             Authors().search("machine learning").get()
@@ -70,8 +66,7 @@ class TestQueryBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value=mock_api_response)
+                status_code=200, json=Mock(return_value=mock_api_response)
             )
 
             Works().sort(cited_by_count="desc").get()
@@ -87,8 +82,7 @@ class TestQueryBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value=mock_api_response)
+                status_code=200, json=Mock(return_value=mock_api_response)
             )
 
             Institutions().select(["id", "display_name", "works_count"]).get()
@@ -104,8 +98,7 @@ class TestQueryBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value=mock_api_response)
+                status_code=200, json=Mock(return_value=mock_api_response)
             )
 
             Works().group_by("is_oa").get()
@@ -121,15 +114,16 @@ class TestQueryBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value=mock_api_response)
+                status_code=200, json=Mock(return_value=mock_api_response)
             )
 
-            (Works()
+            (
+                Works()
                 .filter_gt(cited_by_count=100)
                 .filter_lt(publication_year=2020)
                 .filter_not(type="retracted")
-                .get())
+                .get()
+            )
 
             _, kwargs = mock_request.call_args
             params = kwargs.get("params", {})
@@ -145,8 +139,7 @@ class TestQueryBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value=mock_api_response)
+                status_code=200, json=Mock(return_value=mock_api_response)
             )
 
             Sources().filter_or(type="journal", is_oa=True).get()
@@ -163,8 +156,7 @@ class TestQueryBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value=mock_api_response)
+                status_code=200, json=Mock(return_value=mock_api_response)
             )
 
             Works().filter(
@@ -175,7 +167,9 @@ class TestQueryBehavior:
             params = kwargs.get("params", {})
 
             assert "filter" in params
-            assert "authorships.institutions.country_code:US" in params["filter"]
+            assert (
+                "authorships.institutions.country_code:US" in params["filter"]
+            )
 
     def test_search_filter_creates_search_suffix(self, mock_api_response):
         """Search filters should add .search suffix."""
@@ -183,13 +177,11 @@ class TestQueryBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value=mock_api_response)
+                status_code=200, json=Mock(return_value=mock_api_response)
             )
 
             Works().search_filter(
-                title="quantum computing",
-                abstract="neural networks"
+                title="quantum computing", abstract="neural networks"
             ).get()
 
             _, kwargs = mock_request.call_args
@@ -205,8 +197,7 @@ class TestQueryBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value=mock_api_response)
+                status_code=200, json=Mock(return_value=mock_api_response)
             )
 
             Works().get(page=3, per_page=50)
@@ -223,8 +214,7 @@ class TestQueryBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value=mock_api_response)
+                status_code=200, json=Mock(return_value=mock_api_response)
             )
 
             Authors().sample(100, seed=42).get()
@@ -242,7 +232,7 @@ class TestQueryBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={"id": "W123", "title": "Random Work"})
+                json=Mock(return_value={"id": "W123", "title": "Random Work"}),
             )
 
             work = Works().random()
@@ -258,12 +248,12 @@ class TestQueryBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "results": [
-                        {"id": "I123", "display_name": "MIT"}
-                    ],
-                    "meta": {"count": 1}
-                })
+                json=Mock(
+                    return_value={
+                        "results": [{"id": "I123", "display_name": "MIT"}],
+                        "meta": {"count": 1},
+                    }
+                ),
             )
 
             results = Institutions().autocomplete("massachus")
@@ -281,8 +271,7 @@ class TestQueryBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value=mock_api_response)
+                status_code=200, json=Mock(return_value=mock_api_response)
             )
 
             count = Works().filter(is_oa=True).count()
@@ -300,10 +289,12 @@ class TestQueryBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "id": "https://openalex.org/W123",
-                    "title": "Test Work"
-                })
+                json=Mock(
+                    return_value={
+                        "id": "https://openalex.org/W123",
+                        "title": "Test Work",
+                    }
+                ),
             )
 
             work = Works()["W123"]
@@ -318,8 +309,7 @@ class TestQueryBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value=mock_api_response)
+                status_code=200, json=Mock(return_value=mock_api_response)
             )
 
             Authors()[["A123", "A456", "A789"]]
@@ -337,10 +327,12 @@ class TestQueryBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "results": [{"id": "W1", "title": "First"}],
-                    "meta": {"count": 10}
-                })
+                json=Mock(
+                    return_value={
+                        "results": [{"id": "W1", "title": "First"}],
+                        "meta": {"count": 10},
+                    }
+                ),
             )
 
             work = Works().filter(is_oa=True).first()
@@ -354,8 +346,7 @@ class TestQueryBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value=mock_api_response)
+                status_code=200, json=Mock(return_value=mock_api_response)
             )
 
             work = Works().filter(title="nonexistent").first()

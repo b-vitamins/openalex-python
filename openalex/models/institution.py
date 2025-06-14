@@ -165,7 +165,6 @@ class Institution(OpenAlexEntity):
         description="Yearly publication and citation counts",
     )
 
-
     works_api_url: str | None = Field(
         None, description="API URL for institution's works"
     )
@@ -216,7 +215,6 @@ class Institution(OpenAlexEntity):
         if self.type is None:
             return None
         return f"https://openalex.org/institution-types/{self.type}"
-
 
     @property
     def parent_institution_id(self) -> str | None:

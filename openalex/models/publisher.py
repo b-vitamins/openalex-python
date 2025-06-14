@@ -101,7 +101,6 @@ class Publisher(OpenAlexEntity):
         description="Yearly publication and citation counts",
     )
 
-
     ids: PublisherIds | None = None
 
     @property

@@ -136,4 +136,3 @@ def clear_cache() -> None:
     """Clear all managed caches."""
     for manager in _cache_managers.values():
         manager.clear()
-

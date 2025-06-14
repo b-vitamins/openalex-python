@@ -17,7 +17,7 @@ class TestParameterNormalization:
             "page": 2,
             "per_page": 50,
             "select": ["id", "title"],
-            "unknown_param": "ignored"
+            "unknown_param": "ignored",
         }
 
         normalized = normalize_params(params)
@@ -47,11 +47,7 @@ class TestParameterNormalization:
         """String parameters should be preserved."""
         from openalex.utils.params import normalize_params
 
-        params = {
-            "search": "climate change",
-            "cursor": "abc123",
-            "seed": "42"
-        }
+        params = {"search": "climate change", "cursor": "abc123", "seed": "42"}
 
         normalized = normalize_params(params)
 
@@ -95,9 +91,13 @@ class TestFilterSerialization:
         """Special character handling."""
         from openalex.utils.params import serialize_filter_value
 
-        assert serialize_filter_value("test@example.com") == "test%40example.com"
+        assert (
+            serialize_filter_value("test@example.com") == "test%40example.com"
+        )
         assert serialize_filter_value("A & B") == "A+%26+B"
-        assert serialize_filter_value("C++ Programming") == "C%2B%2B+Programming"
+        assert (
+            serialize_filter_value("C++ Programming") == "C%2B%2B+Programming"
+        )
         assert serialize_filter_value("100%") == "100%25"
 
     def test_serialize_filter_value_logical_expressions(self):
@@ -117,11 +117,7 @@ class TestFilterSerialization:
         """Simple filter dictionary flattening."""
         from openalex.utils.params import flatten_filter_dict
 
-        filters = {
-            "is_oa": True,
-            "publication_year": 2023,
-            "type": "article"
-        }
+        filters = {"is_oa": True, "publication_year": 2023, "type": "article"}
 
         result = flatten_filter_dict(filters)
 
@@ -139,10 +135,7 @@ class TestFilterSerialization:
         filters = {
             "authorships": {
                 "author": {"id": "A123"},
-                "institutions": {
-                    "country_code": "US",
-                    "type": "education"
-                }
+                "institutions": {"country_code": "US", "type": "education"},
             }
         }
 
@@ -180,13 +173,13 @@ class TestFilterSerialization:
                 "is_oa": True,
                 "publication_year": gt_(2020),
                 "type": not_("retracted"),
-                "institutions": {"country_code": ["US", "UK"]}
+                "institutions": {"country_code": ["US", "UK"]},
             },
             "sort": {"cited_by_count": "desc", "publication_year": "asc"},
             "select": ["id", "title", "doi"],
             "search": "machine learning",
             "per_page": 50,
-            "page": 2
+            "page": 2,
         }
 
         result = serialize_params(params)
@@ -223,12 +216,7 @@ class TestFilterSerialization:
         """All parameters should be strings."""
         from openalex.utils.params import serialize_params
 
-        params = {
-            "page": 1,
-            "per_page": 25,
-            "sample": 100,
-            "seed": 42
-        }
+        params = {"page": 1, "per_page": 25, "sample": 100, "seed": 42}
 
         result = serialize_params(params)
 
@@ -247,7 +235,7 @@ class TestFilterSerialization:
         filters = {
             "title.search": "quantum computing",
             "abstract.search": "neural networks",
-            "fulltext.search": "machine learning"
+            "fulltext.search": "machine learning",
         }
 
         result = flatten_filter_dict(filters)
@@ -266,22 +254,23 @@ class TestFilterSerialization:
                     "id": "A123",
                     "last_known_institution": {
                         "country_code": "US",
-                        "type": "education"
-                    }
+                        "type": "education",
+                    },
                 },
-                "institutions": {
-                    "ror": "https://ror.org/123"
-                }
+                "institutions": {"ror": "https://ror.org/123"},
             },
-            "topics": {
-                "id": ["T123", "T456"]
-            }
+            "topics": {"id": ["T123", "T456"]},
         }
 
         result = flatten_filter_dict(filters)
 
         assert "authorships.author.id:A123" in result
-        assert "authorships.author.last_known_institution.country_code:US" in result
-        assert "authorships.author.last_known_institution.type:education" in result
+        assert (
+            "authorships.author.last_known_institution.country_code:US"
+            in result
+        )
+        assert (
+            "authorships.author.last_known_institution.type:education" in result
+        )
         assert "authorships.institutions.ror:https://ror.org/123" in result
         assert "topics.id:T123|T456" in result

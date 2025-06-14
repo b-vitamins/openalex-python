@@ -40,7 +40,9 @@ class OpenAlexClient:
         base = str(self.config.base_url).rstrip("/")
         return f"{base}/{path.lstrip('/')}"
 
-    def _default_headers(self, headers: dict[str, str] | None) -> dict[str, str]:
+    def _default_headers(
+        self, headers: dict[str, str] | None
+    ) -> dict[str, str]:
         merged = self.config.headers.copy()
         if headers:
             merged.update(headers)
@@ -58,7 +60,9 @@ class OpenAlexClient:
         endpoint = parts[0]
         entity_id: str | None = None
         if len(parts) > 1 and parts[1]:
-            entity_id = normalize_entity_id(parts[1].strip(), endpoint.rstrip("s"))
+            entity_id = normalize_entity_id(
+                parts[1].strip(), endpoint.rstrip("s")
+            )
             path = f"/{endpoint}/{entity_id}"
         else:
             path = f"/{endpoint}"
@@ -156,7 +160,9 @@ class OpenAlexClient:
             if status == 404:
                 with contextlib.suppress(Exception):
                     data = response.json()
-                message = locals().get("data", {}).get("error", "Resource not found")
+                message = (
+                    locals().get("data", {}).get("error", "Resource not found")
+                )
                 raise NotFoundError(message)
 
             raise_for_status(response)
@@ -165,7 +171,9 @@ class OpenAlexClient:
     # ------------------------------------------------------------------
     # public API
     # ------------------------------------------------------------------
-    def get(self, path: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
+    def get(
+        self, path: str, params: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         norm_path, endpoint, entity_id = self._normalize_path(path)
 
         def fetch() -> dict[str, Any]:
