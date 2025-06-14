@@ -25,6 +25,11 @@ The response contains:
 ## Understanding the results
 
 ```python
+from openalex import Topics
+
+# Fetch the first page of topics
+first_page = Topics().get()
+
 # Each result shows topic information
 for topic in first_page.results[:5]:  # First 5 topics
     print(f"\n{topic.display_name}")
@@ -40,6 +45,8 @@ for topic in first_page.results[:5]:  # First 5 topics
 You can control pagination and sorting:
 
 ```python
+from openalex import Topics
+
 # Get a specific page with custom page size
 page2 = Topics().get(per_page=50, page=2)
 # This returns topics 51-100
@@ -71,6 +78,7 @@ Get a random sample of topics:
 
 ```python
 # Get 10 random topics
+from openalex import Topics
 random_sample = Topics().sample(10).get(per_page=10)
 
 # Use a seed for reproducible random sampling
@@ -90,6 +98,8 @@ medical_sample = (
 Limit the fields returned to improve performance:
 
 ```python
+from openalex import Topics
+
 # Request only specific fields
 minimal_topics = Topics().select([
     "id",
@@ -109,6 +119,8 @@ for topic in minimal_topics.results:
 ### Example: Explore the topic hierarchy
 
 ```python
+from openalex import Topics
+
 # Get all domains
 domains = Topics().group_by("domain.id").get()
 
@@ -130,6 +142,8 @@ for domain in domains.group_by:
 ### Example: Find trending topics
 
 ```python
+from openalex import Topics
+
 # Get topics with the most recent growth
 def find_trending_topics():
     # Get all topics efficiently
@@ -154,6 +168,8 @@ find_trending_topics()
 ### Example: Topic coverage analysis
 
 ```python
+from openalex import Topics
+
 # Analyze topic distribution across domains
 def analyze_topic_coverage():
     # Get domain distribution

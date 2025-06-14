@@ -5,21 +5,28 @@ It's easy to get a topic using the Python client:
 ```python
 from openalex import Topics
 
-# Get a specific topic by their OpenAlex ID
-topic = Topics()["T11636"]
+# Get a specific topic by the OpenAlex ID
+topic = Topics()["T11636"]  # Artificial Intelligence in Medicine
+print(topic.display_name)
 
 # Alternative syntax using the get method
 topic = Topics().get("T11636")
+print(topic.display_name)
 ```
 
 That will return a [`Topic`](topic-object.md) object, describing everything OpenAlex knows about the topic with that ID:
 
 ```python
+from openalex import Topics
+
+# Fetch the topic again to keep this block self-contained
+topic = Topics()["T11636"]
+
 # Access topic properties directly as Python attributes
 print(topic.id)  # "https://openalex.org/T11636"
 print(topic.display_name)  # "Artificial Intelligence in Medicine"
 print(topic.description)  # AI-generated description
-print(topic.works_count)  # Number of works with this topic
+print(f"Works: {topic.works_count:,}")
 
 # Hierarchical classification
 print(f"Domain: {topic.domain.display_name}")  # "Health Sciences"
@@ -28,11 +35,19 @@ print(f"Subfield: {topic.subfield.display_name}")  # "Health Informatics"
 
 # Keywords
 print(f"Keywords: {', '.join(topic.keywords[:5])}")  # First 5 keywords
+
+# Sibling topics in the same subfield
+if topic.siblings:
+    print("Sibling topics:")
+    for sibling in topic.siblings[:5]:
+        print(f"- {sibling.display_name}")
 ```
 
 You can make up to 50 of these queries at once by requesting a list of entities and filtering on IDs:
 
 ```python
+from openalex import Topics
+
 # Fetch multiple specific topics in one API call
 topic_ids = ["T11636", "T10017", "T10159"]
 multiple_topics = Topics().filter(openalex=topic_ids).get()
@@ -49,6 +64,8 @@ for t in multiple_topics.results:
 You can use `select` to limit the fields that are returned in a topic object:
 
 ```python
+from openalex import Topics
+
 # Fetch only specific fields to reduce response size
 minimal_topic = Topics().select([
     "id",
