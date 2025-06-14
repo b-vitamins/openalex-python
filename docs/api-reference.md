@@ -1,341 +1,239 @@
 # API Reference
 
-## Client Configuration
-
-### OpenAlexConfig
-
-Configuration object for the OpenAlex client.
-
-```python
-from openalex import OpenAlexConfig
-
-config = OpenAlexConfig(
-    email="your@email.com",           # For polite pool (optional)
-    api_key="your-api-key",          # For higher rate limits (optional)
-    base_url="https://api.openalex.org",  # API endpoint
-    user_agent="MyApp/1.0",          # Custom user agent
-    retry_count=3,                   # Number of retries
-    retry_initial_wait=1.0,          # Initial retry wait (seconds)
-    retry_max_wait=60.0,             # Max retry wait (seconds)
-    retry_exponential_base=2.0,      # Exponential backoff base
-    timeout=30.0,                    # Request timeout (seconds)
-    cache_enabled=True,              # Enable caching
-    cache_maxsize=1000,              # Max cache entries
-    cache_ttl=3600,                  # Default cache TTL (seconds)
-)
-```
+This section demonstrates the main features of the OpenAlex client with complete examples.
 
 ## Entity Classes
 
-### Works
-
-Access scholarly works (papers, books, datasets, etc.).
-
 ```python
+# Complete example for each entity class
+
+# Works - the main entity
 from openalex import Works
 
-works = Works()
-
-# Get a specific work
-work = works.get("W2741809807")
-
-# Search works
-results = works.search("climate change").get()
-
-# Filter works
-filtered = works.filter(
-    publication_year=2024,
-    is_oa=True,
-    type="article"
-).get()
-
-# Complex queries
-complex_results = (
-    works
-    .search("machine learning")
-    .filter(
-        publication_year="2020-2024",
-        cited_by_count=">50",
-        institutions={"country_code": "US"}
-    )
-    .sort("cited_by_count", "desc")
-    .select("id", "title", "cited_by_count")
-    .get(per_page=50)
-)
+work = Works()["W2741809807"]
+print(f"Type: {type(work).__name__}")  # Work
+print(f"Attributes: {len(work.model_fields)} fields available")
 ```
 
-#### Work Methods
-
-- `get(id)` - Get a single work by ID
-- `search(query)` - Full-text search
-- `filter(**kwargs)` - Filter results
-- `sort(field, order)` - Sort results
-- `select(*fields)` - Select specific fields
-- `group_by(field)` - Group results
-- `all()` - Iterate through all results
-- `count()` - Get count of results
-- `random()` - Get a random work
-- `autocomplete(query)` - Autocomplete search
-- `ngrams(work_id)` - Get work n-grams
-
-### Authors
-
-Access information about scholarly authors.
-
 ```python
+# Authors
 from openalex import Authors
 
-authors = Authors()
-
-# Get specific author
-author = authors.get("A2208157607")
-
-# Search authors
-results = authors.search("einstein").get()
-
-# Filter by metrics
-prolific_authors = authors.filter(
-    works_count=">100",
-    cited_by_count=">5000"
-).get()
+author = Authors()["A5023888391"]
+print(f"Author: {author.display_name}")
+print(f"H-index: {author.summary_stats.h_index}")
 ```
 
-#### Author Methods
-
-Similar to Works, plus:
-- Filters: `works_count`, `cited_by_count`, `h_index`, `i10_index`
-- Grouping: Can group by institution, country
-
-### Institutions
-
-Access information about research institutions.
-
 ```python
+# Institutions
 from openalex import Institutions
 
-institutions = Institutions()
-
-# Get specific institution
-mit = institutions.get("I63966007")
-
-# Search institutions
-results = institutions.search("Harvard").get()
-
-# Filter by type and country
-universities = institutions.filter(
-    type="education",
-    country_code="US"
-).get()
+mit = Institutions()["I44113856"]
+print(f"Institution: {mit.display_name}")
+print(f"Location: {mit.geo.city}, {mit.geo.country}")
 ```
 
-### Sources
-
-Access information about publication sources (journals, conferences, etc.).
-
 ```python
+# Sources
 from openalex import Sources
 
-sources = Sources()
-
-# Get specific source
-nature = sources.get("S137773608")
-
-# Filter by type
-journals = sources.filter(
-    type="journal",
-    is_in_doaj=True
-).get()
+nature = Sources()["S137773608"]
+print(f"Journal: {nature.display_name}")
+print(f"Impact: {nature.summary_stats.two_year_mean_citedness:.1f}")
 ```
 
-### Topics
-
-Access research topics and fields.
-
 ```python
-from openalex import Topics
-
-topics = Topics()
-
-# Get specific topic
-ml_topic = topics.get("T10119")
-
-# Search topics
-ai_topics = topics.search("artificial intelligence").get()
-```
-
-### Publishers
-
-Access publisher information.
-
-```python
+# Publishers
 from openalex import Publishers
 
-publishers = Publishers()
-
-# Get specific publisher
-elsevier = publishers.get("P4310311648")
-
-# List major publishers
-major_publishers = publishers.filter(
-    works_count=">10000"
-).sort("works_count", "desc").get()
+elsevier = Publishers()["P4310320990"]
+print(f"Publisher: {elsevier.display_name}")
+print(f"Works: {elsevier.works_count:,}")
 ```
 
-### Funders
-
-Access research funder information.
-
 ```python
+# Funders
 from openalex import Funders
 
-funders = Funders()
-
-# Search funders
-nsf = funders.search("National Science Foundation").get()
+nih = Funders()["F4320332161"]
+print(f"Funder: {nih.display_name}")
+print(f"Grants: {nih.grants_count:,}")
 ```
 
-## Query Building
+```python
+# Topics
+from openalex import Topics
 
-### Filtering
+ml = Topics()["T10017"]
+print(f"Topic: {ml.display_name}")
+print(f"Field: {ml.field.display_name}")
+```
 
 ```python
-# Basic filters
-.filter(publication_year=2024)
-.filter(is_oa=True)
+# Concepts (legacy)
+from openalex import Concepts
 
-# Comparison operators
-.filter(cited_by_count=">100")      # Greater than
-.filter(publication_year="<2020")   # Less than
-.filter(works_count="100-500")      # Range
+cs = Concepts()["C41008148"]
+print(f"Concept: {cs.display_name}")
+print(f"Level: {cs.level}")
+```
 
-# Multiple values (OR)
-.filter(type=["article", "book"])
+## Query Methods
 
+```python
+# Demonstrate all query methods
+
+from openalex import Works
+
+# get() - Execute query
+results = Works().filter(publication_year=2023).get(per_page=50, page=2)
+print(f"Page 2 of results: {len(results.results)} items")
+```
+
+```python
+# count() - Get total without results
+from openalex import Works
+
+total = Works().filter(is_oa=True, publication_year=2023).count()
+print(f"Total OA works in 2023: {total:,}")
+```
+
+```python
+# paginate() - Iterate through all results
+from openalex import Authors
+
+all_ml_authors = []
+for author in Authors().search("machine learning").paginate(per_page=200):
+    all_ml_authors.append(author)
+    if len(all_ml_authors) >= 1000:  # Limit for example
+        break
+print(f"Collected {len(all_ml_authors)} ML researchers")
+```
+
+```python
+# random() - Get random entity
+from openalex import Institutions
+
+random_uni = Institutions().filter(type="education").random()
+print(f"Random university: {random_uni.display_name}")
+```
+
+```python
+# Methods can be chained
+from openalex import Sources
+
+top_oa_journals = (
+    Sources()
+    .filter(is_oa=True)
+    .filter(type="journal")
+    .sort(works_count="desc")
+    .get(per_page=10)
+)
+print(f"Top {len(top_oa_journals.results)} OA journals by volume")
+```
+
+## Filter Operators
+
+```python
+# Demonstrate all filter operators
+
+from openalex import Works
+
+# Equality (default)
+recent = Works().filter(publication_year=2023).count()
+print(f"Works from 2023: {recent:,}")
+```
+
+```python
+# Greater than
+from openalex import Works
+
+high_cited = Works().filter(cited_by_count=">100").count()
+print(f"Works with >100 citations: {high_cited:,}")
+```
+
+```python
+# Less than
+from openalex import Works
+
+low_cited = Works().filter(cited_by_count="<5").count()
+print(f"Works with <5 citations: {low_cited:,}")
+```
+
+```python
+# Range
+from openalex import Authors
+
+mid_career = Authors().filter(works_count="50:200").count()
+print(f"Authors with 50-200 works: {mid_career:,}")
+```
+
+```python
 # Negation
-.filter(is_oa="!true")              # NOT open access
+from openalex import Institutions
 
-# Complex filters with OR and AND
-.filter(
-    institutions={"id": ["I123", "I456"]},
-    publication_year=">2020,<2024",
-)
+non_us = Institutions().filter(country_code="!US").count()
+print(f"Non-US institutions: {non_us:,}")
 ```
 
-### Search
-
 ```python
-# Default search (searches multiple fields)
-.search("quantum computing")
+# OR (using pipe)
+from openalex import Sources
 
-# Field-specific search
-.search_filter(
-    title="neural networks",
-    abstract="deep learning"
-)
+cs_journals = Sources().filter(topics={"id": "T10017|T11679"}).count()
+print(f"ML or AI journals: {cs_journals:,}")
 ```
 
-### Sorting
-
 ```python
-.sort("cited_by_count", "desc")    # Descending
-.sort("publication_date", "asc")   # Ascending
+# NULL checks
+from openalex import Authors
+
+no_orcid = Authors().filter(orcid="null").count()
+has_orcid = Authors().filter(orcid="!null").count()
+print(f"Authors without ORCID: {no_orcid:,}")
+print(f"Authors with ORCID: {has_orcid:,}")
 ```
 
-### Pagination
+## Complex Filtering
 
 ```python
-# Manual pagination
-page1 = works.filter(year=2024).get(page=1, per_page=50)
-page2 = works.filter(year=2024).get(page=2, per_page=50)
+# Nested field filtering
+from openalex import Works
 
-# Auto pagination
-for work in works.filter(year=2024).all():
-    process(work)  # Automatically fetches all pages
-```
-
-### Field Selection
-
-```python
-# Select specific fields
-.select("id", "title", "cited_by_count", "doi")
-
-# Nested fields
-.select("id", "title", "authorships.author.display_name")
-```
-
-### Grouping
-
-```python
-# Group by single field
-by_year = works.group_by("publication_year").get()
-
-# Access groups
-for group in by_year.groups:
-    print(f"{group.key}: {group.count} works")
-```
-
-## Async API
-
-All entity classes have async equivalents:
-
-```python
-from openalex import AsyncWorks, AsyncAuthors
-import asyncio
-
-async def main():
-    works = AsyncWorks()
-    
-    # Same API, but async
-    work = await works.get("W2741809807")
-    results = await works.search("AI").get()
-    
-    # Parallel requests
-    results = await asyncio.gather(
-        works.search("quantum").get(),
-        works.search("climate").get(),
+# Filter by author institution
+harvard_ai_papers = (
+    Works()
+    .filter(
+        authorships={
+            "institutions": {"id": "I136199984"},  # Harvard
+        },
+        topics={"id": "T10017"}  # Machine Learning
     )
-
-asyncio.run(main())
-```
-
-## Error Handling
-
-```python
-from openalex import (
-    Works,
-    NotFoundError,
-    RateLimitError,
-    ValidationError,
-    APIError
+    .filter(publication_year=2023)
+    .get(per_page=5)
 )
 
-try:
-    work = Works().get("invalid-id")
-except NotFoundError:
-    print("Work not found")
-except RateLimitError as e:
-    print(f"Rate limited, retry after {e.retry_after}s")
-except ValidationError as e:
-    print(f"Invalid query: {e}")
-except APIError as e:
-    print(f"API error: {e}")
+print(f"Harvard AI papers in 2023: {harvard_ai_papers.meta.count}")
 ```
-
-## Type Hints
-
-All methods are fully typed:
 
 ```python
-from openalex import Works, Work, ListResult
+# Multiple conditions
+from openalex import Authors
 
-# Type hints for better IDE support
-def analyze_works(query: str) -> list[Work]:
-    results: ListResult[Work] = Works().search(query).get()
-    return results.results
+prolific_recent = (
+    Authors()
+    .filter(
+        works_count=">100",
+        last_known_institution={
+            "country_code": "US",
+            "type": "education"
+        }
+    )
+    .search("quantum computing")
+    .get(per_page=10)
+)
 
-# Async with types
-async def get_work_async(work_id: str) -> Work:
-    works = AsyncWorks()
-    work: Work = await works.get(work_id)
-    return work
+for author in prolific_recent.results:
+    print(f"{author.display_name}: {author.works_count} works")
 ```
+

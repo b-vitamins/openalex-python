@@ -1,274 +1,189 @@
 # Performance Optimization Guide
 
-This guide covers best practices for optimizing performance when using the OpenAlex Python client.
+Tips for working efficiently with the OpenAlex client.
 
-## Table of Contents
-- [Field Selection](#field-selection)
-- [Caching Strategy](#caching-strategy)
-- [Async Operations](#async-operations)
-- [Batch Processing](#batch-processing)
-- [Connection Management](#connection-management)
-- [Memory Management](#memory-management)
-
-## Field Selection
-
-Reduce payload size by selecting only the fields you need:
+## Efficient Filtering
 
 ```python
-# Bad: fetches all fields (can be 10KB+ per work)
-works = Works().filter(publication_year=2024).get()
+# Always filter the Works entity - it has 250M+ records
 
-# Good: fetches only specific fields (reduced to ~500 bytes per work)
-works = (
+# \u274c BAD - Too broad
+# from openalex import Works
+# all_works = Works().get()  # DON'T DO THIS!
+
+# \u2705 GOOD - Always filter
+from openalex import Works
+
+filtered_works = (
     Works()
-    .filter(publication_year=2024)
-    .select("id", "title", "cited_by_count", "doi")
-    .get()
+    .filter(publication_year=2023)
+    .filter(topics={"id": "T10017"})
+    .get(per_page=100)
 )
-
-# Typical size reductions:
-# - Full work: ~10-50KB
-# - Minimal fields: ~0.5-2KB
-# - 95% reduction in data transfer!
-```
-
-### Common Field Selection Patterns
-
-```python
-# For bibliometric analysis
-.select("id", "cited_by_count", "publication_year", "is_oa")
-
-# For displaying results
-.select("id", "title", "display_name", "authorships", "publication_date")
-
-# For link building
-.select("id", "doi", "ids", "primary_location")
-```
-
-## Caching Strategy
-
-### Configuration
-
-```python
-config = OpenAlexConfig(
-    cache_enabled=True,
-    cache_maxsize=5000,      # Number of entries
-    cache_ttl=3600,          # Default TTL in seconds
-)
-```
-
-### Cache-Friendly Patterns
-
-```python
-# Good: reusable queries
-def get_institution_works(inst_id: str, year: int):
-    return Works().filter(
-        institutions={"id": inst_id},
-        publication_year=year
-    ).get()
-
-# Bad: unique queries that will not benefit from cache
-def get_works_with_random_param():
-    return Works().filter(
-        random_param=uuid.uuid4()  # Different every time!
-    ).get()
-```
-
-### Custom TTL by Entity Type
-
-Different entities change at different rates:
-
-```python
-# Sources, Topics, Institutions - change rarely (24h TTL)
-sources = Sources(config=OpenAlexConfig(cache_ttl=86400))
-
-# Works - change frequently (1h TTL)
-works = Works(config=OpenAlexConfig(cache_ttl=3600))
-
-# Authors - moderate change rate (4h TTL)
-authors = Authors(config=OpenAlexConfig(cache_ttl=14400))
-```
-
-## Async Operations
-
-### Parallel Requests
-
-```python
-import asyncio
-from openalex import AsyncWorks, AsyncAuthors
-
-async def parallel_analysis():
-    works = AsyncWorks()
-    authors = AsyncAuthors()
-    
-    # Sequential (slow)
-    ml_works = await works.search("machine learning").get()
-    dl_works = await works.search("deep learning").get()
-    ai_works = await works.search("artificial intelligence").get()
-    # Total time: 3x API latency
-    
-    # Parallel (fast)
-    results = await asyncio.gather(
-        works.search("machine learning").get(),
-        works.search("deep learning").get(),
-        works.search("artificial intelligence").get(),
-    )
-    # Total time: 1x API latency
-```
-
-### Async Streaming
-
-```python
-async def process_large_dataset():
-    works = AsyncWorks()
-    
-    # Process items as they arrive
-    async for work in works.filter(publication_year=2024).all():
-        await process_work(work)  # Process immediately
-        # Memory efficient - only one page in memory at a time
+print(f"Filtered to {filtered_works.meta.count} specific works")
 ```
 
 ## Batch Processing
 
-### Combining Filters
-
 ```python
-# Multiple API calls
-harvard_works = Works().filter(institutions={"id": "I136199984"}).get()
-mit_works = Works().filter(institutions={"id": "I63966007"}).get()
-stanford_works = Works().filter(institutions={"id": "I97018004"}).get()
+# Process large result sets efficiently
+from openalex import Works
 
-# Single API call with OR
-combined = Works().filter(
-    institutions={"id": ["I136199984", "I63966007", "I97018004"]}
-).get()
-```
-
-### Efficient Pagination
-
-```python
-# For large datasets, use cursor pagination
-def process_all_2024_works():
-    works = Works()
-    
-    # Process in chunks
-    for work in works.filter(publication_year=2024).all():
-        process(work)
-        
-        # This automatically handles pagination
-        # Fetches next page only when needed
-```
-
-## Connection Management
-
-### Connection Pooling
-
-```python
-# Reuse connections across requests
-config = OpenAlexConfig(
-    email="your@email.com",
-    # Connection pooling is automatic
+# Set up query
+query = Works().filter(
+    publication_year=2023,
+    is_oa=True,
+    type="article"
 )
 
-# Reuses connection
-works = Works(config=config)
-for i in range(100):
-    work = works.get(f"W{i}")  # Reuses same connection
-
-# Creates new connection each time
-for i in range(100):
-    works = Works()  # New connection!
-    work = works.get(f"W{i}")
-```
-
-### Async Connection Management
-
-```python
-from openalex import AsyncWorks, close_all_async_connections
-
-async def main():
-    works = AsyncWorks()
+# Process in batches
+processed = 0
+for page in query.paginate(per_page=200):  # Max allowed
+    # Process this batch
+    for work in page.results:
+        # Do something with each work
+        processed += 1
     
-    # Use connection
-    results = await works.search("test").get()
+    print(f"Processed {processed} works so far...")
     
-    # Clean up when done
-    await close_all_async_connections()
+    # Stop after reasonable number
+    if processed >= 10000:
+        break
+
+print(f"Completed processing {processed} works")
 ```
 
-## Memory Management
-
-### Streaming Large Datasets
+## Select Fields
 
 ```python
-# Loads everything into memory
-all_works = list(Works().filter(publication_year=2024).all())
-# Can use GBs of memory!
+# Reduce response size by selecting only needed fields
+from openalex import Works
 
-# Process one at a time
-for work in Works().filter(publication_year=2024).all():
-    process(work)
-    # Only one page (~25 items) in memory
-```
-
-### Selective Field Loading
-
-```python
-# Full objects with all fields
-works = Works().filter(cited_by_count=">1000").get()
-# Each work can be 50KB+
-
-# Minimal fields
-works = (
+# Get only specific fields
+minimal_works = (
     Works()
-    .filter(cited_by_count=">1000")
-    .select("id", "title", "cited_by_count")
-    .get()
+    .filter(publication_year=2023)
+    .select(["id", "title", "doi", "cited_by_count"])
+    .get(per_page=100)
 )
-# Each work is <1KB
+
+# Much smaller response size
+work = minimal_works.results[0]
+print(f"Title: {work.title}")
+print(f"DOI: {work.doi}")
+# Note: Other fields will be None
 ```
 
-## Performance Benchmarks
-
-| Operation | Without Optimization | With Optimization | Improvement |
-|-----------|---------------------|-------------------|-------------|
-| Fetch 1000 works | 40s | 8s (parallel) | 5x faster |
-| Second identical query | 200ms | 1ms (cached) | 200x faster |
-| Memory for 10k works | 500MB | 50MB (selected fields) | 10x less |
-| API calls for batch | 10 calls | 1 call (OR query) | 10x fewer |
-
-## Monitoring Performance
+## Async for Speed
 
 ```python
-import time
-from openalex import Works, OpenAlexConfig
+# Use async for concurrent requests
+import asyncio
+from openalex import AsyncWorks, AsyncAuthors
 
-# Enable cache stats
-config = OpenAlexConfig(cache_enabled=True)
-works = Works(config=config)
+async def get_author_works(author_id):
+    """Get recent works for an author"""
+    works = await AsyncWorks().filter(
+        authorships={"author": {"id": author_id}},
+        publication_year=">2020"
+    ).get(per_page=10)
+    return works.results
 
-# Measure performance
-start = time.time()
-results = works.search("quantum").get()
-duration = time.time() - start
+async def analyze_collaboration():
+    """Analyze recent works from multiple authors"""
+    author_ids = ["A5023888391", "A5001721193", "A5082969844"]
+    
+    # Fetch concurrently
+    tasks = [get_author_works(aid) for aid in author_ids]
+    all_results = await asyncio.gather(*tasks)
+    
+    # Process results
+    for author_id, works in zip(author_ids, all_results):
+        print(f"Author {author_id}: {len(works)} recent works")
 
-print(f"Query took: {duration:.3f}s")
-
-# Check cache performance
-stats = works.cache_stats()
-print(f"Cache hit rate: {stats['hit_rate']:.1%}")
-print(f"Cache size: {stats['size']}/{stats['maxsize']}")
+# Run async function
+asyncio.run(analyze_collaboration())
 ```
 
-## Best Practices Summary
+## Caching Strategy
 
-1. **Always select only needed fields** - biggest performance win
-2. **Enable caching** for repeated queries
-3. **Use async for parallel operations**
-4. **Batch similar queries** with OR conditions
-5. **Stream large datasets** instead of loading all
-6. **Reuse client instances** for connection pooling
-7. **Monitor cache stats** to optimize TTL
-8. **Set appropriate timeouts** for your use case
+```python
+# Example of simple caching for repeated queries
+from openalex import Works
+from datetime import datetime, timedelta
 
-Following these practices can improve performance by 10-100x depending on your use case!
+# Simple cache dictionary
+cache = {}
+cache_duration = timedelta(hours=1)
+
+def get_cached_results(query_key, query_func):
+    """Get results from cache or fetch if needed"""
+    now = datetime.now()
+    
+    if query_key in cache:
+        result, timestamp = cache[query_key]
+        if now - timestamp < cache_duration:
+            print("Using cached results")
+            return result
+    
+    # Fetch fresh results
+    print("Fetching fresh results")
+    result = query_func()
+    cache[query_key] = (result, now)
+    return result
+
+# Use the cache
+query_key = "ml_papers_2023"
+results = get_cached_results(
+    query_key,
+    lambda: Works().filter(
+        publication_year=2023,
+        topics={"id": "T10017"}
+    ).get(per_page=100)
+)
+
+print(f"Got {len(results.results)} results")
+```
+
+## Rate Limiting
+
+```python
+# Handle rate limits gracefully
+from openalex import Works, config
+import time
+
+# Configure retries
+config.max_retries = 3
+config.retry_backoff_factor = 1.0
+
+# Process with rate awareness
+def process_many_queries(queries):
+    """Process multiple queries with rate limit awareness"""
+    results = []
+    
+    for i, query in enumerate(queries):
+        try:
+            result = query.get(per_page=100)
+            results.append(result)
+            
+            # Optional: Add small delay between requests
+            if i < len(queries) - 1:
+                time.sleep(0.1)  # 100ms delay
+                
+        except Exception as e:
+            print(f"Error on query {i}: {e}")
+            # Could implement exponential backoff here
+            time.sleep(1)
+            
+    return results
+
+# Example queries
+queries = [
+    Works().filter(publication_year=2023, topics={"id": topic_id})
+    for topic_id in ["T10017", "T11679", "T12098"]
+]
+
+all_results = process_many_queries(queries)
+print(f"Successfully processed {len(all_results)} queries")
+```
+

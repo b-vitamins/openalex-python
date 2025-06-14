@@ -1,72 +1,58 @@
 # OpenAlex Python Client Documentation
 
-A modern Python client for OpenAlex with a fluent, chainable interface and full type annotations.
+Welcome to the official client for the [OpenAlex](https://openalex.org) scholarly metadata API. The library offers a fluent interface with type hints and async support.
 
 ## Quick Start
 
 ```python
-from openalex import Works, Authors
+# Make the first example impressive but simple
+from openalex import Works
 
-# Get a work by ID
-work = Works()["W2741809807"]
-
-# Search and filter
-papers = (
-    Works()
-    .search("climate change")
-    .filter(publication_year=2023, is_oa=True)
-    .get()
-)
-
-# Complex queries
-results = (
-    Works()
-    .filter_gt(cited_by_count=10)
-    .filter_not(type="retracted")
-    .sort(publication_year="desc")
-    .get()
-)
+# Get a trending paper
+work = Works()["W2741809807"]  # Use a well-known paper
+print(f"Title: {work.title}")
+print(f"Year: {work.publication_year}")
+print(f"Citations: {work.cited_by_count}")
+print(f"Open Access: {'Yes' if work.open_access.is_oa else 'No'}")
 ```
 
-## Available Entities
-
-Each entity supports the same fluent interface:
-
-- [Works](get-a-single-work.md) - Academic papers, books, datasets
-- [Authors](get-a-single-author.md) - Researchers
-- [Institutions](get-a-single-institution.md) - Universities and organizations
-- [Sources](get-a-single-source.md) - Journals and repositories
-- [Topics](get-a-single-topic.md) - Research topics
-- [Publishers](get-a-single-publisher.md) - Academic publishers
-- [Funders](get-a-single-funder.md) - Funding organizations
-- [Concepts](concepts/get-a-single-concept.md) - Research concepts (deprecated)
-
-## Common Operations
-
-- **Get by ID**: `Works()["W123"]`
-- **Filter**: `.filter(is_oa=True)`
-- **Search**: `.search("quantum")`
-- **Sort**: `.sort(cited_by_count="desc")`
-- **Select fields**: `.select(["id", "title"])`
-- **Paginate**: `.paginate()`
-- **Group by**: `.group_by("oa_status")`
-
-## Logical Operations
-
-- **OR**: `.filter_or(type="article", type="preprint")`
-- **NOT**: `.filter_not(is_retracted=True)`
-- **Greater than**: `.filter_gt(cited_by_count=100)`
-- **Less than**: `.filter_lt(publication_year=2020)`
-
-## Configuration
+## Feature Tour
 
 ```python
-from openalex import Works, OpenAlexConfig
+# Feature 1: Search across entities
+from openalex import Works, Authors
 
-config = OpenAlexConfig(
-    email="your-email@example.com",  # For polite pool
-    api_key="your-api-key",  # For premium access
-)
-
-works = Works(config=config)
+# Search for works
+climate_papers = Works().search("climate change").filter(publication_year=2023).get(per_page=3)
+print(f"Found {climate_papers.meta.count} papers on climate change in 2023")
 ```
+
+```python
+# Search for authors
+from openalex import Authors
+
+climate_researchers = Authors().search("climate change").get(per_page=3)
+for author in climate_researchers.results:
+    print(f"{author.display_name}: {author.works_count} works")
+```
+
+```python
+# Feature 2: Analyze institutions
+from openalex import Institutions
+
+top_unis = Institutions().filter(type="education").sort(cited_by_count="desc").get(per_page=5)
+print("Top universities by citations:")
+for uni in top_unis.results:
+    print(f"  {uni.display_name}: {uni.cited_by_count:,} citations")
+```
+
+```python
+# Feature 3: Track research trends
+from openalex import Topics
+
+ml_topic = Topics()["T10017"]  # Machine Learning
+print(f"Topic: {ml_topic.display_name}")
+print(f"Works: {ml_topic.works_count:,}")
+print(f"Growing field with {ml_topic.cited_by_count:,} total citations")
+```
+
