@@ -109,7 +109,9 @@ class Topic(OpenAlexEntity):
             if match:
                 sec = int(match.group("sec"))
                 sec = min(sec, MAX_SECONDS_IN_MINUTE)
-                new_text = f"{match.group('prefix')}:{sec:02d}{match.group('rest')}"
+                new_text = (
+                    f"{match.group('prefix')}:{sec:02d}{match.group('rest')}"
+                )
                 if new_text.endswith("Z"):
                     new_text = new_text[:-1] + "+00:00"
                 try:

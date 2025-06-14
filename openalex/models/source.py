@@ -71,9 +71,7 @@ class Source(OpenAlexEntity):
     """Full source model."""
 
     issn_l: str | None = Field(None, description="Linking ISSN")
-    issn: list[str] | None = Field(
-        default=None, description="All ISSNs"
-    )
+    issn: list[str] | None = Field(default=None, description="All ISSNs")
 
     @field_validator("issn", mode="before")
     @classmethod
@@ -131,7 +129,6 @@ class Source(OpenAlexEntity):
         default_factory=list,
         description="Yearly publication and citation counts",
     )
-
 
     works_api_url: str | None = Field(
         None, description="API URL for source's works"
@@ -235,7 +232,6 @@ class Source(OpenAlexEntity):
         return sorted(
             [y.year for y in self.counts_by_year if y.works_count > 0]
         )
-
 
 
 Source.model_rebuild()

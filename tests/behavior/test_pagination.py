@@ -18,15 +18,17 @@ class TestPaginationBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "results": [{"id": "W1"}],
-                    "meta": {
-                        "count": 100,
-                        "page": 1,
-                        "per_page": 25,
-                        "db_response_time_ms": 10
+                json=Mock(
+                    return_value={
+                        "results": [{"id": "W1"}],
+                        "meta": {
+                            "count": 100,
+                            "page": 1,
+                            "per_page": 25,
+                            "db_response_time_ms": 10,
+                        },
                     }
-                })
+                ),
             )
 
             Works().get()
@@ -45,10 +47,7 @@ class TestPaginationBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "results": [],
-                    "meta": {"count": 0}
-                })
+                json=Mock(return_value={"results": [], "meta": {"count": 0}}),
             )
 
             Authors().get(page=3, per_page=50)
@@ -72,20 +71,26 @@ class TestPaginationBehavior:
             if page_count <= 3:
                 return Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "results": [{"id": f"I{page_count}"}],
-                        "meta": {
-                            "count": 3,
-                            "page": page_count,
-                            "per_page": 1,
-                            "next_cursor": f"page{page_count+1}" if page_count < 3 else None
+                    json=Mock(
+                        return_value={
+                            "results": [{"id": f"I{page_count}"}],
+                            "meta": {
+                                "count": 3,
+                                "page": page_count,
+                                "per_page": 1,
+                                "next_cursor": f"page{page_count + 1}"
+                                if page_count < 3
+                                else None,
+                            },
                         }
-                    })
+                    ),
                 )
 
         with patch("httpx.Client.request", side_effect=mock_response):
             institutions = Institutions()
-            pages = list(institutions.filter(country_code="US").paginate(per_page=1))
+            pages = list(
+                institutions.filter(country_code="US").paginate(per_page=1)
+            )
 
             assert len(pages) == 3
             assert pages[0].results[0].id == "I1"
@@ -104,23 +109,33 @@ class TestPaginationBehavior:
             if page_count == 1:
                 return Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "results": [
-                            {"id": "S1", "display_name": "Nature"},
-                            {"id": "S2", "display_name": "Science"}
-                        ],
-                        "meta": {"count": 3, "page": 1, "next_cursor": "page2"}
-                    })
+                    json=Mock(
+                        return_value={
+                            "results": [
+                                {"id": "S1", "display_name": "Nature"},
+                                {"id": "S2", "display_name": "Science"},
+                            ],
+                            "meta": {
+                                "count": 3,
+                                "page": 1,
+                                "next_cursor": "page2",
+                            },
+                        }
+                    ),
                 )
             elif page_count == 2:
                 return Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "results": [
-                            {"id": "S3", "display_name": "Cell"}
-                        ],
-                        "meta": {"count": 3, "page": 2, "next_cursor": None}
-                    })
+                    json=Mock(
+                        return_value={
+                            "results": [{"id": "S3", "display_name": "Cell"}],
+                            "meta": {
+                                "count": 3,
+                                "page": 2,
+                                "next_cursor": None,
+                            },
+                        }
+                    ),
                 )
 
         with patch("httpx.Client.request", side_effect=mock_response):
@@ -144,38 +159,44 @@ class TestPaginationBehavior:
             if cursor is None:
                 return Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "results": [{"id": "W1"}],
-                        "meta": {
-                            "count": 30,
-                            "page": 1,
-                            "next_cursor": "abc123"
+                    json=Mock(
+                        return_value={
+                            "results": [{"id": "W1"}],
+                            "meta": {
+                                "count": 30,
+                                "page": 1,
+                                "next_cursor": "abc123",
+                            },
                         }
-                    })
+                    ),
                 )
             elif cursor == "abc123":
                 return Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "results": [{"id": "W2"}],
-                        "meta": {
-                            "count": 30,
-                            "page": 2,
-                            "next_cursor": "def456"
+                    json=Mock(
+                        return_value={
+                            "results": [{"id": "W2"}],
+                            "meta": {
+                                "count": 30,
+                                "page": 2,
+                                "next_cursor": "def456",
+                            },
                         }
-                    })
+                    ),
                 )
             else:
                 return Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "results": [{"id": "W3"}],
-                        "meta": {
-                            "count": 30,
-                            "page": 3,
-                            "next_cursor": None
+                    json=Mock(
+                        return_value={
+                            "results": [{"id": "W3"}],
+                            "meta": {
+                                "count": 30,
+                                "page": 3,
+                                "next_cursor": None,
+                            },
                         }
-                    })
+                    ),
                 )
 
         with patch("httpx.Client.request", side_effect=mock_response):
@@ -196,15 +217,17 @@ class TestPaginationBehavior:
 
             return Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "results": [{"id": f"C{page}"}] if page <= 3 else [],
-                    "meta": {
-                        "count": 3,
-                        "page": page,
-                        "per_page": 1,
-                        "next_cursor": None  # No cursor provided
+                json=Mock(
+                    return_value={
+                        "results": [{"id": f"C{page}"}] if page <= 3 else [],
+                        "meta": {
+                            "count": 3,
+                            "page": page,
+                            "per_page": 1,
+                            "next_cursor": None,  # No cursor provided
+                        },
                     }
-                })
+                ),
             )
 
         with patch("httpx.Client.request", side_effect=mock_response):
@@ -224,19 +247,17 @@ class TestPaginationBehavior:
             page = int(kwargs["params"].get("page", 1))
 
             # Simulate 10 items per page
-            items = [{"id": f"P{i}"} for i in range((page-1)*10, page*10)]
+            items = [{"id": f"P{i}"} for i in range((page - 1) * 10, page * 10)]
             items_returned += len(items)
 
             return Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "results": items,
-                    "meta": {
-                        "count": 100,
-                        "page": page,
-                        "per_page": 10
+                json=Mock(
+                    return_value={
+                        "results": items,
+                        "meta": {"count": 100, "page": page, "per_page": 10},
                     }
-                })
+                ),
             )
 
         with patch("httpx.Client.request", side_effect=mock_response):
@@ -255,13 +276,15 @@ class TestPaginationBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "results": [
-                        {"id": "F1", "display_name": "NSF"},
-                        {"id": "F2", "display_name": "NIH"}
-                    ],
-                    "meta": {"count": 10}
-                })
+                json=Mock(
+                    return_value={
+                        "results": [
+                            {"id": "F1", "display_name": "NSF"},
+                            {"id": "F2", "display_name": "NIH"},
+                        ],
+                        "meta": {"count": 10},
+                    }
+                ),
             )
 
             funder = Funders().filter(country_code="US").first()
@@ -272,10 +295,7 @@ class TestPaginationBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "results": [],
-                    "meta": {"count": 0}
-                })
+                json=Mock(return_value={"results": [], "meta": {"count": 0}}),
             )
 
             funder = Funders().filter(country_code="XX").first()
@@ -288,10 +308,7 @@ class TestPaginationBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "results": [],
-                    "meta": {"count": 42}
-                })
+                json=Mock(return_value={"results": [], "meta": {"count": 42}}),
             )
 
             count = Topics().filter(domain={"id": "D123"}).count()
@@ -310,17 +327,23 @@ class TestPaginationBehavior:
         def mock_response(*args, **kwargs):
             return Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "results": [{"id": "W1"}],
-                    "meta": {"count": 100, "page": 1}
-                })
+                json=Mock(
+                    return_value={
+                        "results": [{"id": "W1"}],
+                        "meta": {"count": 100, "page": 1},
+                    }
+                ),
             )
 
-        with patch("httpx.Client.request", side_effect=mock_response) as mock_request:
-            works = (Works()
-                    .filter(is_oa=True)
-                    .filter_gt(cited_by_count=100)
-                    .search("climate change"))
+        with patch(
+            "httpx.Client.request", side_effect=mock_response
+        ) as mock_request:
+            works = (
+                Works()
+                .filter(is_oa=True)
+                .filter_gt(cited_by_count=100)
+                .search("climate change")
+            )
 
             # Get different pages
             works.get(page=1)
@@ -341,10 +364,12 @@ class TestPaginationBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "results": [{"id": f"K{i}"} for i in range(200)],
-                    "meta": {"count": 500, "page": 1, "per_page": 200}
-                })
+                json=Mock(
+                    return_value={
+                        "results": [{"id": f"K{i}"} for i in range(200)],
+                        "meta": {"count": 500, "page": 1, "per_page": 200},
+                    }
+                ),
             )
 
             results = Keywords().get(per_page=200)
@@ -367,17 +392,23 @@ class TestPaginationBehavior:
             if page_count <= 2:
                 return Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "results": [{"id": f"A{page_count}"}],
-                        "meta": {
-                            "count": 2,
-                            "page": page_count,
-                            "next_cursor": "next" if page_count < 2 else None
+                    json=Mock(
+                        return_value={
+                            "results": [{"id": f"A{page_count}"}],
+                            "meta": {
+                                "count": 2,
+                                "page": page_count,
+                                "next_cursor": "next"
+                                if page_count < 2
+                                else None,
+                            },
                         }
-                    })
+                    ),
                 )
 
-        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+        with patch(
+            "httpx.AsyncClient.request", new_callable=AsyncMock
+        ) as mock_request:
             mock_request.side_effect = mock_response
 
             authors = AsyncAuthors()
@@ -405,13 +436,19 @@ class TestPaginationBehavior:
             page = int(kwargs["params"].get("page", 1))
             return Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "results": [{"id": f"W{page}", "display_name": f"Work {page}"}],
-                    "meta": {"count": 5, "page": page}
-                })
+                json=Mock(
+                    return_value={
+                        "results": [
+                            {"id": f"W{page}", "display_name": f"Work {page}"}
+                        ],
+                        "meta": {"count": 5, "page": page},
+                    }
+                ),
             )
 
-        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+        with patch(
+            "httpx.AsyncClient.request", new_callable=AsyncMock
+        ) as mock_request:
             mock_request.side_effect = mock_response
 
             works = AsyncWorks()
@@ -438,19 +475,23 @@ class TestPaginationBehavior:
             if page == 1:
                 return Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "results": [{"id": "I1"}],
-                        "meta": {"count": 10, "page": 1}
-                    })
+                    json=Mock(
+                        return_value={
+                            "results": [{"id": "I1"}],
+                            "meta": {"count": 10, "page": 1},
+                        }
+                    ),
                 )
             else:
                 # Empty page
                 return Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "results": [],
-                        "meta": {"count": 10, "page": page}
-                    })
+                    json=Mock(
+                        return_value={
+                            "results": [],
+                            "meta": {"count": 10, "page": page},
+                        }
+                    ),
                 )
 
         with patch("httpx.Client.request", side_effect=mock_response):
@@ -473,15 +514,17 @@ class TestPaginationBehavior:
                 # Error on second page
                 return Mock(
                     status_code=500,
-                    json=Mock(return_value={"error": "Server error"})
+                    json=Mock(return_value={"error": "Server error"}),
                 )
             else:
                 return Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "results": [{"id": f"A{page}"}],
-                        "meta": {"count": 10, "page": page}
-                    })
+                    json=Mock(
+                        return_value={
+                            "results": [{"id": f"A{page}"}],
+                            "meta": {"count": 10, "page": page},
+                        }
+                    ),
                 )
 
         with patch("httpx.Client.request", side_effect=mock_response):

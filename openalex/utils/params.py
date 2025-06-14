@@ -162,7 +162,9 @@ def normalize_params(params: dict[str, Any] | None) -> dict[str, Any]:
     if not params:
         return {}
 
-    cleaned = {k: v for k, v in params.items() if v is not None and k in ALLOWED_KEYS}
+    cleaned = {
+        k: v for k, v in params.items() if v is not None and k in ALLOWED_KEYS
+    }
 
     # Serialize complex structures
     serialized = serialize_params(cleaned)

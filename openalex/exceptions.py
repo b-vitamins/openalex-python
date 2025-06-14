@@ -181,7 +181,13 @@ class TemporaryError(APIError, RetryableError):
 
     __slots__ = ("retry_after",)
 
-    def __init__(self, message: str, *, status_code: int | None = None, retry_after: int | None = None) -> None:
+    def __init__(
+        self,
+        message: str,
+        *,
+        status_code: int | None = None,
+        retry_after: int | None = None,
+    ) -> None:
         super().__init__(message, status_code=status_code)
         self.retry_after = retry_after
 
@@ -221,9 +227,17 @@ def raise_for_status(response: httpx.Response) -> None:
             "This usually means there's an issue with your query parameters. "
             "Check the filter syntax and parameter names."
         )
-        if "filter" in error_message.lower() or "filter" in error_details.lower():
+        if (
+            "filter" in error_message.lower()
+            or "filter" in error_details.lower()
+        ):
             raise ValidationError(msg)
-        raise APIError(error_message, status_code=status_code, response=response, details=error_extra)
+        raise APIError(
+            error_message,
+            status_code=status_code,
+            response=response,
+            details=error_extra,
+        )
     if status_code == 401:
         msg = (
             f"{base_message}\n"
@@ -256,7 +270,9 @@ def raise_for_status(response: httpx.Response) -> None:
 
                 try:
                     retry_dt = parsedate_to_datetime(retry_after_raw)
-                    retry_after = int((retry_dt - datetime.now(UTC)).total_seconds())
+                    retry_after = int(
+                        (retry_dt - datetime.now(UTC)).total_seconds()
+                    )
                 except Exception:
                     retry_after = None
         raise RateLimitError(
@@ -272,12 +288,16 @@ def raise_for_status(response: httpx.Response) -> None:
         )
         if status_code == 503:
             retry_header = (
-                response.headers.get("Retry-After") if hasattr(response, "headers") else None
+                response.headers.get("Retry-After")
+                if hasattr(response, "headers")
+                else None
             )
             if isinstance(retry_header, str) and retry_header:
                 try:
                     header_str = retry_header
-                    retry_after_val = int(header_str) if header_str.isdigit() else 0
+                    retry_after_val = (
+                        int(header_str) if header_str.isdigit() else 0
+                    )
                 except Exception:
                     retry_after_val = 0
                 raise TemporaryError(
@@ -297,4 +317,9 @@ def raise_for_status(response: httpx.Response) -> None:
             response=response,
             details=error_extra,
         )
-    raise APIError(error_message, status_code=status_code, response=response, details=error_extra)
+    raise APIError(
+        error_message,
+        status_code=status_code,
+        response=response,
+        details=error_extra,
+    )

@@ -262,7 +262,9 @@ class Query(Generic[T, F]):
         **kwargs: Any,
     ) -> Iterator[T]:
         """Iterate over all results of the query."""
-        paginator = self.paginate(per_page=per_page, max_results=max_results, **kwargs)
+        paginator = self.paginate(
+            per_page=per_page, max_results=max_results, **kwargs
+        )
         for page in paginator:
             yield from page.results
 

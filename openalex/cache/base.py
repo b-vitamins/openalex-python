@@ -91,4 +91,3 @@ class BaseCache(ABC):
     @abstractmethod
     def stats(self) -> dict[str, Any]:
         """Get cache statistics."""
-

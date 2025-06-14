@@ -14,13 +14,23 @@ class TestIDHandling:
         from openalex.utils import strip_id_prefix
 
         # Full URLs
-        assert strip_id_prefix("https://openalex.org/W2741809807") == "W2741809807"
-        assert strip_id_prefix("https://openalex.org/A5023888391") == "A5023888391"
+        assert (
+            strip_id_prefix("https://openalex.org/W2741809807") == "W2741809807"
+        )
+        assert (
+            strip_id_prefix("https://openalex.org/A5023888391") == "A5023888391"
+        )
         assert strip_id_prefix("https://openalex.org/I27837315") == "I27837315"
-        assert strip_id_prefix("https://openalex.org/S137773608") == "S137773608"
+        assert (
+            strip_id_prefix("https://openalex.org/S137773608") == "S137773608"
+        )
         assert strip_id_prefix("https://openalex.org/C71924100") == "C71924100"
-        assert strip_id_prefix("https://openalex.org/P4310319965") == "P4310319965"
-        assert strip_id_prefix("https://openalex.org/F4320332161") == "F4320332161"
+        assert (
+            strip_id_prefix("https://openalex.org/P4310319965") == "P4310319965"
+        )
+        assert (
+            strip_id_prefix("https://openalex.org/F4320332161") == "F4320332161"
+        )
         assert strip_id_prefix("https://openalex.org/T10017") == "T10017"
 
         # Already stripped
@@ -28,8 +38,14 @@ class TestIDHandling:
         assert strip_id_prefix("A5023888391") == "A5023888391"
 
         # Special cases
-        assert strip_id_prefix("https://openalex.org/keywords/machine-learning") == "keywords/machine-learning"
-        assert strip_id_prefix("keywords/machine-learning") == "keywords/machine-learning"
+        assert (
+            strip_id_prefix("https://openalex.org/keywords/machine-learning")
+            == "keywords/machine-learning"
+        )
+        assert (
+            strip_id_prefix("keywords/machine-learning")
+            == "keywords/machine-learning"
+        )
 
         # None/empty
         assert strip_id_prefix(None) is None
@@ -49,7 +65,9 @@ class TestIDHandling:
         assert ensure_prefix("A5023888391", "A") == "A5023888391"
 
         # Case sensitivity
-        assert ensure_prefix("w2741809807", "W") == "w2741809807"  # Preserves case
+        assert (
+            ensure_prefix("w2741809807", "W") == "w2741809807"
+        )  # Preserves case
 
         # Empty/None handling
         assert ensure_prefix("", "W") == "W"
@@ -76,7 +94,9 @@ class TestIDHandling:
 
         # Invalid - wrong domain
         assert not is_openalex_id("https://example.com/W2741809807")
-        assert not is_openalex_id("http://openalex.org/W2741809807")  # Wrong protocol
+        assert not is_openalex_id(
+            "http://openalex.org/W2741809807"
+        )  # Wrong protocol
 
         # Invalid - malformed
         assert not is_openalex_id("not-an-id")
@@ -88,7 +108,9 @@ class TestIDHandling:
         from openalex.utils import normalize_entity_id
 
         # Full URL -> short form
-        assert normalize_entity_id("https://openalex.org/W123", "work") == "W123"
+        assert (
+            normalize_entity_id("https://openalex.org/W123", "work") == "W123"
+        )
 
         # Short form -> short form
         assert normalize_entity_id("W123", "work") == "W123"
@@ -107,9 +129,20 @@ class TestIDHandling:
         assert normalize_entity_id("123", "topic") == "T123"
 
         # Special handling for keywords
-        assert normalize_entity_id("machine-learning", "keyword") == "keywords/machine-learning"
-        assert normalize_entity_id("keywords/machine-learning", "keyword") == "keywords/machine-learning"
-        assert normalize_entity_id("https://openalex.org/keywords/machine-learning", "keyword") == "keywords/machine-learning"
+        assert (
+            normalize_entity_id("machine-learning", "keyword")
+            == "keywords/machine-learning"
+        )
+        assert (
+            normalize_entity_id("keywords/machine-learning", "keyword")
+            == "keywords/machine-learning"
+        )
+        assert (
+            normalize_entity_id(
+                "https://openalex.org/keywords/machine-learning", "keyword"
+            )
+            == "keywords/machine-learning"
+        )
 
         # Case normalization
         assert normalize_entity_id("w123", "work") == "W123"  # Uppercase prefix
@@ -127,7 +160,10 @@ class TestIDHandling:
         assert extract_entity_type("https://openalex.org/P123") == "publisher"
         assert extract_entity_type("https://openalex.org/F123") == "funder"
         assert extract_entity_type("https://openalex.org/T123") == "topic"
-        assert extract_entity_type("https://openalex.org/keywords/test") == "keyword"
+        assert (
+            extract_entity_type("https://openalex.org/keywords/test")
+            == "keyword"
+        )
 
         # From short IDs
         assert extract_entity_type("W123") == "work"
@@ -170,7 +206,7 @@ class TestIDHandling:
             "W123",
             "https://openalex.org/W456",
             "789",  # No prefix
-            "w999"  # Lowercase
+            "w999",  # Lowercase
         ]
 
         parsed = parse_entity_ids(ids, entity_type="work")
@@ -179,7 +215,9 @@ class TestIDHandling:
 
         # With validation
         ids_with_invalid = ["W123", "A456", "789"]
-        parsed_strict = parse_entity_ids(ids_with_invalid, entity_type="work", validate=True)
+        parsed_strict = parse_entity_ids(
+            ids_with_invalid, entity_type="work", validate=True
+        )
 
         # Should skip invalid A456
         assert parsed_strict == ["W123", "W789"]
@@ -190,10 +228,15 @@ class TestIDHandling:
 
         assert id_to_url("W123") == "https://openalex.org/W123"
         assert id_to_url("A456") == "https://openalex.org/A456"
-        assert id_to_url("keywords/test") == "https://openalex.org/keywords/test"
+        assert (
+            id_to_url("keywords/test") == "https://openalex.org/keywords/test"
+        )
 
         # Already full URL
-        assert id_to_url("https://openalex.org/W123") == "https://openalex.org/W123"
+        assert (
+            id_to_url("https://openalex.org/W123")
+            == "https://openalex.org/W123"
+        )
 
         # Invalid
         assert id_to_url("123") is None
@@ -204,14 +247,7 @@ class TestIDHandling:
         """Test normalizing batches of IDs efficiently."""
         from openalex.utils import normalize_id_batch
 
-        ids = [
-            "W123",
-            "https://openalex.org/W456",
-            "789",
-            None,
-            "",
-            "W999"
-        ]
+        ids = ["W123", "https://openalex.org/W456", "789", None, "", "W999"]
 
         normalized = normalize_id_batch(ids, entity_type="work")
 

@@ -17,13 +17,11 @@ class TestFilterBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={"results": [], "meta": {"count": 0}})
+                json=Mock(return_value={"results": [], "meta": {"count": 0}}),
             )
 
             Works().filter(
-                is_oa=True,
-                publication_year=2023,
-                type="article"
+                is_oa=True, publication_year=2023, type="article"
             ).get()
 
             _, kwargs = mock_request.call_args
@@ -40,10 +38,12 @@ class TestFilterBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={"results": [], "meta": {"count": 0}})
+                json=Mock(return_value={"results": [], "meta": {"count": 0}}),
             )
 
-            Authors().filter_gt(works_count=50).filter_lt(cited_by_count=1000).get()
+            Authors().filter_gt(works_count=50).filter_lt(
+                cited_by_count=1000
+            ).get()
 
             _, kwargs = mock_request.call_args
             filter_param = kwargs["params"]["filter"]
@@ -58,7 +58,7 @@ class TestFilterBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={"results": [], "meta": {"count": 0}})
+                json=Mock(return_value={"results": [], "meta": {"count": 0}}),
             )
 
             Institutions().filter_not(type="company").get()
@@ -75,7 +75,7 @@ class TestFilterBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={"results": [], "meta": {"count": 0}})
+                json=Mock(return_value={"results": [], "meta": {"count": 0}}),
             )
 
             Sources().filter(type=["journal", "repository", "conference"]).get()
@@ -92,13 +92,10 @@ class TestFilterBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={"results": [], "meta": {"count": 0}})
+                json=Mock(return_value={"results": [], "meta": {"count": 0}}),
             )
 
-            Works().filter_or(
-                is_oa=True,
-                has_doi=True
-            ).get()
+            Works().filter_or(is_oa=True, has_doi=True).get()
 
             _, kwargs = mock_request.call_args
             filter_param = kwargs["params"]["filter"]
@@ -112,13 +109,13 @@ class TestFilterBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={"results": [], "meta": {"count": 0}})
+                json=Mock(return_value={"results": [], "meta": {"count": 0}}),
             )
 
             Works().filter(
                 authorships={
                     "author": {"id": "A5023888391"},
-                    "institutions": {"country_code": "US"}
+                    "institutions": {"country_code": "US"},
                 }
             ).get()
 
@@ -135,12 +132,11 @@ class TestFilterBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={"results": [], "meta": {"count": 0}})
+                json=Mock(return_value={"results": [], "meta": {"count": 0}}),
             )
 
             Works().search_filter(
-                title="quantum computing",
-                abstract="machine learning"
+                title="quantum computing", abstract="machine learning"
             ).get()
 
             _, kwargs = mock_request.call_args
@@ -156,7 +152,7 @@ class TestFilterBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={"results": [], "meta": {"count": 0}})
+                json=Mock(return_value={"results": [], "meta": {"count": 0}}),
             )
 
             Authors().filter(display_name="Smith & Jones").get()
@@ -165,8 +161,10 @@ class TestFilterBehavior:
             filter_param = kwargs["params"]["filter"]
 
             # Ampersand should be encoded
-            assert "display_name:Smith+%26+Jones" in filter_param or \
-                   "display_name:Smith %26 Jones" in filter_param
+            assert (
+                "display_name:Smith+%26+Jones" in filter_param
+                or "display_name:Smith %26 Jones" in filter_param
+            )
 
     def test_filter_with_spaces(self):
         """Spaces in filter values should be encoded."""
@@ -175,7 +173,7 @@ class TestFilterBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={"results": [], "meta": {"count": 0}})
+                json=Mock(return_value={"results": [], "meta": {"count": 0}}),
             )
 
             Institutions().filter(display_name="University of Michigan").get()
@@ -193,7 +191,7 @@ class TestFilterBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={"results": [], "meta": {"count": 0}})
+                json=Mock(return_value={"results": [], "meta": {"count": 0}}),
             )
 
             Sources().filter(issn=None).get()
@@ -210,7 +208,7 @@ class TestFilterBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={"results": [], "meta": {"count": 0}})
+                json=Mock(return_value={"results": [], "meta": {"count": 0}}),
             )
 
             Works().filter(is_oa=True, is_retracted=False).get()
@@ -228,13 +226,15 @@ class TestFilterBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={"results": [], "meta": {"count": 0}})
+                json=Mock(return_value={"results": [], "meta": {"count": 0}}),
             )
 
-            (Works()
+            (
+                Works()
                 .filter_gt(publication_date="2023-01-01")
                 .filter_lt(publication_date="2023-12-31")
-                .get())
+                .get()
+            )
 
             _, kwargs = mock_request.call_args
             filter_param = kwargs["params"]["filter"]
@@ -249,10 +249,11 @@ class TestFilterBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={"results": [], "meta": {"count": 0}})
+                json=Mock(return_value={"results": [], "meta": {"count": 0}}),
             )
 
-            (Works()
+            (
+                Works()
                 .filter(is_oa=True)
                 .filter_gt(cited_by_count=100)
                 .filter_not(type="retracted")
@@ -262,7 +263,8 @@ class TestFilterBehavior:
                     }
                 )
                 .search_filter(title="climate change")
-                .get())
+                .get()
+            )
 
             _, kwargs = mock_request.call_args
             filter_param = kwargs["params"]["filter"]
@@ -271,7 +273,9 @@ class TestFilterBehavior:
             assert "is_oa:true" in filter_param
             assert "cited_by_count:>100" in filter_param
             assert "type:!retracted" in filter_param
-            assert "authorships.institutions.country_code:US|UK|CA" in filter_param
+            assert (
+                "authorships.institutions.country_code:US|UK|CA" in filter_param
+            )
             assert "title.search:climate change" in filter_param
 
     def test_filter_chaining_accumulates(self):
@@ -281,14 +285,16 @@ class TestFilterBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={"results": [], "meta": {"count": 0}})
+                json=Mock(return_value={"results": [], "meta": {"count": 0}}),
             )
 
-            (Authors()
+            (
+                Authors()
                 .filter(works_count=">10")
                 .filter(cited_by_count=">100")
                 .filter(last_known_institution={"country_code": "US"})
-                .get())
+                .get()
+            )
 
             _, kwargs = mock_request.call_args
             filter_param = kwargs["params"]["filter"]
@@ -305,7 +311,7 @@ class TestFilterBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={"results": [], "meta": {"count": 0}})
+                json=Mock(return_value={"results": [], "meta": {"count": 0}}),
             )
 
             # Test various ID formats
@@ -319,8 +325,11 @@ class TestFilterBehavior:
             filter_param = kwargs["params"]["filter"]
 
             # Should normalize to just the ID part
-            assert "authorships.author.id:A123" in filter_param or \
-                   "authorships.author.id:https://openalex.org/A123" in filter_param
+            assert (
+                "authorships.author.id:A123" in filter_param
+                or "authorships.author.id:https://openalex.org/A123"
+                in filter_param
+            )
 
     def test_empty_filter_no_param(self):
         """Empty filter should not add filter parameter."""
@@ -329,7 +338,7 @@ class TestFilterBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={"results": [], "meta": {"count": 0}})
+                json=Mock(return_value={"results": [], "meta": {"count": 0}}),
             )
 
             Concepts().get()  # No filters

@@ -106,7 +106,6 @@ class Author(OpenAlexEntity):
         description="Yearly publication and citation counts",
     )
 
-
     works_api_url: str | None = Field(
         None, description="API URL for author's works"
     )

@@ -16,8 +16,7 @@ class TestEntityBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value=mock_work_data)
+                status_code=200, json=Mock(return_value=mock_work_data)
             )
 
             work = Works().get("W2741809807")
@@ -27,7 +26,10 @@ class TestEntityBehavior:
 
             # Verify parsed correctly
             assert work.id == "https://openalex.org/W2741809807"
-            assert work.title == "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles"
+            assert (
+                work.title
+                == "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles"
+            )
             assert work.publication_year == 2018
             assert work.cited_by_count == 960
 
@@ -38,10 +40,12 @@ class TestEntityBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "results": [mock_author_data],
-                    "meta": {"count": 1}
-                })
+                json=Mock(
+                    return_value={
+                        "results": [mock_author_data],
+                        "meta": {"count": 1},
+                    }
+                ),
             )
 
             results = Authors().search("Jason Priem").get()
@@ -54,17 +58,21 @@ class TestEntityBehavior:
             assert author.display_name == "Jason Priem"
             assert author.orcid == "https://orcid.org/0000-0001-6187-6610"
 
-    def test_institutions_entity_filters_by_country(self, mock_institution_data):
+    def test_institutions_entity_filters_by_country(
+        self, mock_institution_data
+    ):
         """Institutions entity should filter by country code."""
         from openalex import Institutions
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "results": [mock_institution_data],
-                    "meta": {"count": 1}
-                })
+                json=Mock(
+                    return_value={
+                        "results": [mock_institution_data],
+                        "meta": {"count": 1},
+                    }
+                ),
             )
 
             results = Institutions().filter(country_code="US").get()
@@ -83,8 +91,7 @@ class TestEntityBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value=mock_source_data)
+                status_code=200, json=Mock(return_value=mock_source_data)
             )
 
             source = Sources().get("S137773608")
@@ -102,8 +109,7 @@ class TestEntityBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value=mock_concept_data)
+                status_code=200, json=Mock(return_value=mock_concept_data)
             )
 
             concept = Concepts().get("C71924100")
@@ -112,17 +118,21 @@ class TestEntityBehavior:
             assert concept.level == 0  # Top level
             assert concept.works_count == 64992842
 
-    def test_publishers_entity_filters_by_works_count(self, mock_publisher_data):
+    def test_publishers_entity_filters_by_works_count(
+        self, mock_publisher_data
+    ):
         """Publishers entity should support filtering by metrics."""
         from openalex import Publishers
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "results": [mock_publisher_data],
-                    "meta": {"count": 1}
-                })
+                json=Mock(
+                    return_value={
+                        "results": [mock_publisher_data],
+                        "meta": {"count": 1},
+                    }
+                ),
             )
 
             results = Publishers().filter_gt(works_count=1000000).get()
@@ -141,15 +151,23 @@ class TestEntityBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "results": [{
-                        "id": mock_funder_data["id"],
-                        "display_name": mock_funder_data["display_name"],
-                        "entity_type": "funder",
-                        "cited_by_count": mock_funder_data["cited_by_count"]
-                    }],
-                    "meta": {"count": 1}
-                })
+                json=Mock(
+                    return_value={
+                        "results": [
+                            {
+                                "id": mock_funder_data["id"],
+                                "display_name": mock_funder_data[
+                                    "display_name"
+                                ],
+                                "entity_type": "funder",
+                                "cited_by_count": mock_funder_data[
+                                    "cited_by_count"
+                                ],
+                            }
+                        ],
+                        "meta": {"count": 1},
+                    }
+                ),
             )
 
             results = Funders().autocomplete("National Institutes")
@@ -167,19 +185,15 @@ class TestEntityBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "group_by": [
-                        {
-                            "key": "Health Sciences",
-                            "count": 150
-                        },
-                        {
-                            "key": "Life Sciences",
-                            "count": 120
-                        }
-                    ],
-                    "meta": {"count": 270}
-                })
+                json=Mock(
+                    return_value={
+                        "group_by": [
+                            {"key": "Health Sciences", "count": 150},
+                            {"key": "Life Sciences", "count": 120},
+                        ],
+                        "meta": {"count": 270},
+                    }
+                ),
             )
 
             results = Topics().group_by("domain.display_name").get()
@@ -199,15 +213,17 @@ class TestEntityBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "results": [mock_work_data],
-                    "meta": {
-                        "count": 100,
-                        "page": 1,
-                        "per_page": 1,
-                        "next_cursor": "next123"
+                json=Mock(
+                    return_value={
+                        "results": [mock_work_data],
+                        "meta": {
+                            "count": 100,
+                            "page": 1,
+                            "per_page": 1,
+                            "next_cursor": "next123",
+                        },
                     }
-                })
+                ),
             )
 
             paginator = Works().filter(is_oa=True).paginate(per_page=1)
@@ -229,18 +245,30 @@ class TestEntityBehavior:
             if call_count == 1:
                 return Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "results": [mock_work_data],
-                        "meta": {"count": 2, "page": 1, "next_cursor": "page2"}
-                    })
+                    json=Mock(
+                        return_value={
+                            "results": [mock_work_data],
+                            "meta": {
+                                "count": 2,
+                                "page": 1,
+                                "next_cursor": "page2",
+                            },
+                        }
+                    ),
                 )
             else:
                 return Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "results": [mock_work_data],
-                        "meta": {"count": 2, "page": 2, "next_cursor": None}
-                    })
+                    json=Mock(
+                        return_value={
+                            "results": [mock_work_data],
+                            "meta": {
+                                "count": 2,
+                                "page": 2,
+                                "next_cursor": None,
+                            },
+                        }
+                    ),
                 )
 
         with patch("httpx.Client.request", side_effect=mock_response):
@@ -255,8 +283,7 @@ class TestEntityBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value=mock_author_data)
+                status_code=200, json=Mock(return_value=mock_author_data)
             )
 
             author = Authors().random()
@@ -272,10 +299,12 @@ class TestEntityBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "id": "https://openalex.org/keywords/machine-learning",
-                    "display_name": "Machine Learning"
-                })
+                json=Mock(
+                    return_value={
+                        "id": "https://openalex.org/keywords/machine-learning",
+                        "display_name": "Machine Learning",
+                    }
+                ),
             )
 
             keyword = Keywords().get("machine-learning")
@@ -292,16 +321,18 @@ class TestEntityBehavior:
         reduced_data = {
             "id": mock_work_data["id"],
             "title": mock_work_data["title"],
-            "cited_by_count": mock_work_data["cited_by_count"]
+            "cited_by_count": mock_work_data["cited_by_count"],
         }
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "results": [reduced_data],
-                    "meta": {"count": 1}
-                })
+                json=Mock(
+                    return_value={
+                        "results": [reduced_data],
+                        "meta": {"count": 1},
+                    }
+                ),
             )
 
             results = Works().select(["id", "title", "cited_by_count"]).get()

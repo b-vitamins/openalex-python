@@ -33,7 +33,7 @@ class TestRetryLogic:
             initial_wait=0.5,
             max_wait=30.0,
             multiplier=1.5,
-            jitter=False
+            jitter=False,
         )
 
         assert config.max_attempts == 5
@@ -46,15 +46,21 @@ class TestRetryLogic:
         """Test error classification for retry."""
         from openalex.utils import is_retryable_error
         from openalex.exceptions import (
-            RateLimitError, ServerError, NetworkError,
-            TimeoutError, NotFoundError, ValidationError
+            RateLimitError,
+            ServerError,
+            NetworkError,
+            TimeoutError,
+            NotFoundError,
+            ValidationError,
         )
 
         # Retryable errors
         assert is_retryable_error(RateLimitError())
         assert is_retryable_error(ServerError("Server error", status_code=500))
         assert is_retryable_error(ServerError("Bad gateway", status_code=502))
-        assert is_retryable_error(ServerError("Service unavailable", status_code=503))
+        assert is_retryable_error(
+            ServerError("Service unavailable", status_code=503)
+        )
         assert is_retryable_error(NetworkError())
         assert is_retryable_error(TimeoutError())
 
@@ -72,7 +78,7 @@ class TestRetryLogic:
             initial_wait=1.0,
             multiplier=2.0,
             max_wait=10.0,
-            jitter=False  # Disable jitter for predictable results
+            jitter=False,  # Disable jitter for predictable results
         )
         handler = RetryHandler(config)
 
@@ -87,10 +93,7 @@ class TestRetryLogic:
         """Test wait time calculation with jitter."""
         from openalex.utils import RetryHandler, RetryConfig
 
-        config = RetryConfig(
-            initial_wait=1.0,
-            jitter=True
-        )
+        config = RetryConfig(initial_wait=1.0, jitter=True)
         handler = RetryHandler(config)
 
         # With jitter, wait time should vary
@@ -281,9 +284,7 @@ class TestRateLimiting:
 
         # Make 3 concurrent requests
         await asyncio.gather(
-            acquire_and_track(),
-            acquire_and_track(),
-            acquire_and_track()
+            acquire_and_track(), acquire_and_track(), acquire_and_track()
         )
 
         # First 2 should have no wait (burst)
@@ -305,9 +306,7 @@ class TestRateLimiting:
 
         # Make concurrent calls
         results = await asyncio.gather(
-            async_api_call(),
-            async_api_call(),
-            async_api_call()
+            async_api_call(), async_api_call(), async_api_call()
         )
 
         assert all(r == "done" for r in results)
@@ -324,10 +323,7 @@ class TestSlidingWindowRateLimiter:
         from openalex.utils import SlidingWindowRateLimiter
 
         # 2 requests per 0.2 second window
-        limiter = SlidingWindowRateLimiter(
-            max_requests=2,
-            window_seconds=0.2
-        )
+        limiter = SlidingWindowRateLimiter(max_requests=2, window_seconds=0.2)
 
         # First two should succeed
         assert limiter.try_acquire() is True
@@ -346,10 +342,7 @@ class TestSlidingWindowRateLimiter:
         """Test blocking acquire with sliding window."""
         from openalex.utils import SlidingWindowRateLimiter
 
-        limiter = SlidingWindowRateLimiter(
-            max_requests=1,
-            window_seconds=0.1
-        )
+        limiter = SlidingWindowRateLimiter(max_requests=1, window_seconds=0.1)
 
         # First should be immediate
         wait1 = limiter.acquire()
@@ -367,10 +360,7 @@ class TestSlidingWindowRateLimiter:
         """Test old entries are cleaned up."""
         from openalex.utils import SlidingWindowRateLimiter
 
-        limiter = SlidingWindowRateLimiter(
-            max_requests=100,
-            window_seconds=0.1
-        )
+        limiter = SlidingWindowRateLimiter(max_requests=100, window_seconds=0.1)
 
         # Fill window
         for _ in range(10):

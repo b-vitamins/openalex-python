@@ -19,8 +19,7 @@ class TestConfigurationBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value={"results": []})
+                status_code=200, json=Mock(return_value={"results": []})
             )
 
             works = Works(config=config)
@@ -40,8 +39,7 @@ class TestConfigurationBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value={"results": []})
+                status_code=200, json=Mock(return_value={"results": []})
             )
 
             authors = Authors(config=config)
@@ -59,14 +57,12 @@ class TestConfigurationBehavior:
         from openalex import Institutions, OpenAlexConfig
 
         config = OpenAlexConfig(
-            user_agent="MyResearchBot/1.0",
-            email="bot@example.com"
+            user_agent="MyResearchBot/1.0", email="bot@example.com"
         )
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value={"results": []})
+                status_code=200, json=Mock(return_value={"results": []})
             )
 
             institutions = Institutions(config=config)
@@ -89,8 +85,7 @@ class TestConfigurationBehavior:
             mock_client = Mock()
             mock_client_class.return_value = mock_client
             mock_client.request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value={"results": []})
+                status_code=200, json=Mock(return_value={"results": []})
             )
 
             sources = Sources(config=config)
@@ -118,7 +113,7 @@ class TestConfigurationBehavior:
             attempt_count += 1
             return Mock(
                 status_code=503,
-                json=Mock(return_value={"error": "Service unavailable"})
+                json=Mock(return_value={"error": "Service unavailable"}),
             )
 
         with patch("httpx.Client.request", side_effect=mock_response):
@@ -137,10 +132,12 @@ class TestConfigurationBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "id": "P123",
-                    "display_name": "Test Publisher"
-                })
+                json=Mock(
+                    return_value={
+                        "id": "P123",
+                        "display_name": "Test Publisher",
+                    }
+                ),
             )
 
             publishers = Publishers()  # No config = defaults
@@ -161,10 +158,7 @@ class TestConfigurationBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "id": "F123",
-                    "display_name": "NSF"
-                })
+                json=Mock(return_value={"id": "F123", "display_name": "NSF"}),
             )
 
             funders = Funders(config=config)
@@ -176,7 +170,11 @@ class TestConfigurationBehavior:
 
             # Only one API call (rest from cache)
             assert mock_request.call_count == 1
-            assert funder1.display_name == funder2.display_name == funder3.display_name
+            assert (
+                funder1.display_name
+                == funder2.display_name
+                == funder3.display_name
+            )
 
     def test_cache_configuration_options(self):
         """Cache configuration should control cache behavior."""
@@ -186,19 +184,26 @@ class TestConfigurationBehavior:
         config = OpenAlexConfig(
             cache_enabled=True,
             cache_ttl=0.1,  # 100ms TTL
-            cache_maxsize=2  # Small cache
+            cache_maxsize=2,  # Small cache
         )
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.side_effect = [
                 Mock(
                     status_code=200,
-                    json=Mock(return_value={"id": "T1", "display_name": "Topic 1"})
+                    json=Mock(
+                        return_value={"id": "T1", "display_name": "Topic 1"}
+                    ),
                 ),
                 Mock(
                     status_code=200,
-                    json=Mock(return_value={"id": "T1", "display_name": "Topic 1 Updated"})
-                )
+                    json=Mock(
+                        return_value={
+                            "id": "T1",
+                            "display_name": "Topic 1 Updated",
+                        }
+                    ),
+                ),
             ]
 
             topics = Topics(config=config)
@@ -224,8 +229,7 @@ class TestConfigurationBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value={"results": []})
+                status_code=200, json=Mock(return_value={"results": []})
             )
 
             keywords = Keywords(config=config)
@@ -241,10 +245,13 @@ class TestConfigurationBehavior:
         from openalex import OpenAlexConfig
 
         # Set environment variables
-        with patch.dict(os.environ, {
-            "OPENALEX_API_KEY": "env-key-123",
-            "OPENALEX_EMAIL": "env@example.com"
-        }):
+        with patch.dict(
+            os.environ,
+            {
+                "OPENALEX_API_KEY": "env-key-123",
+                "OPENALEX_EMAIL": "env@example.com",
+            },
+        ):
             config = OpenAlexConfig()
 
             assert config.api_key == "env-key-123"
@@ -254,10 +261,13 @@ class TestConfigurationBehavior:
         """Explicit config should override environment variables."""
         from openalex import OpenAlexConfig
 
-        with patch.dict(os.environ, {
-            "OPENALEX_API_KEY": "env-key",
-            "OPENALEX_EMAIL": "env@example.com"
-        }):
+        with patch.dict(
+            os.environ,
+            {
+                "OPENALEX_API_KEY": "env-key",
+                "OPENALEX_EMAIL": "env@example.com",
+            },
+        ):
             config = OpenAlexConfig(
                 api_key="explicit-key",
                 # email not set explicitly
@@ -274,8 +284,7 @@ class TestConfigurationBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value={"results": []})
+                status_code=200, json=Mock(return_value={"results": []})
             )
 
             # Test different entity types
@@ -323,8 +332,7 @@ class TestConfigurationBehavior:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value={"results": []})
+                status_code=200, json=Mock(return_value={"results": []})
             )
 
             works = Works(config=default_config)

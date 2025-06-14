@@ -18,7 +18,7 @@ class TestAbstractInversion:
             "is": [1],
             "a": [2],
             "test": [3],
-            "abstract": [4]
+            "abstract": [4],
         }
 
         result = invert_abstract(inverted_index)
@@ -33,7 +33,7 @@ class TestAbstractInversion:
             "cat": [1, 5],
             "sat": [2],
             "on": [3],
-            "mat": [6]
+            "mat": [6],
         }
 
         result = invert_abstract(inverted_index)
@@ -53,7 +53,7 @@ class TestAbstractInversion:
             "artificial": [6],
             "intelligence.": [7],
             "Deep": [8],
-            "powerful.": [11]
+            "powerful.": [11],
         }
 
         result = invert_abstract(inverted_index)
@@ -78,11 +78,7 @@ class TestAbstractInversion:
         """Test positions not in sequential order in dict."""
         from openalex.utils import invert_abstract
 
-        inverted_index = {
-            "world": [2],
-            "Hello": [0],
-            "beautiful": [1]
-        }
+        inverted_index = {"world": [2], "Hello": [0], "beautiful": [1]}
 
         result = invert_abstract(inverted_index)
         assert result == "Hello beautiful world"
@@ -98,7 +94,7 @@ class TestAbstractInversion:
             "alive": [3],
             "and": [4],
             "dead": [5],
-            "😺": [6]
+            "😺": [6],
         }
 
         result = invert_abstract(inverted_index)
@@ -111,7 +107,7 @@ class TestAbstractInversion:
         inverted_index = {
             "First": [0],
             "Third": [2],  # Position 1 is missing
-            "Fourth": [3]
+            "Fourth": [3],
         }
 
         # Should handle gaps gracefully
@@ -149,7 +145,7 @@ class TestAbstractInversion:
             "[1]": [5],
             "It's": [6],
             "a": [7],
-            "pandemic!": [8]
+            "pandemic!": [8],
         }
 
         result = invert_abstract(inverted_index)
@@ -165,7 +161,10 @@ class TestTextCleaning:
         from openalex.utils import clean_title
 
         # Remove HTML tags
-        assert clean_title("The <i>Nature</i> of Science") == "The Nature of Science"
+        assert (
+            clean_title("The <i>Nature</i> of Science")
+            == "The Nature of Science"
+        )
 
         # Normalize whitespace
         assert clean_title("Too    many     spaces") == "Too many spaces"
@@ -184,7 +183,10 @@ class TestTextCleaning:
         # Standard DOI formats
         assert extract_doi("doi: 10.1038/nature12373") == "10.1038/nature12373"
         assert extract_doi("DOI:10.1038/nature12373") == "10.1038/nature12373"
-        assert extract_doi("https://doi.org/10.1038/nature12373") == "10.1038/nature12373"
+        assert (
+            extract_doi("https://doi.org/10.1038/nature12373")
+            == "10.1038/nature12373"
+        )
 
         # In sentence
         text = "This paper (doi: 10.1038/nature12373) shows that..."

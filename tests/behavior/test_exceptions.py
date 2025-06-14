@@ -19,11 +19,13 @@ class TestExceptionBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=429,
-                json=Mock(return_value={
-                    "error": "Rate limit exceeded",
-                    "message": "Too many requests"
-                }),
-                headers={"Retry-After": "60"}
+                json=Mock(
+                    return_value={
+                        "error": "Rate limit exceeded",
+                        "message": "Too many requests",
+                    }
+                ),
+                headers={"Retry-After": "60"},
             )
 
             works = Works()
@@ -42,10 +44,12 @@ class TestExceptionBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=404,
-                json=Mock(return_value={
-                    "error": "Not Found",
-                    "message": "Author with ID A99999999 not found"
-                })
+                json=Mock(
+                    return_value={
+                        "error": "Not Found",
+                        "message": "Author with ID A99999999 not found",
+                    }
+                ),
             )
 
             authors = Authors()
@@ -65,10 +69,12 @@ class TestExceptionBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=401,
-                json=Mock(return_value={
-                    "error": "Unauthorized",
-                    "message": "Invalid API key"
-                })
+                json=Mock(
+                    return_value={
+                        "error": "Unauthorized",
+                        "message": "Invalid API key",
+                    }
+                ),
             )
 
             institutions = Institutions(config=config)
@@ -86,10 +92,12 @@ class TestExceptionBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=400,
-                json=Mock(return_value={
-                    "error": "Bad Request",
-                    "message": "Invalid filter: 'invalid_field' is not a valid filter"
-                })
+                json=Mock(
+                    return_value={
+                        "error": "Bad Request",
+                        "message": "Invalid filter: 'invalid_field' is not a valid filter",
+                    }
+                ),
             )
 
             works = Works()
@@ -108,10 +116,12 @@ class TestExceptionBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=500,
-                json=Mock(return_value={
-                    "error": "Internal Server Error",
-                    "message": "An unexpected error occurred"
-                })
+                json=Mock(
+                    return_value={
+                        "error": "Internal Server Error",
+                        "message": "An unexpected error occurred",
+                    }
+                ),
             )
 
             sources = Sources()
@@ -127,7 +137,9 @@ class TestExceptionBehavior:
         from openalex.exceptions import TimeoutError
 
         with patch("httpx.Client.request") as mock_request:
-            mock_request.side_effect = httpx.TimeoutException("Request timed out")
+            mock_request.side_effect = httpx.TimeoutException(
+                "Request timed out"
+            )
 
             concepts = Concepts()
 
@@ -159,11 +171,13 @@ class TestExceptionBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=503,
-                json=Mock(return_value={
-                    "error": "Service Unavailable",
-                    "message": "Service temporarily unavailable"
-                }),
-                headers={"Retry-After": "30"}
+                json=Mock(
+                    return_value={
+                        "error": "Service Unavailable",
+                        "message": "Service temporarily unavailable",
+                    }
+                ),
+                headers={"Retry-After": "30"},
             )
 
             funders = Funders()
@@ -182,11 +196,16 @@ class TestExceptionBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=400,
-                json=Mock(return_value={
-                    "error": "Bad Request",
-                    "message": "Invalid request",
-                    "details": {"field": "page", "issue": "must be positive"}
-                })
+                json=Mock(
+                    return_value={
+                        "error": "Bad Request",
+                        "message": "Invalid request",
+                        "details": {
+                            "field": "page",
+                            "issue": "must be positive",
+                        },
+                    }
+                ),
             )
 
             topics = Topics()
@@ -197,7 +216,10 @@ class TestExceptionBehavior:
             error = exc_info.value
             assert error.status_code == 400
             assert error.message == "Invalid request"
-            assert error.details == {"field": "page", "issue": "must be positive"}
+            assert error.details == {
+                "field": "page",
+                "issue": "must be positive",
+            }
 
     def test_non_json_error_response_handling(self):
         """Non-JSON error responses should be handled gracefully."""
@@ -210,7 +232,7 @@ class TestExceptionBehavior:
                 status_code=502,
                 json=Mock(side_effect=ValueError("Not JSON")),
                 text="<html><body>502 Bad Gateway</body></html>",
-                headers={"Content-Type": "text/html"}
+                headers={"Content-Type": "text/html"},
             )
 
             works = Works()
@@ -219,7 +241,9 @@ class TestExceptionBehavior:
                 works.get("W123")
 
             assert exc_info.value.status_code == 502
-            assert "Bad Gateway" in str(exc_info.value) or "Server error" in str(exc_info.value)
+            assert "Bad Gateway" in str(
+                exc_info.value
+            ) or "Server error" in str(exc_info.value)
 
     def test_retry_after_header_parsing(self):
         """Retry-After header should be parsed correctly."""
@@ -232,7 +256,7 @@ class TestExceptionBehavior:
             mock_request.return_value = Mock(
                 status_code=429,
                 json=Mock(return_value={"error": "Rate limited"}),
-                headers={"Retry-After": "120"}
+                headers={"Retry-After": "120"},
             )
 
             authors = Authors()
@@ -260,16 +284,20 @@ class TestExceptionBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=400,
-                json=Mock(return_value={
-                    "error": "Invalid filter combination",
-                    "message": "Cannot use 'search' with 'filter.display_name.search'"
-                })
+                json=Mock(
+                    return_value={
+                        "error": "Invalid filter combination",
+                        "message": "Cannot use 'search' with 'filter.display_name.search'",
+                    }
+                ),
             )
 
             institutions = Institutions()
 
             with pytest.raises(ValidationError) as exc_info:
-                institutions.search("MIT").search_filter(display_name="MIT").get()
+                institutions.search("MIT").search_filter(
+                    display_name="MIT"
+                ).get()
 
             error = exc_info.value
             assert "search" in str(error)

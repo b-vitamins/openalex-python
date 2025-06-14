@@ -179,7 +179,9 @@ class BaseEntity(Generic[T, F]):
         return self.query()[record_id]
 
     def _get_single_entity(
-        self, entity_id: str, params: dict[str, Any] | None = None,
+        self,
+        entity_id: str,
+        params: dict[str, Any] | None = None,
     ) -> T:
         cache_manager = get_cache_manager(self._config)
         entity_id = strip_id_prefix(entity_id)
@@ -222,7 +224,9 @@ class BaseEntity(Generic[T, F]):
         cache_manager = get_cache_manager(self._config)
 
         def fetch() -> dict[str, Any]:
-            response = self._connection.request(HTTP_METHOD_GET, url, params=params)
+            response = self._connection.request(
+                HTTP_METHOD_GET, url, params=params
+            )
             raise_for_status(response)
             return cast("dict[str, Any]", response.json())
 
@@ -255,15 +259,21 @@ class BaseEntity(Generic[T, F]):
         raise_for_status(response)
         return self._parse_response(response.json())
 
-    def autocomplete(self, query: str, **params: Any) -> ListResult[AutocompleteResult]:
+    def autocomplete(
+        self, query: str, **params: Any
+    ) -> ListResult[AutocompleteResult]:
         """Return autocomplete suggestions for this entity."""
         url = self._build_url(f"{AUTOCOMPLETE_PATH}")
         params_norm = normalize_params(params)
         params_norm[PARAM_Q] = query
-        response = self._connection.request(HTTP_METHOD_GET, url, params=params_norm)
+        response = self._connection.request(
+            HTTP_METHOD_GET, url, params=params_norm
+        )
         raise_for_status(response)
         data = response.json()
-        results = [AutocompleteResult(**item) for item in data.get("results", [])]
+        results = [
+            AutocompleteResult(**item) for item in data.get("results", [])
+        ]
         try:
             return ListResult[AutocompleteResult](
                 meta=data.get("meta", {}),

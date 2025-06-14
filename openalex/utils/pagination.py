@@ -104,7 +104,9 @@ class Paginator(Generic[T]):
     def _page_iterator(self) -> Iterator[ListResult[T]]:
         page: int | None = FIRST_PAGE
         cursor = self.params.get(PARAM_CURSOR)
-        base_params = {k: v for k, v in self.params.items() if k != PARAM_CURSOR}
+        base_params = {
+            k: v for k, v in self.params.items() if k != PARAM_CURSOR
+        }
 
         while True:
             if self.max_results and self._total_fetched >= self.max_results:
@@ -218,7 +220,9 @@ class AsyncPaginator(Generic[T]):
         """Iterate over all results asynchronously."""
         page: int | None = FIRST_PAGE
         cursor = self.params.get(PARAM_CURSOR)
-        base_params = {k: v for k, v in self.params.items() if k != PARAM_CURSOR}
+        base_params = {
+            k: v for k, v in self.params.items() if k != PARAM_CURSOR
+        }
 
         while True:
             if self.max_results and self._total_fetched >= self.max_results:
@@ -264,7 +268,9 @@ class AsyncPaginator(Generic[T]):
         """Iterate over pages instead of individual results."""
         page: int | None = FIRST_PAGE
         cursor = self.params.get(PARAM_CURSOR)
-        base_params = {k: v for k, v in self.params.items() if k != PARAM_CURSOR}
+        base_params = {
+            k: v for k, v in self.params.items() if k != PARAM_CURSOR
+        }
 
         while True:
             params = _build_params(

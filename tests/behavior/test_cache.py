@@ -20,10 +20,12 @@ class TestCacheBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "id": "https://openalex.org/W123",
-                    "title": "Cached Work"
-                })
+                json=Mock(
+                    return_value={
+                        "id": "https://openalex.org/W123",
+                        "title": "Cached Work",
+                    }
+                ),
             )
 
             works = Works(config=config)
@@ -48,10 +50,12 @@ class TestCacheBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "id": "https://openalex.org/A123",
-                    "display_name": "Test Author"
-                })
+                json=Mock(
+                    return_value={
+                        "id": "https://openalex.org/A123",
+                        "display_name": "Test Author",
+                    }
+                ),
             )
 
             authors = Authors(config=config)
@@ -76,18 +80,22 @@ class TestCacheBehavior:
             mock_request.side_effect = [
                 Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "id": "https://openalex.org/I123",
-                        "display_name": "Original Name"
-                    })
+                    json=Mock(
+                        return_value={
+                            "id": "https://openalex.org/I123",
+                            "display_name": "Original Name",
+                        }
+                    ),
                 ),
                 Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "id": "https://openalex.org/I123",
-                        "display_name": "Updated Name"
-                    })
-                )
+                    json=Mock(
+                        return_value={
+                            "id": "https://openalex.org/I123",
+                            "display_name": "Updated Name",
+                        }
+                    ),
+                ),
             ]
 
             institutions = Institutions(config=config)
@@ -115,18 +123,22 @@ class TestCacheBehavior:
             mock_request.side_effect = [
                 Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "results": [{"id": "W1", "title": "OA Work"}],
-                        "meta": {"count": 1}
-                    })
+                    json=Mock(
+                        return_value={
+                            "results": [{"id": "W1", "title": "OA Work"}],
+                            "meta": {"count": 1},
+                        }
+                    ),
                 ),
                 Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "results": [{"id": "W2", "title": "Non-OA Work"}],
-                        "meta": {"count": 1}
-                    })
-                )
+                    json=Mock(
+                        return_value={
+                            "results": [{"id": "W2", "title": "Non-OA Work"}],
+                            "meta": {"count": 1},
+                        }
+                    ),
+                ),
             ]
 
             works = Works(config=config)
@@ -149,18 +161,26 @@ class TestCacheBehavior:
             mock_request.side_effect = [
                 Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "results": [{"id": "A1", "display_name": "Author 1"}],
-                        "meta": {"count": 10, "page": 1}
-                    })
+                    json=Mock(
+                        return_value={
+                            "results": [
+                                {"id": "A1", "display_name": "Author 1"}
+                            ],
+                            "meta": {"count": 10, "page": 1},
+                        }
+                    ),
                 ),
                 Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "results": [{"id": "A2", "display_name": "Author 2"}],
-                        "meta": {"count": 10, "page": 2}
-                    })
-                )
+                    json=Mock(
+                        return_value={
+                            "results": [
+                                {"id": "A2", "display_name": "Author 2"}
+                            ],
+                            "meta": {"count": 10, "page": 2},
+                        }
+                    ),
+                ),
             ]
 
             authors = Authors(config=config)
@@ -189,18 +209,16 @@ class TestCacheBehavior:
             mock_request.side_effect = [
                 Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "id": "W1",
-                        "title": "Random Work 1"
-                    })
+                    json=Mock(
+                        return_value={"id": "W1", "title": "Random Work 1"}
+                    ),
                 ),
                 Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "id": "W2",
-                        "title": "Random Work 2"
-                    })
-                )
+                    json=Mock(
+                        return_value={"id": "W2", "title": "Random Work 2"}
+                    ),
+                ),
             ]
 
             works = Works(config=config)
@@ -221,13 +239,16 @@ class TestCacheBehavior:
         config = OpenAlexConfig(cache_enabled=True, cache_maxsize=2)
 
         with patch("httpx.Client.request") as mock_request:
+
             def make_response(id_num):
                 return Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "id": f"https://openalex.org/S{id_num}",
-                        "display_name": f"Source {id_num}"
-                    })
+                    json=Mock(
+                        return_value={
+                            "id": f"https://openalex.org/S{id_num}",
+                            "display_name": f"Source {id_num}",
+                        }
+                    ),
                 )
 
             mock_request.side_effect = [
@@ -261,10 +282,12 @@ class TestCacheBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "id": "https://openalex.org/C123",
-                    "display_name": "Test Concept"
-                })
+                json=Mock(
+                    return_value={
+                        "id": "https://openalex.org/C123",
+                        "display_name": "Test Concept",
+                    }
+                ),
             )
 
             concepts = Concepts(config=config)
@@ -281,7 +304,7 @@ class TestCacheBehavior:
 
             assert stats["hits"] == 2
             assert stats["misses"] == 1
-            assert stats["hit_rate"] == 2/3
+            assert stats["hit_rate"] == 2 / 3
 
     def test_cache_handles_errors_gracefully(self):
         """Cache should not cache error responses."""
@@ -294,15 +317,17 @@ class TestCacheBehavior:
             mock_request.side_effect = [
                 Mock(
                     status_code=500,
-                    json=Mock(return_value={"error": "Server error"})
+                    json=Mock(return_value={"error": "Server error"}),
                 ),
                 Mock(
                     status_code=200,
-                    json=Mock(return_value={
-                        "id": "https://openalex.org/P123",
-                        "display_name": "Test Publisher"
-                    })
-                )
+                    json=Mock(
+                        return_value={
+                            "id": "https://openalex.org/P123",
+                            "display_name": "Test Publisher",
+                        }
+                    ),
+                ),
             ]
 
             publishers = Publishers(config=config)
@@ -329,10 +354,12 @@ class TestCacheBehavior:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={
-                    "id": "https://openalex.org/W123",
-                    "title": "Concurrent Work"
-                })
+                json=Mock(
+                    return_value={
+                        "id": "https://openalex.org/W123",
+                        "title": "Concurrent Work",
+                    }
+                ),
             )
 
             works = Works(config=config)
