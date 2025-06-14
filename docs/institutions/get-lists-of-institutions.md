@@ -27,6 +27,9 @@ The response contains:
 
 ```python
 # Each result shows institution information
+from openalex import Institutions
+
+first_page = Institutions().get()
 for institution in first_page.results[:5]:  # First 5 institutions
     print(f"\n{institution.display_name}")
     print(f"  Type: {institution.type}")
@@ -42,6 +45,8 @@ for institution in first_page.results[:5]:  # First 5 institutions
 You can control pagination and sorting:
 
 ```python
+from openalex import Institutions
+
 # Get a specific page with custom page size
 page2 = Institutions().get(per_page=50, page=2)
 # This returns institutions 51-100
@@ -70,6 +75,9 @@ Get a random sample of institutions:
 
 ```python
 # Get 50 random institutions
+from openalex import Institutions
+
+# Get 50 random institutions
 random_sample = Institutions().sample(50).get(per_page=50)
 
 # Use a seed for reproducible random sampling
@@ -89,6 +97,9 @@ university_sample = (
 Limit the fields returned to improve performance:
 
 ```python
+# Request only specific fields
+from openalex import Institutions
+
 # Request only specific fields
 minimal_institutions = Institutions().select([
     "id", 
@@ -110,6 +121,9 @@ for institution in minimal_institutions.results:
 
 ```python
 # Get different types of institutions
+from openalex import Institutions
+
+# Get different types of institutions
 education = Institutions().filter(type="education").get()
 healthcare = Institutions().filter(type="healthcare").get()
 companies = Institutions().filter(type="company").get()
@@ -125,6 +139,9 @@ print(f"Government: {government.meta.count:,}")
 
 ```python
 # Get top research institutions globally
+from openalex import Institutions
+
+# Get top research institutions globally
 global_leaders = (
     Institutions()
     .filter(type="education")
@@ -137,6 +154,27 @@ print("Top 20 research universities by citations:")
 for i, inst in enumerate(global_leaders.results, 1):
     print(f"{i}. {inst.display_name} ({inst.country_code})")
     print(f"   Works: {inst.works_count:,}, Citations: {inst.cited_by_count:,}")
+```
+
+### Example: Filter by type and location
+
+```python
+from openalex import Institutions
+
+# US healthcare institutions in Boston
+boston_healthcare = (
+    Institutions()
+    .filter(type="healthcare")
+    .filter(country_code="US")
+    .filter(geo={"city": "Boston"})
+    .get()
+)
+
+print(
+    f"Boston healthcare institutions: {boston_healthcare.meta.count}"
+)
+for inst in boston_healthcare.results[:5]:
+    print(f"- {inst.display_name} ({inst.geo.city})")
 ```
 
 Continue on to learn how you can [filter](filter-institutions.md) and [search](search-institutions.md) lists of institutions.
