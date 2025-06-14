@@ -16,6 +16,9 @@ That will return a [`Work`](work-object.md) object, describing everything OpenAl
 
 ```python
 # Access work properties directly as Python attributes
+from openalex import Works
+
+work = Works()["W2741809807"]
 print(work.id)  # "https://openalex.org/W2741809807"
 print(work.doi)  # "https://doi.org/10.7717/peerj.4375"
 print(work.title)  # "The state of OA: a large-scale analysis..."
@@ -76,4 +79,51 @@ minimal_work = Works().select(["id", "display_name", "cited_by_count"]).get("W27
 # Now only the selected fields are populated
 print(minimal_work.display_name)  # Works
 print(minimal_work.abstract)  # None (not selected)
+```
+
+## Authorship information
+
+```python
+from openalex import Works
+
+work = Works()["W2741809807"]
+print(f"Title: {work.title}")
+for authorship in work.authorships:
+    author_name = authorship.author.display_name
+    institutions = [inst.display_name for inst in authorship.institutions]
+    print(f"{author_name} - {', '.join(institutions) if institutions else 'No affiliation'}")
+```
+
+## Open Access status
+
+```python
+from openalex import Works
+
+work = Works()["W2741809807"]
+print(f"Title: {work.title}")
+if work.open_access.is_oa:
+    print("Open Access: Yes")
+    print(f"OA Status: {work.open_access.oa_status}")
+    if work.open_access.oa_url:
+        print(f"OA URL: {work.open_access.oa_url}")
+else:
+    print("Open Access: No")
+```
+
+## Identifier summary
+
+```python
+from openalex import Works
+
+work = Works()["W2741809807"]
+print("Identifiers:")
+print(f"  OpenAlex: {work.id}")
+if work.doi:
+    print(f"  DOI: {work.doi}")
+if work.pmid:
+    print(f"  PubMed: {work.pmid}")
+if work.pmcid:
+    print(f"  PMC: {work.pmcid}")
+if work.mag_id:
+    print(f"  MAG: {work.mag_id}")
 ```

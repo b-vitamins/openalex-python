@@ -6,7 +6,7 @@ You can group works to get aggregated statistics without fetching individual wor
 from openalex import Works
 
 # Create a query that groups works by their open access status
-oa_stats_query = Works().group_by("oa_status")
+oa_stats_query = Works().filter(publication_year=2023).group_by("oa_status")
 
 # Execute the query to get COUNTS, not individual works
 oa_stats = oa_stats_query.get()
@@ -36,7 +36,7 @@ Open Access statistics for all works in OpenAlex:
 
 ```python
 # The result structure is different from regular queries
-result = Works().group_by("publication_year").get()
+result = Works().filter(publication_year=2023).group_by("publication_year").get()
 
 print(result.results)  # Empty list - no individual works returned!
 print(result.group_by)  # List of groups with counts
@@ -52,19 +52,19 @@ for group in result.group_by:
 
 ```python
 # Group by publication year to see publication trends
-yearly_counts = Works().group_by("publication_year").get()
+yearly_counts = Works().filter(publication_year=2023).group_by("publication_year").get()
 # Returns ~100 groups (one per year) with counts
 
 # Group by work type to see distribution
-type_distribution = Works().group_by("type").get()
+type_distribution = Works().filter(publication_year=2023).group_by("type").get()
 # Shows how many articles, datasets, books, etc.
 
 # Group by language
-language_stats = Works().group_by("language").get()
+language_stats = Works().filter(publication_year=2023).group_by("language").get()
 # See distribution across languages
 
 # Group by whether works are retracted
-retraction_stats = Works().group_by("is_retracted").get()
+retraction_stats = Works().filter(publication_year=2023).group_by("is_retracted").get()
 # Usually shows ~99.9% false, ~0.1% true
 ```
 
@@ -72,7 +72,7 @@ retraction_stats = Works().group_by("is_retracted").get()
 
 ```python
 # Analyze OA trends over time (two-dimensional grouping)
-oa_by_year = Works().group_by("publication_year", "open_access.oa_status").get()
+oa_by_year = Works().filter(publication_year=2023).group_by("publication_year", "open_access.oa_status").get()
 # Returns counts for each year-status combination
 
 # Check OA status for recent works only
@@ -87,6 +87,7 @@ recent_oa = (
 # Find repositories with most OA works
 top_repositories = (
     Works()
+    .filter(publication_year=2023)
     .filter(open_access={"is_oa": True})
     .group_by("repository")
     .get()
@@ -98,23 +99,23 @@ top_repositories = (
 
 ```python
 # Find most prolific authors (by author ID, not name)
-prolific_authors = Works().group_by("authorships.author.id").get()
+prolific_authors = Works().filter(publication_year=2023).group_by("authorships.author.id").get()
 # Returns thousands of groups, one per author ID
 
 # Find most productive institutions
-top_institutions = Works().group_by("authorships.institutions.id").get()
+top_institutions = Works().filter(publication_year=2023).group_by("authorships.institutions.id").get()
 # Useful for institutional rankings
 
 # Analyze international collaboration
-countries = Works().group_by("authorships.institutions.country_code").get()
+countries = Works().filter(publication_year=2023).group_by("authorships.institutions.country_code").get()
 # See research output by country
 
 # Research output by continent
-continental = Works().group_by("authorships.institutions.continent").get()
+continental = Works().filter(publication_year=2023).group_by("authorships.institutions.continent").get()
 # Broader geographic analysis
 
 # Identify Global South research
-global_south_stats = Works().group_by(
+global_south_stats = Works().filter(publication_year=2023).group_by(
     "authorships.institutions.is_global_south"
 ).get()
 ```
@@ -123,21 +124,21 @@ global_south_stats = Works().group_by(
 
 ```python
 # Find top publishing venues
-top_journals = Works().group_by("primary_location.source.id").get()
+top_journals = Works().filter(publication_year=2023).group_by("primary_location.source.id").get()
 # Groups by source (journal/repository) ID
 
 # Analyze by source type
-source_types = Works().group_by("primary_location.source.type").get()
+source_types = Works().filter(publication_year=2023).group_by("primary_location.source.type").get()
 # Shows distribution: journal vs. repository vs. conference, etc.
 
 # Find major publishers
-publishers = Works().group_by(
+publishers = Works().filter(publication_year=2023).group_by(
     "primary_location.source.publisher_lineage"
 ).get()
 # Groups by publisher hierarchy
 
 # Check DOAJ coverage
-doaj_coverage = Works().group_by(
+doaj_coverage = Works().filter(publication_year=2023).group_by(
     "primary_location.source.is_in_doaj"
 ).get()
 # See how many works are in DOAJ-indexed journals
@@ -147,19 +148,19 @@ doaj_coverage = Works().group_by(
 
 ```python
 # Analyze research by primary topic
-topics = Works().group_by("primary_topic.id").get()
+topics = Works().filter(publication_year=2023).group_by("primary_topic.id").get()
 # Returns counts for each research topic
 
 # Broader analysis by scientific field
-fields = Works().group_by("primary_topic.field.id").get()
+fields = Works().filter(publication_year=2023).group_by("primary_topic.field.id").get()
 # Groups into major fields like "Medicine", "Physics", etc.
 
 # Even broader - by domain
-domains = Works().group_by("primary_topic.domain.id").get()
+domains = Works().filter(publication_year=2023).group_by("primary_topic.domain.id").get()
 # Usually 4-5 major domains like "Health Sciences", "Physical Sciences"
 
 # Find interdisciplinary works (those with many topics)
-topic_counts = Works().group_by("topics_count").get()
+topic_counts = Works().filter(publication_year=2023).group_by("topics_count").get()
 # Distribution of how many topics are assigned to works
 ```
 
@@ -213,19 +214,19 @@ You can group by multiple fields (limited to 2 dimensions):
 
 ```python
 # OA status by year - great for trend analysis
-oa_trends = Works().group_by(
+oa_trends = Works().filter(publication_year=2023).group_by(
     "publication_year", 
     "open_access.oa_status"
 ).get()
 
 # Research types by country
-country_types = Works().group_by(
+country_types = Works().filter(publication_year=2023).group_by(
     "authorships.institutions.country_code",
     "type"
 ).get()
 
 # Topics by institution
-inst_topics = Works().group_by(
+inst_topics = Works().filter(publication_year=2023).group_by(
     "authorships.institutions.id",
     "primary_topic.field.id"
 ).get()
@@ -237,15 +238,15 @@ Control how results are ordered:
 
 ```python
 # Default: sorted by count (descending)
-default_sort = Works().group_by("type").get()
+default_sort = Works().filter(publication_year=2023).group_by("type").get()
 # Articles first (most common), then books, etc.
 
 # Sort by key instead of count
-alphabetical = Works().group_by("type").sort(key="asc").get()
+alphabetical = Works().filter(publication_year=2023).group_by("type").sort(key="asc").get()
 # article, book, chapter, dataset...
 
 # Sort by count ascending (least common first)
-rare_first = Works().group_by("type").sort(count="asc").get()
+rare_first = Works().filter(publication_year=2023).group_by("type").sort(count="asc").get()
 # Rarest types appear first
 ```
 
