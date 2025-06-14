@@ -81,7 +81,7 @@ class OpenAlexClient:
 
         attempt = 0
         max_attempts = (
-            self.config.retry_max_attempts if self.config.retry_enabled else 1
+            self.config.retry_max_attempts + 1 if self.config.retry_enabled else 1
         )
         wait = self.config.retry_initial_wait
 

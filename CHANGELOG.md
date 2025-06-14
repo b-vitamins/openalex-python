@@ -49,6 +49,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - License inconsistency between LICENSE file and pyproject.toml
 - AsyncQuery pagination now respects cursors and returns correct counts
+- Configuration now loads API key and email from environment variables and is
+  immutable after creation
+- Retry logic interprets ``max_retries`` as the number of retries
 
 ## [0.1.0] - 2024-01-01
 
