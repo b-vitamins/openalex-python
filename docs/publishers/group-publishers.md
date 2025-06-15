@@ -116,10 +116,12 @@ While the API supports grouping by two dimensions, it's less common for publishe
 from openalex import Publishers
 
 # Publishers by country and hierarchy level
-country_hierarchy = Publishers().group_by(
-    "country_codes",
-    "hierarchy_level"
-).get()
+country_hierarchy = (
+    Publishers()
+    .group_by("country_codes")
+    .group_by("hierarchy_level")
+    .get()
+)
 
 # This shows which countries have more complex publisher structures
 for group in country_hierarchy.group_by[:20]:

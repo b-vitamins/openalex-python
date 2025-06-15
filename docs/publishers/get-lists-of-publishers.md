@@ -64,9 +64,11 @@ alphabetical = Publishers().sort(display_name="asc").get()
 # Get ALL publishers (feasible with only ~10,000)
 # This will make about 50 API calls
 all_publishers = []
-for publisher in Publishers().paginate(per_page=200):
-    all_publishers.append(publisher)
-print(f"Fetched all {len(all_publishers)} publishers")
+for i, page in enumerate(Publishers().paginate(per_page=200)):
+    if i >= 5:  # Stop after ~1000 results
+        break
+    all_publishers.extend(page.results)
+print(f"Fetched {len(all_publishers)} publishers")
 ```
 
 ## Sample publishers
