@@ -21,6 +21,9 @@ for work in many_author_works.results:
 To see the full list of authors, get the individual work record, which is never truncated:
 
 ```python
+# Include imports for standalone example
+from openalex import Works
+
 # Get complete work with all 249 authors
 full_work = Works()["W2168909179"]
 print(f"Total authors: {len(full_work.authorships)}")  # All 249 available
@@ -33,6 +36,9 @@ for i, authorship in enumerate(full_work.authorships, 1):
 This affects filtering as well. So if you filter works using an author ID or ROR, you will not receive works where that author is listed further than 100 places down on the list of authors. We plan to change this in the future, so that filtering works as expected.
 
 ```python
+# Include imports
+from openalex import Works
+
 # This might miss works where the author is listed after position 100
 author_works = Works().filter(
     authorships={"author": {"id": "A5023888391"}}

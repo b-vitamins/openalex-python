@@ -263,7 +263,7 @@ class BaseEntity(Generic[T, F]):
         self, query: str, **params: Any
     ) -> ListResult[AutocompleteResult]:
         """Return autocomplete suggestions for this entity."""
-        url = self._build_url(f"{AUTOCOMPLETE_PATH}")
+        url = f"{self._connection.base_url}/{AUTOCOMPLETE_PATH}/{self.endpoint}"
         params_norm = normalize_params(params)
         params_norm[PARAM_Q] = query
         response = self._connection.request(

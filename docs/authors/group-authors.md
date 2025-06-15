@@ -6,7 +6,9 @@ You can group authors to get aggregated statistics without fetching individual a
 from openalex import Authors
 
 # Create a query that groups authors by their last known institution's continent
-continent_stats_query = Authors().group_by("last_known_institution.continent")
+continent_stats_query = Authors().group_by(
+    "last_known_institutions.continent"
+)
 
 # Execute the query to get COUNTS, not individual authors
 continent_stats = continent_stats_query.get()

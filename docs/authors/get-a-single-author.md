@@ -59,10 +59,7 @@ author = Authors()["https://orcid.org/0000-0002-1298-3089"]
 author = Authors()["orcid:0000-0002-1298-3089"]  # Shorter URN format
 
 # Get author by Scopus ID
-author = Authors()["scopus:7004185353"]
-
-# Get author by Twitter handle  
-author = Authors()["twitter:jasonpriem"]
+author = Authors()["scopus:36455008000"]
 
 # Get author by Wikipedia page
 author = Authors()["wikipedia:https://en.wikipedia.org/wiki/Heather_Piwowar"]
@@ -86,7 +83,9 @@ You can use `select` to limit the fields that are returned in an author object:
 from openalex import Authors
 
 # Fetch only specific fields to reduce response size
-minimal_author = Authors().select(["id", "display_name", "orcid"]).get("A5023888391")
+minimal_author = Authors().get(
+    "A5023888391", select=["id", "display_name", "orcid"]
+)
 
 # Now only the selected fields are populated
 print(minimal_author.display_name)  # Works
