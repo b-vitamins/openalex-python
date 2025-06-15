@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   captures ``retry-after`` values without triggering long retries in tests
 - Updated Ruff configuration to ignore test-only warnings
 - Pytest configuration skips docs-based examples
+- Docs tests can now be run from the repository root with `pytest --docs`
 - Refactored test suite for maintainability and clarity
 
 - Fixed utility helpers and improved parameter, retry, and text functions to

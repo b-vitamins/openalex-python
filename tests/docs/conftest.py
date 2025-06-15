@@ -6,22 +6,6 @@ from unittest.mock import Mock, AsyncMock
 import json
 
 
-def pytest_addoption(parser):
-    """Add custom command line options."""
-    parser.addoption(
-        "--docs",
-        action="store_true",
-        default=False,
-        help="Run documentation tests",
-    )
-    parser.addoption(
-        "--no-mock-api",
-        action="store_true",
-        default=False,
-        help="Run documentation tests with real API calls",
-    )
-
-
 def pytest_configure(config):
     """Configure pytest with custom markers."""
     config.addinivalue_line("markers", "docs: mark test as documentation test")

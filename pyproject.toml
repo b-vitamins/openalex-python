@@ -156,6 +156,8 @@ markers = [
 ]
 
 addopts = [
+    "-p",
+    "tests.docs.plugin",
     "-m",
     "not docs",
     "--strict-markers",
