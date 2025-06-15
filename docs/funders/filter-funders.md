@@ -144,6 +144,8 @@ default_search = Funders().filter(
 ### Combining filters (AND operations)
 
 ```python
+from openalex import Funders
+
 # Large US government funders
 us_gov_funders = (
     Funders()
@@ -176,6 +178,8 @@ global_south_research = (
 ### NOT operations
 
 ```python
+from openalex import Funders
+
 # Funders NOT from the US
 non_us = Funders().filter_not(country_code="US").get()
 
@@ -188,6 +192,8 @@ low_grant_volume = Funders().filter_not(
 ### Range queries
 
 ```python
+from openalex import Funders
+
 # Mid-size funders (100-1000 grants)
 mid_size = (
     Funders()

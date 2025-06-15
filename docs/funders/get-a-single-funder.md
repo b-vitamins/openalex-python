@@ -58,10 +58,8 @@ nsf = Funders()["ror:021nxhr62"]
 nsf = Funders()["ror:https://ror.org/021nxhr62"]  # Full URL also works
 
 # Get funder by Crossref ID
-wellcome = Funders()["crossref:100010269"]
+wellcome = Funders()["crossref:100000002"]
 
-# Get funder by DOI
-funder = Funders()["doi:10.13039/100000002"]
 ```
 
 Available external IDs for funders are:
@@ -81,12 +79,15 @@ You can use `select` to limit the fields that are returned in a funder object:
 from openalex import Funders
 
 # Fetch only specific fields to reduce response size
-minimal_funder = Funders().select([
-    "id", 
-    "display_name", 
-    "country_code",
-    "grants_count"
-]).get("F4320332161")
+minimal_funder = Funders().get(
+    "F4320332161",
+    select=[
+        "id",
+        "display_name",
+        "country_code",
+        "grants_count",
+    ]
+)
 
 # Now only the selected fields are populated
 print(minimal_funder.display_name)  # Works

@@ -131,6 +131,9 @@ active_funders_grants = (
 You can group by two dimensions:
 
 ```python
+# Ensure Funders is available
+from openalex import Funders
+
 # Country and grant volume
 country_grants = Funders().group_by("country_code", "grants_count").get()
 

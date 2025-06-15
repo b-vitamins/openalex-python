@@ -258,6 +258,9 @@ search_international_funders("Research")
 ### Finding funding opportunities by field
 
 ```python
+# Import Funders for standalone execution
+from openalex import Funders
+
 # Medical research funders
 medical_funders = (
     Funders()
