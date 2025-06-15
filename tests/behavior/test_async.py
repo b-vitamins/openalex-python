@@ -226,7 +226,7 @@ class TestAsyncBehavior:
             results = await publishers.autocomplete("springer")
 
             _, kwargs = mock_request.call_args
-            assert kwargs["url"].endswith("/publishers/autocomplete")
+            assert kwargs["url"].endswith("/autocomplete/publishers")
             assert kwargs["params"]["q"] == "springer"
 
     async def test_async_first_helper(self):

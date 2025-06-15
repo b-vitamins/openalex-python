@@ -259,7 +259,7 @@ class TestQueryBehavior:
             results = Institutions().autocomplete("massachus")
 
             _, kwargs = mock_request.call_args
-            assert kwargs["url"].endswith("/institutions/autocomplete")
+            assert kwargs["url"].endswith("/autocomplete/institutions")
             assert kwargs["params"]["q"] == "massachus"
             assert len(results.results) == 1
 

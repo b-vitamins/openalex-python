@@ -173,7 +173,7 @@ class TestEntityBehavior:
             results = Funders().autocomplete("National Institutes")
 
             _, kwargs = mock_request.call_args
-            assert kwargs["url"].endswith("/funders/autocomplete")
+            assert kwargs["url"].endswith("/autocomplete/funders")
             assert kwargs["params"]["q"] == "National Institutes"
 
             assert len(results.results) == 1

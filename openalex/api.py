@@ -307,7 +307,7 @@ class AsyncBaseAPI(Generic[T]):
         params: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         connection = await self._get_connection()
-        url = self._build_url(f"{self.endpoint}/{AUTOCOMPLETE_PATH}")
+        url = self._build_url(f"{AUTOCOMPLETE_PATH}/{self.endpoint}")
         params_norm = normalize_params(params or {})
         params_norm[PARAM_Q] = query
         response = await connection.request(
