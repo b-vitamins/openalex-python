@@ -146,7 +146,7 @@ stats = institution.summary_stats
 if stats:
     print(f"H-index: {stats.h_index}")  # e.g., 985
     print(f"i10-index: {stats.i10_index:,}")  # e.g., 176,682
-    print(f"2-year mean citedness: {stats['2yr_mean_citedness']:.2f}")
+    print(f"2-year mean citedness: {stats.two_year_mean_citedness:.2f}")
     
     # These help assess institutional research impact
     if stats.h_index > 500:
@@ -224,6 +224,10 @@ if institution.image_thumbnail_url:
 ## Concepts (deprecated)
 
 ```python
+# Setup
+from openalex import Institutions
+institution = Institutions()["I114027177"]
+
 # Note: x_concepts will be deprecated soon, replaced by Topics
 if institution.x_concepts:
     print("Top research areas:")
@@ -261,6 +265,8 @@ for work in inst_works.results[:5]:
 ### Find all sub-institutions
 
 ```python
+from openalex import Institutions
+
 def get_all_children(institution_id):
     """Get all institutions that have this one in their lineage."""
     children = Institutions().filter(lineage=institution_id).get()
@@ -296,7 +302,6 @@ def analyze_collaborations(institution_id, year=2023):
         Works()
         .filter(institutions={"id": institution_id})
         .filter(publication_year=year)
-        .select(["id", "authorships"])
         .get(per_page=200)
     )
     
@@ -305,9 +310,12 @@ def analyze_collaborations(institution_id, year=2023):
     for work in works.results:
         institutions_in_work = set()
         for authorship in work.authorships:
-            for inst in authorship.institutions:
-                if inst.id != institution_id:
-                    institutions_in_work.add((inst.id, inst.display_name))
+            auth_inst = authorship.get("institutions", []) if isinstance(authorship, dict) else authorship.institutions
+            for inst in auth_inst:
+                inst_id = inst["id"] if isinstance(inst, dict) else inst.id
+                inst_name = inst.get("display_name") if isinstance(inst, dict) else inst.display_name
+                if inst_id != institution_id:
+                    institutions_in_work.add((inst_id, inst_name))
         
         for inst_id, inst_name in institutions_in_work:
             if inst_id not in collab_counts:
@@ -356,9 +364,9 @@ def compare_peers(institution_ids):
 # Compare Ivy League schools
 ivy_league = [
     "I136199984",  # Harvard
-    "I35403681",   # Yale  
-    "I8689696",    # Princeton
-    "I142606108",  # Columbia
+    "I32971472",   # Yale
+    "I20089843",   # Princeton
+    "I78577930",   # Columbia
 ]
 compare_peers(ivy_league)
 ```

@@ -64,7 +64,7 @@ alphabetical = Institutions().sort(display_name="asc").get()
 # Get ALL institutions (feasible with ~109,000)
 # Limit to the first 1,000 to avoid huge downloads
 all_institutions = []
-for institution in Institutions().paginate(per_page=200):
+for institution in Institutions().paginate(per_page=200, cursor="*"):
     all_institutions.append(institution)
     if len(all_institutions) >= 1000:  # Stop after 1,000
         break

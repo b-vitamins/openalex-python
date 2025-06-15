@@ -22,7 +22,7 @@ institution = Institutions()["I27837315"]  # University of Michigan–Ann Arbor
 print(f"OpenAlex ID: {institution.id}")
 print(f"ROR: {institution.ror}")
 print(f"GRID: {institution.ids.grid}")
-print(f"Wikidata: {institution.wikidata}")
+print(f"Wikidata: {institution.ids.wikidata}")
 print(f"Name: {institution.display_name}")
 print(f"Country: {institution.country_code}")
 print(f"Type: {institution.type}")
