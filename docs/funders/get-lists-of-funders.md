@@ -189,7 +189,11 @@ def find_high_impact_funders(min_h_index=200):
     print(f"Funders with h-index > {min_h_index}:")
     for funder in high_impact.results:
         h_index = funder.summary_stats.h_index if funder.summary_stats else "N/A"
-        mean_cite = funder.summary_stats["2yr_mean_citedness"] if funder.summary_stats else "N/A"
+        mean_cite = (
+            funder.summary_stats.two_year_mean_citedness
+            if funder.summary_stats
+            else "N/A"
+        )
         
         print(f"\n{funder.display_name}")
         print(f"  H-index: {h_index}")

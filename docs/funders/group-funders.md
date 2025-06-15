@@ -133,17 +133,16 @@ You can group by two dimensions:
 ```python
 from openalex import Funders
 
-# Country and grant volume
-country_grants = Funders().group_by("country_code", "grants_count").get()
+
+# Country and grant volume (single dimension)
+country_grants = Funders().group_by("country_code").get()
 
 # Continent and impact
-continent_impact = Funders().group_by("continent", "summary_stats.h_index").get()
+continent_impact = Funders().group_by("continent").get()
 
 # This shows distribution patterns
 for group in country_grants.group_by[:20]:
-    # Keys are pipe-separated for multi-dimensional groups
-    country, grant_count = group.key.split('|')
-    print(f"{country} - {grant_count} grants: {group.count} funders")
+    print(f"{group.key}: {group.count} funders")
 ```
 
 ## Practical examples

@@ -89,7 +89,9 @@ stats = funder.summary_stats
 if stats:
     print(f"H-index: {stats.h_index}")  # e.g., 985
     print(f"i10-index: {stats.i10_index:,}")  # e.g., 176,682
-    print(f"2-year mean citedness: {stats['2yr_mean_citedness']:.2f}")
+    print(
+        f"2-year mean citedness: {stats.two_year_mean_citedness:.2f}"
+    )
     
     # These help assess funding impact
     if stats.h_index > 500:
@@ -150,7 +152,7 @@ def get_funded_works(funder_id, year=None):
     """Get works funded by a specific funder."""
     
     # Build query for funded works
-    query = Works().filter(funders={"id": funder_id})
+    query = Works().filter(grants={"funder": funder_id})
     
     if year:
         query = query.filter(publication_year=year)
@@ -165,9 +167,10 @@ def get_funded_works(funder_id, year=None):
         
         # Show grant information
         for grant in work.grants:
-            if grant.funder and grant.funder.id == funder_id:
-                if grant.award_id:
-                    print(f"  Grant: {grant.award_id}")
+            grant_funder = grant.get("funder") if isinstance(grant, dict) else grant.funder
+            award_id = grant.get("award_id") if isinstance(grant, dict) else grant.award_id
+            if grant_funder == funder_id and award_id:
+                print(f"  Grant: {award_id}")
 
 # Example usage
 get_funded_works(funder.id, year=2023)
@@ -197,7 +200,7 @@ def analyze_funder_impact(funder_id):
         print(f"\nImpact Metrics:")
         print(f"  H-index: {stats.h_index}")
         print(f"  i10-index: {stats.i10_index:,}")
-        print(f"  Mean citedness: {stats['2yr_mean_citedness']:.2f}")
+        print(f"  Mean citedness: {stats.two_year_mean_citedness:.2f}")
         
         # Impact per dollar (if grant count available)
         if funder.grants_count > 0:

@@ -184,9 +184,7 @@ from openalex import Funders
 non_us = Funders().filter_not(country_code="US").get()
 
 # Funders without many grants
-low_grant_volume = Funders().filter_not(
-    grants_count={"gte": 100}
-).get()
+low_grant_volume = Funders().filter_lt(grants_count=100).get()
 ```
 
 ### Range queries
