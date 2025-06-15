@@ -48,16 +48,13 @@ for pub in multiple_publishers.results:
 You can look up publishers using external IDs such as a Wikidata ID:
 
 ```python
-# Get publisher by Wikidata ID
+# Get publisher by ROR ID
 from openalex import Publishers
 
-publisher = Publishers()["wikidata:Q1479654"]
+publisher = Publishers()["ror:https://ror.org/0117jxy09"]
 
-# Get publisher by ROR ID
-publisher = Publishers()["ror:https://ror.org/02scfj030"]
-
-# Direct lookup by full URL also works
-publisher = Publishers()["https://www.wikidata.org/entity/Q746413"]
+# Direct lookup by full URL also works with ROR
+publisher = Publishers()["https://ror.org/0117jxy09"]
 ```
 
 Available external IDs for publishers are:
@@ -75,7 +72,7 @@ You can use `select` to limit the fields that are returned in a publisher object
 # Fetch only specific fields to reduce response size
 from openalex import Publishers
 
-minimal_publisher = Publishers().select(["id", "display_name", "works_count"]).get("P4310319965")
+minimal_publisher = Publishers().select(["id", "display_name", "works_count"]).get(id="P4310319965")
 
 # Now only the selected fields are populated
 print(minimal_publisher.display_name)  # Works

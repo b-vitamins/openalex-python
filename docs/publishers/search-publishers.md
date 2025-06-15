@@ -172,7 +172,7 @@ nature_families = find_publisher_family("Nature")
 for parent_id, members in nature_families.items():
     print(f"\nFamily {parent_id}:")
     for pub in members:
-        indent = "  " * pub.hierarchy_level
+        indent = "  " * (pub.hierarchy_level or 0)
         print(f"{indent}{pub.display_name}")
 ```
 
@@ -240,8 +240,8 @@ from openalex import Publishers
 springer_all = Publishers().search("Springer").get(per_page=50)
 
 # Separate parents from children
-parents = [p for p in springer_all.results if p.hierarchy_level == 0]
-imprints = [p for p in springer_all.results if p.hierarchy_level > 0]
+parents = [p for p in springer_all.results if (p.hierarchy_level or 0) == 0]
+imprints = [p for p in springer_all.results if (p.hierarchy_level or 0) > 0]
 
 print(f"Found {len(parents)} parent companies")
 print(f"Found {len(imprints)} imprints/subsidiaries")

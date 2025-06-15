@@ -87,7 +87,9 @@ stats = publisher.summary_stats
 if stats:
     print(f"H-index: {stats.h_index}")  # e.g., 985
     print(f"i10-index: {stats.i10_index:,}")  # e.g., 176,682
-    print(f"2-year mean citedness: {stats['2yr_mean_citedness']:.2f}")
+    print(
+        f"2-year mean citedness: {stats.two_year_mean_citedness:.2f}"
+    )
     
     # These metrics help assess publisher impact
     if stats.h_index > 500:
@@ -288,7 +290,7 @@ for work_type, count in sorted(work_types.items(), key=lambda x: x[1], reverse=T
     print(f"  {work_type}: {count}")
 
 # Analyze open access
-oa_count = sum(1 for w in recent_works.results if w.open_access.is_oa)
+oa_count = sum(1 for w in recent_works.results if w.is_oa)
 oa_percentage = (oa_count / len(recent_works.results)) * 100
 print(f"\nOpen Access rate: {oa_percentage:.1f}%")
 ```
