@@ -164,8 +164,14 @@ class Query(Generic[T, F]):
     def _apply_logical_operation(
         self, filter_dict: dict[str, Any], operation: type[_LogicalExpression]
     ) -> dict[str, Any]:
-        """Apply a logical operation to all values in a filter dict."""
-        return {k: operation(v) for k, v in filter_dict.items()}
+        """Apply a logical operation recursively to all filter values."""
+
+        def apply(value: Any) -> Any:
+            if isinstance(value, dict):
+                return {k: apply(v) for k, v in value.items()}
+            return operation(value)
+
+        return {k: apply(v) for k, v in filter_dict.items()}
 
     # --- builder methods -------------------------------------------------
     def filter(self, **kwargs: Any) -> Query[T, F]:

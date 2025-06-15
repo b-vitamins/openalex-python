@@ -34,7 +34,7 @@ page2 = query_orcid.get(page=2, per_page=100)  # Authors 101-200
 # Or iterate through all results (use with extreme caution!)
 for author in query_orcid.paginate(per_page=200):
     # This could make thousands of API calls!
-    process(author)
+    print(author.id)
 ```
 
 ## Authors attribute filters
@@ -217,7 +217,7 @@ non_us_authors = Authors().filter_not(
 ).get()
 
 # Authors without ORCID
-no_orcid = Authors().filter_not(has_orcid=True).get()
+no_orcid = Authors().filter(has_orcid=False).get()
 ```
 
 ### Range queries

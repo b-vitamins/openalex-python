@@ -101,7 +101,7 @@ stats = author.summary_stats
 if stats:
     print(f"H-index: {stats.h_index}")  # e.g., 45
     print(f"i10-index: {stats.i10_index}")  # e.g., 205
-    print(f"2-year mean citedness: {stats['2yr_mean_citedness']:.2f}")
+    print(f"2-year mean citedness: {stats.two_year_mean_citedness:.2f}")
     
     # Interpretation
     if stats.h_index > 40:
@@ -224,7 +224,6 @@ author = Authors()["A5023888391"]
 sample_works = (
     Works()
     .filter(authorships={"author": {"id": author.id}})
-    .select(["id", "authorships"])
     .get(per_page=50)
 )
 
@@ -232,11 +231,18 @@ sample_works = (
 co_authors = set()
 for work in sample_works.results:
     for authorship in work.authorships:
+        # API may return raw dicts here when using select
+        if isinstance(authorship, dict):
+            from openalex.models.work import Authorship
+
+            authorship = Authorship(**authorship)
         if authorship.author.id != author.id:
-            co_authors.add((
-                authorship.author.id,
-                authorship.author.display_name
-            ))
+            co_authors.add(
+                (
+                    authorship.author.id,
+                    authorship.author.display_name,
+                )
+            )
 
 print(f"Found {len(co_authors)} co-authors in sample")
 for co_id, co_name in list(co_authors)[:10]:
