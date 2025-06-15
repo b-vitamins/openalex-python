@@ -67,12 +67,17 @@ most_cited = Concepts().sort(cited_by_count="desc").get()
 root_concepts = Concepts().filter(level=0).sort(display_name="asc").get()
 print(f"Found {root_concepts.meta.count} root concepts")  # Should be 19
 
-# Get ALL concepts (feasible with ~65,000)
-# This will make about 325 API calls at 200 per page
+# Get many concepts (feasible with ~65,000)
+# This example stops after about 1,000 concepts to avoid huge downloads
 all_concepts = []
-for concept in Concepts().paginate(per_page=200):
-    all_concepts.append(concept)
-print(f"Fetched all {len(all_concepts)} concepts")
+page_count = 0
+for page in Concepts().paginate(per_page=200):
+    page_count += 1
+    if page_count > 5:  # Roughly 1,000 concepts
+        break
+    all_concepts.extend(page.results)
+
+print(f"Fetched {len(all_concepts)} concepts")
 ```
 
 ## Sample concepts

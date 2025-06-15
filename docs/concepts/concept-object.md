@@ -76,7 +76,7 @@ stats = concept.summary_stats
 if stats:
     print(f"H-index: {stats.h_index}")
     print(f"i10-index: {stats.i10_index:,}")
-    print(f"2-year mean citedness: {stats['2yr_mean_citedness']:.2f}")
+    print(f"2-year mean citedness: {stats.two_year_mean_citedness:.2f}")
     
     # These help assess concept impact
     if stats.h_index > 200:
@@ -255,7 +255,7 @@ def analyze_concept_impact(concept_id):
         print(f"\nImpact Metrics:")
         print(f"  H-index: {stats.h_index}")
         print(f"  i10-index: {stats.i10_index:,}")
-        print(f"  Mean citedness: {stats['2yr_mean_citedness']:.2f}")
+        print(f"  Mean citedness: {stats.two_year_mean_citedness:.2f}")
         
         # Calculate average citations per work
         if concept.works_count > 0:

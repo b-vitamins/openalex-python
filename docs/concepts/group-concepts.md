@@ -133,7 +133,12 @@ You can group by two dimensions:
 from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Level and ancestor combination
-level_ancestor = Concepts().group_by("level,ancestors.id").get()
+level_ancestor = (
+    Concepts()
+    .group_by("level")
+    .group_by("ancestors.id")
+    .get()
+)
 
 # This shows distribution of concepts by level within each ancestor branch
 for group in level_ancestor.group_by[:20]:
@@ -246,11 +251,11 @@ def analyze_concept_impact():
     
     for range_name, min_h, max_h in h_index_ranges:
         # Build query
-        query = Concepts()
-        if min_h > 0:
-            query = query.filter_gte(summary_stats={"h_index": min_h})
+        filters = {"gte": min_h}
         if max_h < float('inf'):
-            query = query.filter_lt(summary_stats={"h_index": max_h})
+            filters["lte"] = max_h
+
+        query = Concepts().filter(summary_stats={"h_index": filters})
         
         # Get results
         result = query.get()
