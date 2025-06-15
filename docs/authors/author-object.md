@@ -155,7 +155,7 @@ if ids.wikipedia:
 
 # Check what IDs are available
 available_ids = [
-    id_type for id_type, value in ids.dict().items() 
+    id_type for id_type, value in ids.model_dump().items()
     if value is not None
 ]
 print(f"Available IDs: {', '.join(available_ids)}")

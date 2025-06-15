@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Request caching disabled by default
 - Verified caching behavior with updated tests
 - Documentation examples for institutions are now self-contained
+- Updated docs to use `model_dump()` instead of `dict()`
 
 ### Fixed
 - Retry logic now honors `max_retries` without exceeding the limit
