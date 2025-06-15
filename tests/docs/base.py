@@ -23,6 +23,7 @@ class BaseDocTest(ABC):
             "# Don't do this",
             "# BAD:",
             "# DON'T DO THIS",
+            "process(",
         ]
 
     def should_skip(self, example: CodeExample) -> str | None:

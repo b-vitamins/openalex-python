@@ -19,7 +19,7 @@ class TestAuthorsDocs(BaseDocTest):
         """Ensure ORCID examples use correct format."""
         docs_path = self.get_docs_path()
 
-        for example in find_examples(docs_path, pattern="*.md"):
+        for example in find_examples(*docs_path.glob("*.md")):
             if ("python" not in example.prefix.lower() or self.should_skip(example)):
                 continue
             code = example.source
@@ -38,7 +38,7 @@ class TestAuthorsDocs(BaseDocTest):
         """Ensure author IDs use correct format."""
         docs_path = self.get_docs_path()
 
-        for example in find_examples(docs_path, pattern="*.md"):
+        for example in find_examples(*docs_path.glob("*.md")):
             if ("python" not in example.prefix.lower() or self.should_skip(example)):
                 continue
             code = example.source

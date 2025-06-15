@@ -126,7 +126,7 @@ def mock_api_responses(request, monkeypatch):
         },
     }
 
-    def mock_sync_request(method, url, **kwargs):
+    def mock_sync_request(self, method, url, **kwargs):
         """Mock synchronous HTTP requests."""
         parts = url.rstrip("/").split("/")
 
@@ -155,9 +155,11 @@ def mock_api_responses(request, monkeypatch):
                     results.append(
                         {
                             "id": f"W{1000+i}",
+                            "display_name": f"Example work {i+1}",
                             "title": f"Example work {i+1}",
                             "publication_year": 2023,
                             "cited_by_count": i * 10,
+                            "relevance_score": round(1.0 - i * 0.1, 2),
                             "open_access": {"is_oa": True},
                         }
                     )
@@ -168,6 +170,15 @@ def mock_api_responses(request, monkeypatch):
                             "display_name": f"Test Author {i+1}",
                             "works_count": 50 + i * 10,
                             "cited_by_count": 1000 + i * 100,
+                        }
+                    )
+                elif "institutions" in url:
+                    results.append(
+                        {
+                            "id": f"I{1000+i}",
+                            "display_name": f"Institution {i+1}",
+                            "works_count": 200 + i * 20,
+                            "cited_by_count": 5000 + i * 500,
                         }
                     )
             return Mock(
@@ -186,8 +197,8 @@ def mock_api_responses(request, monkeypatch):
 
         return Mock(status_code=200, json=lambda: {"results": [], "meta": {"count": 0, "page": 1, "per_page": 25}})
 
-    async def mock_async_request(method, url, **kwargs):
-        return mock_sync_request(method, url, **kwargs)
+    async def mock_async_request(self, method, url, **kwargs):
+        return mock_sync_request(self, method, url, **kwargs)
 
     monkeypatch.setattr("httpx.Client.request", mock_sync_request)
     monkeypatch.setattr("httpx.AsyncClient.request", mock_async_request)
