@@ -31,9 +31,12 @@ first_page = query_orcid.get()
 # To get more results, use pagination
 page2 = query_orcid.get(page=2, per_page=100)  # Authors 101-200
 
-# Or iterate through all results (use with extreme caution!)
+# Iterate through a limited number of pages (safer approach)
+page_count = 0
 for page in query_orcid.paginate(per_page=200):
-    # This could make thousands of API calls!
+    page_count += 1
+    if page_count > 10:  # Stop after 2,000 authors
+        break
     for author in page.results:
         print(author.id)
 ```
@@ -51,7 +54,7 @@ from openalex import Authors
 highly_cited = Authors().filter(cited_by_count=1000).get()  # Exactly 1000
 very_highly_cited = Authors().filter_gt(cited_by_count=10000).get()  # More than 10k
 
-# Filter by works_count  
+# Filter by works_count
 prolific = Authors().filter_gt(works_count=100).get()  # More than 100 works
 new_authors = Authors().filter_lt(works_count=5).get()  # Fewer than 5 works
 

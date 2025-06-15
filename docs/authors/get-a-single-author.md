@@ -51,28 +51,27 @@ Authors are also available via an alias: `People()` works the same as `Authors()
 You can look up authors using external IDs such as an ORCID:
 
 ```python
-# Import required class for each example
 from openalex import Authors
 
-# Get author by ORCID (multiple formats supported)
-author = Authors()["https://orcid.org/0000-0002-1298-3089"]
-author = Authors()["orcid:0000-0002-1298-3089"]  # Shorter URN format
+author = Authors()["A5086198262"]
+name = author.display_name
+print(name) # Yoshua Bengio
 
-# Get author by Scopus ID
-author = Authors()["scopus:36455008000"]
+author = Authors()["https://orcid.org/0000-0002-9322-3515"] # ORCID
+assert name == author.display_name
 
-# Get author by Wikipedia page
-author = Authors()["wikipedia:https://en.wikipedia.org/wiki/Heather_Piwowar"]
+author = Authors()["orcid:0000-0002-9322-3515"] # Shorter URN format
+assert name == author.display_name
 ```
 
 Available external IDs for authors are:
 
-| External ID | URN | Example |
-|------------|-----|---------|
-| ORCID | `orcid` | `orcid:0000-0001-6187-6610` |
-| Scopus | `scopus` | `scopus:7004185353` |
-| Twitter | `twitter` | `twitter:jasonpriem` |
-| Wikipedia | `wikipedia` | `wikipedia:en.wikipedia.org/wiki/Person_Name` |
+| External ID | URN         | Example                                       |
+|-------------|-------------|-----------------------------------------------|
+| ORCID       | `orcid`     | `orcid:0000-0001-6187-6610`                   |
+| Scopus      | `scopus`    | `scopus:7004185353`                           |
+| Twitter     | `twitter`   | `twitter:jasonpriem`                          |
+| Wikipedia   | `wikipedia` | `wikipedia:en.wikipedia.org/wiki/Person_Name` |
 
 ## Select fields
 
