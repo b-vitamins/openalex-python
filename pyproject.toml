@@ -156,8 +156,6 @@ markers = [
 ]
 
 addopts = [
-    "-m",
-    "not docs",
     "--strict-markers",
     "-ra",
 ]
