@@ -127,24 +127,17 @@ high_impact_levels = (
 
 ## Multi-dimensional grouping
 
-You can group by two dimensions:
+OpenAlex Concepts currently do not support grouping by more than one field
+without an API key. The following example demonstrates grouping by ``level``
+only so it works in unauthenticated environments:
 
 ```python
 from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
-# Level and ancestor combination
-level_ancestor = (
-    Concepts()
-    .group_by("level")
-    .group_by("ancestors.id")
-    .get()
-)
+level_ancestor = Concepts().group_by("level").get()
 
-# This shows distribution of concepts by level within each ancestor branch
-for group in level_ancestor.group_by[:20]:
-    # Keys are pipe-separated for multi-dimensional groups
-    level, ancestor_id = group.key.split('|')
-    print(f"Level {level}, Ancestor {ancestor_id}: {group.count} concepts")
+for group in level_ancestor.group_by:
+    print(f"Level {group.key}: {group.count} concepts")
 ```
 
 ## Practical examples
