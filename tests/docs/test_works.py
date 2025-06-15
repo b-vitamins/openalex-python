@@ -19,7 +19,7 @@ class TestWorksDocs(BaseDocTest):
         """Ensure Works() queries always have filters in examples."""
         docs_path = self.get_docs_path()
 
-        for example in find_examples(docs_path, pattern="*.md"):
+        for example in find_examples(*docs_path.glob("*.md")):
             if "python" not in example.prefix.lower() or self.should_skip(example):
                 continue
 
@@ -37,16 +37,14 @@ class TestWorksDocs(BaseDocTest):
                 )
 
             import re
-            pattern = r"Works\(\)[\s\n]*\.get\("
+            pattern = r"Works\(\)\s*\.get\(\)"
             if (
                 re.search(pattern, code)
-                and ".filter(" not in code
-                and ".search(" not in code
                 and "# BAD" not in code
             ):
                 pytest.fail(
                     f"Unfiltered Works query at {example.path.name}:{example.start_line}\n"
-                    "Add .filter() or .search() before .get()"
+                    "Avoid calling Works().get() without filters"
                 )
 
     @pytest.mark.docs
@@ -54,7 +52,7 @@ class TestWorksDocs(BaseDocTest):
         """Ensure paginate() examples have reasonable limits."""
         docs_path = self.get_docs_path()
 
-        for example in find_examples(docs_path, pattern="*.md"):
+        for example in find_examples(*docs_path.glob("*.md")):
             if "python" not in example.prefix.lower() or self.should_skip(example):
                 continue
 

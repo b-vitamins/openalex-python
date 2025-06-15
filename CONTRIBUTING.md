@@ -33,6 +33,12 @@ pytest tests/test_works.py
 
 # Run async tests
 pytest tests/test_async.py
+
+# Run documentation tests with mocked API responses
+pytest tests/docs --docs
+
+# Run documentation tests against the real API
+pytest tests/docs --docs --no-mock-api
 ```
 
 ## Code Style

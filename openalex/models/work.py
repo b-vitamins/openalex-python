@@ -273,6 +273,7 @@ class Work(OpenAlexEntity):
     )
     indexed_in: list[str] = Field(default_factory=list)
     ngrams_url: str | None = None
+    relevance_score: float | None = None
 
     @property
     def abstract(self) -> str | None:
