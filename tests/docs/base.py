@@ -27,10 +27,10 @@ class BaseDocTest(ABC):
 
     def should_skip(self, example: CodeExample) -> str | None:
         """Check if example should be skipped, return reason if so."""
-        if example.lang != "python":
-            return f"Non-Python code block ({example.lang})"
+        if "python" not in example.prefix.lower() and example.path.suffix != ".py":
+            return f"Non-Python code block ({example.prefix or 'unknown'})"
 
-        code = example.code.strip()
+        code = example.source.strip()
 
         if code.startswith(("$", "pip ", "export ", "# ")):
             return "Shell command or comment"
@@ -58,17 +58,10 @@ class BaseDocTest(ABC):
         if skip_reason:
             pytest.skip(skip_reason)
 
-        code = self.prepare_code(example.code)
-
-        example = CodeExample(
-            path=example.path,
-            code=code,
-            lang=example.lang,
-            start_line=example.start_line,
-        )
+        code = self.prepare_code(example.source)
 
         try:
-            example.run()
+            exec(compile(code, str(example.path), "exec"), {})
         except ImportError as e:
             if "pandas" in str(e):
                 pytest.skip("Optional dependency not installed: pandas")
@@ -76,7 +69,7 @@ class BaseDocTest(ABC):
         except Exception as e:
             pytest.fail(
                 f"Example failed at {example.path.name}:{example.start_line}\n"
-                f"Code:\n{example.code}\n"
+                f"Code:\n{code}\n"
                 f"Error: {type(e).__name__}: {e}"
             )
 
