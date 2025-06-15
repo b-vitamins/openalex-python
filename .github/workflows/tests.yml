@@ -55,7 +55,7 @@ jobs:
 
     - name: Run documentation tests
       run: |
-        pytest --docs -v
+        pytest tests/docs --docs -v
       env:
         # OPENALEX_API_KEY: ${{ secrets.OPENALEX_API_KEY }}
 

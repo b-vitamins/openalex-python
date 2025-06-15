@@ -20,10 +20,10 @@ class TestWorksDocs(BaseDocTest):
         docs_path = self.get_docs_path()
 
         for example in find_examples(docs_path, pattern="*.md"):
-            if example.lang != "python" or self.should_skip(example):
+            if "python" not in example.prefix.lower() or self.should_skip(example):
                 continue
 
-            code = example.code
+            code = example.source
 
             if (
                 "Works().get()" in code.replace(" ", "")
@@ -55,10 +55,10 @@ class TestWorksDocs(BaseDocTest):
         docs_path = self.get_docs_path()
 
         for example in find_examples(docs_path, pattern="*.md"):
-            if example.lang != "python" or self.should_skip(example):
+            if "python" not in example.prefix.lower() or self.should_skip(example):
                 continue
 
-            code = example.code
+            code = example.source
 
             if ".paginate(" in code and "Works()" in code:
                 has_limit = any([

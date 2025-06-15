@@ -89,10 +89,10 @@ class TestPerformanceGuideDoc(BaseDocTest):
         has_filter_example = False
 
         for example in examples:
-            if example.lang != "python":
+            if "python" not in example.prefix.lower():
                 continue
 
-            code = example.code
+            code = example.source
 
             if ".paginate(" in code and ("break" in code or "limit" in code):
                 has_pagination_limit = True

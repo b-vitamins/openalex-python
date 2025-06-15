@@ -20,10 +20,9 @@ class TestAuthorsDocs(BaseDocTest):
         docs_path = self.get_docs_path()
 
         for example in find_examples(docs_path, pattern="*.md"):
-            if example.lang != "python" or self.should_skip(example):
+            if ("python" not in example.prefix.lower() or self.should_skip(example)):
                 continue
-
-            code = example.code
+            code = example.source
 
             if "orcid" in code.lower():
                 import re
@@ -40,10 +39,9 @@ class TestAuthorsDocs(BaseDocTest):
         docs_path = self.get_docs_path()
 
         for example in find_examples(docs_path, pattern="*.md"):
-            if example.lang != "python" or self.should_skip(example):
+            if ("python" not in example.prefix.lower() or self.should_skip(example)):
                 continue
-
-            code = example.code
+            code = example.source
 
             if "Authors()[" in code or 'author": {"id":' in code:
                 import re
