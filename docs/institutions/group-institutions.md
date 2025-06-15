@@ -95,8 +95,8 @@ impact_dist = Institutions().group_by("summary_stats.2yr_mean_citedness").get()
 ```python
 from openalex import Institutions
 
-# Group institutions by works_count range (10k increments)
-size_bins = Institutions().group_by("works_count", interval=10000).get()
+# Group institutions by works_count
+size_bins = Institutions().group_by("works_count").get()
 for group in size_bins.group_by[:5]:
     print(f"{group.key}: {group.count} institutions")
 ```
@@ -167,20 +167,21 @@ elite_by_country = (
 You can group by two dimensions:
 
 ```python
-# Type and continent
 from openalex import Institutions
 
-# Type and continent
-type_continent = Institutions().group_by("type", "continent").get()
+# Group by type
+type_dist = Institutions().group_by("type").get()
 
-# Country and type
-country_type = Institutions().group_by("country_code", "type").get()
+# Group by country
+country_dist = Institutions().group_by("country_code").get()
 
-# This shows which countries have diverse institution types
-for group in country_type.group_by[:20]:
-    # Keys are pipe-separated for multi-dimensional groups
-    country, inst_type = group.key.split('|')
-    print(f"{country} - {inst_type}: {group.count}")
+print("Institution types:")
+for group in type_dist.group_by:
+    print(f"  {group.key}: {group.count}")
+
+print("\nInstitutions by country (top 10):")
+for group in country_dist.group_by[:10]:
+    print(f"  {group.key}: {group.count}")
 ```
 
 ## Practical examples

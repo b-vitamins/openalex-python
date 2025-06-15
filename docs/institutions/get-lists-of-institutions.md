@@ -62,11 +62,13 @@ most_cited = Institutions().sort(cited_by_count="desc").get()
 alphabetical = Institutions().sort(display_name="asc").get()
 
 # Get ALL institutions (feasible with ~109,000)
-# This will make about 550 API calls at 200 per page
+# Limit to the first 1,000 to avoid huge downloads
 all_institutions = []
 for institution in Institutions().paginate(per_page=200):
     all_institutions.append(institution)
-print(f"Fetched all {len(all_institutions)} institutions")
+    if len(all_institutions) >= 1000:  # Stop after 1,000
+        break
+print(f"Fetched {len(all_institutions)} institutions")
 ```
 
 ## Sample institutions
@@ -164,9 +166,9 @@ from openalex import Institutions
 # US healthcare institutions in Boston
 boston_healthcare = (
     Institutions()
+    .search("Boston")
     .filter(type="healthcare")
     .filter(country_code="US")
-    .filter(geo={"city": "Boston"})
     .get()
 )
 

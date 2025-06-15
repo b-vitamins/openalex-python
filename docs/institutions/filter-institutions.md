@@ -79,7 +79,7 @@ super_systems = Institutions().filter(is_super_system=True).get()
 print(f"Found {super_systems.meta.count} super systems")
 
 # Find child institutions of UC Berkeley
-berkeley_children = Institutions().filter(parent_institution="I40120149").get()
+berkeley_children = Institutions().filter(lineage="I40120149").get()
 print(f"UC Berkeley has {berkeley_children.meta.count} child institutions")
 ```
 
@@ -87,11 +87,11 @@ print(f"UC Berkeley has {berkeley_children.meta.count} child institutions")
 
 ```python
 # Find institutions with repositories
-from openalex import Institutions
+from openalex import Institutions, not_
 
-# Find institutions with repositories
+# Institutions that host at least one repository
 has_repository = Institutions().filter(
-    repositories={"id": {"exists": True}}
+    repositories={"id": not_(None)}
 ).get()
 
 # Find institutions hosting specific repository
@@ -253,8 +253,8 @@ non_us = Institutions().filter_not(country_code="US").get()
 non_education = Institutions().filter_not(type="education").get()
 
 # Institutions without repositories
-no_repository = Institutions().filter_not(
-    repositories={"id": {"exists": True}}
+no_repository = Institutions().filter(
+    repositories={"id": None}
 ).get()
 ```
 

@@ -172,11 +172,11 @@ columbia_university = (
     .get()
 )
 
-# Or use location to disambiguate
+# Or use location to disambiguate by including the city name
 columbia_ny = (
     Institutions()
-    .search("Columbia")
-    .filter(geo={"city": "New York"})
+    .search("Columbia New York")
+    .filter(country_code="US")
     .get()
 )
 ```

@@ -15,6 +15,9 @@ print(type(institution))  # <class 'openalex.models.institution.Institution'>
 ## Basic properties
 
 ```python
+# Setup
+from openalex import Institutions
+institution = Institutions()["I114027177"]
 # Identifiers
 print(institution.id)  # "https://openalex.org/I114027177"
 print(institution.ror)  # "https://ror.org/0130frc33" (canonical ID)
@@ -44,6 +47,9 @@ print(institution.is_super_system)  # False (True for large systems like UC Syst
 ## Geographic information
 
 ```python
+# Setup
+from openalex import Institutions
+institution = Institutions()["I114027177"]
 geo = institution.geo
 if geo:
     print(f"City: {geo.city}")  # "Chapel Hill"
@@ -57,6 +63,9 @@ if geo:
 ## Hierarchical relationships (lineage)
 
 ```python
+# Setup
+from openalex import Institutions
+institution = Institutions()["I114027177"]
 # Lineage shows the institution hierarchy
 print(f"Lineage depth: {len(institution.lineage)}")
 for i, ancestor_id in enumerate(institution.lineage):
@@ -76,6 +85,9 @@ if len(institution.lineage) > 1:
 ## Associated institutions
 
 ```python
+# Setup
+from openalex import Institutions
+institution = Institutions()["I114027177"]
 # Related institutions (siblings, children, related)
 print(f"Associated institutions: {len(institution.associated_institutions)}")
 
@@ -90,6 +102,9 @@ for assoc in institution.associated_institutions:
 ## Repositories
 
 ```python
+# Setup
+from openalex import Institutions
+institution = Institutions()["I114027177"]
 # Repositories hosted by this institution
 if institution.repositories:
     print(f"Hosts {len(institution.repositories)} repositories:")
@@ -104,6 +119,9 @@ if institution.repositories:
 ## Multiple roles
 
 ```python
+# Setup
+from openalex import Institutions
+institution = Institutions()["I114027177"]
 # An organization can be an institution, funder, and/or publisher
 print(f"This organization has {len(institution.roles)} roles:")
 
@@ -121,6 +139,9 @@ for role in institution.roles:
 ## Summary statistics
 
 ```python
+# Setup
+from openalex import Institutions
+institution = Institutions()["I114027177"]
 stats = institution.summary_stats
 if stats:
     print(f"H-index: {stats.h_index}")  # e.g., 985
@@ -135,6 +156,9 @@ if stats:
 ## Publication trends
 
 ```python
+# Setup
+from openalex import Institutions
+institution = Institutions()["I114027177"]
 # Track output over the last 10 years
 print("Publication trends:")
 for count in institution.counts_by_year:
@@ -153,6 +177,9 @@ if len(institution.counts_by_year) >= 2:
 ## External identifiers
 
 ```python
+# Setup
+from openalex import Institutions
+institution = Institutions()["I114027177"]
 ids = institution.ids
 print(f"OpenAlex: {ids.openalex}")
 print(f"ROR: {ids.ror}")
@@ -169,6 +196,9 @@ if ids.wikidata:
 ## International names
 
 ```python
+# Setup
+from openalex import Institutions
+institution = Institutions()["I114027177"]
 # Names in different languages
 if hasattr(institution, 'international') and institution.international:
     if hasattr(institution.international, 'display_name'):
@@ -180,6 +210,9 @@ if hasattr(institution, 'international') and institution.international:
 ## Images
 
 ```python
+# Setup
+from openalex import Institutions
+institution = Institutions()["I114027177"]
 # Institution logo/seal
 if institution.image_url:
     print(f"Logo URL: {institution.image_url}")
@@ -201,11 +234,13 @@ if institution.x_concepts:
 ## Works API URL
 
 ```python
+# Setup
+from openalex import Institutions, Works
+institution = Institutions()["I114027177"]
 # URL to get all works from this institution
 print(f"Works URL: {institution.works_api_url}")
 
 # To actually fetch works using the client:
-from openalex import Works
 
 # Get recent works from this institution
 inst_works = (
@@ -249,6 +284,9 @@ for campus in campuses:
 ### Analyze institutional collaboration
 
 ```python
+from openalex import Institutions, Works
+
+institution = Institutions()["I114027177"]
 def analyze_collaborations(institution_id, year=2023):
     """Find top collaborating institutions."""
     from openalex import Works
@@ -294,6 +332,8 @@ analyze_collaborations(institution.id)
 ### Compare peer institutions
 
 ```python
+from openalex import Institutions
+
 def compare_peers(institution_ids):
     """Compare multiple institutions."""
     institutions = []
@@ -328,6 +368,9 @@ compare_peers(ivy_league)
 Many fields can be None or empty:
 
 ```python
+# Setup
+from openalex import Institutions
+institution = Institutions()["I114027177"]
 # Safe access patterns
 if institution.geo:
     print(f"Located in: {institution.geo.city}")
@@ -360,8 +403,10 @@ if intl_names and hasattr(intl_names, 'display_name'):
 When institutions appear in other objects (like in work authorships), you get a simplified version:
 
 ```python
+# Setup
+from openalex import Institutions, Works
+institution = Institutions()["I114027177"]
 # Get a work to see dehydrated institutions
-from openalex import Works
 work = Works()["W2741809807"]
 
 # Access dehydrated institutions in authorships
