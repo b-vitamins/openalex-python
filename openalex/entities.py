@@ -328,8 +328,14 @@ class BaseEntity(Generic[T, F]):
     def filter_gt(self, **kwargs: Any) -> Query[T, F]:
         return self.query().filter_gt(**kwargs)
 
+    def filter_gte(self, **kwargs: Any) -> Query[T, F]:
+        return self.query().filter_gte(**kwargs)
+
     def filter_lt(self, **kwargs: Any) -> Query[T, F]:
         return self.query().filter_lt(**kwargs)
+
+    def filter_lte(self, **kwargs: Any) -> Query[T, F]:
+        return self.query().filter_lte(**kwargs)
 
     def search_filter(self, **kwargs: Any) -> Query[T, F]:
         return self.query().search_filter(**kwargs)

@@ -49,6 +49,8 @@ for concept in first_page.results[:5]:  # First 5 concepts
 You can control pagination and sorting:
 
 ```python
+# Import client
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Get a specific page with custom page size
 page2 = Concepts().get(per_page=50, page=2)

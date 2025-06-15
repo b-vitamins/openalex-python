@@ -133,7 +133,7 @@ You can group by two dimensions:
 from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Level and ancestor combination
-level_ancestor = Concepts().group_by("level", "ancestors.id").get()
+level_ancestor = Concepts().group_by("level,ancestors.id").get()
 
 # This shows distribution of concepts by level within each ancestor branch
 for group in level_ancestor.group_by[:20]:
@@ -261,7 +261,7 @@ def analyze_concept_impact():
             print(f"  Concepts: {result.meta.count:,}")
             
             # Show some examples
-            examples = query.sort(summary_stats={"h_index": "desc"}).get(per_page=3)
+            examples = query.sort(**{"summary_stats.h_index": "desc"}).get(per_page=3)
             print("  Examples:")
             for concept in examples.results:
                 h_index = concept.summary_stats.h_index if concept.summary_stats else "N/A"

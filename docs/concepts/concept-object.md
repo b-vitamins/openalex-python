@@ -20,6 +20,9 @@ print(type(concept))  # <class 'openalex.models.concept.Concept'>
 ## Basic properties
 
 ```python
+# Import client and fetch a concept
+from openalex import Concepts
+concept = Concepts()["C71924100"]
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Identifiers
 print(concept.id)  # "https://openalex.org/C71924100"
@@ -42,6 +45,9 @@ print(concept.updated_date)  # "2021-12-25T14:04:30.578837"
 ## Hierarchical relationships
 
 ```python
+# Fetch concept
+from openalex import Concepts
+concept = Concepts()["C71924100"]
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Ancestors (concepts this descends from)
 if concept.ancestors:
@@ -62,6 +68,9 @@ if concept.related_concepts:
 ## Summary statistics
 
 ```python
+# Fetch concept
+from openalex import Concepts
+concept = Concepts()["C71924100"]
 # ⚠️ DEPRECATED: Consider using Topics instead
 stats = concept.summary_stats
 if stats:
@@ -77,6 +86,9 @@ if stats:
 ## Publication trends
 
 ```python
+# Fetch concept
+from openalex import Concepts
+concept = Concepts()["C71924100"]
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Track output over the last 10 years
 print("Publication trends:")
@@ -97,6 +109,9 @@ if len(concept.counts_by_year) >= 2:
 ## External identifiers
 
 ```python
+# Fetch concept
+from openalex import Concepts
+concept = Concepts()["C71924100"]
 # ⚠️ DEPRECATED: Consider using Topics instead
 ids = concept.ids
 print(f"OpenAlex: {ids.openalex}")
@@ -114,6 +129,9 @@ if ids.umls_aui:
 ## Images
 
 ```python
+# Fetch concept
+from openalex import Concepts
+concept = Concepts()["C71924100"]
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Concept visualization (usually from Wikipedia)
 if concept.image_url:
@@ -126,6 +144,9 @@ if concept.image_thumbnail_url:
 ## International names
 
 ```python
+# Fetch concept
+from openalex import Concepts
+concept = Concepts()["C71924100"]
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Names in different languages
 if hasattr(concept, 'international') and concept.international:
@@ -138,6 +159,9 @@ if hasattr(concept, 'international') and concept.international:
 ## Works API URL
 
 ```python
+# Fetch concept
+from openalex import Concepts
+concept = Concepts()["C71924100"]
 # ⚠️ DEPRECATED: Consider using Topics instead
 # URL to get all works tagged with this concept
 print(f"Works URL: {concept.works_api_url}")
@@ -164,6 +188,8 @@ for work in concept_works.results[:5]:
 ### Navigate the concept tree
 
 ```python
+# Import client
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 def explore_concept_tree(concept_id):
     """Navigate up and down the concept hierarchy."""
@@ -207,6 +233,8 @@ explore_concept_tree("C41008148")  # Computer Science
 ### Analyze concept impact
 
 ```python
+# Import client
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 def analyze_concept_impact(concept_id):
     """Comprehensive impact analysis of a concept."""
@@ -251,6 +279,8 @@ analyze_concept_impact("C154945302")  # Machine learning
 ### Compare concepts
 
 ```python
+# Import client
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 def compare_concepts(concept_ids):
     """Compare multiple concepts side by side."""
@@ -283,6 +313,8 @@ compare_concepts([
 ### Find concept relationships
 
 ```python
+# Import client
+from openalex import Concepts
 # ⚠️ DEPRECATED: Consider using Topics instead
 def find_concept_relationships(concept_id):
     """Find various relationships for a concept."""
@@ -336,6 +368,9 @@ find_concept_relationships("C41008148")  # Computer Science
 Many fields can be None or empty:
 
 ```python
+# Fetch concept
+from openalex import Concepts
+concept = Concepts()["C71924100"]
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Safe access patterns
 if concept.description:
@@ -371,6 +406,7 @@ When concepts appear in other objects (like in work concepts or ancestors), you 
 # ⚠️ DEPRECATED: Consider using Topics instead
 # Get a work to see dehydrated concepts
 from openalex import Works
+from openalex import Concepts
 work = Works()["W2741809807"]
 
 # Access dehydrated concepts in works
