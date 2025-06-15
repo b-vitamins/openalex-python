@@ -15,6 +15,10 @@ print(type(funder))  # <class 'openalex.models.funder.Funder'>
 ## Basic properties
 
 ```python
+# Setup
+from openalex import Funders
+funder = Funders()["F4320332161"]
+
 # Identifiers
 print(funder.id)  # "https://openalex.org/F4320332161"
 print(funder.display_name)  # "National Institutes of Health"
@@ -40,6 +44,10 @@ print(funder.updated_date)  # "2023-04-21T16:54:19.012138"
 ## Images
 
 ```python
+# Setup
+from openalex import Funders
+funder = Funders()["F4320332161"]
+
 # Funder logo/seal
 if funder.image_url:
     print(f"Logo URL: {funder.image_url}")
@@ -52,6 +60,10 @@ if funder.image_thumbnail_url:
 ## Multiple roles
 
 ```python
+# Setup
+from openalex import Funders
+funder = Funders()["F4320332161"]
+
 # An organization can be a funder, institution, and/or publisher
 print(f"This organization has {len(funder.roles)} roles:")
 
@@ -69,6 +81,10 @@ for role in funder.roles:
 ## Summary statistics
 
 ```python
+# Setup
+from openalex import Funders
+funder = Funders()["F4320332161"]
+
 stats = funder.summary_stats
 if stats:
     print(f"H-index: {stats.h_index}")  # e.g., 985
@@ -83,6 +99,10 @@ if stats:
 ## Funding trends
 
 ```python
+# Setup
+from openalex import Funders
+funder = Funders()["F4320332161"]
+
 # Track funding output over the last 10 years
 print("Funding trends:")
 for count in funder.counts_by_year[:5]:  # Last 5 years
@@ -101,6 +121,10 @@ if len(funder.counts_by_year) >= 2:
 ## External identifiers
 
 ```python
+# Setup
+from openalex import Funders
+funder = Funders()["F4320332161"]
+
 ids = funder.ids
 print(f"OpenAlex: {ids.openalex}")
 if ids.ror:
@@ -118,7 +142,9 @@ if ids.wikidata:
 ### Find funded works
 
 ```python
-from openalex import Works
+from openalex import Funders, Works
+
+funder = Funders()["F4320332161"]
 
 def get_funded_works(funder_id, year=None):
     """Get works funded by a specific funder."""
@@ -150,6 +176,8 @@ get_funded_works(funder.id, year=2023)
 ### Analyze funding impact
 
 ```python
+from openalex import Funders
+
 def analyze_funder_impact(funder_id):
     """Comprehensive impact analysis of a funder."""
     funder = Funders()[funder_id]
@@ -193,6 +221,8 @@ analyze_funder_impact("F4320332161")  # NIH
 ### Compare funders
 
 ```python
+from openalex import Funders
+
 def compare_funders(funder_ids):
     """Compare multiple funders side by side."""
     funders = []
@@ -224,6 +254,8 @@ compare_funders([
 ### Find related funders
 
 ```python
+from openalex import Funders
+
 def find_related_funders(funder_id):
     """Find funders with similar characteristics or focus."""
     source_funder = Funders()[funder_id]
@@ -270,6 +302,10 @@ find_related_funders("F4320306076")
 Many fields can be None or empty:
 
 ```python
+# Setup
+from openalex import Funders
+funder = Funders()["F4320332161"]
+
 # Safe access patterns
 if funder.homepage_url:
     print(f"Website: {funder.homepage_url}")
@@ -305,7 +341,7 @@ When funders appear in other objects (like in work grants), you get a simplified
 
 ```python
 # Get a work to see dehydrated funders
-from openalex import Works
+from openalex import Funders, Works
 work = Works()["W2741809807"]
 
 # Access dehydrated funders in grants

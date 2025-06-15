@@ -63,9 +63,13 @@ alphabetical = Funders().sort(display_name="asc").get()
 # Get ALL funders (very feasible with ~32,000)
 # This will make about 160 API calls at 200 per page
 all_funders = []
-for funder in Funders().paginate(per_page=200):
-    all_funders.append(funder)
-print(f"Fetched all {len(all_funders)} funders")
+page_count = 0
+for page in Funders().paginate(per_page=200):
+    page_count += 1
+    if page_count > 5:  # Stop after 1,000 funders
+        break
+    all_funders.extend(page.results)
+print(f"Fetched {len(all_funders)} funders")
 ```
 
 ## Sample funders
@@ -178,7 +182,7 @@ def find_high_impact_funders(min_h_index=200):
     high_impact = (
         Funders()
         .filter_gt(summary_stats={"h_index": min_h_index})
-        .sort(summary_stats={"h_index": "desc"})
+        .sort(**{"summary_stats.h_index": "desc"})
         .get(per_page=20)
     )
     
