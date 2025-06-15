@@ -189,8 +189,8 @@ non_cs = Concepts().filter_not(ancestors={"id": "C41008148"}).get()
 non_root = Concepts().filter_not(level=0).get()
 
 # Concepts with limited impact
-low_impact = Concepts().filter_not(
-    summary_stats={"h_index": {"gte": 50}}
+low_impact = Concepts().filter_lt(
+    summary_stats={"h_index": 50}
 ).get()
 ```
 
@@ -202,8 +202,7 @@ from openalex import Concepts
 # Mid-level concepts (levels 2-4)
 mid_levels = (
     Concepts()
-    .filter_gte(level=2)
-    .filter_lte(level=4)
+    .filter(level={"gte": 2, "lte": 4})
     .get()
 )
 
