@@ -111,7 +111,7 @@ from .models import (
     WorkIds,
     WorkType,
 )
-from .query import Query, gt_, lt_, not_, or_
+from .query import Query, gt_, gte_, lt_, lte_, not_, or_
 from .utils import invert_abstract
 
 logger = get_logger(__name__)
@@ -217,8 +217,10 @@ __all__ = [
     "__version__",
     "close_all_async_connections",
     "gt_",
+    "gte_",
     "invert_abstract",
     "lt_",
+    "lte_",
     "not_",
     "or_",
 ]

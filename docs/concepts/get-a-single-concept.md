@@ -86,7 +86,7 @@ minimal_concept = Concepts().select([
     "display_name",
     "level",
     "works_count"
-]).get("C71924100")
+])["C71924100"]
 
 # Now only the selected fields are populated
 print(minimal_concept.display_name)  # Works

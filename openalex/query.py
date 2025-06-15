@@ -19,7 +19,9 @@ from .utils.pagination import MAX_PER_PAGE, AsyncPaginator, Paginator
 __all__ = [
     "Query",
     "gt_",
+    "gte_",
     "lt_",
+    "lte_",
     "not_",
     "or_",
 ]
@@ -59,6 +61,18 @@ class lt_(_LogicalExpression):  # noqa: N801
     """Less than expression."""
 
     token = "<"
+
+
+class gte_(_LogicalExpression):  # noqa: N801
+    """Greater than or equal expression."""
+
+    token = ">="
+
+
+class lte_(_LogicalExpression):  # noqa: N801
+    """Less than or equal expression."""
+
+    token = "<="
 
 
 def _build_list_result(data: dict[str, Any], model: type[T]) -> ListResult[T]:
@@ -238,10 +252,20 @@ class Query(Generic[T, F]):
         gt_filters = self._apply_logical_operation(kwargs, gt_)
         return self.filter(**gt_filters)
 
+    def filter_gte(self, **kwargs: Any) -> Query[T, F]:
+        """Add greater than or equal filter parameters."""
+        gte_filters = self._apply_logical_operation(kwargs, gte_)
+        return self.filter(**gte_filters)
+
     def filter_lt(self, **kwargs: Any) -> Query[T, F]:
         """Add less than filter parameters."""
         lt_filters = self._apply_logical_operation(kwargs, lt_)
         return self.filter(**lt_filters)
+
+    def filter_lte(self, **kwargs: Any) -> Query[T, F]:
+        """Add less than or equal filter parameters."""
+        lte_filters = self._apply_logical_operation(kwargs, lte_)
+        return self.filter(**lte_filters)
 
     def search_filter(self, **kwargs: Any) -> Query[T, F]:
         """Add search filter parameters (search within specific fields)."""
@@ -363,8 +387,14 @@ class AsyncQuery(Generic[T, F]):
     def filter_gt(self, **kwargs: Any) -> AsyncQuery[T, F]:
         return self.filter(**{k: gt_(v) for k, v in kwargs.items()})
 
+    def filter_gte(self, **kwargs: Any) -> AsyncQuery[T, F]:
+        return self.filter(**{k: gte_(v) for k, v in kwargs.items()})
+
     def filter_lt(self, **kwargs: Any) -> AsyncQuery[T, F]:
         return self.filter(**{k: lt_(v) for k, v in kwargs.items()})
+
+    def filter_lte(self, **kwargs: Any) -> AsyncQuery[T, F]:
+        return self.filter(**{k: lte_(v) for k, v in kwargs.items()})
 
     def search(self, query: str) -> AsyncQuery[T, F]:
         self._params["search"] = query

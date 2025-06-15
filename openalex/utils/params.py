@@ -100,6 +100,16 @@ def flatten_filter_dict(
         full_key = f"{prefix}.{key}" if prefix else key
 
         if isinstance(value, dict) and not isinstance(value, or_):
+            range_keys = {"gte", "lte"}
+            if set(value.keys()) <= range_keys:
+                gte_val = value.get("gte")
+                lte_val = value.get("lte")
+                if gte_val is not None or lte_val is not None:
+                    start = serialize_filter_value(gte_val) if gte_val is not None else ""
+                    end = serialize_filter_value(lte_val) if lte_val is not None else ""
+                    parts.append(f"{full_key}:{start}-{end}")
+                    continue
+
             nested = flatten_filter_dict(value, full_key, ",")
             if nested:
                 parts.append(nested)
