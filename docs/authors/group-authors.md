@@ -114,10 +114,12 @@ global_south = Authors().group_by(
 # Shows what percentage of authors are from Global South
 
 # Multi-dimensional: Country AND institution type
-country_and_type = Authors().group_by(
-    "last_known_institutions.country_code",
-    "last_known_institutions.type"
-).get()
+country_and_type = (
+    Authors()
+    .group_by("last_known_institutions.country_code")
+    .group_by("last_known_institutions.type")
+    .get()
+)
 # See which countries have more university vs. company researchers
 ```
 
@@ -175,22 +177,28 @@ You can group by up to two fields:
 from openalex import Authors
 
 # ORCID adoption by continent
-orcid_by_continent = Authors().group_by(
-    "has_orcid",
-    "last_known_institutions.continent"
-).get()
+orcid_by_continent = (
+    Authors()
+    .group_by("has_orcid")
+    .group_by("last_known_institutions.continent")
+    .get()
+)
 
 # Institution type by country
-inst_type_by_country = Authors().group_by(
-    "last_known_institutions.country_code",
-    "last_known_institutions.type"
-).get()
+inst_type_by_country = (
+    Authors()
+    .group_by("last_known_institutions.country_code")
+    .group_by("last_known_institutions.type")
+    .get()
+)
 
 # Productivity by institution
-productivity_by_inst = Authors().group_by(
-    "last_known_institutions.id",
-    "works_count"
-).get()
+productivity_by_inst = (
+    Authors()
+    .group_by("last_known_institutions.id")
+    .group_by("works_count")
+    .get()
+)
 ```
 
 ## Practical examples
@@ -295,10 +303,10 @@ def analyze_career_stages():
     
     return early, mid, senior
 
-# Geographic mobility (authors with multiple affiliations)
+# Geographic distribution of authors from the Global South
 mobile_authors = (
     Authors()
-    .filter_gt(affiliations={"institution": {"count": 2}})
+    .filter(last_known_institutions={"is_global_south": True})
     .group_by("last_known_institutions.country_code")
     .get()
 )
