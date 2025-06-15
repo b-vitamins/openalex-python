@@ -137,7 +137,9 @@ class Query(Generic[T, F]):
                 for key, value in filt.items():
                     if key in current:
                         existing = current[key]
-                        if isinstance(existing, tuple):
+                        if isinstance(existing, dict) and isinstance(value, dict):
+                            current[key] = self._merge_filter_dict(existing, value)
+                        elif isinstance(existing, tuple):
                             current[key] = (*existing, value)
                         else:
                             current[key] = (existing, value)
@@ -159,7 +161,19 @@ class Query(Generic[T, F]):
         """Merge filter dictionaries based on operation type."""
         if operation == "or":
             return or_(current | new)
-        return current | new
+        merged = current.copy()
+        for key, value in new.items():
+            if key in merged and isinstance(merged[key], dict) and isinstance(value, dict):
+                merged[key] = self._merge_filter_dict(merged[key], value, operation)
+            elif key in merged:
+                existing = merged[key]
+                if isinstance(existing, tuple):
+                    merged[key] = (*existing, value)
+                else:
+                    merged[key] = (existing, value)
+            else:
+                merged[key] = value
+        return merged
 
     def _apply_logical_operation(
         self, filter_dict: dict[str, Any], operation: type[_LogicalExpression]

@@ -32,9 +32,10 @@ first_page = query_orcid.get()
 page2 = query_orcid.get(page=2, per_page=100)  # Authors 101-200
 
 # Or iterate through all results (use with extreme caution!)
-for author in query_orcid.paginate(per_page=200):
+for page in query_orcid.paginate(per_page=200):
     # This could make thousands of API calls!
-    print(author.id)
+    for author in page.results:
+        print(author.id)
 ```
 
 ## Authors attribute filters
@@ -138,8 +139,7 @@ rising_stars = Authors().filter_gt(
 # Combine metrics
 elite_authors = (
     Authors()
-    .filter_gt(summary_stats={"h_index": 100})
-    .filter_gt(summary_stats={"i10_index": 500})
+    .filter_gt(summary_stats={"h_index": 100, "i10_index": 500})
     .get()
 )
 ```

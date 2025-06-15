@@ -206,10 +206,11 @@ author_works = Works().filter(
 print(f"Retrieved {len(author_works.results)} of {author.works_count} works")
 
 # Get all works with pagination
-for work in Works().filter(
+for page in Works().filter(
     authorships={"author": {"id": author.id}}
 ).paginate():
-    print(f"- {work.title} ({work.publication_year})")
+    for work in page.results:
+        print(f"- {work.title} ({work.publication_year})")
 ```
 
 ### Find co-authors
