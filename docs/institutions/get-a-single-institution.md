@@ -21,7 +21,7 @@ institution = Institutions()["I27837315"]  # University of Michigan–Ann Arbor
 
 print(f"OpenAlex ID: {institution.id}")
 print(f"ROR: {institution.ror}")
-print(f"GRID: {institution.grid}")
+print(f"GRID: {institution.ids.grid}")
 print(f"Wikidata: {institution.wikidata}")
 print(f"Name: {institution.display_name}")
 print(f"Country: {institution.country_code}")
@@ -94,11 +94,11 @@ from openalex import Institutions
 
 # Fetch only specific fields to reduce response size
 minimal_institution = Institutions().select([
-    "id", 
-    "display_name", 
+    "id",
+    "display_name",
     "country_code",
     "type"
-]).get("I27837315")
+])["I27837315"]
 
 # Now only the selected fields are populated
 print(minimal_institution.display_name)  # Works
