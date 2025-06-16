@@ -47,6 +47,14 @@ class OpenAlexConfig(BaseModel):
         le=300,
         description="Request timeout in seconds",
     )
+    operation_timeouts: dict[str, float] = Field(
+        default_factory=lambda: {
+            "get": 10.0,
+            "list": 30.0,
+            "search": 20.0,
+            "autocomplete": 5.0,
+        }
+    )
     per_page: int = Field(
         default=DEFAULT_PER_PAGE,
         ge=1,

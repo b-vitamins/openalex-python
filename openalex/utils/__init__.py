@@ -53,6 +53,7 @@ from .text import (
     normalize_author_name,
     truncate_abstract,
 )
+from .validation import validate_entity_id
 
 __all__ = [
     "DOI_URL_PREFIX",
@@ -97,6 +98,7 @@ __all__ = [
     "retry_with_rate_limit",
     "strip_id_prefix",
     "truncate_abstract",
+    "validate_entity_id",
     "validate_id_format",
     "with_retry",
 ]
