@@ -2,17 +2,15 @@
 description: Organizations that fund research
 ---
 
-# 💰 Funders
+# Funders
 
 Funders are organizations that fund research. OpenAlex indexes about 32,000 funders. Funder data comes from Crossref, and is enhanced with data from Wikidata and ROR.
 
 ```python
 from openalex import Funders
 
-# Create a query builder for funders
 funders_query = Funders()
 
-# Execute the query to get the first page of results (25 funders by default)
 first_page = funders_query.get()
 
 print(f"Total funders in OpenAlex: {first_page.meta.count:,}")  # ~32,000
