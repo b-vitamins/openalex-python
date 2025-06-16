@@ -65,6 +65,7 @@ from .models import (
 from .query import Query
 from .utils import Paginator, strip_id_prefix
 from .utils.params import normalize_params
+from .utils.validation import validate_entity_id
 
 if TYPE_CHECKING:  # pragma: no cover
     from .config import OpenAlexConfig
@@ -184,6 +185,7 @@ class BaseEntity(Generic[T, F]):
         params: dict[str, Any] | None = None,
     ) -> T:
         cache_manager = get_cache_manager(self._config)
+        entity_id = validate_entity_id(entity_id, self.endpoint.rstrip("s"))
         entity_id = strip_id_prefix(entity_id)
 
         def fetch() -> dict[str, Any]:

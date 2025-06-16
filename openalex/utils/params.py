@@ -35,7 +35,32 @@ __all__ = [
     "normalize_params",
     "serialize_filter_value",
     "serialize_params",
+    "validate_date_param",
+    "validate_numeric_param",
 ]
+
+
+def validate_date_param(value: str) -> str:
+    """Validate date format matches ISO 8601."""
+    from datetime import datetime
+
+    try:
+        datetime.fromisoformat(value)
+    except ValueError as exc:  # pragma: no cover - defensive
+        message = f"Invalid date format: {value}"
+        raise ValueError(message) from exc
+    return value
+
+
+def validate_numeric_param(value: int | float, min_val: int = 0, max_val: int = 1_000_000) -> int | float:
+    """Ensure numeric parameters are within reasonable ranges."""
+    if not isinstance(value, int | float):
+        message = f"Numeric value required, got {type(value).__name__}"
+        raise TypeError(message)
+    if value < min_val or value > max_val:
+        message = f"Value {value} outside allowed range [{min_val}, {max_val}]"
+        raise ValueError(message)
+    return value
 
 
 def serialize_filter_value(value: Any) -> str:
