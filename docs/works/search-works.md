@@ -264,7 +264,7 @@ broad_query = Works().search("science").filter(publication_year=2023).get()
 better_query = (
     Works()
     .search("citizen science")
-    .filter(primary_topic={"field": {"display_name": "Environmental Science"}})
+    .filter(primary_topic={"field": {"id": "F10075"}})
     .get()
 )
 ```

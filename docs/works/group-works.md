@@ -177,9 +177,6 @@ fields = Works().filter(publication_year=2023).group_by("primary_topic.field.id"
 domains = Works().filter(publication_year=2023).group_by("primary_topic.domain.id").get()
 # Usually 4-5 major domains like "Health Sciences", "Physical Sciences"
 
-# Find interdisciplinary works (those with many topics)
-topic_counts = Works().filter(publication_year=2023).group_by("topics_count").get()
-# Distribution of how many topics are assigned to works
 ```
 
 ## Combining filters with group_by
@@ -322,7 +319,7 @@ nature_stats = (
 nature_topics = (
     Works()
     .filter(primary_location={"source": {"id": "S137773608"}})
-    .group_by("primary_topic.field.display_name")
+    .group_by("primary_topic.field.id")
     .get()
 )
 ```
