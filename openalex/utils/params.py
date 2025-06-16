@@ -10,7 +10,7 @@ from typing import Any, Final
 # applied so that raw values are sent and encoded once by the HTTP client.
 from urllib.parse import quote_plus
 
-from ..query import _LogicalExpression, or_
+from ..query import _LogicalExpression, gte_, lte_, or_
 
 KEY_MAP: Final[dict[str, str]] = {
     "per_page": "per-page",
@@ -116,6 +116,22 @@ def flatten_filter_dict(
             continue
 
         if isinstance(value, tuple):
+            gte_val = None
+            lte_val = None
+            range_candidates = True
+            for item in value:
+                if isinstance(item, gte_):
+                    gte_val = item.value
+                elif isinstance(item, lte_):
+                    lte_val = item.value
+                else:
+                    range_candidates = False
+            if range_candidates and (gte_val is not None or lte_val is not None):
+                start = serialize_filter_value(gte_val) if gte_val is not None else ""
+                end = serialize_filter_value(lte_val) if lte_val is not None else ""
+                parts.append(f"{full_key}:{start}-{end}")
+                continue
+
             for item in value:
                 ser = serialize_filter_value(item)
                 if full_key.endswith(".search"):
