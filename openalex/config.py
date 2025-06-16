@@ -22,6 +22,7 @@ from .constants import (
     HEADER_AUTHORIZATION,
     HEADER_USER_AGENT,
 )
+from .middleware import Middleware
 from .utils.rate_limit import DEFAULT_BUFFER
 
 
@@ -77,6 +78,11 @@ class OpenAlexConfig(BaseModel):
         ge=0,
         le=1,
         description="Rate limit buffer (0-1)",
+    )
+
+    middleware: Middleware = Field(
+        default_factory=Middleware,
+        description="Request/response middleware stack",
     )
 
     # Retry settings
@@ -148,7 +154,11 @@ class OpenAlexConfig(BaseModel):
             params["api_key"] = self.api_key
         return params
 
-    model_config = ConfigDict(frozen=True, populate_by_name=True)
+    model_config = ConfigDict(
+        frozen=True,
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+    )
 
     def __setattr__(self, name: str, value: Any) -> None:
         """Raise AttributeError when attempting to modify frozen fields."""

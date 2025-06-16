@@ -70,6 +70,31 @@ class Connection:
             self.open()
         assert self._client is not None
 
+        if (
+            self._config.middleware.request_interceptors
+            or self._config.middleware.response_interceptors
+        ):
+            request = self._client.build_request(
+                method, url, params=params, **kwargs
+            )
+            for req_interceptor in self._config.middleware.request_interceptors:
+                request = req_interceptor.process_request(request)
+            send_kwargs: dict[str, Any] = {}
+            try:
+                response = self._client.send(request, **send_kwargs)
+            except httpx.TimeoutException as e:
+                msg = f"Request timed out after {self._config.timeout}s"
+                raise TimeoutError(msg) from e
+            except httpx.NetworkError as e:
+                msg = f"Network error: {e!s}"
+                raise NetworkError(msg) from e
+            except httpx.HTTPError as e:
+                msg = f"HTTP error: {e!s}"
+                raise APIError(msg) from e
+            else:
+                for resp_interceptor in self._config.middleware.response_interceptors:
+                    response = resp_interceptor.process_response(response)
+                return response
         try:
             response = self._client.request(
                 method, url, params=params, **kwargs
