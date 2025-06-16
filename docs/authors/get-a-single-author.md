@@ -78,7 +78,7 @@ Available external IDs for authors are:
 You can use `select` to limit the fields that are returned in an author object:
 
 ```python
-# Import again so the block is self‑contained
+# Import again so the block is self-contained
 from openalex import Authors
 
 # Fetch only specific fields to reduce response size

@@ -5,14 +5,10 @@ You can get lists of authors using the Python client:
 ```python
 from openalex import Authors
 
-# Create a query for all authors (no filters applied)
 all_authors_query = Authors()
 
-# Execute the query to get the FIRST PAGE of results
 first_page = all_authors_query.get()
 
-# IMPORTANT: This does NOT return all 93+ million authors!
-# It returns only the first 25 authors (one page)
 print(f"Total authors matching query: {first_page.meta.count:,}")  # ~93,011,659
 print(f"Authors in this response: {len(first_page.results)}")  # 25
 print(f"Current page: {first_page.meta.page}")  # 1
@@ -113,7 +109,7 @@ for author in minimal_authors.results:
 
 1. **Default page size**: 25 results
 2. **Maximum page size**: 200 results
-3. **Maximum offset**: 10,000 (page × per_page must be ≤ 10,000)
+3. **Maximum offset**: 10,000 (page * per_page must be <= 10,000)
 4. **Total authors**: ~93 million (be careful with broad queries!)
 5. **For analytics**: Use `group_by` instead of fetching all authors
 

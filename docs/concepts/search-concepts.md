@@ -169,9 +169,9 @@ def search_in_domain(search_term, domain_concept_id):
     print(f"'{search_term}' concepts in domain:")
     for concept in results.results:
         # Show the path from root to this concept
-        path = " → ".join([a.display_name for a in concept.ancestors])
+        path = " -> ".join([a.display_name for a in concept.ancestors])
         print(f"\n{concept.display_name}")
-        print(f"  Path: {path} → {concept.display_name}")
+        print(f"  Path: {path} -> {concept.display_name}")
         print(f"  Level: {concept.level}")
         print(f"  Works: {concept.works_count:,}")
 
@@ -339,7 +339,7 @@ def comprehensive_search(search_terms, min_works=1000):
     for concept in sorted_concepts[:20]:
         print(f"\n{concept.display_name} (Level {concept.level})")
         if concept.ancestors:
-            path = " → ".join([a.display_name for a in concept.ancestors])
+            path = " -> ".join([a.display_name for a in concept.ancestors])
             print(f"  Path: {path}")
         print(f"  Works: {concept.works_count:,}")
 

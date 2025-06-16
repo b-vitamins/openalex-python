@@ -193,7 +193,7 @@ def explore_concept_tree(concept_id):
         print("\nAncestors (parent chain):")
         for i, ancestor in enumerate(concept.ancestors):
             indent = "  " * i
-            print(f"{indent}↑ {ancestor.display_name} (Level {ancestor.level})")
+            print(f"{indent}^ {ancestor.display_name} (Level {ancestor.level})")
     
     # Go down: Show descendants
     descendants = (
@@ -206,7 +206,7 @@ def explore_concept_tree(concept_id):
     if descendants.meta.count > 0:
         print(f"\nDescendants ({descendants.meta.count} direct children):")
         for child in descendants.results:
-            print(f"  ↓ {child.display_name}")
+            print(f"  v {child.display_name}")
             
             # Count grandchildren
             grandchildren = (

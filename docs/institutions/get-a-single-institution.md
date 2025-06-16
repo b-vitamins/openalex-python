@@ -17,7 +17,7 @@ That will return an [`Institution`](institution-object.md) object, describing ev
 ```python
 from openalex import Institutions
 
-institution = Institutions()["I27837315"]  # University of Michigan–Ann Arbor
+institution = Institutions()["I27837315"]  # University of Michigan-Ann Arbor
 
 print(f"OpenAlex ID: {institution.id}")
 print(f"ROR: {institution.ror}")
@@ -43,10 +43,8 @@ if institution.geo:
 You can make up to 50 of these queries at once by requesting a list of entities and filtering on IDs:
 
 ```python
-# Example fetching multiple institutions
 from openalex import Institutions
 
-# Fetch multiple specific institutions in one API call
 institution_ids = ["I27837315", "I136199984", "I97018004"]
 multiple_institutions = Institutions().filter(openalex=institution_ids).get()
 

@@ -2,17 +2,15 @@
 description: Universities and other organizations to which authors claim affiliations
 ---
 
-# 🏫 Institutions
+# Institutions
 
 Institutions are universities and other organizations to which authors claim affiliations. OpenAlex indexes about 109,000 institutions. You can access institutions in the Python client like this:
 
 ```python
 from openalex import Institutions
 
-# Create a query builder for institutions
 institutions_query = Institutions()
 
-# Execute the query to get the first page of results (25 institutions by default)
 first_page = institutions_query.get()
 
 print(f"Total institutions in OpenAlex: {first_page.meta.count:,}")  # ~109,000

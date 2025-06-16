@@ -268,7 +268,7 @@ def find_interdisciplinary_concepts():
             )
             
             if shared.meta.count > 0:
-                print(f"\n{root1.display_name} ∩ {root2.display_name}: {shared.meta.count} concepts")
+                print(f"\n{root1.display_name}  &  {root2.display_name}: {shared.meta.count} concepts")
                 for concept in shared.results[:3]:
                     print(f"  - {concept.display_name}")
 

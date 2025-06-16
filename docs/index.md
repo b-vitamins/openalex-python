@@ -5,11 +5,9 @@ Welcome to the official client for the [OpenAlex](https://openalex.org) scholarl
 ## Quick Start
 
 ```python
-# Make the first example impressive but simple
 from openalex import Works
 
-# Get a trending paper
-work = Works()["W2741809807"]  # Use a well-known paper
+work = Works()["W2741809807"]
 print(f"Title: {work.title}")
 print(f"Year: {work.publication_year}")
 print(f"Citations: {work.cited_by_count}")
@@ -19,16 +17,13 @@ print(f"Open Access: {'Yes' if work.open_access.is_oa else 'No'}")
 ## Feature Tour
 
 ```python
-# Feature 1: Search across entities
 from openalex import Works, Authors
 
-# Search for works
 climate_papers = Works().search("climate change").filter(publication_year=2023).get(per_page=3)
 print(f"Found {climate_papers.meta.count} papers on climate change in 2023")
 ```
 
 ```python
-# Search for authors
 from openalex import Authors
 
 climate_researchers = Authors().search("climate change").get(per_page=3)
@@ -37,7 +32,6 @@ for author in climate_researchers.results:
 ```
 
 ```python
-# Feature 2: Analyze institutions
 from openalex import Institutions
 
 top_unis = Institutions().filter(type="education").sort(cited_by_count="desc").get(per_page=5)
@@ -47,10 +41,9 @@ for uni in top_unis.results:
 ```
 
 ```python
-# Feature 3: Track research trends
 from openalex import Topics
 
-ml_topic = Topics()["T10017"]  # Machine Learning
+ml_topic = Topics()["T10017"]
 print(f"Topic: {ml_topic.display_name}")
 print(f"Works: {ml_topic.works_count:,}")
 print(f"Growing field with {ml_topic.cited_by_count:,} total citations")
