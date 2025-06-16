@@ -73,6 +73,11 @@ class CacheManager:
                     entity_id=entity_id,
                     from_cache=True,
                 )
+                if self.config.collect_metrics:
+                    from ..metrics import get_metrics_collector
+
+                    metrics = get_metrics_collector(self.config)
+                    metrics.record_cache_hit(endpoint)
                 return cast("T", cached_data)
 
             logger.debug(
@@ -81,6 +86,12 @@ class CacheManager:
                 entity_id=entity_id,
                 from_cache=False,
             )
+
+            if self.config.collect_metrics:
+                from ..metrics import get_metrics_collector
+
+                metrics = get_metrics_collector(self.config)
+                metrics.record_cache_miss(endpoint)
 
             data = fetch_func()
             cache_ttl = ttl or self._get_ttl_for_endpoint(endpoint)

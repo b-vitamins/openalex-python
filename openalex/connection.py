@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import time
 from typing import TYPE_CHECKING, Any
 
 import httpx
@@ -70,45 +71,56 @@ class Connection:
             self.open()
         assert self._client is not None
 
-        if (
-            self._config.middleware.request_interceptors
-            or self._config.middleware.response_interceptors
-        ):
-            request = self._client.build_request(
-                method, url, params=params, **kwargs
-            )
-            for req_interceptor in self._config.middleware.request_interceptors:
-                request = req_interceptor.process_request(request)
-            send_kwargs: dict[str, Any] = {}
-            try:
+        metrics = None
+        start_time = 0.0
+        endpoint = "unknown"
+        if self._config.collect_metrics:
+            from .metrics import get_metrics_collector
+
+            metrics = get_metrics_collector(self._config)
+            start_time = time.time()
+            endpoint = url.split("/")[-2] if "/" in url else "unknown"
+
+        try:
+            if (
+                self._config.middleware.request_interceptors
+                or self._config.middleware.response_interceptors
+            ):
+                request = self._client.build_request(
+                    method, url, params=params, **kwargs
+                )
+                for req_interceptor in self._config.middleware.request_interceptors:
+                    request = req_interceptor.process_request(request)
+                send_kwargs: dict[str, Any] = {}
                 response = self._client.send(request, **send_kwargs)
-            except httpx.TimeoutException as e:
-                msg = f"Request timed out after {self._config.timeout}s"
-                raise TimeoutError(msg) from e
-            except httpx.NetworkError as e:
-                msg = f"Network error: {e!s}"
-                raise NetworkError(msg) from e
-            except httpx.HTTPError as e:
-                msg = f"HTTP error: {e!s}"
-                raise APIError(msg) from e
-            else:
                 for resp_interceptor in self._config.middleware.response_interceptors:
                     response = resp_interceptor.process_response(response)
-                return response
-        try:
-            response = self._client.request(
-                method, url, params=params, **kwargs
-            )
+            else:
+                response = self._client.request(
+                    method, url, params=params, **kwargs
+                )
         except httpx.TimeoutException as e:
+            if metrics is not None:
+                duration = time.time() - start_time
+                metrics.record_request(endpoint, duration, success=False)
             msg = f"Request timed out after {self._config.timeout}s"
             raise TimeoutError(msg) from e
         except httpx.NetworkError as e:
+            if metrics is not None:
+                duration = time.time() - start_time
+                metrics.record_request(endpoint, duration, success=False)
             msg = f"Network error: {e!s}"
             raise NetworkError(msg) from e
         except httpx.HTTPError as e:
+            if metrics is not None:
+                duration = time.time() - start_time
+                metrics.record_request(endpoint, duration, success=False)
             msg = f"HTTP error: {e!s}"
             raise APIError(msg) from e
         else:
+            if metrics is not None:
+                duration = time.time() - start_time
+                metrics.record_request(endpoint, duration, success=response.is_success)
             return response
 
     def _build_headers(self) -> dict[str, str]:

@@ -87,6 +87,10 @@ class OpenAlexConfig(BaseModel):
         le=1,
         description="Rate limit buffer (0-1)",
     )
+    collect_metrics: bool = Field(
+        default=False,
+        description="Enable metrics collection",
+    )
 
     middleware: Middleware = Field(
         default_factory=Middleware,
