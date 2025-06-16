@@ -28,7 +28,7 @@ print(f"H-index: {author.summary_stats.h_index}")
 # Institutions
 from openalex import Institutions
 
-mit = Institutions()["I44113856"]
+mit = Institutions()["I63966007"]
 print(f"Institution: {mit.display_name}")
 print(f"Location: {mit.geo.city}, {mit.geo.country}")
 ```
@@ -164,7 +164,12 @@ print(f"Works with <5 citations: {low_cited:,}")
 # Range
 from openalex import Authors
 
-mid_career = Authors().filter(works_count="50:200").count()
+mid_career = (
+    Authors()
+    .filter_gte(works_count=50)
+    .filter_lte(works_count=200)
+    .count()
+)
 print(f"Authors with 50-200 works: {mid_career:,}")
 ```
 
@@ -224,7 +229,7 @@ prolific_recent = (
     Authors()
     .filter(
         works_count=">100",
-        last_known_institution={
+        last_known_institutions={
             "country_code": "US",
             "type": "education"
         }
