@@ -1,7 +1,7 @@
 # Concept object
 
 {% hint style="warning" %}
-**DEPRECATION WARNING**: These are the original OpenAlex Concepts, which are being deprecated in favor of [Topics](../topics/README.md). We will continue to provide these Concepts for Works, but we will not be actively maintaining, updating, or providing support for these concepts. Unless you have a good reason to be relying on them, we encourage you to look into [Topics](../topics/README.md) instead.
+**DEPRECATION WARNING**: These are the original OpenAlex Concepts, which are being deprecated in favor of [Topics](../topics/README.md). OpenAlex will continue to provide these Concepts for Works, but OpenAlex will not be actively maintaining, updating, or providing support for these concepts. Unless you have a good reason to be relying on them, The OpenAlex team encourages you to look into [Topics](../topics/README.md) instead.
 {% endhint %}
 
 When you fetch a concept using the Python client, you get a `Concept` object with all of OpenAlex's data about that concept. Here's how to access the various properties:

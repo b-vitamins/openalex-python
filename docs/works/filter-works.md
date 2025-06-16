@@ -228,7 +228,7 @@ quantum_search = Works().filter(
 ml_fulltext = Works().filter(
     fulltext={"search": "machine learning algorithms"}
 ).get()
-# Only searches works where we have full-text indexed
+# Searches works only when OpenAlex has full-text indexed
 
 # Search in author affiliation strings
 amsterdam_affiliations = Works().filter(

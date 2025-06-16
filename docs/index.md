@@ -1,6 +1,6 @@
 # OpenAlex Python Client Documentation
 
-Welcome to the official client for the [OpenAlex](https://openalex.org) scholarly metadata API. The library offers a fluent interface with type hints and async support.
+Welcome to an unofficial Python client for the [OpenAlex](https://openalex.org) scholarly metadata API. This library provides a fluent interface with type hints and async support.
 
 ## Quick Start
 

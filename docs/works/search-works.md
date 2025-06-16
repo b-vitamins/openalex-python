@@ -59,7 +59,7 @@ climate_fulltext = (
     .filter(publication_year=2023)
     .get()
 )
-# Searches the complete text of works where we have it
+# Searches the complete text of works where OpenAlex has it available
 
 # Search in author affiliation strings
 sfu_affiliations = (
@@ -201,7 +201,7 @@ Why? Because:
 - "J. Smith" might miss "John Smith"
 - Multiple people might have the same name
 
-We've already resolved these ambiguities in our entity records!
+The OpenAlex team has already resolved these ambiguities in their entity records.
 
 ## Autocomplete works
 

@@ -21,7 +21,7 @@ print(f"Sources returned in this page: {len(first_page.results)}")  # 25
 
 The [Canonical External ID](../../how-to-use-the-api/get-single-entities/#canonical-external-ids) for sources is ISSN-L, which is a special "main" ISSN assigned to every source (sources tend to have multiple ISSNs). About 90% of sources in OpenAlex have an ISSN-L or ISSN.
 
-Our information about sources comes from Crossref, the ISSN Network, and MAG. These datasets are joined automatically where possible, but there's also a lot of manual combining involved. We do not curate journals, so any journal that is available in the data sources should make its way into OpenAlex.
+OpenAlex gathers source information from Crossref, the ISSN Network, and MAG. These datasets are joined automatically where possible, but there is also substantial manual combining. Because the OpenAlex team does not curate journals directly, any journal available in these sources should make its way into OpenAlex.
 
 Several sources may host the same work. OpenAlex reports both the primary host source (generally wherever the [version of record](https://en.wikipedia.org/wiki/Version_of_record) lives), and alternate host sources (like preprint repositories).
 

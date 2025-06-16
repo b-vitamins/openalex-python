@@ -152,8 +152,8 @@ def analyze_research_landscape():
 
     # Show domain distribution
     print("\nTopics per domain:")
-    # Since we don't have domain names in the group_by result,
-    # we'd need to fetch some topics to get the names
+    # Domain names are not included in the group_by result,
+    # so fetch a sample topic to get the name
     for group in domains.group_by:
         # Get one topic from this domain to get its name
         sample = Topics().filter(domain={"id": group.key}).get(per_page=1)

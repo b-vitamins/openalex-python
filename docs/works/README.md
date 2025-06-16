@@ -19,7 +19,7 @@ print(f"Total works in OpenAlex: {first_page.meta.count:,}")
 print(f"Works returned in this page: {len(first_page.results)}")
 ```
 
-That will return a [`ListResult`](../models/list-result.md) containing [`Work`](work-object.md) objects, describing everything OpenAlex knows about each work. We collect new works from many sources, including Crossref, PubMed, institutional and discipline-specific repositories (eg, arXiv). Many older works come from the now-defunct Microsoft Academic Graph (MAG).
+That will return a [`ListResult`](../models/list-result.md) containing [`Work`](work-object.md) objects, describing everything OpenAlex knows about each work. OpenAlex collects new works from many sources, including Crossref, PubMed, institutional and discipline-specific repositories (e.g., arXiv). Many older works originate from the now-defunct Microsoft Academic Graph (MAG).
 
 Works are linked to other works via the `referenced_works` (outgoing citations), `cited_by_api_url` (incoming citations), and `related_works` properties.
 

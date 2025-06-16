@@ -33,7 +33,7 @@ for i, authorship in enumerate(full_work.authorships, 1):
     print(f"{i}. {authorship.author.display_name}")
 ```
 
-This affects filtering as well. So if you filter works using an author ID or ROR, you will not receive works where that author is listed further than 100 places down on the list of authors. We plan to change this in the future, so that filtering works as expected.
+This affects filtering as well. If you filter works using an author ID or ROR, you will not receive works where that author appears beyond the first 100 positions. The OpenAlex team plans to change this in the future so that filtering works as expected.
 
 ```python
 # Include imports

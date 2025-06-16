@@ -19,13 +19,13 @@ print(f"Institutions returned in this page: {len(first_page.results)}")  # 25
 
 The [Canonical External ID](../../how-to-use-the-api/get-single-entities/#canonical-external-ids) for institutions is the ROR ID. All institutions in OpenAlex have ROR IDs.
 
-Our information about institutions comes from metadata found in Crossref, PubMed, ROR, MAG, and publisher websites. In order to link institutions to works, we parse every affiliation listed by every author. These affiliation strings can be quite messy, so we've trained an algorithm to interpret them and extract the actual institutions with reasonably high reliability.
+OpenAlex compiles institution information from Crossref, PubMed, ROR, MAG, and publisher websites. To link institutions to works, they parse every affiliation string listed by each author. These strings can be messy, so the OpenAlex team trained an algorithm to interpret them and identify the correct institutions with reasonably high reliability.
 
-For a simple example: we will treat both "MIT, Boston, USA" and "Massachusetts Institute of Technology" as the same institution (https://ror.org/042nb2s44).
+For example, both "MIT, Boston, USA" and "Massachusetts Institute of Technology" are recognized as the same institution (https://ror.org/042nb2s44).
 
 Institutions are linked to works via the `works.authorships` property.
 
-Most papers use raw strings to enumerate author affiliations (eg "Univ. of Florida, Gainesville FL"). Parsing these to determine the actual institution the author is talking about is nontrivial; you can find more information about how we do it, as well as downloading code, models, and test sets, [here on GitHub](https://github.com/ourresearch/openalex-institution-parsing).
+Most papers provide raw strings for author affiliations (e.g., "Univ. of Florida, Gainesville FL"). Parsing these to determine the actual institution is nontrivial. More information, including code, models, and test sets, is available in the [OpenAlex institution parsing repository](https://github.com/ourresearch/openalex-institution-parsing).
 
 ## Important: Understanding Query Results
 
