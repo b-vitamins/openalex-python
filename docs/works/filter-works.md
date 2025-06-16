@@ -20,6 +20,9 @@ Remember: `.filter()` builds the query, `.get()` executes it and returns one pag
 ## Understanding filters vs. results
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # This creates a QUERY for ~5 million works from 2023
 query_2023 = Works().filter(publication_year=2023)
 
@@ -30,9 +33,11 @@ first_page = query_2023.get()
 page2 = query_2023.get(page=2, per_page=100)  # Works 101-200
 
 # Or iterate through all results (use with caution!)
-for work in query_2023.paginate(per_page=200):
-    # This will make ~25,000 API calls to get all 5M works!
+for i, work in enumerate(query_2023.paginate(cursor="*", per_page=200), 1):
+    # Stop after a reasonable number of results
     process(work)
+    if i >= 12000:
+        break
 ```
 
 ## Works attribute filters
@@ -44,6 +49,9 @@ You can filter using these attributes of the [`Work`](work-object.md) object:
 ### Basic attribute filters
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Filter by DOI (returns at most one work)
 specific_work = Works().filter(doi="https://doi.org/10.1038/nature12373").get()
 
@@ -74,6 +82,9 @@ exactly_100_citations = Works().filter(cited_by_count=100).get()
 ### Comparison operators
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Greater than: find highly-cited works
 highly_cited = Works().filter_gt(cited_by_count=1000).get()
 # Returns first 25 works with >1000 citations
@@ -98,6 +109,9 @@ older = Works().filter_lt(publication_year=2000).get()
 ### Author and institution filters
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Find works by a specific author (using their OpenAlex ID)
 author_works = Works().filter(
     authorships={"author": {"id": "A5023888391"}}
@@ -166,6 +180,9 @@ arxiv_works = Works().filter(
 ### Topic and concept filters
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Filter by primary topic (e.g., Machine Learning)
 ml_works = Works().filter(primary_topic={"id": "T10159"}).get()
 # Returns first 25 works about machine learning
@@ -186,6 +203,9 @@ These filters aren't attributes of the Work object, but they're handy for common
 ### Text search filters
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Search in abstracts only
 ai_abstracts = Works().filter(
     abstract={"search": "artificial intelligence"}
@@ -217,6 +237,9 @@ amsterdam_affiliations = Works().filter(
 ### Count filters
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Filter by number of authors
 single_author_works = Works().filter(authors_count=1).get()
 
@@ -233,6 +256,9 @@ international_collabs = Works().filter_gt(countries_distinct_count=3).get()
 ### Date range filters
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Works published from a specific date onwards
 recent_works = Works().filter(from_publication_date="2023-01-01").get()
 # Returns first 25 works published after Jan 1, 2023
@@ -256,6 +282,9 @@ recently_updated = Works().filter(from_updated_date="2024-06-01").get()
 ### Citation relationship filters
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Find works that cite a specific paper
 citing_works = Works().filter(cites="W2741809807").get()
 # Returns first 25 works that reference W2741809807
@@ -271,6 +300,9 @@ related = Works().filter(related_to="W2486144666").get()
 ### Boolean and existence filters
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Check for presence of identifiers
 has_doi = Works().filter(has_doi=True).get()
 has_pmid = Works().filter(has_pmid=True).get()
@@ -301,6 +333,9 @@ has_preprint = Works().filter(has_oa_submitted_version=True).get()
 ### AND operations (default)
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Each filter() call adds an AND condition
 recent_ml_papers = (
     Works()
@@ -317,15 +352,15 @@ recent_ml_papers = (
 ### OR operations
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # OR within a single field (use list)
 multilingual = Works().filter(language=["en", "es", "fr"]).get()
 # Returns works in English OR Spanish OR French
 
 # OR between different values of same field
-article_or_preprint = Works().filter_or(
-    type="article",
-    type="preprint"
-).get()
+article_or_preprint = Works().filter(type=["article", "preprint"]).get()
 
 # OR with different fields requires multiple queries
 # (The API doesn't support OR across different fields)
@@ -334,6 +369,9 @@ article_or_preprint = Works().filter_or(
 ### NOT operations
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Exclude retracted works
 not_retracted = Works().filter_not(is_retracted=True).get()
 
@@ -354,6 +392,9 @@ good_recent_works = (
 ## Nested filtering examples
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Complex author-institution query
 harvard_chemists = Works().filter(
     authorships={
@@ -394,6 +435,9 @@ nsf_funded_recent = Works().filter(
 4. **Check meta.count first**: See how many results match before paginating
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Check result count before deciding to paginate
 query = Works().filter(authorships={"institutions": {"id": "I12345"}})
 first_page = query.get()
@@ -403,6 +447,8 @@ if first_page.meta.count > 10000:
     print("Consider adding more filters or using group_by")
 else:
     # Safe to paginate through results
-    for work in query.paginate():
+    for i, work in enumerate(query.paginate(cursor="*"), 1):
         process(work)
+        if i >= 12000:
+            break
 ```
