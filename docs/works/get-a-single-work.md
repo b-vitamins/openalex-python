@@ -29,6 +29,9 @@ print(work.publication_date)  # "2018-02-13"
 You can make up to 50 of these queries at once by requesting a list of entities and filtering on IDs:
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Fetch multiple specific works in one API call
 ids = ["W2741809807", "W2755950973", "W2898525390"]
 multiple_works = Works().filter(openalex_id=ids).get()
@@ -42,6 +45,9 @@ print(f"Found {len(multiple_works.results)} works")
 You can look up works using external IDs such as a DOI:
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Get work by DOI (multiple formats supported)
 work = Works()["https://doi.org/10.7717/peerj.4375"]
 work = Works()["doi:10.7717/peerj.4375"]  # Shorter URN format
@@ -73,6 +79,9 @@ Available external IDs for works are:
 You can use `select` to limit the fields that are returned in a work object:
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Fetch only specific fields to reduce response size and improve performance
 minimal_work = Works().select(["id", "display_name", "cited_by_count"]).get("W2741809807")
 
@@ -120,10 +129,10 @@ print("Identifiers:")
 print(f"  OpenAlex: {work.id}")
 if work.doi:
     print(f"  DOI: {work.doi}")
-if work.pmid:
-    print(f"  PubMed: {work.pmid}")
-if work.pmcid:
-    print(f"  PMC: {work.pmcid}")
-if work.mag_id:
-    print(f"  MAG: {work.mag_id}")
+if work.ids and work.ids.pmid:
+    print(f"  PubMed: {work.ids.pmid}")
+if work.ids and work.ids.pmcid:
+    print(f"  PMC: {work.ids.pmcid}")
+if work.ids and work.ids.mag:
+    print(f"  MAG: {work.ids.mag}")
 ```

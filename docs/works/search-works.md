@@ -31,6 +31,9 @@ Search uses relevance ranking, stemming (e.g., "running" matches "run"), and rem
 You can search within specific fields for more precise results:
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Search only in titles
 cubist_titles = (
     Works()
@@ -91,6 +94,9 @@ The following fields can be searched:
 ## Default search vs field search
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Option 1: General search (searches title, abstract, fulltext)
 general_search = (
     Works()
@@ -125,6 +131,9 @@ specific_search = (
 Search is most powerful when combined with filters:
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Find recent, highly-cited ML papers
 recent_ml_papers = (
     Works()
@@ -199,6 +208,9 @@ We've already resolved these ambiguities in our entity records!
 Create a fast type-ahead search experience:
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Get autocomplete suggestions for works
 suggestions = Works().filter(publication_year=2023).autocomplete("quantum comp")
 
@@ -232,6 +244,9 @@ Quantum Computing: An Applied Approach
 4. **Combine strategies**: Use search for discovery, then filters for precision
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Good: Specific search with reasonable result size
 good_query = (
     Works()

@@ -15,6 +15,10 @@ print(type(work))  # <class 'openalex.models.work.Work'>
 ## Basic properties
 
 ```python
+# Import Works query builder and fetch a work
+from openalex import Works
+work = Works()["W2741809807"]
+
 # Identifiers
 print(work.id)  # "https://openalex.org/W2741809807"
 print(work.doi)  # "https://doi.org/10.7717/peerj.4375"
@@ -44,6 +48,10 @@ print(work.is_retracted)  # False (True if retracted)
 The abstract is stored as an inverted index (word positions), but the Python client provides automatic conversion:
 
 ```python
+# Import Works and fetch work
+from openalex import Works
+work = Works()["W2741809807"]
+
 # Get abstract as plain text (automatically converted)
 if work.abstract:
     print(work.abstract[:200] + "...")
@@ -60,6 +68,10 @@ if work.abstract_inverted_index:
 Authorships contain author and affiliation information:
 
 ```python
+# Import Works and fetch work
+from openalex import Works
+work = Works()["W2741809807"]
+
 # Iterate through all authors
 print(f"This work has {len(work.authorships)} authors")
 
@@ -96,6 +108,10 @@ for authorship in work.authorships:
 Works can be found in multiple locations (journal, repositories, etc.):
 
 ```python
+# Import Works and fetch work
+from openalex import Works
+work = Works()["W2741809807"]
+
 # Primary location (usually the publisher's version)
 primary = work.primary_location
 if primary:
@@ -123,6 +139,10 @@ for i, location in enumerate(work.locations, 1):
 ## Open Access information
 
 ```python
+# Import Works and fetch work
+from openalex import Works
+work = Works()["W2741809807"]
+
 # Comprehensive OA information
 oa = work.open_access
 print(f"Open Access: {oa.is_oa}")
@@ -144,6 +164,10 @@ green_oa = any(loc.is_oa and loc.source.type == "repository"
 ## Citations and references
 
 ```python
+# Import Works and fetch work
+from openalex import Works
+work = Works()["W2741809807"]
+
 # Citation count
 print(f"Cited by {work.cited_by_count:,} other works")
 
@@ -174,6 +198,10 @@ for count in work.counts_by_year:
 ## Topics and research areas
 
 ```python
+# Import Works and fetch work
+from openalex import Works
+work = Works()["W2741809807"]
+
 # Primary topic (most relevant)
 if work.primary_topic:
     topic = work.primary_topic
@@ -209,6 +237,10 @@ for concept in work.concepts[:5]:
 ## Bibliographic information
 
 ```python
+# Import Works and fetch work
+from openalex import Works
+work = Works()["W2741809807"]
+
 # Traditional bibliographic metadata
 if work.biblio:
     print(f"Volume: {work.biblio.volume}")
@@ -221,6 +253,10 @@ if work.biblio:
 ## All identifiers
 
 ```python
+# Import Works and fetch work
+from openalex import Works
+work = Works()["W2741809807"]
+
 # Access all known identifiers
 ids = work.ids
 print(f"OpenAlex ID: {ids.openalex}")
@@ -240,6 +276,10 @@ print(f"Indexed in: {', '.join(work.indexed_in)}")
 ## Funding information
 
 ```python
+# Import Works and fetch work
+from openalex import Works
+work = Works()["W2741809807"]
+
 # Grant funding
 if work.grants:
     print(f"Funded by {len(work.grants)} grants:")
@@ -252,6 +292,10 @@ if work.grants:
 ## Article Processing Charges (APC)
 
 ```python
+# Import Works and fetch work
+from openalex import Works
+work = Works()["W2741809807"]
+
 # List price for publishing
 if work.apc_list:
     apc = work.apc_list
@@ -270,6 +314,10 @@ if work.apc_paid:
 ## Additional metadata
 
 ```python
+# Import Works and fetch work
+from openalex import Works
+work = Works()["W2741809807"]
+
 # MeSH terms (for biomedical works from PubMed)
 if work.mesh:
     print("MeSH terms:")
@@ -310,6 +358,10 @@ if work.citation_normalized_percentile:
 The Work object includes helpful computed properties:
 
 ```python
+# Import Works and fetch work
+from openalex import Works
+work = Works()["W2741809807"]
+
 # Abstract as text (mentioned earlier)
 abstract_text = work.abstract  # Automatically converted from inverted index
 
@@ -341,6 +393,10 @@ us_authors = sum(
 Many fields can be None, so always check:
 
 ```python
+# Import Works and fetch work
+from openalex import Works
+work = Works()["W2741809807"]
+
 # Safe patterns for optional fields
 if work.abstract:
     process_abstract(work.abstract)

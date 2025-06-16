@@ -35,6 +35,9 @@ Open Access statistics for all works in OpenAlex:
 ## Understanding group_by results
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # The result structure is different from regular queries
 result = Works().filter(publication_year=2023).group_by("publication_year").get()
 
@@ -51,6 +54,9 @@ for group in result.group_by:
 ### Basic grouping
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Group by publication year to see publication trends
 yearly_counts = Works().filter(publication_year=2023).group_by("publication_year").get()
 # Returns ~100 groups (one per year) with counts
@@ -71,6 +77,9 @@ retraction_stats = Works().filter(publication_year=2023).group_by("is_retracted"
 ### Open Access analysis
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Analyze OA trends over time (two-dimensional grouping)
 oa_by_year = Works().filter(publication_year=2023).group_by("publication_year", "open_access.oa_status").get()
 # Returns counts for each year-status combination
@@ -98,6 +107,9 @@ top_repositories = (
 ### Author and institution analysis
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Find most prolific authors (by author ID, not name)
 prolific_authors = Works().filter(publication_year=2023).group_by("authorships.author.id").get()
 # Returns thousands of groups, one per author ID
@@ -123,6 +135,9 @@ global_south_stats = Works().filter(publication_year=2023).group_by(
 ### Publisher and source analysis
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Find top publishing venues
 top_journals = Works().filter(publication_year=2023).group_by("primary_location.source.id").get()
 # Groups by source (journal/repository) ID
@@ -147,6 +162,9 @@ doaj_coverage = Works().filter(publication_year=2023).group_by(
 ### Topic and field analysis
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Analyze research by primary topic
 topics = Works().filter(publication_year=2023).group_by("primary_topic.id").get()
 # Returns counts for each research topic
@@ -169,6 +187,9 @@ topic_counts = Works().filter(publication_year=2023).group_by("topics_count").ge
 Group_by becomes very powerful when combined with filters:
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Analyze 2023 research by country
 research_2023_by_country = (
     Works()
@@ -213,6 +234,9 @@ nsf_funded_by_year = (
 You can group by multiple fields (limited to 2 dimensions):
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # OA status by year - great for trend analysis
 oa_trends = Works().filter(publication_year=2023).group_by(
     "publication_year", 
@@ -237,6 +261,9 @@ inst_topics = Works().filter(publication_year=2023).group_by(
 Control how results are ordered:
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Default: sorted by count (descending)
 default_sort = Works().filter(publication_year=2023).group_by("type").get()
 # Articles first (most common), then books, etc.
@@ -256,7 +283,7 @@ rare_first = Works().filter(publication_year=2023).group_by("type").sort(count="
 
 ```python
 # First, find your institution ID
-from openalex import Institutions
+from openalex import Institutions, Works
 inst = Institutions().search("Stanford University").get().results[0]
 
 # Analyze research output
@@ -280,6 +307,9 @@ stanford_oa = (
 ### Example 2: Journal analysis
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Analyze a specific journal
 nature_stats = (
     Works()
@@ -300,6 +330,9 @@ nature_topics = (
 ### Example 3: Research trends
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Track AI/ML research growth
 ml_trend = (
     Works()
