@@ -170,13 +170,13 @@ from openalex import Topics
 
 def find_interdisciplinary_topics():
     """Find topics that might span multiple fields."""
-    
+
     # Look for topics with certain keywords
     interdisciplinary_keywords = [
         "interdisciplinary", "cross-disciplinary", "multidisciplinary",
         "systems", "complexity", "integrated"
     ]
-    
+
     results = []
     for keyword in interdisciplinary_keywords:
         topics = (
@@ -186,10 +186,10 @@ def find_interdisciplinary_topics():
             .get(per_page=10)
         )
         results.extend(topics.results)
-    
+
     # Remove duplicates
     unique_topics = {t.id: t for t in results}.values()
-    
+
     print("Potentially interdisciplinary topics:")
     for topic in sorted(unique_topics, key=lambda t: t.works_count, reverse=True)[:20]:
         print(f"{topic.display_name}")
@@ -206,13 +206,13 @@ from openalex import Topics
 
 def compare_domains():
     """Compare research activity across domains."""
-    
+
     # Get domain list
     domains_grouped = Topics().group_by("domain.id").get()
-    
+
     print("Research Activity by Domain:")
     print("-" * 60)
-    
+
     for domain_group in domains_grouped.group_by:
         # Get top topics in this domain
         top_topics = (
@@ -221,7 +221,7 @@ def compare_domains():
             .sort(works_count="desc")
             .get(per_page=5)
         )
-        
+
         if top_topics.results:
             domain_name = top_topics.results[0].domain.display_name
             total_works = sum(t.works_count for t in top_topics.results)
@@ -243,7 +243,7 @@ from openalex import Topics
 
 def find_emerging_topics(min_works=500, max_works=5000):
     """Find topics that might be emerging (moderate activity)."""
-    
+
     # Topics with moderate work counts might be emerging
     emerging = (
         Topics()
@@ -252,21 +252,21 @@ def find_emerging_topics(min_works=500, max_works=5000):
         .sort(works_count="desc")
         .get(per_page=50)
     )
-    
+
     # Filter for topics with modern keywords
     modern_keywords = [
         "AI", "machine learning", "deep learning", "neural",
         "COVID", "pandemic", "climate", "sustainability",
         "quantum", "nano", "synthetic biology", "CRISPR"
     ]
-    
+
     emerging_modern = []
     for topic in emerging.results:
         # Check if any modern keywords appear
         topic_text = f"{topic.display_name} {' '.join(topic.keywords or [])}"
         if any(kw.lower() in topic_text.lower() for kw in modern_keywords):
             emerging_modern.append(topic)
-    
+
     print(f"Potentially emerging topics ({min_works}-{max_works} works):")
     for topic in emerging_modern[:20]:
         print(f"{topic.display_name}")
@@ -285,18 +285,18 @@ from openalex import Topics
 
 def analyze_field(field_id, field_name):
     """Deep analysis of a specific field."""
-    
+
     # Get all topics in field
     field_topics = list(
         Topics()
         .filter(field={"id": field_id})
         .all(per_page=200)
     )
-    
+
     print(f"Analysis of {field_name}")
     print("=" * 50)
     print(f"Total topics: {len(field_topics)}")
-    
+
     # Group by subfield
     subfields = {}
     for topic in field_topics:
@@ -304,15 +304,15 @@ def analyze_field(field_id, field_name):
         if subfield_name not in subfields:
             subfields[subfield_name] = []
         subfields[subfield_name].append(topic)
-    
+
     print(f"Subfields: {len(subfields)}")
-    
+
     # Show subfield distribution
     print("Subfield breakdown:")
     for subfield, topics in sorted(subfields.items(), key=lambda x: len(x[1]), reverse=True):
         total_works = sum(t.works_count for t in topics)
         print(f"  {subfield}: {len(topics)} topics, {total_works:,} works")
-    
+
     # Find most active topics
     top_topics = sorted(field_topics, key=lambda t: t.works_count, reverse=True)[:10]
     print(f"Top 10 most active topics in {field_name}:")

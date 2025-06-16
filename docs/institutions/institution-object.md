@@ -70,7 +70,7 @@ institution = Institutions()["I114027177"]
 print(f"Lineage depth: {len(institution.lineage)}")
 for i, ancestor_id in enumerate(institution.lineage):
     print(f"  Level {i}: {ancestor_id}")
-    
+
 # lineage[0] is always self
 # lineage[1] is parent (if exists)
 # lineage[2] is grandparent (if exists), etc.
@@ -108,7 +108,7 @@ institution = Institutions()["I114027177"]
 # Repositories hosted by this institution
 if institution.repositories:
     print(f"Hosts {len(institution.repositories)} repositories:")
-    
+
     for repo in institution.repositories:
         print(f"\n{repo.display_name}")
         print(f"  ID: {repo.id}")
@@ -147,7 +147,7 @@ if stats:
     print(f"H-index: {stats.h_index}")  # e.g., 985
     print(f"i10-index: {stats.i10_index:,}")  # e.g., 176,682
     print(f"2-year mean citedness: {stats.two_year_mean_citedness:.2f}")
-    
+
     # These help assess institutional research impact
     if stats.h_index > 500:
         print("This is a very high-impact research institution")
@@ -169,7 +169,7 @@ for count in institution.counts_by_year:
 if len(institution.counts_by_year) >= 2:
     recent = institution.counts_by_year[0]
     previous = institution.counts_by_year[1]
-    growth = ((recent.works_count - previous.works_count) / 
+    growth = ((recent.works_count - previous.works_count) /
               previous.works_count * 100)
     print(f"Year-over-year growth: {growth:+.1f}%")
 ```
@@ -216,7 +216,7 @@ institution = Institutions()["I114027177"]
 # Institution logo/seal
 if institution.image_url:
     print(f"Logo URL: {institution.image_url}")
-    
+
 if institution.image_thumbnail_url:
     print(f"Thumbnail: {institution.image_thumbnail_url}")
 ```
@@ -270,13 +270,13 @@ from openalex import Institutions
 def get_all_children(institution_id):
     """Get all institutions that have this one in their lineage."""
     children = Institutions().filter(lineage=institution_id).get()
-    
+
     # Exclude self
     children_only = [
-        inst for inst in children.results 
+        inst for inst in children.results
         if inst.id != institution_id
     ]
-    
+
     return children_only
 
 # Example: Find all UC campuses
@@ -296,7 +296,7 @@ institution = Institutions()["I114027177"]
 def analyze_collaborations(institution_id, year=2023):
     """Find top collaborating institutions."""
     from openalex import Works
-    
+
     # Get sample of recent works
     works = (
         Works()
@@ -304,7 +304,7 @@ def analyze_collaborations(institution_id, year=2023):
         .filter(publication_year=year)
         .get(per_page=200)
     )
-    
+
     # Count collaborating institutions
     collab_counts = {}
     for work in works.results:
@@ -316,19 +316,19 @@ def analyze_collaborations(institution_id, year=2023):
                 inst_name = inst.get("display_name") if isinstance(inst, dict) else inst.display_name
                 if inst_id != institution_id:
                     institutions_in_work.add((inst_id, inst_name))
-        
+
         for inst_id, inst_name in institutions_in_work:
             if inst_id not in collab_counts:
                 collab_counts[inst_id] = {"name": inst_name, "count": 0}
             collab_counts[inst_id]["count"] += 1
-    
+
     # Sort by collaboration frequency
     top_collabs = sorted(
         collab_counts.items(),
         key=lambda x: x[1]["count"],
         reverse=True
     )[:10]
-    
+
     print(f"Top collaborators for {institution.display_name}:")
     for inst_id, data in top_collabs:
         print(f"  {data['name']}: {data['count']} joint works")
@@ -348,12 +348,12 @@ def compare_peers(institution_ids):
     for inst_id in institution_ids:
         inst = Institutions()[inst_id]
         institutions.append(inst)
-    
+
     print("Institution comparison:")
     print("-" * 80)
     print(f"{'Institution':<40} {'Works':>10} {'Citations':>15} {'H-index':>10}")
     print("-" * 80)
-    
+
     for inst in institutions:
         h_index = inst.summary_stats.h_index if inst.summary_stats else "N/A"
         print(f"{inst.display_name:<40} "
@@ -427,7 +427,7 @@ for authorship in work.authorships:
         print(inst.country_code)
         print(inst.type)
         print(inst.lineage)
-        
+
         # To get full details, fetch the complete institution:
         full_inst = Institutions()[inst.id]
         print(f"Full works count: {full_inst.works_count}")

@@ -54,7 +54,7 @@ page2 = Authors().get(per_page=50, page=2)
 # Most cited authors
 highly_cited = Authors().sort(cited_by_count="desc").get()
 
-# Most prolific authors  
+# Most prolific authors
 prolific = Authors().sort(works_count="desc").get()
 
 # Combine sorting with pagination

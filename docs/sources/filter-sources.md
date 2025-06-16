@@ -291,7 +291,7 @@ from openalex import Sources
 
 def find_affordable_oa_journals(max_apc=1500, min_impact=2.0):
     """Find OA journals with reasonable APCs and decent impact."""
-    
+
     affordable_oa = (
         Sources()
         .filter(type="journal")
@@ -301,7 +301,7 @@ def find_affordable_oa_journals(max_apc=1500, min_impact=2.0):
         .sort(**{"summary_stats.2yr_mean_citedness": "desc"})
         .get(per_page=20)
     )
-    
+
     print(f"Affordable OA journals (APC < ${max_apc}, IF > {min_impact}):")
     for journal in affordable_oa.results:
         apc = journal.apc_usd or 0
@@ -314,7 +314,7 @@ def find_affordable_oa_journals(max_apc=1500, min_impact=2.0):
         print(f"  APC: ${apc}")
         print(f"  Impact Factor: {impact:.2f}")
         print(f"  Publisher: {journal.host_organization_name}")
-    
+
     return affordable_oa
 
 # Find options
@@ -328,25 +328,25 @@ from openalex import Sources
 
 def analyze_publisher_portfolio(publisher_id):
     """Analyze all sources from a publisher."""
-    
+
     # Get all sources from this publisher
     publisher_sources = (
         Sources()
         .filter(host_organization_lineage=publisher_id)
         .get(per_page=200)
     )
-    
+
     # Analyze by type
     types = {}
     oa_count = 0
     total_citations = 0
-    
+
     for source in publisher_sources.results:
         types[source.type] = types.get(source.type, 0) + 1
         if source.is_oa:
             oa_count += 1
         total_citations += source.cited_by_count
-    
+
     print(f"Publisher portfolio analysis:")
     print(f"Total sources: {publisher_sources.meta.count}")
     print(f"Open Access: {oa_count} ({oa_count/len(publisher_sources.results)*100:.1f}%)")
@@ -366,18 +366,18 @@ from openalex import Sources
 
 def compare_regions():
     """Compare sources across different regions."""
-    
+
     regions = {
         "North America": ["US", "CA", "MX"],
         "Europe": ["GB", "DE", "FR", "IT", "ES", "NL"],
         "Asia": ["CN", "JP", "KR", "IN", "SG"],
         "Latin America": ["BR", "AR", "CL", "MX", "CO"]
     }
-    
+
     for region_name, countries in regions.items():
         # Get sources from region
         regional_sources = Sources().filter(country_code=countries).get()
-        
+
         # Get OA sources from region
         regional_oa = (
             Sources()
@@ -385,10 +385,10 @@ def compare_regions():
             .filter(is_oa=True)
             .get()
         )
-        
-        oa_percent = (regional_oa.meta.count / regional_sources.meta.count * 100 
+
+        oa_percent = (regional_oa.meta.count / regional_sources.meta.count * 100
                      if regional_sources.meta.count > 0 else 0)
-        
+
         print(f"\n{region_name}:")
         print(f"  Total sources: {regional_sources.meta.count:,}")
         print(f"  Open Access: {regional_oa.meta.count:,} ({oa_percent:.1f}%)")
@@ -413,11 +413,11 @@ def journal_landscape_summary():
     # Use group_by instead of fetching all sources
     by_type = Sources().group_by("type").get()
     by_oa_status = Sources().filter(type="journal").group_by("is_oa").get()
-    
+
     print("Sources by type:")
     for group in by_type.group_by:
         print(f"  {group.key}: {group.count:,}")
-    
+
     print("\nJournals by OA status:")
     for group in by_oa_status.group_by:
         status = "Open Access" if group.key else "Subscription"

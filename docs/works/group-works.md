@@ -236,7 +236,7 @@ from openalex import Works
 
 # OA status by year - great for trend analysis
 oa_trends = Works().filter(publication_year=2023).group_by(
-    "publication_year", 
+    "publication_year",
     "open_access.oa_status"
 ).get()
 

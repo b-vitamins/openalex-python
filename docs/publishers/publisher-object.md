@@ -26,7 +26,7 @@ print(publisher.display_name)  # "Elsevier BV"
 
 # Alternate names (list of variations)
 print(publisher.alternate_titles)
-# ["Elsevier", "elsevier.com", "Elsevier Science", "\u7231\u601d\u97e6\u5c14", ...]
+# ["Elsevier", "elsevier.com", "Elsevier Science", "爱思维尔", ...]
 
 # Hierarchy information
 print(publisher.hierarchy_level)  # 1 (has one parent above)
@@ -70,7 +70,7 @@ for i, ancestor_id in enumerate(publisher.lineage):
 
 # Example lineage interpretation:
 # lineage[0] = self (P4310320990)
-# lineage[1] = parent (P4310311775)  
+# lineage[1] = parent (P4310311775)
 # lineage[2] = grandparent (if exists)
 ```
 
@@ -90,7 +90,7 @@ if stats:
     print(
         f"2-year mean citedness: {stats.two_year_mean_citedness:.2f}"
     )
-    
+
     # These metrics help assess publisher impact
     if stats.h_index > 500:
         print("This is a very high-impact publisher")
@@ -114,7 +114,7 @@ for count in publisher.counts_by_year:
 if len(publisher.counts_by_year) >= 2:
     recent = publisher.counts_by_year[0]
     previous = publisher.counts_by_year[1]
-    growth = ((recent.works_count - previous.works_count) / 
+    growth = ((recent.works_count - previous.works_count) /
               previous.works_count * 100)
     print(f"Year-over-year growth: {growth:+.1f}%")
 ```
@@ -245,12 +245,12 @@ def get_publisher_chain(publisher_id):
     """Get the full chain from publisher to top parent."""
     chain = []
     current_id = publisher_id
-    
+
     while current_id:
         pub = Publishers()[current_id]
         chain.append(pub)
         current_id = pub.parent_publisher
-    
+
     return chain
 
 # Example usage

@@ -166,19 +166,19 @@ from openalex import Funders
 
 def find_government_funders(country_code=None):
     """Find government funding agencies."""
-    
+
     # Common government funder terms
     gov_terms = ["National", "Ministry", "Department", "Federal", "Government"]
-    
+
     # Build search query
     search_query = " OR ".join(gov_terms)
     query = Funders().search(search_query)
-    
+
     if country_code:
         query = query.filter(country_code=country_code)
-    
+
     results = query.get(per_page=50)
-    
+
     print(f"Government funders{f' in {country_code}' if country_code else ''}:")
     for funder in results.results:
         print(f"  - {funder.display_name} ({funder.country_code})")
@@ -196,17 +196,17 @@ from openalex import Funders
 
 def find_foundations(focus_area=None):
     """Find private foundations and charities."""
-    
+
     # Search for foundations
     query = Funders().search("Foundation OR Trust OR Charity")
-    
+
     if focus_area:
         # Add focus area to search
         query = Funders().search(f"({focus_area}) AND (Foundation OR Trust)")
-    
+
     # Exclude government funders
     foundations = query.get(per_page=30)
-    
+
     print(f"Private foundations{f' focused on {focus_area}' if focus_area else ''}:")
     for funder in foundations.results:
         if "National" not in funder.display_name:  # Simple filter
@@ -228,11 +228,11 @@ from openalex import Funders
 
 def search_international_funders(search_term):
     """Search for funders across multiple languages/variations."""
-    
+
     results = Funders().search(search_term).get(per_page=20)
-    
+
     print(f"International results for '{search_term}':")
-    
+
     # Group by country
     by_country = {}
     for funder in results.results:
@@ -240,7 +240,7 @@ def search_international_funders(search_term):
         if country not in by_country:
             by_country[country] = []
         by_country[country].append(funder)
-    
+
     # Display grouped results
     for country, funders in sorted(by_country.items()):
         print(f"\n{country}:")
@@ -314,7 +314,7 @@ def find_regional_funders(region, min_grants=50):
             .filter_gt(grants_count=min_grants)
             .get()
         )
-    
+
     return results
 
 # Examples
@@ -336,34 +336,34 @@ from openalex import Funders
 
 def comprehensive_funder_search(keywords, country=None, min_impact=None):
     """Search with multiple strategies."""
-    
+
     all_results = {}
-    
+
     # Search each keyword
     for keyword in keywords:
         query = Funders().search(keyword)
-        
+
         if country:
             query = query.filter(country_code=country)
-        
+
         if min_impact:
             query = query.filter_gt(summary_stats={"h_index": min_impact})
-        
+
         results = query.get(per_page=20)
-        
+
         # Collect unique funders
         for funder in results.results:
             all_results[funder.id] = funder
-    
+
     print(f"Found {len(all_results)} unique funders")
-    
+
     # Sort by relevance (cited_by_count as proxy)
     sorted_funders = sorted(
-        all_results.values(), 
-        key=lambda f: f.cited_by_count, 
+        all_results.values(),
+        key=lambda f: f.cited_by_count,
         reverse=True
     )
-    
+
     for funder in sorted_funders[:10]:
         print(f"\n{funder.display_name} ({funder.country_code})")
         print(f"  Works: {funder.works_count:,}")

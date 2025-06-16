@@ -53,7 +53,7 @@ from openalex import Authors
 orcid_stats = Authors().group_by("has_orcid").get()
 # Shows ORCID adoption rate
 
-# Group by works count to see productivity distribution  
+# Group by works count to see productivity distribution
 productivity = Authors().group_by("works_count").get()
 # Returns counts for each value (1 work, 2 works, etc.)
 
@@ -283,7 +283,7 @@ def analyze_career_stages():
         .group_by("last_known_institutions.type")
         .get()
     )
-    
+
     # Mid career (11-50 works)
     mid = (
         Authors()
@@ -292,7 +292,7 @@ def analyze_career_stages():
         .group_by("last_known_institutions.type")
         .get()
     )
-    
+
     # Senior (50+ works)
     senior = (
         Authors()
@@ -300,7 +300,7 @@ def analyze_career_stages():
         .group_by("last_known_institutions.type")
         .get()
     )
-    
+
     return early, mid, senior
 
 # Geographic distribution of authors from the Global South

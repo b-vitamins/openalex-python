@@ -80,13 +80,13 @@ stats = source.summary_stats
 if stats:
     # Impact factor (2-year mean citedness)
     print(f"Impact Factor: {stats.two_year_mean_citedness:.3f}")
-    
+
     # H-index for the source
     print(f"H-index: {stats.h_index}")
-    
+
     # i10-index (papers with 10+ citations)
     print(f"i10-index: {stats.i10_index:,}")
-    
+
     # Interpret the metrics
     if stats.two_year_mean_citedness and stats.two_year_mean_citedness > 10:
         print("This is a high-impact journal")
@@ -107,7 +107,7 @@ for count in source.counts_by_year[:5]:  # Last 5 years
 if len(source.counts_by_year) >= 2:
     recent = source.counts_by_year[0]
     previous = source.counts_by_year[1]
-    growth = ((recent.works_count - previous.works_count) / 
+    growth = ((recent.works_count - previous.works_count) /
               previous.works_count * 100)
     print(f"Year-over-year growth: {growth:+.1f}%")
 ```
@@ -189,16 +189,16 @@ from openalex import Sources
 def analyze_journal_quality(source_id):
     """Comprehensive quality analysis of a journal."""
     source = Sources()[source_id]
-    
+
     print(f"Journal Quality Analysis: {source.display_name}")
     print("=" * 50)
-    
+
     # Basic info
     print(f"Type: {source.type}")
     print(f"Publisher: {source.host_organization_name}")
     print(f"Country: {source.country_code}")
     print(f"Open Access: {source.is_oa}")
-    
+
     # Impact metrics
     if source.summary_stats:
         stats = source.summary_stats
@@ -211,7 +211,7 @@ def analyze_journal_quality(source_id):
         print(f"  Impact Factor: {impact_factor:.3f}")
         print(f"  H-index: {stats.h_index}")
         print(f"  Total citations: {source.cited_by_count:,}")
-        
+
         # Quality tier
         stat_val = (
             stats.get("2yr_mean_citedness")
@@ -229,14 +229,14 @@ def analyze_journal_quality(source_id):
         else:
             tier = "Developing"
         print(f"  Quality Tier: {tier}")
-    
+
     # Publishing volume
     print(f"\nPublishing Volume:")
     print(f"  Total works: {source.works_count:,}")
     if source.counts_by_year:
         recent_avg = sum(c.works_count for c in source.counts_by_year[:3]) / 3
         print(f"  Recent average: {recent_avg:.0f} works/year")
-    
+
     # APC information
     if source.apc_usd is not None:
         print(f"\nArticle Processing Charge: ${source.apc_usd:,}")
@@ -256,23 +256,23 @@ def compare_sources(source_ids):
     sources = []
     for sid in source_ids:
         sources.append(Sources()[sid])
-    
+
     print("Source Comparison")
     print("-" * 100)
     print(f"{'Source':<40} {'Type':<12} {'IF':>6} {'Works':>8} {'OA':<5} {'APC':>8}")
     print("-" * 100)
-    
+
     for src in sources:
         impact_factor = "N/A"
         if src.summary_stats and src.summary_stats.two_year_mean_citedness:
             impact_factor = f"{src.summary_stats.two_year_mean_citedness:.2f}"
-        
+
         apc = "N/A"
         if src.apc_usd is not None:
             apc = f"${src.apc_usd:,}"
         elif src.is_oa:
             apc = "$0"
-        
+
         print(f"{src.display_name[:39]:<40} "
               f"{src.type:<12} "
               f"{impact_factor:>6} "
@@ -296,7 +296,7 @@ from openalex import Sources
 def find_related_sources(source_id):
     """Find sources similar to a given source."""
     source = Sources()[source_id]
-    
+
     # Find sources from same publisher
     same_publisher = (
         Sources()
@@ -306,18 +306,18 @@ def find_related_sources(source_id):
         .sort(cited_by_count="desc")
         .get(per_page=10)
     )
-    
+
     print(f"Sources related to {source.display_name}")
     print(f"\nFrom same publisher ({source.host_organization_name}):")
     for src in same_publisher.results[:5]:
         print(f"  - {src.display_name}")
-    
+
     # Find sources with similar impact
     if source.summary_stats and source.summary_stats.two_year_mean_citedness:
         impact = source.summary_stats.two_year_mean_citedness
         min_impact = impact * 0.7
         max_impact = impact * 1.3
-        
+
         similar_impact = (
             Sources()
             .filter(type="journal")
@@ -327,7 +327,7 @@ def find_related_sources(source_id):
             .sort(**{"summary_stats.2yr_mean_citedness": "desc"})
             .get(per_page=10)
         )
-        
+
         print(f"\nWith similar impact factor ({impact:.1f}):")
         for src in similar_impact.results[:5]:
             src_if = src.summary_stats.two_year_mean_citedness
@@ -394,7 +394,7 @@ if work.primary_location and work.primary_location.source:
     print(source.is_oa)
     print(source.is_in_doaj)
     print(source.issn_l)
-    
+
     # To get full details, fetch the complete source:
     full_source = Sources()[source.id]
     print(f"Full works count: {full_source.works_count}")

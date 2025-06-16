@@ -166,13 +166,13 @@ from openalex import Sources
 # Many journals have multiple names/abbreviations
 def find_journal_variations(journal_name):
     """Find all variations of a journal name."""
-    
+
     # Try exact search first
     exact = Sources().search(journal_name).get(per_page=10)
-    
+
     print(f"Searching for '{journal_name}':")
     print(f"Found {exact.meta.count} matches\n")
-    
+
     # Show all variations found
     for source in exact.results:
         print(f"{source.display_name}")
@@ -196,15 +196,15 @@ from openalex import Sources
 
 def find_sources_by_topic(topic, source_type=None):
     """Find sources related to a specific topic."""
-    
+
     # Build query
     query = Sources().search(topic)
     if source_type:
         query = query.filter(type=source_type)
-    
+
     # Get results sorted by relevance (default)
     results = query.get(per_page=20)
-    
+
     print(f"Top sources for '{topic}':")
     for i, source in enumerate(results.results, 1):
         print(f"\n{i}. {source.display_name}")
@@ -231,23 +231,23 @@ from openalex import Sources
 
 def search_publisher_catalog(publisher_id, search_term):
     """Search within a specific publisher's sources."""
-    
+
     results = (
         Sources()
         .search(search_term)
         .filter(host_organization_lineage=publisher_id)
         .get(per_page=50)
     )
-    
+
     print(f"Found {results.meta.count} sources matching '{search_term}'")
-    
+
     # Group by type
     by_type = {}
     for source in results.results:
         if source.type not in by_type:
             by_type[source.type] = []
         by_type[source.type].append(source)
-    
+
     # Display grouped results
     for source_type, sources in by_type.items():
         print(f"\n{source_type.title()}s ({len(sources)}):")
@@ -309,7 +309,7 @@ def find_regional_sources(search_term, country_codes):
 
 # Asian science journals
 asian_science = find_regional_sources(
-    "science", 
+    "science",
     ["CN", "JP", "KR", "IN", "SG"]
 )
 
@@ -337,9 +337,9 @@ from openalex import Sources
 # Example: Comprehensive journal search
 def comprehensive_journal_search(search_terms, min_impact=None):
     """Search for journals with multiple strategies."""
-    
+
     all_results = set()
-    
+
     # Try each search term
     for term in search_terms:
         results = (
@@ -348,7 +348,7 @@ def comprehensive_journal_search(search_terms, min_impact=None):
             .filter(type="journal")
             .get(per_page=100)
         )
-        
+
         for source in results.results:
             # Apply additional filters
             if min_impact and source.summary_stats:
@@ -359,13 +359,13 @@ def comprehensive_journal_search(search_terms, min_impact=None):
                 )
                 if impact < min_impact:
                     continue
-            
+
             all_results.add((source.id, source.display_name))
-    
+
     print(f"Found {len(all_results)} unique journals")
     for source_id, name in sorted(all_results, key=lambda x: x[1]):
         print(f"  - {name}")
-    
+
     return all_results
 
 # Search for AI/ML journals

@@ -190,7 +190,7 @@ def find_all_campuses(university_name):
     """Find all campuses of a university system."""
     # First search broadly
     all_matches = Institutions().search(university_name).get(per_page=100)
-    
+
     # Group by main institution (using lineage)
     campus_groups = {}
     for inst in all_matches.results:
@@ -199,7 +199,7 @@ def find_all_campuses(university_name):
         if root not in campus_groups:
             campus_groups[root] = []
         campus_groups[root].append(inst)
-    
+
     # Show the largest group
     largest_group = max(campus_groups.values(), key=len)
     print(f"Found {len(largest_group)} related institutions:")
@@ -220,11 +220,11 @@ from openalex import Institutions
 def search_international(english_name):
     """Search for institutions including international variations."""
     results = Institutions().search(english_name).get(per_page=20)
-    
+
     print(f"Results for '{english_name}':")
     for inst in results.results:
         print(f"\n{inst.display_name}")
-        
+
         # Check for international names
         if hasattr(inst, 'international') and inst.international:
             if hasattr(inst.international, 'display_name'):
@@ -316,19 +316,19 @@ from openalex import Institutions
 # Example: Comprehensive institution search
 def comprehensive_search(name, country=None, type=None):
     """Search with fallback strategies."""
-    
+
     # First try exact search
     query = Institutions().search(name)
     if country:
         query = query.filter(country_code=country)
     if type:
         query = query.filter(type=type)
-    
+
     results = query.get()
-    
+
     if results.meta.count == 0:
         print(f"No exact matches for '{name}'")
-        
+
         # Try broader search
         words = name.split()
         if len(words) > 1:
@@ -337,7 +337,7 @@ def comprehensive_search(name, country=None, type=None):
             print(f"\nDid you mean one of these?")
             for inst in broad_results.results:
                 print(f"  - {inst.display_name} ({inst.country_code})")
-    
+
     return results
 
 # Usage

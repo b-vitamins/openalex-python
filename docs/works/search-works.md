@@ -147,7 +147,7 @@ recent_ml_papers = (
 
 print(f"Found {recent_ml_papers.meta.count:,} highly-cited 2023 ML papers")
 
-# Search specific fields with additional filters  
+# Search specific fields with additional filters
 quantum_2023 = (
     Works()
     .search_filter(title="quantum computing")  # Title must contain this
@@ -197,7 +197,7 @@ if authors.results:
 ```
 
 Why? Because:
-- "NYU" might miss "New York University" 
+- "NYU" might miss "New York University"
 - "J. Smith" might miss "John Smith"
 - Multiple people might have the same name
 
@@ -226,7 +226,7 @@ for work in suggestions.results:
 Example output:
 ```
 Quantum computation and quantum information
-  Authors: Michael A. Nielsen, Isaac L. Chuang  
+  Authors: Michael A. Nielsen, Isaac L. Chuang
   Citations: 12453
   Work ID: https://openalex.org/W1234567
 

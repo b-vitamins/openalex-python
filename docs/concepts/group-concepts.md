@@ -142,22 +142,22 @@ for group in level_ancestor.group_by:
 from openalex import Concepts
 def analyze_concept_hierarchy():
     """Comprehensive analysis of the concept tree structure."""
-    
+
     # Get distribution by level
     by_level = Concepts().group_by("level").get()
-    
+
     print("Concept Hierarchy Analysis")
     print("=" * 40)
-    
+
     # Show level distribution
     print("\nConcepts per level:")
     for group in sorted(by_level.group_by, key=lambda g: int(g.key)):
         print(f"  Level {group.key}: {group.count:,} concepts")
-    
+
     # Analyze root concepts
     root_concepts = Concepts().filter(level=0).get(per_page=25)
     print(f"\nRoot concepts: {root_concepts.meta.count}")
-    
+
     # For each root, count descendants
     print("\nDescendants per root concept:")
     for root in root_concepts.results:
@@ -173,7 +173,7 @@ analyze_concept_hierarchy()
 from openalex import Concepts
 def analyze_research_activity():
     """Analyze how research activity is distributed across concepts."""
-    
+
     # Define activity tiers based on works count
     tiers = [
         ("Inactive", 0, 100),
@@ -183,12 +183,12 @@ def analyze_research_activity():
         ("Very Active", 100000, 1000000),
         ("Hyper Active", 1000000, float('inf'))
     ]
-    
+
     print("Research Activity Distribution")
     print("=" * 40)
-    
+
     total_concepts = Concepts().get().meta.count
-    
+
     for tier_name, min_works, max_works in tiers:
         # Build filter
         tier_query = Concepts()
@@ -196,14 +196,14 @@ def analyze_research_activity():
             tier_query = tier_query.filter_gt(works_count=min_works)
         if max_works < float('inf'):
             tier_query = tier_query.filter_lt(works_count=max_works)
-        
+
         # Get count and level distribution
         tier_result = tier_query.get()
         level_dist = tier_query.group_by("level").get()
-        
+
         count = tier_result.meta.count
         percentage = (count / total_concepts) * 100
-        
+
         print(f"\n{tier_name} ({min_works:,}-{max_works:,} works):")
         print(f"  Concepts: {count:,} ({percentage:.1f}%)")
         print(f"  Level distribution:", end="")
@@ -220,7 +220,7 @@ analyze_research_activity()
 from openalex import Concepts
 def analyze_concept_impact():
     """Analyze impact metrics across the concept hierarchy."""
-    
+
     # Group by h-index ranges
     h_index_ranges = [
         ("Low", 0, 50),
@@ -229,10 +229,10 @@ def analyze_concept_impact():
         ("Very High", 200, 500),
         ("Elite", 500, float('inf'))
     ]
-    
+
     print("Concept Impact Analysis (by h-index)")
     print("=" * 40)
-    
+
     for range_name, min_h, max_h in h_index_ranges:
         # Build query
         filters = {"gte": min_h}
@@ -240,15 +240,15 @@ def analyze_concept_impact():
             filters["lte"] = max_h
 
         query = Concepts().filter(summary_stats={"h_index": filters})
-        
+
         # Get results
         result = query.get()
         level_dist = query.group_by("level").get()
-        
+
         if result.meta.count > 0:
             print(f"\n{range_name} impact (h-index {min_h}-{max_h}):")
             print(f"  Concepts: {result.meta.count:,}")
-            
+
             # Show some examples
             examples = query.sort(**{"summary_stats.h_index": "desc"}).get(per_page=3)
             print("  Examples:")
@@ -264,15 +264,15 @@ analyze_concept_impact()
 ```python
 from openalex import Concepts
 def compare_domains():
-    
+
     # Get all root concepts
     roots = Concepts().filter(level=0).get(per_page=25)
-    
+
     print("Domain Comparison")
     print("=" * 60)
     print(f"{'Domain':<30} {'Descendants':<12} {'Avg Level':<10}")
     print("-" * 60)
-    
+
     for root in roots.results:
         # Get all descendants
         descendants = (
@@ -280,7 +280,7 @@ def compare_domains():
             .filter(ancestors={"id": root.id})
             .get()
         )
-        
+
         # Get level distribution
         level_dist = (
             Concepts()
@@ -288,7 +288,7 @@ def compare_domains():
             .group_by("level")
             .get()
         )
-        
+
         # Calculate average level
         total_concepts = 0
         weighted_sum = 0
@@ -297,9 +297,9 @@ def compare_domains():
             count = group.count
             total_concepts += count
             weighted_sum += level * count
-        
+
         avg_level = weighted_sum / total_concepts if total_concepts > 0 else 0
-        
+
         print(f"{root.display_name[:29]:<30} "
               f"{descendants.meta.count:<12,} "
               f"{avg_level:<10.2f}")

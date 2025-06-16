@@ -114,7 +114,7 @@ from openalex import Institutions
 # Filter by h-index
 high_impact = Institutions().filter_gt(summary_stats={"h_index": 500}).get()
 
-# Filter by i10-index  
+# Filter by i10-index
 very_productive = Institutions().filter_gt(summary_stats={"i10_index": 10000}).get()
 
 # Filter by 2-year mean citedness
@@ -292,11 +292,11 @@ def find_peer_institutions(institution_id, radius=0.2):
     """Find institutions similar to a given institution."""
     # First get the reference institution
     ref_inst = Institutions()[institution_id]
-    
+
     # Define peer criteria
     min_works = int(ref_inst.works_count * (1 - radius))
     max_works = int(ref_inst.works_count * (1 + radius))
-    
+
     # Find similar institutions
     peers = (
         Institutions()
@@ -308,7 +308,7 @@ def find_peer_institutions(institution_id, radius=0.2):
         .sort(works_count="desc")
         .get(per_page=20)
     )
-    
+
     return peers
 
 # Example usage
@@ -326,9 +326,9 @@ from openalex import Institutions
 
 # Compare research output by continent
 def analyze_continents():
-    continents = ["north_america", "europe", "asia", "south_america", 
+    continents = ["north_america", "europe", "asia", "south_america",
                   "africa", "oceania"]
-    
+
     for continent in continents:
         # Get top institutions
         top_inst = (
@@ -338,7 +338,7 @@ def analyze_continents():
             .sort(cited_by_count="desc")
             .get(per_page=5)
         )
-        
+
         print(f"\nTop 5 universities in {continent.replace('_', ' ').title()}:")
         for i, inst in enumerate(top_inst.results, 1):
             print(f"  {i}. {inst.display_name} ({inst.country_code})")
@@ -356,7 +356,7 @@ from openalex import Institutions
 # Find institutions with shared characteristics
 def find_institution_network(country, min_collaborations=1000):
     """Find highly collaborative institutions in a country."""
-    
+
     # Get institutions with many international works
     collaborative = (
         Institutions()
@@ -366,7 +366,7 @@ def find_institution_network(country, min_collaborations=1000):
         .sort(cited_by_count="desc")
         .get(per_page=20)
     )
-    
+
     print(f"Highly collaborative institutions in {country}:")
     for inst in collaborative.results:
         # Calculate international collaboration rate
@@ -397,11 +397,11 @@ def global_institution_summary():
     # Use group_by instead of fetching all institutions
     by_type = Institutions().group_by("type").get()
     by_continent = Institutions().group_by("continent").get()
-    
+
     print("Institutions by type:")
     for group in by_type.group_by:
         print(f"  {group.key}: {group.count:,}")
-    
+
     print("\nInstitutions by continent:")
     for group in by_continent.group_by:
         print(f"  {group.key}: {group.count:,}")

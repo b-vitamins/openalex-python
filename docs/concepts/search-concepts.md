@@ -99,7 +99,7 @@ Computer science
   Citations: 392,939,277
   Wikidata: https://www.wikidata.org/wiki/Q21198
 
-Computational biology  
+Computational biology
   Hint: interdisciplinary field that applies computational methods to biological problems
   Works: 1,234,567
   Citations: 12,345,678
@@ -158,14 +158,14 @@ emerging = (
 from openalex import Concepts
 def search_in_domain(search_term, domain_concept_id):
     """Search for concepts within a specific domain."""
-    
+
     results = (
         Concepts()
         .search(search_term)
         .filter(ancestors={"id": domain_concept_id})
         .get(per_page=20)
     )
-    
+
     print(f"'{search_term}' concepts in domain:")
     for concept in results.results:
         # Show the path from root to this concept
@@ -188,9 +188,9 @@ search_in_domain("therapy", "C71924100")
 from openalex import Concepts
 def hierarchical_search(search_term):
     """Search at different levels of the hierarchy."""
-    
+
     print(f"Searching for '{search_term}' at different levels:")
-    
+
     for level in range(6):  # Levels 0-5
         results = (
             Concepts()
@@ -198,7 +198,7 @@ def hierarchical_search(search_term):
             .filter(level=level)
             .get(per_page=5)
         )
-        
+
         if results.meta.count > 0:
             print(f"\nLevel {level} ({results.meta.count} results):")
             for concept in results.results[:3]:
@@ -213,17 +213,17 @@ hierarchical_search("network")
 from openalex import Concepts
 def discover_related_concepts(concept_id):
     """Find concepts related to a given concept through various methods."""
-    
+
     source = Concepts()[concept_id]
     print(f"Finding concepts related to: {source.display_name}")
-    
+
     # Method 1: Search using the concept name
     name_search = Concepts().search(source.display_name).filter_not(openalex=concept_id).get()
-    
+
     print(f"\nConcepts with similar names:")
     for concept in name_search.results[:5]:
         print(f"  - {concept.display_name} (Level {concept.level})")
-    
+
     # Method 2: Get siblings (same parent)
     if source.ancestors:
         parent_id = source.ancestors[-1].id
@@ -234,11 +234,11 @@ def discover_related_concepts(concept_id):
             .filter_not(openalex=concept_id)
             .get(per_page=5)
         )
-        
+
         print(f"\nSibling concepts:")
         for concept in siblings.results:
             print(f"  - {concept.display_name}")
-    
+
     # Method 3: Use related_concepts if available
     if hasattr(source, 'related_concepts') and source.related_concepts:
         print(f"\nDirectly related concepts:")
@@ -316,25 +316,25 @@ from openalex import Concepts
 # Example: Comprehensive concept search
 def comprehensive_search(search_terms, min_works=1000):
     """Search with multiple strategies."""
-    
+
     all_results = {}
-    
+
     for term in search_terms:
         # General search
         general = Concepts().search(term).filter_gt(works_count=min_works).get()
-        
+
         # Collect unique concepts
         for concept in general.results:
             if concept.id not in all_results:
                 all_results[concept.id] = concept
-    
+
     # Sort by relevance (works_count as proxy)
     sorted_concepts = sorted(
         all_results.values(),
         key=lambda c: c.works_count,
         reverse=True
     )
-    
+
     print(f"Found {len(sorted_concepts)} unique concepts")
     for concept in sorted_concepts[:20]:
         print(f"\n{concept.display_name} (Level {concept.level})")

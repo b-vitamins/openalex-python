@@ -220,11 +220,11 @@ def find_peer_funders(funder_id, radius=0.2):
     """Find funders similar to a given funder."""
     # First get the reference funder
     ref_funder = Funders()[funder_id]
-    
+
     # Define peer criteria
     min_grants = int(ref_funder.grants_count * (1 - radius))
     max_grants = int(ref_funder.grants_count * (1 + radius))
-    
+
     # Find similar funders
     peers = (
         Funders()
@@ -235,7 +235,7 @@ def find_peer_funders(funder_id, radius=0.2):
         .sort(grants_count="desc")
         .get(per_page=20)
     )
-    
+
     return peers
 
 # Example usage
@@ -252,18 +252,18 @@ from openalex import Funders
 
 def analyze_regional_funding():
     """Compare funding landscapes across regions."""
-    
+
     regions = {
         "North America": ["US", "CA", "MX"],
         "Europe": ["GB", "DE", "FR", "IT", "ES", "NL", "CH"],
         "Asia": ["CN", "JP", "KR", "IN", "SG"],
         "Latin America": ["BR", "AR", "CL", "MX", "CO"]
     }
-    
+
     for region_name, countries in regions.items():
         # Get funders from region
         regional_funders = Funders().filter(country_code=countries).get()
-        
+
         # Get high-impact funders from region
         high_impact = (
             Funders()
@@ -271,10 +271,10 @@ def analyze_regional_funding():
             .filter_gt(summary_stats={"h_index": 100})
             .get()
         )
-        
-        impact_percent = (high_impact.meta.count / regional_funders.meta.count * 100 
+
+        impact_percent = (high_impact.meta.count / regional_funders.meta.count * 100
                          if regional_funders.meta.count > 0 else 0)
-        
+
         print(f"\n{region_name}:")
         print(f"  Total funders: {regional_funders.meta.count:,}")
         print(f"  High-impact (h>100): {high_impact.meta.count:,} ({impact_percent:.1f}%)")
@@ -289,7 +289,7 @@ from openalex import Funders
 
 def find_specialized_funders(search_term, min_focus_score=0.8):
     """Find funders specialized in a particular area."""
-    
+
     # Search for funders mentioning the term
     specialized = (
         Funders()
@@ -297,13 +297,13 @@ def find_specialized_funders(search_term, min_focus_score=0.8):
         .filter_gt(works_count=100)  # Active funders only
         .get(per_page=20)
     )
-    
+
     print(f"Funders specializing in '{search_term}':")
     for funder in specialized.results:
         # Check if alternate titles also mention the term
-        alt_mentions = sum(1 for alt in (funder.alternate_titles or []) 
+        alt_mentions = sum(1 for alt in (funder.alternate_titles or [])
                            if search_term.lower() in alt.lower())
-        
+
         if funder.description and search_term.lower() in funder.description.lower():
             print(f"\n{funder.display_name} ({funder.country_code})")
             print(f"  Description: {funder.description[:100]}...")
@@ -322,26 +322,26 @@ from openalex import Funders
 
 def find_multi_role_organizations():
     """Find organizations that are funders, institutions, and/or publishers."""
-    
+
     # Get funders with high activity
     active_funders = (
         Funders()
         .filter_gt(works_count=1000)
         .get(per_page=200)
     )
-    
+
     multi_role_count = 0
     examples = []
-    
+
     for funder in active_funders.results:
         if funder.roles and len(funder.roles) > 1:
             multi_role_count += 1
             if len(examples) < 5:  # Collect first 5 examples
                 examples.append(funder)
-    
+
     print(f"Found {multi_role_count} multi-role organizations")
     print("\nExamples:")
-    
+
     for org in examples:
         print(f"\n{org.display_name}")
         for role in org.roles:
@@ -367,11 +367,11 @@ def global_funding_summary():
     # Use group_by instead of fetching all funders
     by_country = Funders().group_by("country_code").get()
     by_continent = Funders().group_by("continent").get()
-    
+
     print("Funders by continent:")
     for group in by_continent.group_by:
         print(f"  {group.key}: {group.count:,}")
-    
+
     print("\nTop 10 countries by funder count:")
     for group in by_country.group_by[:10]:
         print(f"  {group.key}: {group.count:,}")

@@ -73,7 +73,7 @@ if stats:
     print(f"H-index: {stats.h_index}")
     print(f"i10-index: {stats.i10_index:,}")
     print(f"2-year mean citedness: {stats.two_year_mean_citedness:.2f}")
-    
+
     # These help assess concept impact
     if stats.h_index > 200:
         print("This is a high-impact research concept")
@@ -96,7 +96,7 @@ if len(concept.counts_by_year) >= 2:
     recent = concept.counts_by_year[0]
     previous = concept.counts_by_year[1]
     if previous.works_count > 0:
-        growth = ((recent.works_count - previous.works_count) / 
+        growth = ((recent.works_count - previous.works_count) /
                   previous.works_count * 100)
         print(f"Year-over-year growth: {growth:+.1f}%")
 ```
@@ -129,7 +129,7 @@ concept = Concepts()["C71924100"]
 # Concept visualization (usually from Wikipedia)
 if concept.image_url:
     print(f"Image URL: {concept.image_url}")
-    
+
 if concept.image_thumbnail_url:
     print(f"Thumbnail: {concept.image_thumbnail_url}")
 ```
@@ -183,18 +183,18 @@ for work in concept_works.results[:5]:
 from openalex import Concepts
 def explore_concept_tree(concept_id):
     """Navigate up and down the concept hierarchy."""
-    
+
     concept = Concepts()[concept_id]
-    
+
     print(f"Concept: {concept.display_name} (Level {concept.level})")
-    
+
     # Go up: Show ancestors
     if concept.ancestors:
         print("\nAncestors (parent chain):")
         for i, ancestor in enumerate(concept.ancestors):
             indent = "  " * i
             print(f"{indent}^ {ancestor.display_name} (Level {ancestor.level})")
-    
+
     # Go down: Show descendants
     descendants = (
         Concepts()
@@ -202,12 +202,12 @@ def explore_concept_tree(concept_id):
         .filter(level=concept.level + 1)  # Direct children only
         .get(per_page=10)
     )
-    
+
     if descendants.meta.count > 0:
         print(f"\nDescendants ({descendants.meta.count} direct children):")
         for child in descendants.results:
             print(f"  v {child.display_name}")
-            
+
             # Count grandchildren
             grandchildren = (
                 Concepts()
@@ -228,16 +228,16 @@ from openalex import Concepts
 def analyze_concept_impact(concept_id):
     """Comprehensive impact analysis of a concept."""
     concept = Concepts()[concept_id]
-    
+
     print(f"Impact Analysis: {concept.display_name}")
     print("=" * 50)
-    
+
     # Basic metrics
     print(f"\nBasic Metrics:")
     print(f"  Level: {concept.level}")
     print(f"  Works: {concept.works_count:,}")
     print(f"  Citations: {concept.cited_by_count:,}")
-    
+
     # Impact metrics
     if concept.summary_stats:
         stats = concept.summary_stats
@@ -245,18 +245,18 @@ def analyze_concept_impact(concept_id):
         print(f"  H-index: {stats.h_index}")
         print(f"  i10-index: {stats.i10_index:,}")
         print(f"  Mean citedness: {stats.two_year_mean_citedness:.2f}")
-        
+
         # Calculate average citations per work
         if concept.works_count > 0:
             avg_citations = concept.cited_by_count / concept.works_count
             print(f"  Avg citations/work: {avg_citations:.1f}")
-    
+
     # Trend analysis
     if concept.counts_by_year and len(concept.counts_by_year) >= 5:
         recent_years = concept.counts_by_year[:5]
         recent_works = sum(y.works_count for y in recent_years)
         recent_citations = sum(y.cited_by_count for y in recent_years)
-        
+
         print(f"\nRecent Activity (last 5 years):")
         print(f"  Works: {recent_works:,}")
         print(f"  Citations: {recent_citations:,}")
@@ -275,12 +275,12 @@ def compare_concepts(concept_ids):
     concepts = []
     for cid in concept_ids:
         concepts.append(Concepts()[cid])
-    
+
     print("Concept Comparison")
     print("-" * 80)
     print(f"{'Concept':<30} {'Level':<6} {'Works':>10} {'Citations':>12} {'H-index':>8}")
     print("-" * 80)
-    
+
     for c in concepts:
         h_index = c.summary_stats.h_index if c.summary_stats else "N/A"
         print(f"{c.display_name[:29]:<30} "
@@ -292,7 +292,7 @@ def compare_concepts(concept_ids):
 # Compare AI-related concepts
 compare_concepts([
     "C154945302",  # Machine learning
-    "C107457646",  # Deep learning  
+    "C107457646",  # Deep learning
     "C23123220",   # Artificial neural network
     "C204321447"   # Natural language processing
 ])
@@ -305,17 +305,17 @@ compare_concepts([
 from openalex import Concepts
 def find_concept_relationships(concept_id):
     """Find various relationships for a concept."""
-    
+
     concept = Concepts()[concept_id]
     print(f"Relationships for: {concept.display_name}")
-    
+
     # Direct relationships
     if concept.related_concepts:
         print(f"\nDirectly related ({len(concept.related_concepts)}):")
-        for related in sorted(concept.related_concepts[:10], 
+        for related in sorted(concept.related_concepts[:10],
                             key=lambda x: x.score, reverse=True):
             print(f"  - {related.display_name} (score: {related.score:.2f})")
-    
+
     # Sibling concepts (same parent)
     if concept.ancestors and concept.level > 0:
         parent_id = concept.ancestors[-1].id
@@ -327,11 +327,11 @@ def find_concept_relationships(concept_id):
             .sort(works_count="desc")
             .get(per_page=10)
         )
-        
+
         print(f"\nSibling concepts ({siblings.meta.count}):")
         for sibling in siblings.results[:5]:
             print(f"  - {sibling.display_name} ({sibling.works_count:,} works)")
-    
+
     # Descendant statistics
     all_descendants = Concepts().filter(ancestors={"id": concept_id}).get()
     if all_descendants.meta.count > 1:  # More than just itself
@@ -341,7 +341,7 @@ def find_concept_relationships(concept_id):
             .group_by("level")
             .get()
         )
-        
+
         print(f"\nDescendant distribution:")
         for group in sorted(desc_by_level.group_by, key=lambda g: int(g.key)):
             if int(group.key) > concept.level:
@@ -403,7 +403,7 @@ if work.concepts:
         print(concept.level)
         print(concept.wikidata)
         print(concept.score)  # Confidence score for this tagging
-        
+
         # To get full details, fetch the complete concept:
         full_concept = Concepts()[concept.id]
         print(f"Full description: {full_concept.description}")

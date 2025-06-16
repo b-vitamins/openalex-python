@@ -55,7 +55,7 @@ page2 = Institutions().get(per_page=50, page=2)
 # Largest institutions by work count
 largest_institutions = Institutions().sort(works_count="desc").get()
 
-# Most cited institutions  
+# Most cited institutions
 most_cited = Institutions().sort(cited_by_count="desc").get()
 
 # Alphabetical by name
@@ -103,7 +103,7 @@ from openalex import Institutions
 
 # Request only specific fields
 minimal_institutions = Institutions().select([
-    "id", 
+    "id",
     "display_name",
     "ror",
     "country_code",

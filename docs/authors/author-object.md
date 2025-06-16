@@ -57,7 +57,7 @@ for affiliation in author.affiliations:
     print(f"  Type: {institution.type}")
     print(f"  Country: {institution.country_code}")
     print(f"  Years: {affiliation.years}")  # List of years
-    
+
 # Example output:
 # OurResearch
 #   Type: nonprofit
@@ -77,7 +77,7 @@ author = Authors()["A5023888391"]
 # Can be multiple if author had multiple affiliations in latest work
 if author.last_known_institutions:
     print(f"Last known at {len(author.last_known_institutions)} institution(s):")
-    
+
     for inst in author.last_known_institutions:
         print(f"\n{inst.display_name}")
         print(f"  Type: {inst.type}")  # education, company, etc.
@@ -102,7 +102,7 @@ if stats:
     print(f"H-index: {stats.h_index}")  # e.g., 45
     print(f"i10-index: {stats.i10_index}")  # e.g., 205
     print(f"2-year mean citedness: {stats.two_year_mean_citedness:.2f}")
-    
+
     # Interpretation
     if stats.h_index > 40:
         print("This is a highly influential researcher")
@@ -127,8 +127,8 @@ for count in author.counts_by_year:
 
 # Calculate recent impact
 recent_citations = sum(
-    c.cited_by_count 
-    for c in author.counts_by_year 
+    c.cited_by_count
+    for c in author.counts_by_year
     if c.year >= 2020
 )
 print(f"Citations since 2020: {recent_citations}")
@@ -175,7 +175,7 @@ if author.x_concepts:
     print("Top research areas:")
     for concept in author.x_concepts[:5]:  # Top 5
         print(f"  {concept.display_name}: {concept.score:.1f}%")
-        
+
 # Example output:
 # Top research areas:
 #   Computer science: 97.4%
@@ -277,7 +277,7 @@ recent = [c for c in yearly_works if c.year >= 2020]
 if early_career and recent:
     early_avg = sum(c.works_count for c in early_career) / len(early_career)
     recent_avg = sum(c.works_count for c in recent) / len(recent)
-    
+
     if recent_avg > early_avg * 1.5:
         print("Increasing productivity over time")
     elif recent_avg < early_avg * 0.5:
@@ -303,7 +303,7 @@ else:
 # Check for affiliations
 if not author.affiliations:
     print("No affiliation information")
-    
+
 if not author.last_known_institutions:
     print("No current institutional affiliation known")
 
@@ -331,12 +331,12 @@ work = Works()["W2741809807"]
 # Access dehydrated authors in authorships
 for authorship in work.authorships:
     dehydrated_author = authorship.author
-    
+
     # Only these fields are available in dehydrated version:
     print(dehydrated_author.id)
     print(dehydrated_author.display_name)
     print(dehydrated_author.orcid)  # If available
-    
+
     # Other fields are not included to save space
     # To get full details, fetch the complete author:
     if dehydrated_author.orcid:

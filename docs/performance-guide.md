@@ -35,9 +35,9 @@ processed = 0
 for page in query.paginate(per_page=200):  # Max allowed
     for work in page.results:
         processed += 1
-    
+
     print(f"Processed {processed} works so far...")
-    
+
     if processed >= 1000:
         break
 
@@ -83,11 +83,11 @@ async def get_author_works(author_id):
 async def analyze_collaboration():
     """Analyze recent works from multiple authors"""
     author_ids = ["A5023888391", "A5001721193", "A5082969844"]
-    
+
     # Fetch concurrently
     tasks = [get_author_works(aid) for aid in author_ids]
     all_results = await asyncio.gather(*tasks)
-    
+
     # Process results
     for author_id, works in zip(author_ids, all_results):
         print(f"Author {author_id}: {len(works)} recent works")
@@ -110,13 +110,13 @@ cache_duration = timedelta(hours=1)
 def get_cached_results(query_key, query_func):
     """Get results from cache or fetch if needed"""
     now = datetime.now()
-    
+
     if query_key in cache:
         result, timestamp = cache[query_key]
         if now - timestamp < cache_duration:
             print("Using cached results")
             return result
-    
+
     # Fetch fresh results
     print("Fetching fresh results")
     result = query_func()
@@ -151,21 +151,21 @@ config.retry_backoff_factor = 1.0
 def process_many_queries(queries):
     """Process multiple queries with rate limit awareness"""
     results = []
-    
+
     for i, query in enumerate(queries):
         try:
             result = query.get(per_page=100)
             results.append(result)
-            
+
             # Optional: Add small delay between requests
             if i < len(queries) - 1:
                 time.sleep(0.1)  # 100ms delay
-                
+
         except Exception as e:
             print(f"Error on query {i}: {e}")
             # Could implement exponential backoff here
             time.sleep(1)
-            
+
     return results
 
 # Example queries
