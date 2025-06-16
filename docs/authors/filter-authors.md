@@ -35,7 +35,7 @@ page2 = query_orcid.get(page=2, per_page=100)  # Authors 101-200
 page_count = 0
 for page in query_orcid.paginate(per_page=200):
     page_count += 1
-    if page_count > 2:  # Stop after about 400 authors
+    if page_count > 2:
         break
     for author in page.results:
         print(author.id)

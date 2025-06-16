@@ -64,7 +64,7 @@ alphabetical = Publishers().sort(display_name="asc").get()
 # Get many publishers without hitting the API too hard
 some_publishers = []
 for i, page in enumerate(Publishers().paginate(per_page=200)):
-    if i >= 2:  # Stop after about 400 results
+    if i >= 2:
         break
     some_publishers.extend(page.results)
 print(f"Fetched {len(some_publishers)} publishers")

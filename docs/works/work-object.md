@@ -19,10 +19,6 @@ print(type(work))  # <class 'openalex.models.work.Work'>
 from openalex import Works
 work = Works()["W2741809807"]
 
-def process_abstract(text: str) -> None:
-    """Placeholder processing function."""
-    pass
-
 # Identifiers
 print(work.id)  # "https://openalex.org/W2741809807"
 print(work.doi)  # "https://doi.org/10.7717/peerj.4375"
@@ -182,12 +178,12 @@ print(f"Recent citations: {len(citing.results)}")
 print(f"\nThis work references {len(work.referenced_works)} other works")
 # Show first 5 references
 for ref_id in work.referenced_works[:5]:
-    print(f"  \u2192 {ref_id}")
+    print(f"  -> {ref_id}")
 
 # Related works (algorithmically determined)
 print(f"\n{len(work.related_works)} related works identified")
 for related_id in work.related_works[:3]:
-    print(f"  \u2194 {related_id}")
+    print(f"  <-> {related_id}")
 
 # Citation trend by year
 print("\nCitations by year:")
@@ -214,24 +210,24 @@ if work.primary_topic:
 # All topics (up to 3)
 print(f"\nAll {len(work.topics)} topics:")
 for topic in work.topics:
-    print(f"  \u2022 {topic.display_name} (score: {topic.score:.3f})")
+    print(f"  * {topic.display_name} (score: {topic.score:.3f})")
 
 # Keywords extracted from the work
 if work.keywords:
     print(f"\nKeywords:")
     for kw in work.keywords:
-        print(f"  \u2022 {kw.display_name} (score: {kw.score:.3f})")
+        print(f"  * {kw.display_name} (score: {kw.score:.3f})")
 
 # Sustainable Development Goals relevance
 if work.sustainable_development_goals:
     print(f"\nRelevant to SDGs:")
     for sdg in work.sustainable_development_goals:
-        print(f"  \u2022 {sdg.display_name} (score: {sdg.score:.3f})")
+        print(f"  * {sdg.display_name} (score: {sdg.score:.3f})")
 
 # Legacy concepts (being phased out)
 print(f"\n{len(work.concepts)} concepts assigned")
 for concept in work.concepts[:5]:
-    print(f"  \u2022 {concept.display_name} (score: {concept.score:.3f})")
+    print(f"  * {concept.display_name} (score: {concept.score:.3f})")
 ```
 
 ## Bibliographic information
@@ -284,7 +280,7 @@ work = Works()["W2741809807"]
 if work.grants:
     print(f"Funded by {len(work.grants)} grants:")
     for grant in work.grants:
-        print(f"  \u2022 {grant.funder_display_name}")
+        print(f"  * {grant.funder_display_name}")
         if grant.award_id:
             print(f"    Award: {grant.award_id}")
 ```
@@ -322,7 +318,7 @@ work = Works()["W2741809807"]
 if work.mesh:
     print("MeSH terms:")
     for mesh in work.mesh:
-        print(f"  \u2022 {mesh.descriptor_name}")
+        print(f"  * {mesh.descriptor_name}")
         if mesh.qualifier_name:
             print(f"    Qualifier: {mesh.qualifier_name}")
         print(f"    Major topic: {mesh.is_major_topic}")
@@ -396,10 +392,6 @@ Many fields can be None, so always check:
 # Import Works and fetch work
 from openalex import Works
 work = Works()["W2741809807"]
-
-def process_abstract(text: str) -> None:
-    """Placeholder processing function."""
-    pass
 
 # Safe patterns for optional fields
 if work.abstract:

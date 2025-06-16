@@ -33,14 +33,11 @@ query = Works().filter(
 # Process in batches
 processed = 0
 for page in query.paginate(per_page=200):  # Max allowed
-    # Process this batch
     for work in page.results:
-        # Do something with each work
         processed += 1
     
     print(f"Processed {processed} works so far...")
     
-    # Stop after reasonable number
     if processed >= 1000:
         break
 

@@ -65,7 +65,7 @@ some_funders = []
 page_count = 0
 for page in Funders().paginate(per_page=200):
     page_count += 1
-    if page_count > 2:  # Stop after about 400 funders
+    if page_count > 2:
         break
     some_funders.extend(page.results)
 print(f"Fetched {len(some_funders)} funders")
