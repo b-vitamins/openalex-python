@@ -1,7 +1,7 @@
 # Concepts
 
 {% hint style="warning" %}
-**DEPRECATION WARNING**: These are the original OpenAlex Concepts, which are being deprecated in favor of [Topics](../topics/README.md). We will continue to provide these Concepts for Works, but we will not be actively maintaining, updating, or providing support for these concepts. Unless you have a good reason to be relying on them, we encourage you to look into [Topics](../topics/README.md) instead.
+**DEPRECATION WARNING**: These are the original OpenAlex Concepts, which are being deprecated in favor of [Topics](../topics/README.md). OpenAlex will continue to provide these Concepts for Works, but OpenAlex will not be actively maintaining, updating, or providing support for these concepts. Unless you have a good reason to be relying on them, The OpenAlex team encourages you to look into [Topics](../topics/README.md) instead.
 {% endhint %}
 
 Concepts are abstract ideas that works are about. OpenAlex indexes about 65k concepts.
@@ -22,7 +22,7 @@ print(f"Concepts returned in this page: {len(first_page.results)}")  # 25
 print("\nWARNING: Concepts are deprecated. Use Topics instead!")
 ```
 
-The [Canonical External ID](../../how-to-use-the-api/get-single-entities/#canonical-external-ids) for OpenAlex concepts is the Wikidata ID, and each of our concepts has one, because all OpenAlex concepts are also Wikidata concepts.
+The [Canonical External ID](../../how-to-use-the-api/get-single-entities/#canonical-external-ids) for OpenAlex concepts is the Wikidata ID, and each OpenAlex concept has one, because all OpenAlex concepts are also Wikidata concepts.
 
 Concepts are hierarchical, like a tree. There are 19 root-level concepts, and six layers of descendants branching out from them, containing about 65 thousand concepts all told. This concept tree is a modified version of [the one created by MAG](https://arxiv.org/abs/1805.12216).
 
@@ -30,9 +30,9 @@ You can view all the concepts and their position in the tree [as a spreadsheet h
 
 ## How concepts are assigned
 
-Each work is tagged with multiple concepts, based on the title, abstract, and the title of its host venue. The tagging is done using an automated classifier that was trained on MAG's corpus; you can read more about the development and operation of this classifier in [Automated concept tagging for OpenAlex, an open index of scholarly articles.](https://docs.google.com/document/d/1OgXSLriHO3Ekz0OYoaoP_h0sPcuvV4EqX7VgLLblKe4/edit) You can implement the classifier yourself using [our models and code](https://github.com/ourresearch/openalex-concept-tagging).
+Each work is tagged with multiple concepts, based on the title, abstract, and the title of its host venue. The tagging is done using an automated classifier that was trained on MAG's corpus; you can read more about the development and operation of this classifier in [Automated concept tagging for OpenAlex, an open index of scholarly articles.](https://docs.google.com/document/d/1OgXSLriHO3Ekz0OYoaoP_h0sPcuvV4EqX7VgLLblKe4/edit) You can implement the classifier yourself using [the OpenAlex models and code](https://github.com/ourresearch/openalex-concept-tagging).
 
-A score is available for each [concept in a work](../works/work-object/#concepts), showing the classifier's confidence in choosing that concept. However, when assigning a lower-level child concept, we also assign all of its parent concepts all the way up to the root. This means that some concept assignment scores will be 0.0. The tagger adds concepts to works written in different languages, but it is optimized for English.
+A score is available for each [concept in a work](../works/work-object/#concepts), showing the classifier's confidence in choosing that concept. However, when assigning a lower-level child concept, OpenAlex also assigns all of its parent concepts up to the root. This means some concept assignment scores will be 0.0. The tagger adds concepts to works written in different languages, but it is optimized for English.
 
 Concepts are linked to works via the [`concepts`](../works/work-object/#concepts) property, and to other concepts via the [`ancestors`](concept-object.md#ancestors) and [`related_concepts`](concept-object.md#related_concepts) properties.
 

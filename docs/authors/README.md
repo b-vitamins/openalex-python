@@ -21,7 +21,7 @@ print(f"Authors returned in this page: {len(first_page.results)}")  # 25
 
 The [Canonical External ID](../../how-to-use-the-api/get-single-entities/#canonical-external-ids) for authors is ORCID; only a small percentage of authors have one, but the percentage is higher for more recent works.
 
-Our information about authors comes from MAG, Crossref, PubMed, ORCID, and publisher websites, among other sources. To learn more about how we combine this information to get OpenAlex Authors, see [Author Disambiguation](https://help.openalex.org/hc/en-us/articles/24347048891543-Author-disambiguation).
+OpenAlex gathers author information from MAG, Crossref, PubMed, ORCID, and publisher websites, among other sources. To learn more about how they combine this data to build author records, see [Author Disambiguation](https://help.openalex.org/hc/en-us/articles/24347048891543-Author-disambiguation).
 
 Authors are linked to works via the `works.authorships` property.
 

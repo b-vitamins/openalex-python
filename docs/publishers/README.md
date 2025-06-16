@@ -19,7 +19,7 @@ print(f"Total publishers in OpenAlex: {first_page.meta.count:,}")  # ~10,000
 print(f"Publishers returned in this page: {len(first_page.results)}")  # 25
 ```
 
-Our publisher data is closely tied to the publisher information in Wikidata. So the [Canonical External ID](../../how-to-use-the-api/get-single-entities/#canonical-external-ids) for OpenAlex publishers is a Wikidata ID, and almost every publisher has one. Publishers are linked to sources through the `host_organization` field.
+Publisher data in OpenAlex is closely tied to the information available in Wikidata. The [Canonical External ID](../../how-to-use-the-api/get-single-entities/#canonical-external-ids) for OpenAlex publishers is a Wikidata ID, and almost every publisher has one. Publishers are linked to sources through the `host_organization` field.
 
 ## Important: Understanding Query Results
 
