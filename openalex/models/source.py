@@ -104,6 +104,16 @@ class Source(OpenAlexEntity):
     apc_prices: list[APCPrice] = Field(
         default_factory=list, description="Article processing charges"
     )
+
+    @field_validator("apc_prices", mode="before")
+    @classmethod
+    def _normalize_apc_prices(
+        cls, value: Any
+    ) -> list[APCPrice] | Any:
+        """Convert ``None`` to an empty list for APC prices."""
+        if value is None:
+            return []
+        return value
     apc_usd: int | None = Field(None, description="APC in USD")
 
     country_code: str | None = Field(None, description="Country code")

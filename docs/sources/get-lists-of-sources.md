@@ -153,7 +153,7 @@ high_impact_journals = (
 
 print("Top 20 high-impact journals (IF > 5.0):")
 for i, journal in enumerate(high_impact_journals.results, 1):
-    impact_factor = journal.summary_stats["2yr_mean_citedness"]
+    impact_factor = journal.summary_stats.two_year_mean_citedness
     print(f"{i}. {journal.display_name}")
     print(f"   Impact Factor: {impact_factor:.2f}")
     print(f"   Works: {journal.works_count:,}")

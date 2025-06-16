@@ -158,12 +158,13 @@ if source.x_concepts:
 ## Works API URL
 
 ```python
+from openalex import Sources, Works
+
+source = Sources()["S137773608"]
 # URL to get all works from this source
 print(f"Works URL: {source.works_api_url}")
 
 # To actually fetch works using the client:
-from openalex import Sources, Works
-source = Sources()["S137773608"]
 
 # Get recent works from this source
 source_works = (
