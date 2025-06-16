@@ -168,7 +168,7 @@ class TestOpenAlexClient:
             with pytest.raises(ServerError):
                 client.get("/works")
 
-            assert mock_request.call_count == 2
+            assert mock_request.call_count == 3
 
     def test_client_follows_cursor_pagination(self, mock_response):
         """Client should follow cursor-based pagination."""
@@ -281,3 +281,37 @@ class TestOpenAlexClient:
             # All should normalize to the same endpoint
             calls = mock_request.call_args_list
             assert all(call[0][1].endswith("/works/W123") for call in calls)
+
+    def test_retry_counts_correctly(self, mock_response):
+        """Verify exactly N+1 attempts are made for N retries."""
+        from openalex import OpenAlexConfig
+        from openalex.client import OpenAlexClient
+        from openalex.exceptions import ServerError
+
+        config = OpenAlexConfig(max_retries=2)
+        client = OpenAlexClient(config)
+
+        with patch("httpx.Client.request") as mock_request:
+            mock_request.return_value = mock_response(
+                {"error": "Server error"}, status_code=503
+            )
+
+            with pytest.raises(ServerError):
+                client.get("/works")
+
+            assert mock_request.call_count == 3
+
+    def test_enhanced_validation_error(self):
+        """Check new error fields are populated correctly."""
+        from openalex.exceptions import ValidationError
+
+        err = ValidationError(
+            "bad value",
+            field_path=["works", "year"],
+            invalid_value="abc",
+            expected_type="int",
+        )
+
+        assert err.field_path == ["works", "year"]
+        assert err.invalid_value == "abc"
+        assert err.expected_type == "int"

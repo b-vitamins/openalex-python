@@ -103,21 +103,20 @@ class NotFoundError(APIError):
 
 
 class ValidationError(OpenAlexError):
-    """Validation error for input data."""
-
-    __slots__ = ("field", "value")
+    """Enhanced validation error with context."""
 
     def __init__(
         self,
         message: str,
         *,
-        field: str | None = None,
-        value: Any = None,
-        **kwargs: Any,
+        field_path: list[str] | None = None,
+        invalid_value: Any = None,
+        expected_type: str | None = None,
     ) -> None:
-        super().__init__(message, **kwargs)
-        self.field = field
-        self.value = value
+        super().__init__(message)
+        self.field_path = field_path
+        self.invalid_value = invalid_value
+        self.expected_type = expected_type
 
 
 class NetworkError(OpenAlexError):

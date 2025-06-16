@@ -281,19 +281,21 @@ def retry_with_rate_limit(func: Callable[..., T]) -> Callable[..., T]:
         if hasattr(self, "config"):
             config = self.config
             if getattr(config, "retry_enabled", True):
-                # ``retry_max_attempts`` represents the number of retries in
-                # addition to the initial attempt.
+                # ``retry_max_attempts`` represents the number of retries,
+                # so add one for the initial attempt.
                 max_attempts = getattr(config, "retry_max_attempts", 5) + 1
             else:
                 max_attempts = 1
-        attempt = 0
+        attempt = 1
+        # attempt 1 is the initial request, 2+ are retries
 
-        while attempt < max_attempts:
+        while attempt <= max_attempts:
             try:
                 return func(*args, **kwargs)
             except RateLimitExceededError as e:
+                logger.debug("retry_attempt", attempt=attempt)
                 attempt += 1
-                if attempt >= max_attempts:
+                if attempt > max_attempts:
                     raise
 
                 wait_time = e.retry_after or (2**attempt)
@@ -305,8 +307,9 @@ def retry_with_rate_limit(func: Callable[..., T]) -> Callable[..., T]:
                 )
                 time.sleep(wait_time)
             except ServerError as e:
+                logger.debug("retry_attempt", attempt=attempt)
                 attempt += 1
-                if attempt >= max_attempts:
+                if attempt > max_attempts:
                     raise
 
                 wait_time = min(60, 2**attempt)
