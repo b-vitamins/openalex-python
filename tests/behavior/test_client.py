@@ -168,7 +168,7 @@ class TestOpenAlexClient:
             with pytest.raises(ServerError):
                 client.get("/works")
 
-            assert mock_request.call_count == 2
+            assert mock_request.call_count == 3
 
     def test_client_follows_cursor_pagination(self, mock_response):
         """Client should follow cursor-based pagination."""
