@@ -41,10 +41,10 @@ first_page = query_2023.get()
 page2 = query_2023.get(page=2, per_page=100)  # Works 101-200
 
 # Or iterate through all results (use with caution!)
-for i, work in enumerate(query_2023.paginate(cursor="*", per_page=200), 1):
+for i, work in enumerate(query_2023.paginate(per_page=10), 1):
     # Stop after a reasonable number of results
     process(work)
-    if i >= 12000:
+    if i >= 10:
         break
 ```
 
@@ -285,11 +285,11 @@ pandemic_era = Works().filter(
 
 # Filter by when works were added to OpenAlex (requires API key)
 newly_added_query = Works().filter(from_created_date="2024-01-01")
-print(newly_added_query.url)
+print(newly_added_query)
 
 # Filter by when works were last updated
 recently_updated_query = Works().filter(from_updated_date="2024-06-01")
-print(recently_updated_query.url)
+print(recently_updated_query)
 ```
 
 ### Citation relationship filters
