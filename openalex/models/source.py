@@ -37,9 +37,11 @@ class APCPrice(OpenAlexBase):
     currency: str | None = None
 
 
-class Society(OpenAlexEntity):
-    """Society affiliation."""
+class Society(OpenAlexBase):
+    """Society affiliation information."""
 
+    id: str | None = None
+    display_name: str | None = None
     url: str | None = None
     organization: str | None = None
 
