@@ -5,6 +5,10 @@ It's easy to filter works using the Python client:
 ```python
 from openalex import Works
 
+def process(work):
+    """Placeholder processing function."""
+    pass
+
 # Create a filtered query for works published in 2020
 works_2020_query = Works().filter(publication_year=2020)
 
@@ -22,6 +26,10 @@ Remember: `.filter()` builds the query, `.get()` executes it and returns one pag
 ```python
 # Import Works query builder
 from openalex import Works
+
+def process(work):
+    """Placeholder processing function."""
+    pass
 
 # This creates a QUERY for ~5 million works from 2023
 query_2023 = Works().filter(publication_year=2023)
@@ -153,6 +161,9 @@ corresponding = Works().filter(authorships={"is_corresponding": True}).get()
 ### Location and open access filters
 
 ```python
+# Import Works query builder
+from openalex import Works
+
 # Find works published in a specific journal
 nature_works = Works().filter(
     primary_location={"source": {"id": "S137773608"}}
@@ -273,10 +284,12 @@ pandemic_era = Works().filter(
 ).get()
 
 # Filter by when works were added to OpenAlex (requires API key)
-newly_added = Works().filter(from_created_date="2024-01-01").get()
+newly_added_query = Works().filter(from_created_date="2024-01-01")
+print(newly_added_query.url)
 
 # Filter by when works were last updated
-recently_updated = Works().filter(from_updated_date="2024-06-01").get()
+recently_updated_query = Works().filter(from_updated_date="2024-06-01")
+print(recently_updated_query.url)
 ```
 
 ### Citation relationship filters
@@ -373,17 +386,17 @@ article_or_preprint = Works().filter(type=["article", "preprint"]).get()
 from openalex import Works
 
 # Exclude retracted works
-not_retracted = Works().filter_not(is_retracted=True).get()
+not_retracted = Works().filter(is_retracted=False).get()
 
 # Exclude specific types
-not_paratext = Works().filter_not(is_paratext=True).get()
+not_paratext = Works().filter(is_paratext=False).get()
 
 # Combine NOT with other filters
 good_recent_works = (
     Works()
     .filter(publication_year=2023)
-    .filter_not(is_retracted=True)
-    .filter_not(is_paratext=True)
+    .filter(is_retracted=False)
+    .filter(is_paratext=False)
     .filter_gt(cited_by_count=5)
     .get()
 )
@@ -404,7 +417,7 @@ harvard_chemists = Works().filter(
         }
     },
     primary_topic={
-        "field": {"display_name": "Chemistry"}
+        "field": {"id": "F10432"}
     }
 ).get()
 
@@ -437,6 +450,10 @@ nsf_funded_recent = Works().filter(
 ```python
 # Import Works query builder
 from openalex import Works
+
+def process(work):
+    """Placeholder processing function."""
+    pass
 
 # Check result count before deciding to paginate
 query = Works().filter(authorships={"institutions": {"id": "I12345"}})

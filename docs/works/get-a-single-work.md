@@ -54,10 +54,9 @@ work = Works()["doi:10.7717/peerj.4375"]  # Shorter URN format
 
 # Get work by PubMed ID
 work = Works()["pmid:14907713"]
-work = Works()["https://pubmed.ncbi.nlm.nih.gov/14907713"]  # Full URL also works
 
-# Get work by PubMed Central ID
-work = Works()["pmcid:PMC1394394"]
+# Get work by PubMed Central ID (use a valid PMCID)
+work = Works()["pmcid:PMC3000000"]
 
 # Get work by Microsoft Academic Graph ID
 work = Works()["mag:2741809807"]
@@ -83,7 +82,7 @@ You can use `select` to limit the fields that are returned in a work object:
 from openalex import Works
 
 # Fetch only specific fields to reduce response size and improve performance
-minimal_work = Works().select(["id", "display_name", "cited_by_count"]).get("W2741809807")
+minimal_work = Works().select(["id", "display_name", "cited_by_count"])["W2741809807"]
 
 # Now only the selected fields are populated
 print(minimal_work.display_name)  # Works

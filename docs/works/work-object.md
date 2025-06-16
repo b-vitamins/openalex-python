@@ -19,6 +19,10 @@ print(type(work))  # <class 'openalex.models.work.Work'>
 from openalex import Works
 work = Works()["W2741809807"]
 
+def process_abstract(text: str) -> None:
+    """Placeholder processing function."""
+    pass
+
 # Identifiers
 print(work.id)  # "https://openalex.org/W2741809807"
 print(work.doi)  # "https://doi.org/10.7717/peerj.4375"
@@ -94,9 +98,8 @@ for authorship in work.authorships:
         print(f"    ROR: {institution.ror}")
     
     # Raw affiliation strings (as they appear in the paper)
-    for affiliation in authorship.affiliations:
-        print(f"  Raw text: '{affiliation.raw_affiliation_string}'")
-        print(f"    Matched to: {affiliation.institution_ids}")
+    for raw_text in authorship.raw_affiliation_strings:
+        print(f"  Raw text: '{raw_text}'")
     
     # Countries (derived from institutions and raw strings)
     if authorship.countries:
@@ -170,9 +173,6 @@ work = Works()["W2741809807"]
 
 # Citation count
 print(f"Cited by {work.cited_by_count:,} other works")
-
-# URL to get works that cite this one
-print(f"Citing works API: {work.cited_by_api_url}")
 
 # To actually get citing works:
 citing = Works().filter(cites=work.id).get()
@@ -396,6 +396,10 @@ Many fields can be None, so always check:
 # Import Works and fetch work
 from openalex import Works
 work = Works()["W2741809807"]
+
+def process_abstract(text: str) -> None:
+    """Placeholder processing function."""
+    pass
 
 # Safe patterns for optional fields
 if work.abstract:
