@@ -5,8 +5,8 @@ You can group sources to get aggregated statistics without fetching individual s
 ```python
 from openalex import Sources
 
-# Create a query that groups sources by publisher
-publisher_stats_query = Sources().group_by("publisher")
+# Create a query that groups sources by host organization
+publisher_stats_query = Sources().group_by("host_organization")
 
 # Execute the query to get COUNTS, not individual sources
 publisher_stats = publisher_stats_query.get()
@@ -182,11 +182,11 @@ country_type = Sources().group_by("country_code", "type").get()
 for group in country_type.group_by[:20]:
     # Keys are pipe-separated for multi-dimensional groups
     country, source_type = group.key.split('|')
-    oa_status = "OA" if source_type == "True" else "Subscription"
     print(f"{country} - {source_type}: {group.count}")
 
 # Publisher and source type
-publisher_types = Sources().group_by("publisher", "type").get()
+# Group by host organization and source type
+publisher_types = Sources().group_by("host_organization", "type").get()
 # See what types of sources each publisher has
 ```
 
@@ -224,7 +224,7 @@ def analyze_oa_landscape():
         Sources()
         .filter(is_oa=True)
         .filter(type="journal")
-        .filter(apc_usd={"exists": True})
+        .filter_gt(apc_usd=0)
         .group_by("apc_prices.currency")
         .get()
     )
@@ -262,13 +262,13 @@ def analyze_publisher_concentration():
     """Analyze market concentration in academic publishing."""
     
     # Top publishers by number of sources
-    by_publisher = Sources().group_by("publisher").get()
+    by_publisher = Sources().group_by("host_organization").get()
     
     # Top publishers of OA sources
     oa_publishers = (
         Sources()
         .filter(is_oa=True)
-        .group_by("publisher")
+        .group_by("host_organization")
         .get()
     )
     
@@ -300,7 +300,7 @@ def analyze_publisher_concentration():
         regional_publishers = (
             Sources()
             .filter(country_code=countries)
-            .group_by("publisher")
+            .group_by("host_organization")
             .get()
         )
         
@@ -411,7 +411,7 @@ Control how results are ordered:
 from openalex import Sources
 
 # Default: sorted by count (descending)
-default_sort = Sources().group_by("publisher").get()
+default_sort = Sources().group_by("host_organization").get()
 # Elsevier first (most sources), then Springer, etc.
 
 # Sort by key instead of count
@@ -419,7 +419,7 @@ alphabetical = Sources().group_by("type").sort(key="asc").get()
 # conference, ebook platform, journal... (alphabetical)
 
 # Sort by count ascending (smallest groups first)
-smallest_first = Sources().group_by("publisher").sort(count="asc").get()
+smallest_first = Sources().group_by("host_organization").sort(count="asc").get()
 # Publishers with fewest sources first
 ```
 

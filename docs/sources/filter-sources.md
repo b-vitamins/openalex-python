@@ -76,8 +76,8 @@ springer_nature_lineage = Sources().filter(
     host_organization_lineage="P4310319965"
 ).get()
 
-# Filter by exact publisher match
-exact_publisher = Sources().filter(publisher="Elsevier BV").get()
+# Filter by exact host organization (publisher) match
+exact_publisher = Sources().filter(host_organization="P4310320595").get()
 ```
 
 ### Open Access filters
@@ -121,9 +121,12 @@ from openalex import Sources
 
 # Filter by impact factor (2-year mean citedness)
 high_impact = Sources().filter_gt(summary_stats={"2yr_mean_citedness": 10.0}).get()
-medium_impact = Sources().filter_range(
-    summary_stats={"2yr_mean_citedness": [2.0, 5.0]}
-).get()
+medium_impact = (
+    Sources()
+    .filter_gt(summary_stats={"2yr_mean_citedness": 2.0})
+    .filter_lt(summary_stats={"2yr_mean_citedness": 5.0})
+    .get()
+)
 
 # Filter by h-index
 high_h_index = Sources().filter_gt(summary_stats={"h_index": 200}).get()
@@ -220,7 +223,7 @@ high_impact_oa = (
     .filter(type="journal")
     .filter(is_oa=True)
     .filter_gt(summary_stats={"2yr_mean_citedness": 5.0})
-    .sort(summary_stats={"2yr_mean_citedness": "desc"})
+    .sort(**{"summary_stats.2yr_mean_citedness": "desc"})
     .get()
 )
 
@@ -253,10 +256,8 @@ non_us = Sources().filter_not(country_code="US").get()
 # Non-journal sources
 non_journals = Sources().filter_not(type="journal").get()
 
-# Sources without APCs
-no_apc = Sources().filter_not(
-    apc_usd={"exists": True}
-).get()
+# Sources without APC information
+no_apc = Sources().filter(apc_usd=None).get()
 ```
 
 ### Range queries
@@ -297,7 +298,7 @@ def find_affordable_oa_journals(max_apc=1500, min_impact=2.0):
         .filter(is_oa=True)
         .filter_lt(apc_usd=max_apc)
         .filter_gt(summary_stats={"2yr_mean_citedness": min_impact})
-        .sort(summary_stats={"2yr_mean_citedness": "desc"})
+        .sort(**{"summary_stats.2yr_mean_citedness": "desc"})
         .get(per_page=20)
     )
     

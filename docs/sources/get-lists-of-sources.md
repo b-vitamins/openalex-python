@@ -44,6 +44,8 @@ for source in first_page.results[:5]:  # First 5 sources
 You can control pagination and sorting:
 
 ```python
+from openalex import Sources
+
 # Get a specific page with custom page size
 page2 = Sources().get(per_page=50, page=2)
 # This returns sources 51-100
@@ -56,7 +58,7 @@ most_cited = Sources().sort(cited_by_count="desc").get()
 most_productive = Sources().sort(works_count="desc").get()
 
 # Sort by impact factor (2-year mean citedness)
-high_impact = Sources().sort(summary_stats={"2yr_mean_citedness": "desc"}).get()
+high_impact = Sources().sort(**{"summary_stats.2yr_mean_citedness": "desc"}).get()
 
 # Alphabetical by name
 alphabetical = Sources().sort(display_name="asc").get()
@@ -64,9 +66,9 @@ alphabetical = Sources().sort(display_name="asc").get()
 # Get ALL sources (feasible with ~249,000)
 # This will make about 1,250 API calls at 200 per page
 all_sources = []
-for source in Sources().paginate(per_page=200):
+for source in Sources().paginate(per_page=200, max_results=12000):
     all_sources.append(source)
-print(f"Fetched all {len(all_sources)} sources")
+print(f"Fetched {len(all_sources)} sources")
 ```
 
 ## Sample sources
