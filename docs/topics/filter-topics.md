@@ -97,6 +97,8 @@ default_search = Topics().filter(
 ### Combining filters (AND operations)
 
 ```python
+from openalex import Topics
+
 # Large medical topics
 large_medical = (
     Topics()
@@ -128,18 +130,20 @@ high_impact_bio = (
 ### NOT operations
 
 ```python
+from openalex import Topics
+
 # Topics NOT in Health Sciences
 non_health = Topics().filter_not(domain={"id": 4}).get()
 
 # Topics with few works
-low_activity = Topics().filter_not(
-    works_count={"gte": 1000}
-).get()
+low_activity = Topics().filter_lt(works_count=1000).get()
 ```
 
 ### Range queries
 
 ```python
+from openalex import Topics
+
 # Mid-size topics (1k-10k works)
 mid_size = (
     Topics()
@@ -188,8 +192,7 @@ def find_interdisciplinary_topics():
     
     print("Potentially interdisciplinary topics:")
     for topic in sorted(unique_topics, key=lambda t: t.works_count, reverse=True)[:20]:
-        print(f"
-{topic.display_name}")
+        print(f"{topic.display_name}")
         print(f"  {topic.domain.display_name} -> {topic.field.display_name} -> {topic.subfield.display_name}")
         print(f"  Works: {topic.works_count:,}")
 
@@ -222,9 +225,8 @@ def compare_domains():
         if top_topics.results:
             domain_name = top_topics.results[0].domain.display_name
             total_works = sum(t.works_count for t in top_topics.results)
-            
-            print(f"
-{domain_name}:")
+
+            print(f"{domain_name}:")
             print(f"  Total topics: {domain_group.count}")
             print(f"  Top 5 topics total works: {total_works:,}")
             print("  Most active topics:")
@@ -267,8 +269,7 @@ def find_emerging_topics(min_works=500, max_works=5000):
     
     print(f"Potentially emerging topics ({min_works}-{max_works} works):")
     for topic in emerging_modern[:20]:
-        print(f"
-{topic.display_name}")
+        print(f"{topic.display_name}")
         print(f"  Field: {topic.field.display_name}")
         print(f"  Works: {topic.works_count:,}")
         if topic.keywords:
@@ -289,7 +290,7 @@ def analyze_field(field_id, field_name):
     field_topics = list(
         Topics()
         .filter(field={"id": field_id})
-        .paginate(per_page=200)
+        .all(per_page=200)
     )
     
     print(f"Analysis of {field_name}")
@@ -307,16 +308,14 @@ def analyze_field(field_id, field_name):
     print(f"Subfields: {len(subfields)}")
     
     # Show subfield distribution
-    print("
-Subfield breakdown:")
+    print("Subfield breakdown:")
     for subfield, topics in sorted(subfields.items(), key=lambda x: len(x[1]), reverse=True):
         total_works = sum(t.works_count for t in topics)
         print(f"  {subfield}: {len(topics)} topics, {total_works:,} works")
     
     # Find most active topics
     top_topics = sorted(field_topics, key=lambda t: t.works_count, reverse=True)[:10]
-    print(f"
-Top 10 most active topics in {field_name}:")
+    print(f"Top 10 most active topics in {field_name}:")
     for i, topic in enumerate(top_topics, 1):
         print(f"  {i}. {topic.display_name} ({topic.works_count:,} works)")
 
@@ -341,7 +340,7 @@ from openalex import Topics
 def get_all_topics_cached():
     """Get all topics and cache them."""
     # In practice, you'd want to persist this cache
-    all_topics = list(Topics().paginate(per_page=200))
+    all_topics = list(Topics().all(per_page=200))
     return all_topics
 
 # Use the cache for complex analyses

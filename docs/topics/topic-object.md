@@ -15,6 +15,10 @@ print(type(topic))  # <class 'openalex.models.topic.Topic'>
 ## Basic properties
 
 ```python
+# Fetch the topic again for this example
+from openalex import Topics
+topic = Topics()["T11636"]
+
 # Identifiers
 print(topic.id)  # "https://openalex.org/T11636"
 print(topic.display_name)  # "Artificial Intelligence in Medicine"
@@ -35,6 +39,10 @@ print(topic.updated_date)  # "2024-02-05T05:00:03.798420"
 ## Hierarchical classification
 
 ```python
+# Fetch the topic again
+from openalex import Topics
+topic = Topics()["T11636"]
+
 # Topics are organized in a 4-level hierarchy
 # Domain (broadest)
 print(f"Domain: {topic.domain.display_name} (ID: {topic.domain.id})")
@@ -59,6 +67,10 @@ print(f"Full hierarchy: {topic.domain.display_name} -> {topic.field.display_name
 ## Keywords
 
 ```python
+# Fetch the topic again
+from openalex import Topics
+topic = Topics()["T11636"]
+
 # AI-generated keywords for this topic
 if topic.keywords:
     print(f"Number of keywords: {len(topic.keywords)}")
@@ -76,6 +88,10 @@ if topic.keywords:
 ## External identifiers
 
 ```python
+# Fetch the topic again
+from openalex import Topics
+topic = Topics()["T11636"]
+
 ids = topic.ids
 print(f"OpenAlex: {ids.openalex}")
 if ids.wikipedia:
@@ -88,7 +104,9 @@ if ids.wikipedia:
 ### Find works in a topic
 
 ```python
-from openalex import Works
+from openalex import Topics, Works
+
+topic = Topics()["T11636"]
 
 def get_works_for_topic(topic_id, recent_only=False):
     """Get works that have this topic."""
@@ -109,7 +127,9 @@ def get_works_for_topic(topic_id, recent_only=False):
         print(f"  Published: {work.publication_date}")
         
         # Show if this is the primary topic
-        if work.primary_topic and work.primary_topic.id == topic_id:
+        pt = work.primary_topic
+        pt_id = pt.get("id") if isinstance(pt, dict) else getattr(pt, "id", None)
+        if pt_id == topic_id:
             print(f"  Primary topic: Yes")
 
 # Example usage
@@ -121,7 +141,7 @@ get_works_for_topic(topic.id, recent_only=True)
 ```python
 def analyze_topic_growth(topic_id):
     """Analyze how a topic has grown over time."""
-    from openalex import Works
+    from openalex import Topics, Works
     
     topic = Topics()[topic_id]
     
@@ -162,6 +182,7 @@ analyze_topic_growth("T11636")
 ```python
 def find_related_topics(topic_id):
     """Find topics related to a given topic."""
+    from openalex import Topics
     source_topic = Topics()[topic_id]
     
     # Same subfield (most related)
@@ -212,6 +233,7 @@ find_related_topics("T11636")
 ```python
 def compare_topics(topic_ids):
     """Compare multiple topics side by side."""
+    from openalex import Topics
     topics = []
     for tid in topic_ids:
         topics.append(Topics()[tid])
@@ -252,6 +274,7 @@ compare_topics(["T11636", "T10017", "T10159"])
 ```python
 def explore_topic_hierarchy(topic_id):
     """Explore the hierarchical context of a topic."""
+    from openalex import Topics
     topic = Topics()[topic_id]
     
     print(f"Hierarchy for: {topic.display_name}")
@@ -273,8 +296,10 @@ def explore_topic_hierarchy(topic_id):
     subfield_topics = Topics().filter(subfield={"id": topic.subfield.id}).get()
     
     print(f"\nContext:")
-    print(f"  Fields in {topic.domain.display_name}: {len(domain_fields.group_by)}")
-    print(f"  Subfields in {topic.field.display_name}: {len(field_subfields.group_by)}")
+    fields_len = len(domain_fields.group_by or [])
+    subfields_len = len(field_subfields.group_by or [])
+    print(f"  Fields in {topic.domain.display_name}: {fields_len}")
+    print(f"  Subfields in {topic.field.display_name}: {subfields_len}")
     print(f"  Topics in {topic.subfield.display_name}: {subfield_topics.meta.count}")
     
     # Show some sibling topics
@@ -298,6 +323,10 @@ explore_topic_hierarchy("T11636")
 Some fields might be None or empty:
 
 ```python
+# Fetch the topic again
+from openalex import Topics
+topic = Topics()["T11636"]
+
 # Safe access patterns
 if topic.description:
     print(f"Description: {topic.description[:200]}...")
@@ -326,11 +355,14 @@ if topic.works_count < 100:
 Since there are only ~4,500 topics, you can easily work with all of them:
 
 ```python
+# Fetch the Topics client
+from openalex import Topics
+
 # Load all topics for comprehensive analysis
 def load_all_topics():
     """Load all topics into memory for analysis."""
     print("Loading all topics...")
-    all_topics = list(Topics().paginate(per_page=200))
+    all_topics = list(Topics().all(per_page=200))
     print(f"Loaded {len(all_topics)} topics")
     
     # Create useful indexes
