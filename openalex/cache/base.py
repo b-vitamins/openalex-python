@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import json
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, TypeVar
+from urllib.parse import urlencode
 
 import xxhash
 from structlog import get_logger
@@ -32,18 +32,17 @@ class CacheKeyBuilder:
         params: dict[str, Any] | None = None,
     ) -> str:
         """Build a cache key from request parameters."""
-        key_parts = [endpoint]
+        parts = [endpoint]
 
         if entity_id:
-            key_parts.append(entity_id)
+            parts.append(entity_id)
 
         if params:
             sorted_params = sorted(params.items())
-            params_str = json.dumps(sorted_params, sort_keys=True)
-            key_parts.append(params_str)
+            param_str = urlencode(sorted_params)
+            parts.append(xxhash.xxh64(param_str).hexdigest())
 
-        key_str = "|".join(key_parts)
-        return f"openalex:{xxhash.xxh64(key_str).hexdigest()}"
+        return ":".join(parts)
 
 
 @dataclass(slots=True)

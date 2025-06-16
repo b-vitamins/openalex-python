@@ -115,6 +115,34 @@ class CacheManager:
             **self._cache.stats(),
         }
 
+    def warm_cache(
+        self,
+        endpoint: str,
+        entity_ids: list[str],
+        fetch_func: Callable[[str], Any],
+    ) -> dict[str, bool]:
+        """Pre-populate cache with frequently accessed entities."""
+        results: dict[str, bool] = {}
+
+        for entity_id in entity_ids:
+            try:
+                cache_key = CacheKeyBuilder.build_key(endpoint, entity_id)
+                if self._cache and not self._cache.get(cache_key):
+                    data = fetch_func(entity_id)
+                    self._cache.set(
+                        cache_key,
+                        data,
+                        self._get_ttl_for_endpoint(endpoint),
+                    )
+                    results[entity_id] = True
+                else:
+                    results[entity_id] = False
+            except Exception:  # pragma: no cover - unexpected
+                logger.exception("Failed to warm cache for %s", entity_id)
+                results[entity_id] = False
+
+        return results
+
     def _get_ttl_for_endpoint(self, _endpoint: str) -> float:
         return float(self.config.cache_ttl)
 

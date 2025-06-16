@@ -208,6 +208,8 @@ class BaseEntity(Generic[T, F]):
             entity_id=entity_id,
             params=params,
         )
+        if isinstance(data, self.model_class):
+            return data
         return self._parse_response(data)
 
     def get_many(self, ids: list[str], max_concurrent: int = 10) -> list[T]:
@@ -398,6 +400,15 @@ class BaseEntity(Generic[T, F]):
         """Get cache statistics for this entity type."""
         cache_manager = get_cache_manager(self._config)
         return cache_manager.stats()
+
+    def warm_cache(self, entity_ids: builtins.list[str]) -> dict[str, bool]:
+        """Pre-fetch and cache multiple entities."""
+        cache_manager = get_cache_manager(self._config)
+        return cache_manager.warm_cache(
+            self.endpoint,
+            entity_ids,
+            lambda id: self._get_single_entity(id),
+        )
 
 
 def _build_list_result(data: dict[str, Any], model: type[_T]) -> ListResult[_T]:
