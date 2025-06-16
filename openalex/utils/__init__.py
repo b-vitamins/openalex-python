@@ -7,6 +7,7 @@ from ..constants import (
     ORCID_URL_PREFIX,
     PMID_PREFIX,
 )
+from .batch import chunk_list
 from .common import (
     empty_list_result,
     ensure_prefix,
@@ -71,6 +72,7 @@ __all__ = [
     "SlidingWindowRateLimiter",
     "async_rate_limited",
     "async_with_retry",
+    "chunk_list",
     "clean_html",
     "clean_title",
     "constant_backoff",

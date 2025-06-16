@@ -12,6 +12,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from .query import AsyncQuery
 
 from pydantic import ValidationError
+from structlog import get_logger
 
 __all__ = [
     "AsyncAuthors",
@@ -74,6 +75,8 @@ if TYPE_CHECKING:  # pragma: no cover
 T = TypeVar("T")
 F = TypeVar("F", bound="BaseFilter")
 _T = TypeVar("_T")
+
+logger = get_logger(__name__)
 
 
 class BaseEntity(Generic[T, F]):
@@ -206,6 +209,34 @@ class BaseEntity(Generic[T, F]):
             params=params,
         )
         return self._parse_response(data)
+
+    def get_many(self, ids: list[str], max_concurrent: int = 10) -> list[T]:
+        """Fetch multiple entities efficiently using concurrent requests."""
+        import concurrent.futures
+
+        # Validate all IDs first
+        validated_ids: list[str] = []
+        for entity_id in ids:
+            try:
+                valid_id = validate_entity_id(entity_id, self.endpoint.rstrip("s"))
+                validated_ids.append(valid_id)
+            except ValueError as e:
+                logger.warning("Skipping invalid ID %s: %s", entity_id, e)
+
+        results: list[T] = []
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_concurrent) as executor:
+            future_to_id = {
+                executor.submit(self._get_single_entity, vid): vid for vid in validated_ids
+            }
+
+            for future in concurrent.futures.as_completed(future_to_id):
+                vid = future_to_id[future]
+                try:
+                    results.append(future.result())
+                except Exception:  # pragma: no cover - unexpected
+                    logger.exception("Failed to fetch %s", vid)
+
+        return results
 
     def get(self, id: str | None = None, **params: Any) -> T | ListResult[T]:
         """Retrieve a single entity or list results."""
@@ -508,6 +539,36 @@ class AsyncBaseEntity(AsyncBaseAPI[T], Generic[T, F]):
 
         cache_manager = get_cache_manager(self._config)
         return cache_manager.stats()
+
+    async def get_many(
+        self, ids: list[str], max_concurrent: int = 10
+    ) -> list[T]:
+        """Fetch multiple entities efficiently using concurrent requests."""
+        import asyncio
+
+        # Validate IDs first
+        validated_ids: list[str] = []
+        for entity_id in ids:
+            try:
+                valid_id = validate_entity_id(entity_id, self.endpoint.rstrip("s"))
+                validated_ids.append(valid_id)
+            except ValueError as e:
+                logger.warning("Skipping invalid ID %s: %s", entity_id, e)
+
+        semaphore = asyncio.Semaphore(max_concurrent)
+
+        async def fetch_with_semaphore(entity_id: str) -> T | None:
+            async with semaphore:
+                try:
+                    return await self.get(entity_id)
+                except Exception:  # pragma: no cover - unexpected
+                    logger.exception("Failed to fetch %s", entity_id)
+                    return None
+
+        results = await asyncio.gather(
+            *[fetch_with_semaphore(vid) for vid in validated_ids]
+        )
+        return [r for r in results if r is not None]
 
 
 class Works(BaseEntity[Work, BaseFilter]):
