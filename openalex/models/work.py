@@ -57,6 +57,15 @@ class WorkType(str, Enum):
     BOOK = "book"
     REPORT = "report"
     OTHER = "other"
+    BOOK_CHAPTER = "book-chapter"
+    DATASET = "dataset"
+    DISSERTATION = "dissertation"
+    ERRATUM = "erratum"
+    LETTER = "letter"
+    PARATEXT = "paratext"
+    PREPRINT = "preprint"
+    REFERENCE_ENTRY = "reference-entry"
+    REVIEW = "review"
 
 
 class OpenAccessStatus(str, Enum):
