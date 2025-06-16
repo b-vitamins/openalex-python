@@ -65,7 +65,7 @@ alphabetical = Institutions().sort(display_name="asc").get()
 some_institutions = []
 for institution in Institutions().paginate(per_page=200, cursor="*"):
     some_institutions.append(institution)
-    if len(some_institutions) >= 200:  # Stop after 200 results
+    if len(some_institutions) >= 200:
         break
 print(f"Fetched {len(some_institutions)} institutions")
 ```

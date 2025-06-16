@@ -5,10 +5,6 @@ It's easy to filter works using the Python client:
 ```python
 from openalex import Works
 
-def process(work):
-    """Placeholder processing function."""
-    pass
-
 # Create a filtered query for works published in 2020
 works_2020_query = Works().filter(publication_year=2020)
 
@@ -27,10 +23,6 @@ Remember: `.filter()` builds the query, `.get()` executes it and returns one pag
 # Import Works query builder
 from openalex import Works
 
-def process(work):
-    """Placeholder processing function."""
-    pass
-
 # This creates a QUERY for ~5 million works from 2023
 query_2023 = Works().filter(publication_year=2023)
 
@@ -42,7 +34,6 @@ page2 = query_2023.get(page=2, per_page=100)  # Works 101-200
 
 # Or iterate through all results (use with caution!)
 for i, work in enumerate(query_2023.paginate(per_page=10), 1):
-    # Stop after a reasonable number of results
     process(work)
     if i >= 10:
         break
@@ -450,10 +441,6 @@ nsf_funded_recent = Works().filter(
 ```python
 # Import Works query builder
 from openalex import Works
-
-def process(work):
-    """Placeholder processing function."""
-    pass
 
 # Check result count before deciding to paginate
 query = Works().filter(authorships={"institutions": {"id": "I12345"}})

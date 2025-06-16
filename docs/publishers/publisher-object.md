@@ -261,7 +261,7 @@ chain = get_publisher_chain(publisher.id)
 print("Publisher hierarchy (child to parent):")
 for i, pub in enumerate(chain):
     indent = "  " * i
-    print(f"{indent}\u2192 {pub.display_name} (Level {pub.hierarchy_level})")
+    print(f"{indent}-> {pub.display_name} (Level {pub.hierarchy_level})")
 ```
 
 ## Analyze publisher portfolio
