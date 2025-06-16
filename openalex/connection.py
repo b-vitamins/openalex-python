@@ -156,11 +156,13 @@ class AsyncConnection:
         params: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> httpx.Response:
-        # ``retry_max_attempts`` already counts the first request; don't add one.
         max_attempts = (
-            self._config.retry_max_attempts if self._config.retry_enabled else 1
+            (self._config.retry_max_attempts + 1)
+            if self._config.retry_enabled
+            else 1
         )
-        attempt = 0
+        attempt = 1
+        # attempt 1 is the initial request, 2+ are retries
 
         def _raise(err: Exception) -> None:
             raise err
@@ -192,7 +194,7 @@ class AsyncConnection:
 
             except (RateLimitExceededError, ServerError, TemporaryError) as e:
                 attempt += 1
-                if attempt >= max_attempts:
+                if attempt > max_attempts:
                     raise
 
                 if isinstance(e, RateLimitExceededError) and e.retry_after:

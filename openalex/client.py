@@ -83,12 +83,12 @@ class OpenAlexClient:
         req_headers = self._default_headers(headers)
         req_params = self._default_params(params)
 
-        attempt = 0
-        # ``retry_max_attempts`` already represents the total number of attempts
-        # allowed (including the first request).  Do not add 1 here to avoid
-        # exceeding the configured retry limit.
+        attempt = 1
+        # attempt 1 is the initial request, 2+ are retries
         max_attempts = (
-            self.config.retry_max_attempts if self.config.retry_enabled else 1
+            (self.config.retry_max_attempts + 1)
+            if self.config.retry_enabled
+            else 1
         )
         wait = self.config.retry_initial_wait
 
@@ -102,7 +102,7 @@ class OpenAlexClient:
                 )
             except httpx.TimeoutException as exc:  # pragma: no cover - network
                 attempt += 1
-                if attempt >= max_attempts:
+                if attempt > max_attempts:
                     raise TimeoutError(str(exc)) from exc
                 time.sleep(min(wait, self.config.retry_max_wait))
                 wait = min(
@@ -112,7 +112,7 @@ class OpenAlexClient:
                 continue
             except httpx.NetworkError as exc:  # pragma: no cover - network
                 attempt += 1
-                if attempt >= max_attempts:
+                if attempt > max_attempts:
                     raise NetworkError(str(exc)) from exc
                 time.sleep(min(wait, self.config.retry_max_wait))
                 wait = min(
@@ -126,7 +126,7 @@ class OpenAlexClient:
                 retry_after_raw = response.headers.get("Retry-After")
                 retry_after = int(retry_after_raw) if retry_after_raw else None
                 attempt += 1
-                if attempt >= max_attempts:
+                if attempt > max_attempts:
                     raise RateLimitError(retry_after=retry_after)
                 sleep_for = retry_after or wait
                 time.sleep(min(sleep_for, self.config.retry_max_wait))
@@ -137,7 +137,7 @@ class OpenAlexClient:
                 continue
             if status in (502, 503, 504):
                 attempt += 1
-                if attempt >= max_attempts:
+                if attempt > max_attempts:
                     msg = f"Server error {status}"
                     raise ServerError(msg)
                 time.sleep(min(wait, self.config.retry_max_wait))
@@ -148,7 +148,7 @@ class OpenAlexClient:
                 continue
             if 500 <= status < 600:
                 attempt += 1
-                if attempt >= max_attempts:
+                if attempt > max_attempts:
                     msg = f"Server error {status}"
                     raise ServerError(msg)
                 time.sleep(min(wait, self.config.retry_max_wait))
