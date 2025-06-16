@@ -131,16 +131,17 @@ def flatten_filter_dict(
     return logical.join(parts)
 
 
-def serialize_params(params: dict[str, Any]) -> dict[str, str]:
+def serialize_params(params: dict[str, Any]) -> dict[str, Any]:
     """Serialize parameters for API requests.
 
     Handles special serialization for:
     - filter: Complex nested structures with logical operators
     - sort: Key:value pairs joined by commas
     - select: List to comma-separated string
+    - group_by: Sequence values to allow repeated parameters
     - Standard values: Convert to strings
     """
-    serialized: dict[str, str] = {}
+    serialized: dict[str, Any] = {}
 
     for key, value in params.items():
         if key == "filter" and isinstance(value, dict):
@@ -152,6 +153,8 @@ def serialize_params(params: dict[str, Any]) -> dict[str, str]:
             serialized["sort"] = ",".join(sort_parts)
         elif key == "select" and isinstance(value, list):
             serialized["select"] = ",".join(value)
+        elif key == "group_by" and isinstance(value, list | tuple):
+            serialized["group_by"] = list(value)
         elif value is not None:
             mapped = KEY_MAP.get(key, key)
             serialized[mapped] = (

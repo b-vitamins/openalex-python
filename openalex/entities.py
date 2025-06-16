@@ -349,8 +349,8 @@ class BaseEntity(Generic[T, F]):
     def sample(self, n: int, seed: int | None = None) -> Query[T, F]:
         return self.query().sample(n, seed)
 
-    def group_by(self, key: str) -> Query[T, F]:
-        return self.query().group_by(key)
+    def group_by(self, *keys: str) -> Query[T, F]:
+        return self.query().group_by(*keys)
 
     def count(self) -> int:
         return self.query().count()
