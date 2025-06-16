@@ -17,11 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Behavior-driven test suite covering async, caching, config, pagination, etc.
 - Synchronous ``OpenAlexClient`` for simple API access
 - Batch fetching via ``BaseEntity.get_many`` and ``AsyncBaseEntity.get_many``
+- Cache warming utility to pre-populate frequently accessed items
 
 ### Changed
 - Fixed caching logic to handle list queries and thread safety
 - License clarification: Now consistently MIT licensed
 - Request caching disabled by default
+- Cache keys now include endpoint prefix to avoid collisions
 - Verified caching behavior with updated tests
 - Documentation examples for institutions are now self-contained
 - Updated docs to use `model_dump()` instead of `dict()`
