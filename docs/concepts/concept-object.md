@@ -1,7 +1,7 @@
 # Concept object
 
 {% hint style="warning" %}
-⚠️ **DEPRECATION WARNING**: These are the original OpenAlex Concepts, which are being deprecated in favor of [Topics](../topics/README.md). We will continue to provide these Concepts for Works, but we will not be actively maintaining, updating, or providing support for these concepts. Unless you have a good reason to be relying on them, we encourage you to look into [Topics](../topics/README.md) instead.
+**DEPRECATION WARNING**: These are the original OpenAlex Concepts, which are being deprecated in favor of [Topics](../topics/README.md). We will continue to provide these Concepts for Works, but we will not be actively maintaining, updating, or providing support for these concepts. Unless you have a good reason to be relying on them, we encourage you to look into [Topics](../topics/README.md) instead.
 {% endhint %}
 
 When you fetch a concept using the Python client, you get a `Concept` object with all of OpenAlex's data about that concept. Here's how to access the various properties:
@@ -9,7 +9,6 @@ When you fetch a concept using the Python client, you get a `Concept` object wit
 ```python
 from openalex import Concepts
 
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Get a specific concept
 concept = Concepts()["C71924100"]
 
@@ -23,7 +22,6 @@ print(type(concept))  # <class 'openalex.models.concept.Concept'>
 # Import client and fetch a concept
 from openalex import Concepts
 concept = Concepts()["C71924100"]
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Identifiers
 print(concept.id)  # "https://openalex.org/C71924100"
 print(concept.wikidata)  # "https://www.wikidata.org/wiki/Q11190" (canonical ID)
@@ -48,7 +46,6 @@ print(concept.updated_date)  # "2021-12-25T14:04:30.578837"
 # Fetch concept
 from openalex import Concepts
 concept = Concepts()["C71924100"]
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Ancestors (concepts this descends from)
 if concept.ancestors:
     print(f"Ancestors ({len(concept.ancestors)}):")
@@ -71,7 +68,6 @@ if concept.related_concepts:
 # Fetch concept
 from openalex import Concepts
 concept = Concepts()["C71924100"]
-# ⚠️ DEPRECATED: Consider using Topics instead
 stats = concept.summary_stats
 if stats:
     print(f"H-index: {stats.h_index}")
@@ -89,7 +85,6 @@ if stats:
 # Fetch concept
 from openalex import Concepts
 concept = Concepts()["C71924100"]
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Track output over the last 10 years
 print("Publication trends:")
 for count in concept.counts_by_year[:5]:  # Last 5 years
@@ -112,7 +107,6 @@ if len(concept.counts_by_year) >= 2:
 # Fetch concept
 from openalex import Concepts
 concept = Concepts()["C71924100"]
-# ⚠️ DEPRECATED: Consider using Topics instead
 ids = concept.ids
 print(f"OpenAlex: {ids.openalex}")
 print(f"Wikidata: {ids.wikidata}")  # Always present (canonical ID)
@@ -132,7 +126,6 @@ if ids.umls_aui:
 # Fetch concept
 from openalex import Concepts
 concept = Concepts()["C71924100"]
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Concept visualization (usually from Wikipedia)
 if concept.image_url:
     print(f"Image URL: {concept.image_url}")
@@ -147,7 +140,6 @@ if concept.image_thumbnail_url:
 # Fetch concept
 from openalex import Concepts
 concept = Concepts()["C71924100"]
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Names in different languages
 if hasattr(concept, 'international') and concept.international:
     if hasattr(concept.international, 'display_name'):
@@ -162,7 +154,6 @@ if hasattr(concept, 'international') and concept.international:
 # Fetch concept
 from openalex import Concepts
 concept = Concepts()["C71924100"]
-# ⚠️ DEPRECATED: Consider using Topics instead
 # URL to get all works tagged with this concept
 print(f"Works URL: {concept.works_api_url}")
 
@@ -190,7 +181,6 @@ for work in concept_works.results[:5]:
 ```python
 # Import client
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 def explore_concept_tree(concept_id):
     """Navigate up and down the concept hierarchy."""
     
@@ -235,7 +225,6 @@ explore_concept_tree("C41008148")  # Computer Science
 ```python
 # Import client
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 def analyze_concept_impact(concept_id):
     """Comprehensive impact analysis of a concept."""
     concept = Concepts()[concept_id]
@@ -281,7 +270,6 @@ analyze_concept_impact("C154945302")  # Machine learning
 ```python
 # Import client
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 def compare_concepts(concept_ids):
     """Compare multiple concepts side by side."""
     concepts = []
@@ -315,7 +303,6 @@ compare_concepts([
 ```python
 # Import client
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 def find_concept_relationships(concept_id):
     """Find various relationships for a concept."""
     
@@ -371,7 +358,6 @@ Many fields can be None or empty:
 # Fetch concept
 from openalex import Concepts
 concept = Concepts()["C71924100"]
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Safe access patterns
 if concept.description:
     print(f"Description: {concept.description}")
@@ -403,7 +389,6 @@ if intl_names and hasattr(intl_names, 'display_name'):
 When concepts appear in other objects (like in work concepts or ancestors), you get a simplified version:
 
 ```python
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Get a work to see dehydrated concepts
 from openalex import Works
 from openalex import Concepts
@@ -424,5 +409,5 @@ if work.concepts:
         print(f"Full description: {full_concept.description}")
 ```
 
-**⚠️ Final reminder: Concepts are deprecated! Please migrate to [Topics](../topics/README.md) for better support and more accurate research classification.**
+**Final reminder: Concepts are deprecated! Please migrate to [Topics](../topics/README.md) for better support and more accurate research classification.**
 

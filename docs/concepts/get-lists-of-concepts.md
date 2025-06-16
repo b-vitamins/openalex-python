@@ -1,7 +1,7 @@
 # Get lists of concepts
 
 {% hint style="warning" %}
-⚠️ **DEPRECATION WARNING**: These are the original OpenAlex Concepts, which are being deprecated in favor of [Topics](../topics/README.md). We will continue to provide these Concepts for Works, but we will not be actively maintaining, updating, or providing support for these concepts. Unless you have a good reason to be relying on them, we encourage you to look into [Topics](../topics/README.md) instead.
+**DEPRECATION WARNING**: These are the original OpenAlex Concepts, which are being deprecated in favor of [Topics](../topics/README.md). We will continue to provide these Concepts for Works, but we will not be actively maintaining, updating, or providing support for these concepts. Unless you have a good reason to be relying on them, we encourage you to look into [Topics](../topics/README.md) instead.
 {% endhint %}
 
 You can get lists of concepts using the Python client:
@@ -9,7 +9,6 @@ You can get lists of concepts using the Python client:
 ```python
 from openalex import Concepts
 
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Create a query for all concepts (no filters applied)
 all_concepts_query = Concepts()
 
@@ -33,7 +32,6 @@ The response contains:
 from openalex import Concepts
 
 first_page = Concepts().get()
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Each result shows concept information
 for concept in first_page.results[:5]:  # First 5 concepts
     print(f"\n{concept.display_name} (Level {concept.level})")
@@ -51,7 +49,6 @@ You can control pagination and sorting:
 ```python
 # Import client
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Get a specific page with custom page size
 page2 = Concepts().get(per_page=50, page=2)
 # This returns concepts 51-100
@@ -67,17 +64,16 @@ most_cited = Concepts().sort(cited_by_count="desc").get()
 root_concepts = Concepts().filter(level=0).sort(display_name="asc").get()
 print(f"Found {root_concepts.meta.count} root concepts")  # Should be 19
 
-# Get many concepts (feasible with ~65,000)
-# This example stops after about 1,000 concepts to avoid huge downloads
-all_concepts = []
+# Get many concepts without downloading everything
+some_concepts = []
 page_count = 0
 for page in Concepts().paginate(per_page=200):
     page_count += 1
-    if page_count > 5:  # Roughly 1,000 concepts
+    if page_count > 2:  # Roughly 400 concepts
         break
-    all_concepts.extend(page.results)
+    some_concepts.extend(page.results)
 
-print(f"Fetched {len(all_concepts)} concepts")
+print(f"Fetched {len(some_concepts)} concepts")
 ```
 
 ## Sample concepts
@@ -86,7 +82,6 @@ Get a random sample of concepts:
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Get 10 random concepts
 random_sample = Concepts().sample(10).get(per_page=10)
 
@@ -108,7 +103,6 @@ Limit the fields returned to improve performance:
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Request only specific fields
 minimal_concepts = Concepts().select([
     "id",
@@ -130,7 +124,6 @@ for concept in minimal_concepts.results:
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 def explore_concept_hierarchy():
     """Explore the 6-level concept hierarchy."""
     
@@ -160,7 +153,6 @@ explore_concept_hierarchy()
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 def analyze_concept_levels():
     """Analyze how concepts are distributed across levels."""
     
@@ -189,7 +181,6 @@ analyze_concept_levels()
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 def find_research_hotspots(min_works=10000):
     """Find highly active research concepts."""
     
@@ -213,4 +204,4 @@ find_research_hotspots()
 
 Continue on to learn how you can [filter](filter-concepts.md) and [search](search-concepts.md) lists of concepts.
 
-**⚠️ Remember: Concepts are deprecated! Use [Topics](../topics/README.md) for new projects.**
+**Remember: Concepts are deprecated! Use [Topics](../topics/README.md) for new projects.**

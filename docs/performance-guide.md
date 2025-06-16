@@ -6,12 +6,6 @@ Tips for working efficiently with the OpenAlex client.
 
 ```python
 # Always filter the Works entity - it has 250M+ records
-
-# \u274c BAD - Too broad
-# from openalex import Works
-# all_works = Works().get()  # DON'T DO THIS!
-
-# \u2705 GOOD - Always filter
 from openalex import Works
 
 filtered_works = (
@@ -47,7 +41,7 @@ for page in query.paginate(per_page=200):  # Max allowed
     print(f"Processed {processed} works so far...")
     
     # Stop after reasonable number
-    if processed >= 10000:
+    if processed >= 1000:
         break
 
 print(f"Completed processing {processed} works")

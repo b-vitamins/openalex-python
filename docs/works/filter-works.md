@@ -52,7 +52,7 @@ for i, work in enumerate(query_2023.paginate(per_page=10), 1):
 
 You can filter using these attributes of the [`Work`](work-object.md) object:
 
-\u26a0\ufe0f The `host_venue` and `alternate_host_venues` properties have been deprecated in favor of `primary_location` and `locations`.
+Note: The `host_venue` and `alternate_host_venues` properties have been deprecated in favor of `primary_location` and `locations`.
 
 ### Basic attribute filters
 
@@ -459,13 +459,13 @@ def process(work):
 query = Works().filter(authorships={"institutions": {"id": "I12345"}})
 first_page = query.get()
 
-if first_page.meta.count > 10000:
+if first_page.meta.count > 1000:
     print(f"Warning: {first_page.meta.count:,} results!")
     print("Consider adding more filters or using group_by")
 else:
     # Safe to paginate through results
     for i, work in enumerate(query.paginate(cursor="*"), 1):
         process(work)
-        if i >= 12000:
+        if i >= 1000:
             break
 ```

@@ -71,7 +71,7 @@ Available external IDs for works are:
 | PubMed ID (PMID)               | `pmid`  |
 | PubMed Central ID (PMCID)      | `pmcid` |
 
-\u26a0\ufe0f You must make sure that the ID(s) you supply are valid and correct. If an ID you request is incorrect, you will get no result.
+Note: You must make sure that the ID(s) you supply are valid and correct. If an ID you request is incorrect, you will get no result.
 
 ## Select fields
 

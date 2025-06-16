@@ -1,7 +1,7 @@
 # Filter concepts
 
 {% hint style="warning" %}
-⚠️ **DEPRECATION WARNING**: These are the original OpenAlex Concepts, which are being deprecated in favor of [Topics](../topics/README.md). We will continue to provide these Concepts for Works, but we will not be actively maintaining, updating, or providing support for these concepts. Unless you have a good reason to be relying on them, we encourage you to look into [Topics](../topics/README.md) instead.
+**DEPRECATION WARNING**: These are the original OpenAlex Concepts, which are being deprecated in favor of [Topics](../topics/README.md). We will continue to provide these Concepts for Works, but we will not be actively maintaining, updating, or providing support for these concepts. Unless you have a good reason to be relying on them, we encourage you to look into [Topics](../topics/README.md) instead.
 {% endhint %}
 
 You can filter concepts using the Python client:
@@ -9,7 +9,6 @@ You can filter concepts using the Python client:
 ```python
 from openalex import Concepts
 
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Create a filtered query for top-level concepts
 root_concepts_query = Concepts().filter(level=0)
 
@@ -35,7 +34,6 @@ You can filter using these attributes of the [`Concept`](concept-object.md) obje
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Filter by cited_by_count
 highly_cited = Concepts().filter(cited_by_count=1000000).get()  # Exactly 1M
 very_highly_cited = Concepts().filter_gt(cited_by_count=10000000).get()  # More than 10M
@@ -59,7 +57,6 @@ specific_ids = Concepts().filter(
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Filter by ancestors
 # Get all descendants of Computer Science (C41008148)
 cs_descendants = Concepts().filter(ancestors={"id": "C41008148"}).get()
@@ -83,7 +80,6 @@ interdisciplinary = (
 ### Summary statistics filters
 
 ```python
-# ⚠️ DEPRECATED: Consider using Topics instead
 from openalex import Concepts
 # Filter by h-index
 high_h_index = Concepts().filter_gt(summary_stats={"h_index": 200}).get()
@@ -114,7 +110,6 @@ These filters aren't attributes of the Concept object, but they're handy:
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Has Wikidata ID (currently all concepts have one)
 with_wikidata = Concepts().filter(has_wikidata=True).get()
 without_wikidata = Concepts().filter(has_wikidata=False).get()
@@ -126,7 +121,6 @@ print(f"Without Wikidata: {without_wikidata.meta.count:,}")  # Should be 0
 ### Text search filters
 
 ```python
-# ⚠️ DEPRECATED: Consider using Topics instead
 from openalex import Concepts
 # Search in display names
 ai_search = Concepts().filter(
@@ -148,7 +142,6 @@ default_search = Concepts().filter(
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # High-impact computer science concepts
 high_impact_cs = (
     Concepts()
@@ -180,7 +173,6 @@ ml_concepts = (
 ### NOT operations
 
 ```python
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Concepts NOT under Computer Science
 from openalex import Concepts
 non_cs = Concepts().filter_not(ancestors={"id": "C41008148"}).get()
@@ -197,7 +189,6 @@ low_impact = Concepts().filter_lt(
 ### Range queries
 
 ```python
-# ⚠️ DEPRECATED: Consider using Topics instead
 from openalex import Concepts
 # Mid-level concepts (levels 2-4)
 mid_levels = (
@@ -221,7 +212,6 @@ moderate_activity = (
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 def explore_concept_branch(concept_id, max_depth=3):
     """Explore a branch of the concept tree."""
     
@@ -259,7 +249,6 @@ explore_concept_branch("C41008148")
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 def find_interdisciplinary_concepts():
     """Find concepts that bridge multiple fields."""
     
@@ -289,7 +278,6 @@ find_interdisciplinary_concepts()
 ### Example 3: Analyze research trends
 
 ```python
-# ⚠️ DEPRECATED: Consider using Topics instead
 from openalex import Concepts
 def analyze_research_trends(min_works=50000):
     """Find rapidly growing research areas."""
@@ -338,7 +326,6 @@ analyze_research_trends()
 ### Example 4: Concept similarity
 
 ```python
-# ⚠️ DEPRECATED: Consider using Topics instead
 from openalex import Concepts
 def find_similar_concepts(concept_id):
     """Find concepts similar to a given concept."""
@@ -381,7 +368,6 @@ Since there are ~65,000 concepts:
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Example: Efficiently analyze concept distribution
 def concept_distribution_summary():
     # Use group_by instead of fetching all concepts
@@ -400,4 +386,4 @@ def concept_distribution_summary():
         print(f"  {root.display_name}: {descendants.meta.count:,} descendants")
 ```
 
-**⚠️ Final reminder: Concepts are deprecated! Please use [Topics](../topics/README.md) for all new projects.**
+**Final reminder: Concepts are deprecated! Please use [Topics](../topics/README.md) for all new projects.**

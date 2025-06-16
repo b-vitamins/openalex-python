@@ -1,7 +1,7 @@
 # Group concepts
 
 {% hint style="warning" %}
-⚠️ **DEPRECATION WARNING**: These are the original OpenAlex Concepts, which are being deprecated in favor of [Topics](../topics/README.md). We will continue to provide these Concepts for Works, but we will not be actively maintaining, updating, or providing support for these concepts. Unless you have a good reason to be relying on them, we encourage you to look into [Topics](../topics/README.md) instead.
+**DEPRECATION WARNING**: These are the original OpenAlex Concepts, which are being deprecated in favor of [Topics](../topics/README.md). We will continue to provide these Concepts for Works, but we will not be actively maintaining, updating, or providing support for these concepts. Unless you have a good reason to be relying on them, we encourage you to look into [Topics](../topics/README.md) instead.
 {% endhint %}
 
 You can group concepts to get aggregated statistics without fetching individual concept records:
@@ -9,7 +9,6 @@ You can group concepts to get aggregated statistics without fetching individual 
 ```python
 from openalex import Concepts
 
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Create a query that groups concepts by level
 level_stats_query = Concepts().group_by("level")
 
@@ -29,7 +28,6 @@ for group in level_stats.group_by:
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 result = Concepts().group_by("level").get()
 
 print(result.results)  # Empty list - no individual concepts returned!
@@ -49,7 +47,6 @@ for group in result.group_by:
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Group by level (0-5)
 by_level = Concepts().group_by("level").get()
 # Shows how concepts are distributed across hierarchy levels
@@ -68,7 +65,6 @@ by_wikidata = Concepts().group_by("has_wikidata").get()
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Works count distribution
 works_dist = Concepts().group_by("works_count").get()
 # Note: Creates many groups (one per unique count)
@@ -93,7 +89,6 @@ Group_by becomes more insightful when combined with filters:
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Level distribution for Computer Science descendants
 cs_levels = (
     Concepts()
@@ -133,7 +128,6 @@ only so it works in unauthenticated environments:
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 level_ancestor = Concepts().group_by("level").get()
 
 for group in level_ancestor.group_by:
@@ -145,7 +139,6 @@ for group in level_ancestor.group_by:
 ### Example 1: Analyze concept hierarchy
 
 ```python
-# ⚠️ DEPRECATED: Consider using Topics instead
 from openalex import Concepts
 def analyze_concept_hierarchy():
     """Comprehensive analysis of the concept tree structure."""
@@ -178,7 +171,6 @@ analyze_concept_hierarchy()
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 def analyze_research_activity():
     """Analyze how research activity is distributed across concepts."""
     
@@ -226,7 +218,6 @@ analyze_research_activity()
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 def analyze_concept_impact():
     """Analyze impact metrics across the concept hierarchy."""
     
@@ -272,7 +263,6 @@ analyze_concept_impact()
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 def compare_domains():
     
     # Get all root concepts
@@ -323,7 +313,6 @@ Control how results are ordered:
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Default: sorted by count (descending)
 default_sort = Concepts().group_by("level").get()
 # Most populous levels first
@@ -343,8 +332,7 @@ smallest_first = Concepts().group_by("ancestors.id").sort(count="asc").get()
 2. **Efficient for analytics**: Much faster than fetching all concepts
 3. **Limited dimensions**: Maximum 2 fields for grouping
 4. **Good for hierarchy analysis**: Understand the concept tree structure
-5. **DEPRECATED**: Remember to use Topics for new projects!
 
 When you need statistics about concepts, prefer `group_by()` over fetching and counting individual records.
 
-**⚠️ Final reminder: Concepts are deprecated! Please use [Topics](../topics/README.md) instead for all new development.**
+**Final reminder: Concepts are deprecated! Please use [Topics](../topics/README.md) instead for all new development.**

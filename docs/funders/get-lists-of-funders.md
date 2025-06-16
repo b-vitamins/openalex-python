@@ -60,16 +60,15 @@ most_cited = Funders().sort(cited_by_count="desc").get()
 # Alphabetical by name
 alphabetical = Funders().sort(display_name="asc").get()
 
-# Get ALL funders (very feasible with ~32,000)
-# This will make about 160 API calls at 200 per page
-all_funders = []
+# Get several funders without too many API calls
+some_funders = []
 page_count = 0
 for page in Funders().paginate(per_page=200):
     page_count += 1
-    if page_count > 5:  # Stop after 1,000 funders
+    if page_count > 2:  # Stop after about 400 funders
         break
-    all_funders.extend(page.results)
-print(f"Fetched {len(all_funders)} funders")
+    some_funders.extend(page.results)
+print(f"Fetched {len(some_funders)} funders")
 ```
 
 ## Sample funders

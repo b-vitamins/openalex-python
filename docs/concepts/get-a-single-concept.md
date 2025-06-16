@@ -1,7 +1,7 @@
 # Get a single concept
 
 {% hint style="warning" %}
-⚠️ **DEPRECATION WARNING**: These are the original OpenAlex Concepts, which are being deprecated in favor of [Topics](../topics/README.md). We will continue to provide these Concepts for Works, but we will not be actively maintaining, updating, or providing support for these concepts. Unless you have a good reason to be relying on them, we encourage you to look into [Topics](../topics/README.md) instead.
+**DEPRECATION WARNING**: These are the original OpenAlex Concepts, which are being deprecated in favor of [Topics](../topics/README.md). We will continue to provide these Concepts for Works, but we will not be actively maintaining, updating, or providing support for these concepts. Unless you have a good reason to be relying on them, we encourage you to look into [Topics](../topics/README.md) instead.
 {% endhint %}
 
 It's easy to get a concept using the Python client:
@@ -9,7 +9,6 @@ It's easy to get a concept using the Python client:
 ```python
 from openalex import Concepts
 
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Get a specific concept by their OpenAlex ID
 concept = Concepts()["C71924100"]
 
@@ -40,7 +39,6 @@ You can make up to 50 of these queries at once by requesting a list of entities 
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Fetch multiple specific concepts in one API call
 concept_ids = ["C71924100", "C41008148", "C86803240"]
 multiple_concepts = Concepts().filter(openalex=concept_ids).get()
@@ -57,7 +55,6 @@ You can look up concepts using external IDs such as a Wikidata ID:
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Get concept by Wikidata ID (canonical external ID)
 medicine = Concepts()["wikidata:Q11190"]
 medicine = Concepts()["wikidata:https://www.wikidata.org/wiki/Q11190"]  # Full URL
@@ -79,7 +76,6 @@ You can use `select` to limit the fields that are returned in a concept object:
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Fetch only specific fields to reduce response size
 minimal_concept = Concepts().select([
     "id",
