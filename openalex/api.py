@@ -105,14 +105,32 @@ class APIConnection:
             time.sleep(wait)
 
         try:
-            response = self.client.request(
-                method=method,
-                url=url,
-                params=params,
-                timeout=self.config.timeout,
-                **kwargs,
-            )
-            raise_for_status(response)
+            if (
+                self.config.middleware.request_interceptors
+                or self.config.middleware.response_interceptors
+            ):
+                request = self.client.build_request(
+                    method=method,
+                    url=url,
+                    params=params,
+                    timeout=self.config.timeout,
+                    **kwargs,
+                )
+                for req_interceptor in self.config.middleware.request_interceptors:
+                    request = req_interceptor.process_request(request)
+                response = self.client.send(request)
+                raise_for_status(response)
+                for resp_interceptor in self.config.middleware.response_interceptors:
+                    response = resp_interceptor.process_response(response)
+            else:
+                response = self.client.request(
+                    method=method,
+                    url=url,
+                    params=params,
+                    timeout=self.config.timeout,
+                    **kwargs,
+                )
+                raise_for_status(response)
         except httpx.TimeoutException as e:
             msg = f"Request timed out after {self.config.timeout}s"
             raise TimeoutError(msg) from e
@@ -207,13 +225,37 @@ class AsyncAPIConnection:
         async def make_request() -> Response:
             assert self._client is not None
             try:
-                return await self._client.request(
-                    method, url, params=params, **kwargs
-                )
+                if (
+                    self.config.middleware.request_interceptors
+                    or self.config.middleware.response_interceptors
+                ):
+                    request = self._client.build_request(
+                        method,
+                        url,
+                        params=params,
+                        timeout=self.config.timeout,
+                        **kwargs,
+                    )
+                    for req_interceptor in self.config.middleware.request_interceptors:
+                        request = req_interceptor.process_request(request)
+                    response = await self._client.send(request)
+                else:
+                    response = await self._client.request(
+                        method,
+                        url,
+                        params=params,
+                        timeout=self.config.timeout,
+                        **kwargs,
+                    )
+                raise_for_status(response)
             except httpx.TimeoutException as e:  # pragma: no cover - network
                 raise TimeoutError(str(e)) from e
             except httpx.RequestError as e:  # pragma: no cover - network
                 raise NetworkError(str(e)) from e
+            else:
+                for resp_interceptor in self.config.middleware.response_interceptors:
+                    response = resp_interceptor.process_response(response)
+                return response
 
         return await async_with_retry(make_request, self.retry_config)()
 
