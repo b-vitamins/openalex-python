@@ -8,6 +8,7 @@ if TYPE_CHECKING:  # pragma: no cover
     import builtins
     from collections.abc import AsyncIterator, Iterator
 
+    from .metrics import MetricsReport
     from .models.work import Ngram
     from .query import AsyncQuery
 
@@ -409,6 +410,15 @@ class BaseEntity(Generic[T, F]):
             entity_ids,
             lambda id: self._get_single_entity(id),
         )
+
+    def get_metrics(self) -> MetricsReport | None:
+        """Get metrics report if metrics collection is enabled."""
+        if self._config.collect_metrics:
+            from .metrics import get_metrics_collector
+
+            collector = get_metrics_collector(self._config)
+            return collector.get_report()
+        return None
 
 
 def _build_list_result(data: dict[str, Any], model: type[_T]) -> ListResult[_T]:

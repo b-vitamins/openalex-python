@@ -104,6 +104,16 @@ class APIConnection:
         if wait > 0:
             time.sleep(wait)
 
+        metrics = None
+        start_time = 0.0
+        endpoint = "unknown"
+        if self.config.collect_metrics:
+            from .metrics import get_metrics_collector
+
+            metrics = get_metrics_collector(self.config)
+            start_time = time.time()
+            endpoint = url.split("/")[-2] if "/" in url else "unknown"
+
         try:
             if (
                 self.config.middleware.request_interceptors
@@ -132,15 +142,27 @@ class APIConnection:
                 )
                 raise_for_status(response)
         except httpx.TimeoutException as e:
+            if metrics is not None:
+                duration = time.time() - start_time
+                metrics.record_request(endpoint, duration, success=False)
             msg = f"Request timed out after {self.config.timeout}s"
             raise TimeoutError(msg) from e
         except httpx.NetworkError as e:
+            if metrics is not None:
+                duration = time.time() - start_time
+                metrics.record_request(endpoint, duration, success=False)
             msg = f"Network error: {e!s}"
             raise NetworkError(msg) from e
         except httpx.HTTPError as e:
+            if metrics is not None:
+                duration = time.time() - start_time
+                metrics.record_request(endpoint, duration, success=False)
             msg = f"HTTP error: {e!s}"
             raise APIError(msg) from e
         else:
+            if metrics is not None:
+                duration = time.time() - start_time
+                metrics.record_request(endpoint, duration, success=response.is_success)
             return response
 
     def close(self) -> None:

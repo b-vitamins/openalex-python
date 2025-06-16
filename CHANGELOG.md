@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Full async/await support for all API operations
 - Extended documentation with advanced usage examples
 - Performance monitoring and metrics collection
+- Optional metrics collection configurable via `collect_metrics` and reporting
+  via `BaseEntity.get_metrics`
 - Development guidelines for contributors in `AGENTS.md`
 - Behavior-driven test suite covering async, caching, config, pagination, etc.
 - Synchronous ``OpenAlexClient`` for simple API access

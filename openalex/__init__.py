@@ -47,6 +47,7 @@ from .exceptions import (
     TimeoutError,
     ValidationError,
 )
+from .metrics import MetricsCollector, MetricsReport, get_metrics_collector
 from .middleware import Middleware, RequestInterceptor, ResponseInterceptor
 from .models import (
     APC,
@@ -176,6 +177,8 @@ __all__ = [
     "Location",
     "MeshTag",
     "Meta",
+    "MetricsCollector",
+    "MetricsReport",
     "Middleware",
     "NetworkError",
     "NotFoundError",
@@ -220,6 +223,7 @@ __all__ = [
     "__license__",
     "__version__",
     "close_all_async_connections",
+    "get_metrics_collector",
     "gt_",
     "gte_",
     "invert_abstract",
