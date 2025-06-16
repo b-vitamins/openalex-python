@@ -72,7 +72,9 @@ You can use `select` to limit the fields that are returned in a publisher object
 # Fetch only specific fields to reduce response size
 from openalex import Publishers
 
-minimal_publisher = Publishers().select(["id", "display_name", "works_count"]).get(id="P4310319965")
+minimal_publisher = Publishers().get(
+    "P4310319965", select=["id", "display_name", "works_count"]
+)
 
 # Now only the selected fields are populated
 print(minimal_publisher.display_name)  # Works

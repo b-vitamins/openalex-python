@@ -215,13 +215,24 @@ class Query(Generic[T, F]):
         sort_parts = [f"{k}:{v}" for k, v in kwargs.items()]
         return self._clone(sort=",".join(sort_parts))
 
-    def group_by(self, key: str) -> Query[T, F]:
-        """Group results by ``key``."""
-        # ``normalize_params`` expects ``group_by`` which will later be
-        # converted to ``group-by`` when sending the request. Using the
-        # Pythonic key here avoids the parameter being dropped during
-        # normalization.
-        return self._clone(group_by=key)
+    def group_by(self, *keys: str) -> Query[T, F]:
+        """Group results by one or more ``keys``."""
+
+        if len(keys) == 1 and isinstance(keys[0], list | tuple):
+            keys = tuple(keys[0])
+
+        existing = self.params.get("group_by")
+        if existing:
+            if isinstance(existing, list):
+                new_keys = [*existing, *keys]
+            else:
+                new_keys = [existing, *keys]
+        else:
+            new_keys = list(keys)
+
+        group_param: str | list[str] = new_keys[0] if len(new_keys) == 1 else new_keys
+
+        return self._clone(group_by=group_param)
 
     def select(self, fields: list[str] | str) -> Query[T, F]:
         """Select specific fields."""

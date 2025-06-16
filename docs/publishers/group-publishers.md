@@ -110,23 +110,20 @@ parent_by_continent = (
 
 ## Multi-dimensional grouping
 
-While the API supports grouping by two dimensions, it's less common for publishers:
+OpenAlex currently supports grouping publishers by a single field. Here's an example grouping by hierarchy level:
 
 ```python
 from openalex import Publishers
 
-# Publishers by country and hierarchy level
-country_hierarchy = (
+# Publishers by hierarchy level
+hierarchy_counts = (
     Publishers()
-    .group_by("country_codes")
     .group_by("hierarchy_level")
     .get()
 )
 
-# This shows which countries have more complex publisher structures
-for group in country_hierarchy.group_by[:20]:
-    country, level = group.key.split('|')  # Keys are pipe-separated
-    print(f"{country} Level {level}: {group.count} publishers")
+for group in hierarchy_counts.group_by:
+    print(f"Level {group.key}: {group.count} publishers")
 ```
 
 ## Practical examples
