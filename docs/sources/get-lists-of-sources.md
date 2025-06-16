@@ -102,7 +102,7 @@ from openalex import Sources
 
 # Request only specific fields
 minimal_sources = Sources().select([
-    "id", 
+    "id",
     "display_name",
     "issn",
     "type",
@@ -169,15 +169,15 @@ def analyze_oa_landscape():
     all_sources = Sources().get()
     oa_sources = Sources().filter(is_oa=True).get()
     doaj_sources = Sources().filter(is_in_doaj=True).get()
-    
+
     # Calculate percentages
     oa_percent = (oa_sources.meta.count / all_sources.meta.count) * 100
     doaj_percent = (doaj_sources.meta.count / all_sources.meta.count) * 100
-    
+
     print(f"Total sources: {all_sources.meta.count:,}")
     print(f"Open Access sources: {oa_sources.meta.count:,} ({oa_percent:.1f}%)")
     print(f"DOAJ listed: {doaj_sources.meta.count:,} ({doaj_percent:.1f}%)")
-    
+
     # Get top OA journals
     top_oa = (
         Sources()
@@ -186,7 +186,7 @@ def analyze_oa_landscape():
         .sort(cited_by_count="desc")
         .get(per_page=10)
     )
-    
+
     print("\nTop 10 Open Access journals by citations:")
     for journal in top_oa.results:
         print(f"  - {journal.display_name}: {journal.cited_by_count:,} citations")

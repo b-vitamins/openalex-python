@@ -137,19 +137,19 @@ from openalex import Topics
 
 def analyze_research_landscape():
     """Comprehensive analysis of the topic hierarchy."""
-    
+
     # Get counts at each level
     domains = Topics().group_by("domain.id").get()
     fields = Topics().group_by("field.id").get()
     subfields = Topics().group_by("subfield.id").get()
-    
+
     print("OpenAlex Research Landscape")
     print("=" * 40)
     print(f"Total topics: ~{Topics().get().meta.count:,}")
     print(f"Domains: {len(domains.group_by)}")
     print(f"Fields: {len(fields.group_by)}")
     print(f"Subfields: {len(subfields.group_by)}")
-    
+
     # Show domain distribution
     print("\nTopics per domain:")
     # Since we don't have domain names in the group_by result,
@@ -171,26 +171,26 @@ from openalex import Topics
 
 def analyze_field_concentration():
     """Analyze how topics are concentrated across fields."""
-    
+
     # Group by field
     by_field = Topics().group_by("field.id").get()
-    
+
     # Sort groups by count
     sorted_fields = sorted(
         by_field.group_by,
         key=lambda g: g.count,
         reverse=True
     )
-    
+
     # Calculate concentration
     total_topics = sum(g.count for g in by_field.group_by)
     top10_topics = sum(g.count for g in sorted_fields[:10])
     concentration = (top10_topics / total_topics) * 100
-    
+
     print(f"Field Concentration Analysis")
     print(f"Total fields: {len(by_field.group_by)}")
     print(f"Top 10 fields contain {concentration:.1f}% of all topics")
-    
+
     print("\nTop 10 fields by topic count:")
     for i, group in enumerate(sorted_fields[:10], 1):
         # Get field name
@@ -210,7 +210,7 @@ from openalex import Topics
 
 def analyze_topic_activity():
     """Analyze distribution of research activity across topics."""
-    
+
     # Define activity tiers
     tiers = [
         ("Inactive", 0, 100),
@@ -220,12 +220,12 @@ def analyze_topic_activity():
         ("Very Active", 20000, 100000),
         ("Hyper Active", 100000, float('inf'))
     ]
-    
+
     print("Topic Activity Distribution")
     print("=" * 40)
-    
+
     total_topics = Topics().get().meta.count
-    
+
     for tier_name, min_works, max_works in tiers:
         # Build filter
         tier_query = Topics()
@@ -233,15 +233,15 @@ def analyze_topic_activity():
             tier_query = tier_query.filter_gt(works_count=min_works)
         if max_works < float('inf'):
             tier_query = tier_query.filter_lt(works_count=max_works)
-        
+
         # Get count
         tier_result = tier_query.get()
         count = tier_result.meta.count
         percentage = (count / total_topics) * 100
-        
+
         # Get domain distribution for this tier
         domain_dist = tier_query.group_by("domain.id").get()
-        
+
         print(f"\n{tier_name} ({min_works:,}-{max_works:,} works):")
         print(f"  Topics: {count} ({percentage:.1f}%)")
         print(f"  Distributed across {len(domain_dist.group_by)} domains")
@@ -256,7 +256,7 @@ from openalex import Topics
 
 def explore_hierarchy(domain_id=None):
     """Explore the topic hierarchy starting from a domain."""
-    
+
     if domain_id:
         # Get fields in this domain
         fields_in_domain = (
@@ -265,9 +265,9 @@ def explore_hierarchy(domain_id=None):
             .group_by("field.id")
             .get()
         )
-        
+
         print(f"Domain {domain_id} contains {len(fields_in_domain.group_by)} fields")
-        
+
         # For each field, count subfields
         for field_group in fields_in_domain.group_by[:5]:  # Top 5 fields
             subfields_in_field = (
@@ -277,7 +277,7 @@ def explore_hierarchy(domain_id=None):
                 .group_by("subfield.id")
                 .get()
             )
-            
+
             # Get field name from a sample topic
             sample = (
                 Topics()
@@ -293,7 +293,7 @@ def explore_hierarchy(domain_id=None):
         # Show all domains
         all_domains = Topics().group_by("domain.id").get()
         print(f"Total domains: {len(all_domains.group_by)}")
-        
+
         for domain_group in all_domains.group_by:
             # Get domain name
             sample = Topics().filter(domain={"id": domain_group.key}).get(per_page=1)

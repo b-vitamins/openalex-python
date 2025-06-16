@@ -126,14 +126,14 @@ for concept in minimal_concepts.results:
 from openalex import Concepts
 def explore_concept_hierarchy():
     """Explore the 6-level concept hierarchy."""
-    
+
     # Get root concepts (level 0)
     root_concepts = Concepts().filter(level=0).get(per_page=25)
     print(f"Root concepts (Level 0): {root_concepts.meta.count}")
-    
+
     for root in root_concepts.results[:5]:
         print(f"\n{root.display_name}")
-        
+
         # Get children (level 1)
         children = (
             Concepts()
@@ -142,7 +142,7 @@ def explore_concept_hierarchy():
             .get()
         )
         print(f"  Children: {children.meta.count}")
-        
+
         for child in children.results[:3]:
             print(f"    - {child.display_name}")
 
@@ -155,12 +155,12 @@ explore_concept_hierarchy()
 from openalex import Concepts
 def analyze_concept_levels():
     """Analyze how concepts are distributed across levels."""
-    
+
     print("Concept distribution by level:")
     for level in range(6):  # Levels 0-5
         level_concepts = Concepts().filter(level=level).get()
         print(f"  Level {level}: {level_concepts.meta.count:,} concepts")
-    
+
     # Get examples from each level
     print("\nExample concepts at each level:")
     for level in range(6):
@@ -183,14 +183,14 @@ analyze_concept_levels()
 from openalex import Concepts
 def find_research_hotspots(min_works=10000):
     """Find highly active research concepts."""
-    
+
     hotspots = (
         Concepts()
         .filter_gt(works_count=min_works)
         .sort(cited_by_count="desc")
         .get(per_page=20)
     )
-    
+
     print(f"Research hotspots (> {min_works:,} works):")
     for i, concept in enumerate(hotspots.results, 1):
         impact = concept.cited_by_count / concept.works_count if concept.works_count > 0 else 0

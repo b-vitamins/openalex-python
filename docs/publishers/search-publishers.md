@@ -32,7 +32,7 @@ elsevier_results = Publishers().search("elsevier").get()
 # - "Elsevier BV" (display_name)
 # - "Elsevier Science" (alternate_title)
 # - "Elsevier Health Sciences" (display_name)
-# - Publishers with "\u0627\u0644\u0633\u0641\u06cc\u0631" (Arabic for Elsevier) in alternate_titles
+# - Publishers with "السفير" (Arabic for Elsevier) in alternate_titles
 ```
 
 Read more about search relevance, stemming, and boolean searches in the [search documentation](../../how-to-use-the-api/get-lists-of-entities/search-entities.md).
@@ -93,7 +93,7 @@ Elsevier BV
   Citations: 407,508,754
   Wikidata: https://www.wikidata.org/entity/Q746413
 
-Else Kr\u00f6ner-Fresenius Foundation
+Else Kröner-Fresenius Foundation
   Works: 1,234
   Citations: 45,678
   Wikidata: https://www.wikidata.org/entity/Q1333765
@@ -151,7 +151,7 @@ from openalex import Publishers
 def find_publisher_family(search_term):
     # First, find potential matches
     matches = Publishers().search(search_term).get(per_page=20)
-    
+
     families = {}
     for pub in matches.results:
         # Get the top-level parent
@@ -160,11 +160,11 @@ def find_publisher_family(search_term):
         else:
             # Find parent through lineage
             family_key = pub.lineage[-1] if pub.lineage else pub.id
-        
+
         if family_key not in families:
             families[family_key] = []
         families[family_key].append(pub)
-    
+
     return families
 
 # Example usage
@@ -193,7 +193,7 @@ def find_regional_publishers(search_term, country_codes):
 
 # Find Asian academic publishers
 asian_academic = find_regional_publishers(
-    "Academic", 
+    "Academic",
     ["CN", "JP", "KR", "IN", "SG"]
 )
 
@@ -269,19 +269,19 @@ from openalex import Publishers
 
 def find_main_publisher(search_term):
     results = Publishers().search(search_term).get(per_page=10)
-    
+
     # Strategy 1: Highest works count
     by_works = max(results.results, key=lambda p: p.works_count)
-    
+
     # Strategy 2: Top-level only
     parents = [p for p in results.results if p.hierarchy_level == 0]
-    
+
     # Strategy 3: Most cited
     by_citations = max(results.results, key=lambda p: p.cited_by_count)
-    
+
     print(f"Most works: {by_works.display_name} ({by_works.works_count:,})")
     print(f"Parent companies: {[p.display_name for p in parents]}")
     print(f"Most cited: {by_citations.display_name} ({by_citations.cited_by_count:,})")
-    
+
     return by_works  # Usually the best choice
 ```

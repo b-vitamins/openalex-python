@@ -154,10 +154,10 @@ from openalex import Funders
 
 def analyze_global_funding_landscape():
     """Analyze the global distribution of research funders."""
-    
+
     # Overall geographic distribution
     by_continent = Funders().group_by("continent").get()
-    
+
     # High-impact funders by continent
     high_impact_by_continent = (
         Funders()
@@ -165,21 +165,21 @@ def analyze_global_funding_landscape():
         .group_by("continent")
         .get()
     )
-    
+
     # Calculate impact concentration
     print("Funding Landscape Analysis")
     print("=" * 40)
-    
+
     for cont in by_continent.group_by:
         continent = cont.key
         total = cont.count
-        
+
         # Find high-impact count for this continent
         high_impact = next(
             (g.count for g in high_impact_by_continent.group_by if g.key == continent),
             0
         )
-        
+
         concentration = (high_impact / total * 100) if total > 0 else 0
         print(f"\n{continent}:")
         print(f"  Total funders: {total}")
@@ -195,10 +195,10 @@ from openalex import Funders
 
 def analyze_funding_concentration():
     """Analyze how concentrated research funding is."""
-    
+
     # Countries by number of funders
     by_country = Funders().group_by("country_code").get()
-    
+
     # Countries with major funders
     major_funders = (
         Funders()
@@ -206,7 +206,7 @@ def analyze_funding_concentration():
         .group_by("country_code")
         .get()
     )
-    
+
     # Countries with mega-funders
     mega_funders = (
         Funders()
@@ -214,25 +214,25 @@ def analyze_funding_concentration():
         .group_by("country_code")
         .get()
     )
-    
+
     print("Funding Concentration Analysis")
     print("=" * 40)
-    
+
     # Top 10 countries
     total_funders = sum(g.count for g in by_country.group_by)
     top10_count = sum(g.count for g in by_country.group_by[:10])
     concentration = (top10_count / total_funders) * 100
-    
+
     print(f"\nTop 10 countries have {concentration:.1f}% of all funders")
-    
+
     print("\nCountry Rankings:")
     print(f"{'Country':<10} {'Total':<8} {'Major':<8} {'Mega':<8}")
     print("-" * 35)
-    
+
     for group in by_country.group_by[:15]:
         country = group.key
         total = group.count
-        
+
         major = next(
             (g.count for g in major_funders.group_by if g.key == country),
             0
@@ -241,7 +241,7 @@ def analyze_funding_concentration():
             (g.count for g in mega_funders.group_by if g.key == country),
             0
         )
-        
+
         print(f"{country:<10} {total:<8} {major:<8} {mega:<8}")
 
 analyze_funding_concentration()
@@ -254,7 +254,7 @@ from openalex import Funders
 
 def analyze_funding_impact_tiers():
     """Group funders into impact tiers based on h-index."""
-    
+
     # Define impact tiers
     tiers = [
         ("Mega", 500, float('inf')),
@@ -264,28 +264,28 @@ def analyze_funding_impact_tiers():
         ("Emerging", 50, 100),
         ("Developing", 0, 50)
     ]
-    
+
     print("Funders by Impact Tier (H-index based)")
     print("=" * 40)
-    
+
     total_funders = Funders().get().meta.count
-    
+
     for tier_name, min_h, max_h in tiers:
         # Build filter
         tier_query = Funders()
-        
+
         if min_h > 0:
             tier_query = tier_query.filter_gt(summary_stats={"h_index": min_h})
         if max_h < float('inf'):
             tier_query = tier_query.filter_lt(summary_stats={"h_index": max_h})
-        
+
         # Get count and geographic distribution
         tier_result = tier_query.get()
         geo_dist = tier_query.group_by("continent").get()
-        
+
         count = tier_result.meta.count
         percentage = (count / total_funders) * 100
-        
+
         print(f"\n{tier_name} tier (h-index {min_h}-{max_h}):")
         print(f"  Funders: {count:,} ({percentage:.1f}%)")
         print("  Geographic distribution:")
@@ -302,20 +302,20 @@ from openalex import Funders
 
 def compare_funding_ecosystems():
     """Compare funding characteristics across regions."""
-    
+
     regions = {
         "North America": ["US", "CA"],
         "Europe": ["GB", "DE", "FR", "NL", "CH"],
         "Asia": ["CN", "JP", "KR", "IN", "SG"]
     }
-    
+
     print("Regional Funding Ecosystem Comparison")
     print("=" * 50)
-    
+
     for region_name, countries in regions.items():
         # Total funders in region
         regional = Funders().filter(country_code=countries).get()
-        
+
         # Funders with many grants
         productive = (
             Funders()
@@ -323,7 +323,7 @@ def compare_funding_ecosystems():
             .filter_gt(grants_count=500)
             .get()
         )
-        
+
         # High-impact funders
         high_impact = (
             Funders()
@@ -331,7 +331,7 @@ def compare_funding_ecosystems():
             .filter_gt(summary_stats={"h_index": 200})
             .get()
         )
-        
+
         # Group by specific countries
         by_country = (
             Funders()
@@ -339,7 +339,7 @@ def compare_funding_ecosystems():
             .group_by("country_code")
             .get()
         )
-        
+
         print(f"\n{region_name}:")
         print(f"  Total funders: {regional.meta.count}")
         print(f"  Productive (>500 grants): {productive.meta.count}")

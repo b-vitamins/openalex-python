@@ -88,7 +88,7 @@ from openalex import Works
 highly_cited = Works().filter_gt(cited_by_count=1000).get()
 # Returns first 25 works with >1000 citations
 
-# Less than: find recent works with fewer citations  
+# Less than: find recent works with fewer citations
 less_cited = Works().filter_lt(cited_by_count=10).get()
 
 # Combine comparisons for ranges
@@ -293,7 +293,7 @@ from openalex import Works
 citing_works = Works().filter(cites="W2741809807").get()
 # Returns first 25 works that reference W2741809807
 
-# Find works cited by a specific paper  
+# Find works cited by a specific paper
 references = Works().filter(cited_by="W2766808518").get()
 # Returns works in the reference list of W2766808518
 
@@ -312,7 +312,7 @@ has_doi = Works().filter(has_doi=True).get()
 has_pmid = Works().filter(has_pmid=True).get()
 has_pmcid = Works().filter(has_pmcid=True).get()
 
-# Check for content availability  
+# Check for content availability
 has_abstract = Works().filter(has_abstract=True).get()
 has_fulltext = Works().filter(has_fulltext=True).get()  # Has indexed full text
 has_references = Works().filter(has_references=True).get()

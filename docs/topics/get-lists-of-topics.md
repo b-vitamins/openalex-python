@@ -133,7 +133,7 @@ for domain in domains.group_by:
         .sort(works_count="desc")
         .get(per_page=3)
     )
-    
+
     print(f"\n{domain.key}: {domain.count} topics")
     for topic in domain_topics.results:
         print(f"  - {topic.display_name} ({topic.works_count:,} works)")
@@ -148,14 +148,14 @@ from openalex import Topics
 def find_trending_topics():
     # Get all topics efficiently
     all_topics = list(Topics().all(per_page=200))
-    
+
     # Sort by growth rate (simplified - you'd want to look at recent works)
     active_topics = sorted(
         [t for t in all_topics if t.works_count > 1000],
         key=lambda t: t.works_count,
         reverse=True
     )[:20]
-    
+
     print("Most active research topics:")
     for i, topic in enumerate(active_topics, 1):
         print(f"{i}. {topic.display_name}")
@@ -174,19 +174,19 @@ from openalex import Topics
 def analyze_topic_coverage():
     # Get domain distribution
     by_domain = Topics().group_by("domain.id").get()
-    
+
     # Get field distribution
     by_field = Topics().group_by("field.id").get()
-    
+
     # Get subfield distribution
     by_subfield = Topics().group_by("subfield.id").get()
-    
+
     print("OpenAlex Topic Hierarchy:")
     print(f"  Domains: {len(by_domain.group_by)}")
     print(f"  Fields: {len(by_field.group_by)}")
     print(f"  Subfields: {len(by_subfield.group_by)}")
     print(f"  Topics: ~{Topics().get().meta.count:,}")
-    
+
     # Show largest domains
     print("Largest domains by topic count:")
     for domain in by_domain.group_by[:5]:

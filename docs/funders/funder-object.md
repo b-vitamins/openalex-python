@@ -51,7 +51,7 @@ funder = Funders()["F4320332161"]
 # Funder logo/seal
 if funder.image_url:
     print(f"Logo URL: {funder.image_url}")
-    
+
 if funder.image_thumbnail_url:
     print(f"Thumbnail: {funder.image_thumbnail_url}")
     # Usually includes width parameter you can adjust
@@ -92,7 +92,7 @@ if stats:
     print(
         f"2-year mean citedness: {stats.two_year_mean_citedness:.2f}"
     )
-    
+
     # These help assess funding impact
     if stats.h_index > 500:
         print("This funder supports very high-impact research")
@@ -115,7 +115,7 @@ for count in funder.counts_by_year[:5]:  # Last 5 years
 if len(funder.counts_by_year) >= 2:
     recent = funder.counts_by_year[0]
     previous = funder.counts_by_year[1]
-    growth = ((recent.works_count - previous.works_count) / 
+    growth = ((recent.works_count - previous.works_count) /
               previous.works_count * 100)
     print(f"Year-over-year growth: {growth:+.1f}%")
 ```
@@ -150,21 +150,21 @@ funder = Funders()["F4320332161"]
 
 def get_funded_works(funder_id, year=None):
     """Get works funded by a specific funder."""
-    
+
     # Build query for funded works
     query = Works().filter(grants={"funder": funder_id})
-    
+
     if year:
         query = query.filter(publication_year=year)
-    
+
     # Get recent works
     recent_works = query.sort(publication_date="desc").get()
-    
+
     print(f"Recent works funded by {funder.display_name}:")
     for work in recent_works.results[:10]:
         print(f"\n{work.title}")
         print(f"  Published: {work.publication_date}")
-        
+
         # Show grant information
         for grant in work.grants:
             grant_funder = grant.get("funder") if isinstance(grant, dict) else grant.funder
@@ -184,16 +184,16 @@ from openalex import Funders
 def analyze_funder_impact(funder_id):
     """Comprehensive impact analysis of a funder."""
     funder = Funders()[funder_id]
-    
+
     print(f"Funding Impact Analysis: {funder.display_name}")
     print("=" * 50)
-    
+
     # Basic metrics
     print(f"\nBasic Metrics:")
     print(f"  Grants: {funder.grants_count:,}")
     print(f"  Funded works: {funder.works_count:,}")
     print(f"  Total citations: {funder.cited_by_count:,}")
-    
+
     # Impact metrics
     if funder.summary_stats:
         stats = funder.summary_stats
@@ -201,18 +201,18 @@ def analyze_funder_impact(funder_id):
         print(f"  H-index: {stats.h_index}")
         print(f"  i10-index: {stats.i10_index:,}")
         print(f"  Mean citedness: {stats.two_year_mean_citedness:.2f}")
-        
+
         # Impact per dollar (if grant count available)
         if funder.grants_count > 0:
             citations_per_grant = funder.cited_by_count / funder.grants_count
             print(f"  Citations per grant: {citations_per_grant:.0f}")
-    
+
     # Trend analysis
     if funder.counts_by_year and len(funder.counts_by_year) >= 5:
         recent_years = funder.counts_by_year[:5]
         recent_works = sum(y.works_count for y in recent_years)
         recent_citations = sum(y.cited_by_count for y in recent_years)
-        
+
         print(f"\nRecent Performance (last 5 years):")
         print(f"  Works: {recent_works:,}")
         print(f"  Citations: {recent_citations:,}")
@@ -231,12 +231,12 @@ def compare_funders(funder_ids):
     funders = []
     for fid in funder_ids:
         funders.append(Funders()[fid])
-    
+
     print("Funder Comparison")
     print("-" * 80)
     print(f"{'Funder':<40} {'Country':<8} {'Grants':>10} {'Works':>10} {'H-index':>10}")
     print("-" * 80)
-    
+
     for fund in funders:
         h_index = fund.summary_stats.h_index if fund.summary_stats else "N/A"
         print(f"{fund.display_name[:39]:<40} "
@@ -262,26 +262,26 @@ from openalex import Funders
 def find_related_funders(funder_id):
     """Find funders with similar characteristics or focus."""
     source_funder = Funders()[funder_id]
-    
+
     # Search for funders with similar names/descriptions
     if source_funder.description:
         # Extract key terms from description
         key_terms = source_funder.description.split()[:3]
         search_query = " ".join(key_terms)
-        
+
         similar = (
             Funders()
             .search(search_query)
             .filter_not(openalex=funder_id)
             .get(per_page=10)
         )
-        
+
         print(f"Funders similar to {source_funder.display_name}:")
         for fund in similar.results:
             print(f"  - {fund.display_name} ({fund.country_code})")
             if fund.description:
                 print(f"    {fund.description}")
-    
+
     # Find funders in same country with similar scale
     peers = (
         Funders()
@@ -291,7 +291,7 @@ def find_related_funders(funder_id):
         .filter_not(openalex=funder_id)
         .get()
     )
-    
+
     print(f"\nPeer funders in {source_funder.country_code}:")
     for fund in peers.results[:5]:
         print(f"  - {fund.display_name}: {fund.grants_count:,} grants")
@@ -354,7 +354,7 @@ if work.grants:
             # Only these fields are available in dehydrated version:
             print(grant.funder.id)
             print(grant.funder.display_name)
-            
+
             # To get full details, fetch the complete funder:
             full_funder = Funders()[grant.funder.id]
             print(f"Full grant count: {full_funder.grants_count}")

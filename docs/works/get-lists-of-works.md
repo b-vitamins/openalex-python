@@ -123,8 +123,8 @@ for work in minimal_works.results:
 ## Important notes on result limits
 
 1. **Default page size**: 25 results
-2. **Maximum page size**: 200 results  
-3. **Maximum offset**: 10,000 (page \u00d7 per_page must be \u2264 10,000)
+2. **Maximum page size**: 200 results
+3. **Maximum offset**: 10,000 (page × per_page must be ≤ 10,000)
 4. **For more results**: Use cursor pagination (see pagination docs)
 5. **For analytics**: Use `group_by` instead of fetching all works
 

@@ -197,10 +197,10 @@ from openalex import Sources
 
 def analyze_oa_landscape():
     """Analyze the global OA publishing landscape."""
-    
+
     # Overall OA distribution
     oa_status = Sources().group_by("is_oa").get()
-    
+
     # OA by source type
     oa_by_type = (
         Sources()
@@ -208,7 +208,7 @@ def analyze_oa_landscape():
         .group_by("type")
         .get()
     )
-    
+
     # Geographic distribution of OA
     oa_by_continent = (
         Sources()
@@ -216,7 +216,7 @@ def analyze_oa_landscape():
         .group_by("continent")
         .get()
     )
-    
+
     # APC analysis for OA journals
     oa_with_apc = (
         Sources()
@@ -226,24 +226,24 @@ def analyze_oa_landscape():
         .group_by("apc_prices.currency")
         .get()
     )
-    
+
     print("Open Access Landscape Analysis")
     print("=" * 40)
-    
+
     # Calculate OA percentage
     for group in oa_status.group_by:
         status = "Open Access" if group.key else "Subscription"
         percentage = (group.count / oa_status.meta.count) * 100
         print(f"{status}: {group.count:,} ({percentage:.1f}%)")
-    
+
     print("\nOA sources by type:")
     for group in oa_by_type.group_by:
         print(f"  {group.key}: {group.count:,}")
-    
+
     print("\nOA sources by continent:")
     for group in oa_by_continent.group_by:
         print(f"  {group.key}: {group.count:,}")
-    
+
     print("\nAPC currencies for OA journals:")
     for group in oa_with_apc.group_by[:10]:
         print(f"  {group.key}: {group.count:,} journals")
@@ -258,10 +258,10 @@ from openalex import Sources
 
 def analyze_publisher_concentration():
     """Analyze market concentration in academic publishing."""
-    
+
     # Top publishers by number of sources
     by_publisher = Sources().group_by("host_organization").get()
-    
+
     # Top publishers of OA sources
     oa_publishers = (
         Sources()
@@ -269,17 +269,17 @@ def analyze_publisher_concentration():
         .group_by("host_organization")
         .get()
     )
-    
+
     # Regional publisher diversity
     regions = {
         "North America": ["US", "CA"],
         "Europe": ["GB", "DE", "NL", "FR"],
         "Asia": ["CN", "JP", "IN", "KR"]
     }
-    
+
     print("Publisher Concentration Analysis")
     print("=" * 40)
-    
+
     # Show top 10 publishers
     print("\nTop 10 publishers by source count:")
     total_sources = by_publisher.meta.count
@@ -288,10 +288,10 @@ def analyze_publisher_concentration():
         percentage = (group.count / total_sources) * 100
         top10_count += group.count
         print(f"{i}. {group.key}: {group.count:,} ({percentage:.1f}%)")
-    
+
     concentration = (top10_count / total_sources) * 100
     print(f"\nTop 10 publishers control {concentration:.1f}% of all sources")
-    
+
     # Regional analysis
     print("\nPublisher diversity by region:")
     for region, countries in regions.items():
@@ -301,7 +301,7 @@ def analyze_publisher_concentration():
             .group_by("host_organization")
             .get()
         )
-        
+
         unique_publishers = len(regional_publishers.group_by)
         print(f"  {region}: {unique_publishers} unique publishers")
 
@@ -315,7 +315,7 @@ from openalex import Sources
 
 def analyze_journal_quality_tiers():
     """Group journals into quality tiers based on impact factor."""
-    
+
     # Define impact factor tiers
     tiers = [
         ("Elite", 20.0, float('inf')),
@@ -324,16 +324,16 @@ def analyze_journal_quality_tiers():
         ("Average", 2.0, 5.0),
         ("Low", 0.0, 2.0)
     ]
-    
+
     print("Journal Quality Tiers (by Impact Factor)")
     print("=" * 40)
-    
+
     total_journals = Sources().filter(type="journal").get().meta.count
-    
+
     for tier_name, min_if, max_if in tiers:
         # Build filter
         tier_query = Sources().filter(type="journal")
-        
+
         if min_if > 0:
             tier_query = tier_query.filter_gt(
                 summary_stats={"2yr_mean_citedness": min_if}
@@ -342,15 +342,15 @@ def analyze_journal_quality_tiers():
             tier_query = tier_query.filter_lt(
                 summary_stats={"2yr_mean_citedness": max_if}
             )
-        
+
         # Get count for this tier
         tier_result = tier_query.get()
         count = tier_result.meta.count
         percentage = (count / total_journals) * 100
-        
+
         print(f"\n{tier_name} tier (IF {min_if}-{max_if}):")
         print(f"  Journals: {count:,} ({percentage:.1f}%)")
-        
+
         # Show geographic distribution for this tier
         geo_dist = tier_query.group_by("continent").get()
         print("  By continent:")
@@ -367,10 +367,10 @@ from openalex import Sources
 
 def analyze_repository_ecosystem():
     """Analyze the repository landscape."""
-    
+
     # Total repositories
     all_repos = Sources().filter(type="repository").get()
-    
+
     # By country
     repo_countries = (
         Sources()
@@ -378,7 +378,7 @@ def analyze_repository_ecosystem():
         .group_by("country_code")
         .get()
     )
-    
+
     # By host organization
     repo_hosts = (
         Sources()
@@ -386,15 +386,15 @@ def analyze_repository_ecosystem():
         .group_by("host_organization_name")
         .get()
     )
-    
+
     print(f"Repository Landscape Analysis")
     print(f"Total repositories: {all_repos.meta.count:,}")
     print("=" * 40)
-    
+
     print("\nTop 10 countries by repository count:")
     for group in repo_countries.group_by[:10]:
         print(f"  {group.key}: {group.count} repositories")
-    
+
     print("\nTop repository hosts:")
     for group in repo_hosts.group_by[:10]:
         if group.key:  # Some might not have host org

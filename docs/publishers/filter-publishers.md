@@ -286,11 +286,11 @@ def get_publisher_summary():
     # Use group_by for statistics
     by_country = Publishers().group_by("country_codes").get()
     by_level = Publishers().group_by("hierarchy_level").get()
-    
+
     print("Publishers by country (top 10):")
     for group in by_country.group_by[:10]:
         print(f"  {group.key}: {group.count}")
-    
+
     print("\nPublishers by hierarchy level:")
     for group in by_level.group_by:
         print(f"  Level {group.key}: {group.count}")

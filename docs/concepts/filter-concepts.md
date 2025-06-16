@@ -214,16 +214,16 @@ moderate_activity = (
 from openalex import Concepts
 def explore_concept_branch(concept_id, max_depth=3):
     """Explore a branch of the concept tree."""
-    
+
     # Get the root concept
     root = Concepts()[concept_id]
     print(f"Root: {root.display_name} (Level {root.level})")
-    
+
     # Recursive function to explore descendants
     def get_descendants(ancestor_id, current_level, max_level):
         if current_level > max_level:
             return
-        
+
         descendants = (
             Concepts()
             .filter(ancestors={"id": ancestor_id})
@@ -231,13 +231,13 @@ def explore_concept_branch(concept_id, max_depth=3):
             .sort(works_count="desc")
             .get(per_page=10)
         )
-        
+
         indent = "  " * current_level
         for desc in descendants.results[:5]:
             print(f"{indent}- {desc.display_name} ({desc.works_count:,} works)")
             # Recursively get children
             get_descendants(desc.id, current_level + 1, max_level)
-    
+
     # Start exploration
     get_descendants(root.id, root.level + 1, root.level + max_depth)
 
@@ -251,13 +251,13 @@ explore_concept_branch("C41008148")
 from openalex import Concepts
 def find_interdisciplinary_concepts():
     """Find concepts that bridge multiple fields."""
-    
+
     # Get all root concepts
     root_concepts = Concepts().filter(level=0).get(per_page=25)
-    
+
     # For each pair of roots, find concepts with both as ancestors
     interdisciplinary = []
-    
+
     for i, root1 in enumerate(root_concepts.results):
         for root2 in root_concepts.results[i+1:]:
             # Find concepts descended from both
@@ -266,7 +266,7 @@ def find_interdisciplinary_concepts():
                 .filter(ancestors={"id": [root1.id, root2.id]})
                 .get()
             )
-            
+
             if shared.meta.count > 0:
                 print(f"\n{root1.display_name}  &  {root2.display_name}: {shared.meta.count} concepts")
                 for concept in shared.results[:3]:
@@ -281,7 +281,7 @@ find_interdisciplinary_concepts()
 from openalex import Concepts
 def analyze_research_trends(min_works=50000):
     """Find rapidly growing research areas."""
-    
+
     # Get active concepts
     active_concepts = (
         Concepts()
@@ -289,30 +289,30 @@ def analyze_research_trends(min_works=50000):
         .filter_gt(level=1)  # Not too general
         .get(per_page=100)
     )
-    
+
     print(f"Analyzing {active_concepts.meta.count} active concepts...")
-    
+
     # For each concept, look at growth metrics
     growing_concepts = []
     for concept in active_concepts.results:
         if concept.counts_by_year and len(concept.counts_by_year) >= 2:
             recent = concept.counts_by_year[0]
             previous = concept.counts_by_year[1]
-            
+
             if previous.works_count > 0:
-                growth_rate = ((recent.works_count - previous.works_count) / 
+                growth_rate = ((recent.works_count - previous.works_count) /
                               previous.works_count * 100)
-                
+
                 if growth_rate > 20:  # 20% growth
                     growing_concepts.append({
                         "concept": concept,
                         "growth_rate": growth_rate,
                         "recent_works": recent.works_count
                     })
-    
+
     # Sort by growth rate
     growing_concepts.sort(key=lambda x: x["growth_rate"], reverse=True)
-    
+
     print("\nFastest growing concepts:")
     for item in growing_concepts[:10]:
         concept = item["concept"]
@@ -329,9 +329,9 @@ analyze_research_trends()
 from openalex import Concepts
 def find_similar_concepts(concept_id):
     """Find concepts similar to a given concept."""
-    
+
     source = Concepts()[concept_id]
-    
+
     # Strategy 1: Same parent
     if source.ancestors:
         parent_id = source.ancestors[-1].id  # Immediate parent
@@ -343,11 +343,11 @@ def find_similar_concepts(concept_id):
             .sort(works_count="desc")
             .get()
         )
-        
+
         print(f"Sibling concepts of {source.display_name}:")
         for sibling in siblings.results[:5]:
             print(f"  - {sibling.display_name} ({sibling.works_count:,} works)")
-    
+
     # Strategy 2: Use related_concepts if available
     if hasattr(source, 'related_concepts') and source.related_concepts:
         print(f"\nRelated concepts:")
@@ -372,11 +372,11 @@ from openalex import Concepts
 def concept_distribution_summary():
     # Use group_by instead of fetching all concepts
     by_level = Concepts().group_by("level").get()
-    
+
     print("Concepts by level:")
     for group in by_level.group_by:
         print(f"  Level {group.key}: {group.count:,}")
-    
+
     # Get root distribution
     roots = Concepts().filter(level=0).get(per_page=25)
     print(f"\nRoot concepts: {roots.meta.count}")

@@ -25,7 +25,7 @@ print(topic.display_name)  # "Artificial Intelligence in Medicine"
 
 # Description (AI-generated)
 print(topic.description)
-# "This cluster of papers explores the intersection of artificial intelligence 
+# "This cluster of papers explores the intersection of artificial intelligence
 #  and medicine, focusing on applications in healthcare, medical imaging..."
 
 # Metrics
@@ -77,7 +77,7 @@ if topic.keywords:
     print("Keywords:")
     for keyword in topic.keywords[:10]:  # First 10
         print(f"  - {keyword}")
-    
+
     # Keywords can be multi-word phrases
     single_word = [k for k in topic.keywords if ' ' not in k]
     multi_word = [k for k in topic.keywords if ' ' in k]
@@ -110,22 +110,22 @@ topic = Topics()["T11636"]
 
 def get_works_for_topic(topic_id, recent_only=False):
     """Get works that have this topic."""
-    
+
     # Build query for works with this topic
     query = Works().filter(topics={"id": topic_id})
-    
+
     if recent_only:
         query = query.filter(publication_year=2023)
-    
+
     # Get recent highly-cited works
     top_works = query.sort(cited_by_count="desc").get()
-    
+
     print(f"Top works in topic '{topic.display_name}':")
     for work in top_works.results[:10]:
         print(f"\n{work.title}")
         print(f"  Citations: {work.cited_by_count}")
         print(f"  Published: {work.publication_date}")
-        
+
         # Show if this is the primary topic
         pt = work.primary_topic
         pt_id = pt.get("id") if isinstance(pt, dict) else getattr(pt, "id", None)
@@ -142,12 +142,12 @@ get_works_for_topic(topic.id, recent_only=True)
 def analyze_topic_growth(topic_id):
     """Analyze how a topic has grown over time."""
     from openalex import Topics, Works
-    
+
     topic = Topics()[topic_id]
-    
+
     print(f"Growth Analysis: {topic.display_name}")
     print("=" * 50)
-    
+
     # Get work counts by year
     current_year = 2024
     for year in range(current_year - 5, current_year + 1):
@@ -157,9 +157,9 @@ def analyze_topic_growth(topic_id):
             .filter(publication_year=year)
             .get()
         )
-        
+
         print(f"{year}: {year_works.meta.count:,} works")
-    
+
     # Show related topics (topics in same subfield)
     related = (
         Topics()
@@ -168,7 +168,7 @@ def analyze_topic_growth(topic_id):
         .sort(works_count="desc")
         .get(per_page=5)
     )
-    
+
     print(f"\nRelated topics in {topic.subfield.display_name}:")
     for t in related.results:
         print(f"  - {t.display_name} ({t.works_count:,} works)")
@@ -184,7 +184,7 @@ def find_related_topics(topic_id):
     """Find topics related to a given topic."""
     from openalex import Topics
     source_topic = Topics()[topic_id]
-    
+
     # Same subfield (most related)
     same_subfield = (
         Topics()
@@ -193,11 +193,11 @@ def find_related_topics(topic_id):
         .sort(works_count="desc")
         .get(per_page=10)
     )
-    
+
     print(f"Topics in same subfield ({source_topic.subfield.display_name}):")
     for t in same_subfield.results:
         print(f"  - {t.display_name} ({t.works_count:,} works)")
-    
+
     # Same field but different subfield
     same_field = (
         Topics()
@@ -206,11 +206,11 @@ def find_related_topics(topic_id):
         .sort(works_count="desc")
         .get(per_page=5)
     )
-    
+
     print(f"\nOther topics in {source_topic.field.display_name}:")
     for t in same_field.results:
         print(f"  - {t.display_name} ({t.subfield.display_name})")
-    
+
     # Search for topics with similar keywords
     if source_topic.keywords:
         keyword_search = " OR ".join(source_topic.keywords[:3])
@@ -220,7 +220,7 @@ def find_related_topics(topic_id):
             .filter_not(openalex=topic_id)
             .get(per_page=5)
         )
-        
+
         print(f"\nTopics with similar keywords:")
         for t in similar_keywords.results:
             print(f"  - {t.display_name}")
@@ -237,28 +237,28 @@ def compare_topics(topic_ids):
     topics = []
     for tid in topic_ids:
         topics.append(Topics()[tid])
-    
+
     print("Topic Comparison")
     print("-" * 80)
     print(f"{'Topic':<40} {'Field':<20} {'Works':>10} {'Domain':<15}")
     print("-" * 80)
-    
+
     for t in topics:
         print(f"{t.display_name[:39]:<40} "
               f"{t.field.display_name[:19]:<20} "
               f"{t.works_count:>10,} "
               f"{t.domain.display_name:<15}")
-    
+
     # Show keyword overlap
     print("\nKeyword Analysis:")
     all_keywords = set()
     topic_keywords = {}
-    
+
     for t in topics:
         if t.keywords:
             topic_keywords[t.id] = set(t.keywords)
             all_keywords.update(t.keywords)
-    
+
     # Find common keywords
     if len(topic_keywords) > 1:
         common = set.intersection(*topic_keywords.values())
@@ -276,10 +276,10 @@ def explore_topic_hierarchy(topic_id):
     """Explore the hierarchical context of a topic."""
     from openalex import Topics
     topic = Topics()[topic_id]
-    
+
     print(f"Hierarchy for: {topic.display_name}")
     print("=" * 50)
-    
+
     # Show full path
     print(f"\nFull path:")
     print(f"  Domain: {topic.domain.display_name} (ID: {topic.domain.id})")
@@ -289,19 +289,19 @@ def explore_topic_hierarchy(topic_id):
     print(f"  Subfield: {topic.subfield.display_name} (ID: {topic.subfield.id})")
     print(f"  v")
     print(f"  Topic: {topic.display_name}")
-    
+
     # Count siblings at each level
     domain_fields = Topics().filter(domain={"id": topic.domain.id}).group_by("field.id").get()
     field_subfields = Topics().filter(field={"id": topic.field.id}).group_by("subfield.id").get()
     subfield_topics = Topics().filter(subfield={"id": topic.subfield.id}).get()
-    
+
     print(f"\nContext:")
     fields_len = len(domain_fields.group_by or [])
     subfields_len = len(field_subfields.group_by or [])
     print(f"  Fields in {topic.domain.display_name}: {fields_len}")
     print(f"  Subfields in {topic.field.display_name}: {subfields_len}")
     print(f"  Topics in {topic.subfield.display_name}: {subfield_topics.meta.count}")
-    
+
     # Show some sibling topics
     siblings = (
         Topics()
@@ -310,7 +310,7 @@ def explore_topic_hierarchy(topic_id):
         .sort(works_count="desc")
         .get(per_page=5)
     )
-    
+
     print(f"\nSibling topics in {topic.subfield.display_name}:")
     for t in siblings.results:
         print(f"  - {t.display_name} ({t.works_count:,} works)")
@@ -364,31 +364,31 @@ def load_all_topics():
     print("Loading all topics...")
     all_topics = list(Topics().all(per_page=200))
     print(f"Loaded {len(all_topics)} topics")
-    
+
     # Create useful indexes
     by_domain = {}
     by_field = {}
     by_subfield = {}
-    
+
     for topic in all_topics:
         # Index by domain
         domain_name = topic.domain.display_name
         if domain_name not in by_domain:
             by_domain[domain_name] = []
         by_domain[domain_name].append(topic)
-        
+
         # Index by field
         field_name = topic.field.display_name
         if field_name not in by_field:
             by_field[field_name] = []
         by_field[field_name].append(topic)
-        
+
         # Index by subfield
         subfield_name = topic.subfield.display_name
         if subfield_name not in by_subfield:
             by_subfield[subfield_name] = []
         by_subfield[subfield_name].append(topic)
-    
+
     return {
         "all": all_topics,
         "by_domain": by_domain,

@@ -137,38 +137,38 @@ from openalex import Publishers
 def analyze_market_concentration():
     # Total publishers by country
     by_country = Publishers().group_by("country_codes").get()
-    
-    # Large publishers by country  
+
+    # Large publishers by country
     large_by_country = (
         Publishers()
         .filter_gt(works_count=100000)
         .group_by("country_codes")
         .get()
     )
-    
+
     # Calculate concentration
     country_data = {}
     for group in by_country.group_by[:10]:
         country = group.key
         total = group.count
-        
+
         # Find large publisher count for this country
         large_count = next(
-            (g.count for g in large_by_country.group_by if g.key == country), 
+            (g.count for g in large_by_country.group_by if g.key == country),
             0
         )
-        
+
         concentration = (large_count / total * 100) if total > 0 else 0
         country_data[country] = {
             'total': total,
             'large': large_count,
             'concentration': concentration
         }
-    
+
     print("Market concentration by country:")
     for country, data in sorted(
-        country_data.items(), 
-        key=lambda x: x[1]['concentration'], 
+        country_data.items(),
+        key=lambda x: x[1]['concentration'],
         reverse=True
     ):
         print(f"  {country}: {data['large']} of {data['total']} "
@@ -186,13 +186,13 @@ from openalex import Publishers
 def analyze_hierarchies():
     # Overall hierarchy distribution
     hierarchy_dist = Publishers().group_by("hierarchy_level").get()
-    
+
     print("Publisher hierarchy distribution:")
     total_publishers = sum(g.count for g in hierarchy_dist.group_by)
     for group in hierarchy_dist.group_by:
         pct = (group.count / total_publishers) * 100
         print(f"  Level {group.key}: {group.count:,} ({pct:.1f}%)")
-    
+
     # Countries with complex hierarchies
     deep_hierarchies = (
         Publishers()
@@ -200,7 +200,7 @@ def analyze_hierarchies():
         .group_by("country_codes")
         .get()
     )
-    
+
     print("\nCountries with complex publisher hierarchies:")
     for group in deep_hierarchies.group_by[:10]:
         print(f"  {group.key}: {group.count} multi-level subsidiaries")
@@ -217,7 +217,7 @@ from openalex import Publishers
 def analyze_impact():
     # Group by h-index ranges
     h_ranges = [0, 50, 100, 200, 300, 500, 1000]
-    
+
     print("Publishers by h-index range:")
     for i in range(len(h_ranges) - 1):
         range_pubs = (
@@ -228,7 +228,7 @@ def analyze_impact():
         )
         print(f"  {h_ranges[i]}-{h_ranges[i+1]}: "
               f"{range_pubs.meta.count} publishers")
-    
+
     # Top countries by high-impact publishers
     high_impact_countries = (
         Publishers()
@@ -236,7 +236,7 @@ def analyze_impact():
         .group_by("country_codes")
         .get()
     )
-    
+
     print("\nCountries with high-impact publishers (h-index > 200):")
     for group in high_impact_countries.group_by[:10]:
         print(f"  {group.key}: {group.count} publishers")
@@ -255,7 +255,7 @@ from openalex import Publishers
 default_sort = Publishers().group_by("country_codes").get()
 # US first (most publishers), then GB, DE, etc.
 
-# Sort by key instead of count  
+# Sort by key instead of count
 alphabetical = Publishers().group_by("country_codes").sort(key="asc").get()
 # AF, AL, AM... (alphabetical by country code)
 

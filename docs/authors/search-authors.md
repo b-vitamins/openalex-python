@@ -31,8 +31,8 @@ smiths = Authors().search("John Smith").get()
 
 # Diacritics are handled flexibly
 tarrago1 = Authors().search("David Tarrago").get()
-tarrago2 = Authors().search("David Tarrag\u00f3").get()
-# Both can find "David Tarrag\u00f3" and "David Tarrago"
+tarrago2 = Authors().search("David Tarragó").get()
+# Both can find "David Tarragó" and "David Tarrago"
 # When searching with diacritics, those versions are prioritized
 ```
 
@@ -96,7 +96,7 @@ Ronald Swanstrom
   ORCID: https://orcid.org/0000-0001-7777-0773
 
 Ronald Swoboda
-  University of Vienna, Austria  
+  University of Vienna, Austria
   Works: 45
   Citations: 892
 ```

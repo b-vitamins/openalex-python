@@ -102,7 +102,7 @@ from openalex import Funders
 
 # Request only specific fields
 minimal_funders = Funders().select([
-    "id", 
+    "id",
     "display_name",
     "alternate_titles",
     "country_code",
@@ -149,10 +149,10 @@ def analyze_funding_by_region():
         "Asia": ["CN", "JP", "KR", "IN", "SG", "TW"],
         "Oceania": ["AU", "NZ"]
     }
-    
+
     for region, countries in regions.items():
         regional_funders = Funders().filter(country_code=countries).get()
-        
+
         # Get top funder in region
         top_funder = (
             Funders()
@@ -160,7 +160,7 @@ def analyze_funding_by_region():
             .sort(cited_by_count="desc")
             .get(per_page=1)
         )
-        
+
         print(f"\n{region}:")
         print(f"  Total funders: {regional_funders.meta.count:,}")
         if top_funder.results:
@@ -177,14 +177,14 @@ analyze_funding_by_region()
 from openalex import Funders
 def find_high_impact_funders(min_h_index=200):
     """Find funders supporting high-impact research."""
-    
+
     high_impact = (
         Funders()
         .filter_gt(summary_stats={"h_index": min_h_index})
         .sort(**{"summary_stats.h_index": "desc"})
         .get(per_page=20)
     )
-    
+
     print(f"Funders with h-index > {min_h_index}:")
     for funder in high_impact.results:
         h_index = funder.summary_stats.h_index if funder.summary_stats else "N/A"
@@ -193,7 +193,7 @@ def find_high_impact_funders(min_h_index=200):
             if funder.summary_stats
             else "N/A"
         )
-        
+
         print(f"\n{funder.display_name}")
         print(f"  H-index: {h_index}")
         print(f"  Mean citedness: {mean_cite:.2f}" if isinstance(mean_cite, float) else f"  Mean citedness: {mean_cite}")

@@ -193,10 +193,10 @@ from openalex import Institutions
 
 def analyze_global_research():
     """Analyze the global distribution of research institutions."""
-    
+
     # Overall distribution by continent
     by_continent = Institutions().group_by("continent").get()
-    
+
     # Research universities by continent
     research_unis = (
         Institutions()
@@ -205,19 +205,19 @@ def analyze_global_research():
         .group_by("continent")
         .get()
     )
-    
+
     # Calculate research intensity
     print("Research intensity by continent:")
     for cont in by_continent.group_by:
         continent = cont.key
         total = cont.count
-        
+
         # Find research count for this continent
         research_count = next(
             (g.count for g in research_unis.group_by if g.key == continent),
             0
         )
-        
+
         intensity = (research_count / total * 100) if total > 0 else 0
         print(f"  {continent}: {research_count}/{total} "
               f"({intensity:.1f}% are major research institutions)")
@@ -232,10 +232,10 @@ from openalex import Institutions
 
 def analyze_institution_ecosystem():
     """Understand the mix of institution types globally."""
-    
+
     # Basic type distribution
     types = Institutions().group_by("type").get()
-    
+
     # Type distribution in Global South vs North
     global_south_types = (
         Institutions()
@@ -243,21 +243,21 @@ def analyze_institution_ecosystem():
         .group_by("type")
         .get()
     )
-    
+
     global_north_types = (
         Institutions()
         .filter(is_global_south=False)
         .group_by("type")
         .get()
     )
-    
+
     print("Institution type comparison:")
     print("Type | Global South | Global North")
     print("-" * 40)
-    
+
     for type_group in types.group_by:
         inst_type = type_group.key
-        
+
         south_count = next(
             (g.count for g in global_south_types.group_by if g.key == inst_type),
             0
@@ -266,7 +266,7 @@ def analyze_institution_ecosystem():
             (g.count for g in global_north_types.group_by if g.key == inst_type),
             0
         )
-        
+
         print(f"{inst_type:<12} | {south_count:>12,} | {north_count:>12,}")
 
 analyze_institution_ecosystem()
@@ -279,7 +279,7 @@ from openalex import Institutions
 
 def analyze_research_concentration():
     """Analyze how research is concentrated globally."""
-    
+
     # Countries by number of high-output institutions
     high_output = (
         Institutions()
@@ -287,7 +287,7 @@ def analyze_research_concentration():
         .group_by("country_code")
         .get()
     )
-    
+
     # Countries by number of high-impact institutions
     high_impact = (
         Institutions()
@@ -295,19 +295,19 @@ def analyze_research_concentration():
         .group_by("country_code")
         .get()
     )
-    
+
     # Combine the analyses
     print("Research concentration by country:")
     print("Country | High Output | High Impact")
     print("-" * 40)
-    
+
     # Get unique countries from both
     countries = set()
     for g in high_output.group_by[:20]:
         countries.add(g.key)
     for g in high_impact.group_by[:20]:
         countries.add(g.key)
-    
+
     for country in sorted(countries):
         output_count = next(
             (g.count for g in high_output.group_by if g.key == country),
@@ -317,7 +317,7 @@ def analyze_research_concentration():
             (g.count for g in high_impact.group_by if g.key == country),
             0
         )
-        
+
         if output_count > 0 or impact_count > 0:
             print(f"{country:>7} | {output_count:>11} | {impact_count:>11}")
 
@@ -331,16 +331,16 @@ from openalex import Institutions
 
 def analyze_repository_landscape():
     """Analyze which institutions host repositories."""
-    
+
     # Basic count of institutions with repositories
     has_repo = (
         Institutions()
         .filter(repositories={"id": {"exists": True}})
         .get()
     )
-    
+
     print(f"Institutions hosting repositories: {has_repo.meta.count:,}")
-    
+
     # By country
     repo_by_country = (
         Institutions()
@@ -348,7 +348,7 @@ def analyze_repository_landscape():
         .group_by("country_code")
         .get()
     )
-    
+
     print("\nTop 10 countries by repository-hosting institutions:")
     for group in repo_by_country.group_by[:10]:
         print(f"  {group.key}: {group.count} institutions with repositories")

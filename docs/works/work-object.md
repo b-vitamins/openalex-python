@@ -81,22 +81,22 @@ for authorship in work.authorships:
     print(f"\nAuthor: {author.display_name}")
     if author.orcid:
         print(f"  ORCID: {author.orcid}")
-    
+
     # Author position in the paper
     print(f"  Position: {authorship.author_position}")  # "first", "middle", or "last"
     print(f"  Corresponding: {authorship.is_corresponding}")
-    
+
     # Institutional affiliations
     for institution in authorship.institutions:
         print(f"  Institution: {institution.display_name}")
         print(f"    Country: {institution.country_code}")
         print(f"    Type: {institution.type}")  # "education", "company", etc.
         print(f"    ROR: {institution.ror}")
-    
+
     # Raw affiliation strings (as they appear in the paper)
     for raw_text in authorship.raw_affiliation_strings:
         print(f"  Raw text: '{raw_text}'")
-    
+
     # Countries (derived from institutions and raw strings)
     if authorship.countries:
         print(f"  Countries: {', '.join(authorship.countries)}")
@@ -145,7 +145,7 @@ work = Works()["W2741809807"]
 # Comprehensive OA information
 oa = work.open_access
 print(f"Open Access: {oa.is_oa}")
-print(f"OA Status: {oa.oa_status}")  
+print(f"OA Status: {oa.oa_status}")
 # Possible values: "gold", "green", "hybrid", "bronze", "closed"
 
 if oa.oa_url:
@@ -154,9 +154,9 @@ if oa.oa_url:
 print(f"Available in repository: {oa.any_repository_has_fulltext}")
 
 # For detailed OA analysis, check locations
-gold_oa = any(loc.is_oa and loc.source.type == "journal" 
+gold_oa = any(loc.is_oa and loc.source.type == "journal"
               for loc in work.locations)
-green_oa = any(loc.is_oa and loc.source.type == "repository" 
+green_oa = any(loc.is_oa and loc.source.type == "repository"
                for loc in work.locations)
 ```
 
@@ -341,7 +341,7 @@ if work.corresponding_institution_ids:
 # Advanced citation metrics (when available)
 if work.fwci is not None:
     print(f"Field-Weighted Citation Impact: {work.fwci:.2f}")
-    
+
 if work.citation_normalized_percentile:
     cnp = work.citation_normalized_percentile
     print(f"Citation percentile: {cnp.value:.1%}")
