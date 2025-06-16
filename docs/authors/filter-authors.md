@@ -35,7 +35,7 @@ page2 = query_orcid.get(page=2, per_page=100)  # Authors 101-200
 page_count = 0
 for page in query_orcid.paginate(per_page=200):
     page_count += 1
-    if page_count > 10:  # Stop after 2,000 authors
+    if page_count > 2:  # Stop after about 400 authors
         break
     for author in page.results:
         print(author.id)
@@ -283,11 +283,13 @@ from openalex import Authors
 query = Authors().filter(last_known_institutions={"country_code": "US"})
 first_page = query.get()
 
-if first_page.meta.count > 100000:
+if first_page.meta.count > 10000:
     print(f"Warning: {first_page.meta.count:,} results!")
     print("Consider adding more filters or using group_by")
 else:
     # Safe to paginate through results
-    for author in query.paginate():
+    for i, author in enumerate(query.paginate(), 1):
         process(author)
+        if i >= 1000:
+            break
 ```

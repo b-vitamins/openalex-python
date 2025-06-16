@@ -1,7 +1,7 @@
 # Search concepts
 
 {% hint style="warning" %}
-⚠️ **DEPRECATION WARNING**: These are the original OpenAlex Concepts, which are being deprecated in favor of [Topics](../topics/README.md). We will continue to provide these Concepts for Works, but we will not be actively maintaining, updating, or providing support for these concepts. Unless you have a good reason to be relying on them, we encourage you to look into [Topics](../topics/README.md) instead.
+**DEPRECATION WARNING**: These are the original OpenAlex Concepts, which are being deprecated in favor of [Topics](../topics/README.md). We will continue to provide these Concepts for Works, but we will not be actively maintaining, updating, or providing support for these concepts. Unless you have a good reason to be relying on them, we encourage you to look into [Topics](../topics/README.md) instead.
 {% endhint %}
 
 The best way to search for concepts is to use the `search` method, which searches the `display_name` and `description` fields:
@@ -9,7 +9,6 @@ The best way to search for concepts is to use the `search` method, which searche
 ```python
 from openalex import Concepts
 
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Search for concepts related to artificial intelligence
 ai_search = Concepts().search("artificial intelligence")
 
@@ -30,7 +29,6 @@ The search checks multiple fields:
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # This searches display_name AND description
 ml_results = Concepts().search("machine learning").get()
 
@@ -50,7 +48,6 @@ Read more about search relevance, stemming, and boolean searches in the [search 
 You can also use search as a filter:
 
 ```python
-# ⚠️ DEPRECATED: Consider using Topics instead
 from openalex import Concepts
 # Search only in display_name
 name_only = Concepts().filter(
@@ -80,7 +77,6 @@ Available search fields:
 Create a fast type-ahead search experience:
 
 ```python
-# ⚠️ DEPRECATED: Consider using Topics instead
 from openalex import Concepts
 # Get autocomplete suggestions
 suggestions = Concepts().autocomplete("comp")
@@ -116,7 +112,6 @@ Search is most powerful when combined with filters:
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Search for AI concepts at specific levels
 ai_subfields = (
     Concepts()
@@ -160,7 +155,6 @@ emerging = (
 ### Finding concepts in a domain
 
 ```python
-# ⚠️ DEPRECATED: Consider using Topics instead
 from openalex import Concepts
 def search_in_domain(search_term, domain_concept_id):
     """Search for concepts within a specific domain."""
@@ -192,7 +186,6 @@ search_in_domain("therapy", "C71924100")
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 def hierarchical_search(search_term):
     """Search at different levels of the hierarchy."""
     
@@ -217,7 +210,6 @@ hierarchical_search("network")
 ### Related concept discovery
 
 ```python
-# ⚠️ DEPRECATED: Consider using Topics instead
 from openalex import Concepts
 def discover_related_concepts(concept_id):
     """Find concepts related to a given concept through various methods."""
@@ -262,7 +254,6 @@ discover_related_concepts("C154945302")  # Machine learning
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Bioinformatics, computational biology, etc.
 bio_comp = (
     Concepts()
@@ -292,7 +283,6 @@ env_econ = (
 
 ```python
 from openalex import Concepts
-# ⚠️ DEPRECATED: Consider using Topics instead
 # Find emerging concepts with specific terms
 emerging_tech = (
     Concepts()
@@ -322,7 +312,6 @@ climate_concepts = (
 5. **Check related concepts**: Explore the concept graph
 
 ```python
-# ⚠️ DEPRECATED: Consider using Topics instead
 from openalex import Concepts
 # Example: Comprehensive concept search
 def comprehensive_search(search_terms, min_works=1000):
@@ -361,4 +350,4 @@ comprehensive_search([
 ])
 ```
 
-**⚠️ Final reminder: Concepts are deprecated! Please migrate to [Topics](../topics/README.md) for better support and accuracy.**
+**Final reminder: Concepts are deprecated! Please migrate to [Topics](../topics/README.md) for better support and accuracy.**

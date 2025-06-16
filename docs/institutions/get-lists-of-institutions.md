@@ -61,14 +61,13 @@ most_cited = Institutions().sort(cited_by_count="desc").get()
 # Alphabetical by name
 alphabetical = Institutions().sort(display_name="asc").get()
 
-# Get ALL institutions (feasible with ~109,000)
-# Limit to the first 1,000 to avoid huge downloads
-all_institutions = []
+# Get many institutions but keep it manageable
+some_institutions = []
 for institution in Institutions().paginate(per_page=200, cursor="*"):
-    all_institutions.append(institution)
-    if len(all_institutions) >= 1000:  # Stop after 1,000
+    some_institutions.append(institution)
+    if len(some_institutions) >= 200:  # Stop after 200 results
         break
-print(f"Fetched {len(all_institutions)} institutions")
+print(f"Fetched {len(some_institutions)} institutions")
 ```
 
 ## Sample institutions

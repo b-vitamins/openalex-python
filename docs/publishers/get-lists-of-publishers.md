@@ -61,14 +61,13 @@ most_cited = Publishers().sort(cited_by_count="desc").get()
 # Alphabetical by name
 alphabetical = Publishers().sort(display_name="asc").get()
 
-# Get ALL publishers (feasible with only ~10,000)
-# This will make about 50 API calls
-all_publishers = []
+# Get many publishers without hitting the API too hard
+some_publishers = []
 for i, page in enumerate(Publishers().paginate(per_page=200)):
-    if i >= 5:  # Stop after ~1000 results
+    if i >= 2:  # Stop after about 400 results
         break
-    all_publishers.extend(page.results)
-print(f"Fetched {len(all_publishers)} publishers")
+    some_publishers.extend(page.results)
+print(f"Fetched {len(some_publishers)} publishers")
 ```
 
 ## Sample publishers

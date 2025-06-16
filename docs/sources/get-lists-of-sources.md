@@ -63,12 +63,11 @@ high_impact = Sources().sort(**{"summary_stats.2yr_mean_citedness": "desc"}).get
 # Alphabetical by name
 alphabetical = Sources().sort(display_name="asc").get()
 
-# Get ALL sources (feasible with ~249,000)
-# This will make about 1,250 API calls at 200 per page
-all_sources = []
-for source in Sources().paginate(per_page=200, cursor="*", max_results=12000):
-    all_sources.append(source)
-print(f"Fetched {len(all_sources)} sources")
+# Fetch many sources (limit the total to avoid excessive calls)
+some_sources = []
+for source in Sources().paginate(per_page=200, cursor="*", max_results=400):
+    some_sources.append(source)
+print(f"Fetched {len(some_sources)} sources")
 ```
 
 ## Sample sources
