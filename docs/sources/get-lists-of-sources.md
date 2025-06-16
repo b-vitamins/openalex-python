@@ -66,7 +66,7 @@ alphabetical = Sources().sort(display_name="asc").get()
 # Get ALL sources (feasible with ~249,000)
 # This will make about 1,250 API calls at 200 per page
 all_sources = []
-for source in Sources().paginate(per_page=200, max_results=12000):
+for source in Sources().paginate(per_page=200, cursor="*", max_results=12000):
     all_sources.append(source)
 print(f"Fetched {len(all_sources)} sources")
 ```
@@ -147,7 +147,7 @@ high_impact_journals = (
     .filter(type="journal")
     .filter_gt(summary_stats={"2yr_mean_citedness": 5.0})
     .filter_gt(works_count=1000)
-    .sort(summary_stats={"2yr_mean_citedness": "desc"})
+    .sort(**{"summary_stats.2yr_mean_citedness": "desc"})
     .get(per_page=20)
 )
 

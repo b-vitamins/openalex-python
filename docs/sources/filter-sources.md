@@ -305,7 +305,11 @@ def find_affordable_oa_journals(max_apc=1500, min_impact=2.0):
     print(f"Affordable OA journals (APC < ${max_apc}, IF > {min_impact}):")
     for journal in affordable_oa.results:
         apc = journal.apc_usd or 0
-        impact = journal.summary_stats["2yr_mean_citedness"]
+        impact = (
+            journal.summary_stats.get("2yr_mean_citedness")
+            if isinstance(journal.summary_stats, dict)
+            else journal.summary_stats.two_year_mean_citedness
+        )
         print(f"\n{journal.display_name}")
         print(f"  APC: ${apc}")
         print(f"  Impact Factor: {impact:.2f}")

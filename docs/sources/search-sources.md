@@ -211,7 +211,11 @@ def find_sources_by_topic(topic, source_type=None):
         print(f"   Type: {source.type}")
         print(f"   Works: {source.works_count:,}")
         if source.summary_stats and source.type == "journal":
-            impact = source.summary_stats.two_year_mean_citedness or 0
+            impact = (
+                source.summary_stats.get("2yr_mean_citedness", 0)
+                if isinstance(source.summary_stats, dict)
+                else source.summary_stats.two_year_mean_citedness or 0
+            )
             print(f"   Impact Factor: {impact:.2f}")
 
 # Examples
@@ -348,7 +352,11 @@ def comprehensive_journal_search(search_terms, min_impact=None):
         for source in results.results:
             # Apply additional filters
             if min_impact and source.summary_stats:
-                impact = source.summary_stats.two_year_mean_citedness or 0
+                impact = (
+                    source.summary_stats.get("2yr_mean_citedness", 0)
+                    if isinstance(source.summary_stats, dict)
+                    else source.summary_stats.two_year_mean_citedness or 0
+                )
                 if impact < min_impact:
                     continue
             
