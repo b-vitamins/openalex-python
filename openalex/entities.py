@@ -4,12 +4,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
-from .metrics import MetricsReport
-
 if TYPE_CHECKING:  # pragma: no cover
     import builtins
     from collections.abc import AsyncIterator, Iterator
 
+    from .metrics import MetricsReport
     from .models.work import Ngram
     from .query import AsyncQuery
 

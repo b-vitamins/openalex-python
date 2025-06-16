@@ -1,7 +1,11 @@
 from __future__ import annotations
 
-from ..config import OpenAlexConfig
+from typing import TYPE_CHECKING
+
 from .collector import MetricsCollector
+
+if TYPE_CHECKING:  # pragma: no cover
+    from ..config import OpenAlexConfig
 
 _metrics_collectors: dict[int, MetricsCollector] = {}
 

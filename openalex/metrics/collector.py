@@ -26,7 +26,7 @@ class MetricsCollector:
         self._cache_hits = 0
         self._cache_misses = 0
 
-    def record_request(self, endpoint: str, duration: float, success: bool = True) -> None:
+    def record_request(self, endpoint: str, duration: float, *, success: bool = True) -> None:
         with self._lock:
             self._requests[endpoint] += 1
             self._response_times.append(duration)
