@@ -64,12 +64,12 @@ alphabetical = Topics().sort(display_name="asc").get()
 # Get ALL topics (very easy with only ~4,500)
 # This will make about 23 API calls at 200 per page
 all_topics = []
-for topic in Topics().paginate(per_page=200):
+for topic in Topics().all(per_page=200):
     all_topics.append(topic)
 print(f"Fetched all {len(all_topics)} topics")
 
 # Or more simply, since the dataset is small
-all_topics_list = list(Topics().paginate(per_page=200))
+all_topics_list = list(Topics().all(per_page=200))
 ```
 
 ## Sample topics
@@ -147,7 +147,7 @@ from openalex import Topics
 # Get topics with the most recent growth
 def find_trending_topics():
     # Get all topics efficiently
-    all_topics = list(Topics().paginate(per_page=200))
+    all_topics = list(Topics().all(per_page=200))
     
     # Sort by growth rate (simplified - you'd want to look at recent works)
     active_topics = sorted(
@@ -188,8 +188,7 @@ def analyze_topic_coverage():
     print(f"  Topics: ~{Topics().get().meta.count:,}")
     
     # Show largest domains
-    print("
-Largest domains by topic count:")
+    print("Largest domains by topic count:")
     for domain in by_domain.group_by[:5]:
         print(f"  Domain {domain.key}: {domain.count} topics")
 

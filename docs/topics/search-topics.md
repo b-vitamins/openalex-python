@@ -325,7 +325,9 @@ def comprehensive_topic_search(search_terms, min_works=100):
     
     # Fetch full details for unique topics
     if all_results:
-        unique_topics = Topics().filter(openalex=list(all_results)).get(per_page=50)
+        # OpenAlex allows filtering up to 100 ids at once
+        limited_ids = list(all_results)[:100]
+        unique_topics = Topics().filter(openalex=limited_ids).get(per_page=50)
         
         # Sort by relevance (work count as proxy)
         sorted_topics = sorted(
@@ -359,7 +361,7 @@ def browse_all_topics():
     """Load all topics for interactive browsing."""
     
     print("Loading all topics...")
-    all_topics = list(Topics().paginate(per_page=200))
+    all_topics = list(Topics().all(per_page=200))
     print(f"Loaded {len(all_topics)} topics")
     
     # Now you can search locally with any criteria

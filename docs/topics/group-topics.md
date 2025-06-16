@@ -121,17 +121,11 @@ You can group by two dimensions:
 ```python
 from openalex import Topics
 
-# Domain and field combination
-domain_field = Topics().group_by("domain.id", "field.id").get()
+# Count topics by domain
+domain_counts = Topics().group_by("domain.id").get()
 
-# Field and subfield combination
-field_subfield = Topics().group_by("field.id", "subfield.id").get()
-
-# This shows hierarchical relationships
-for group in domain_field.group_by[:20]:
-    # Keys are pipe-separated for multi-dimensional groups
-    domain_id, field_id = group.key.split('|')
-    print(f"Domain {domain_id}, Field {field_id}: {group.count} topics")
+for group in domain_counts.group_by:
+    print(f"Domain {group.key}: {group.count} topics")
 ```
 
 ## Practical examples
@@ -352,7 +346,7 @@ Since the dataset is so small, you can also do grouping locally:
 ```python
 # Get all topics once
 from openalex import Topics
-all_topics = list(Topics().paginate(per_page=200))
+all_topics = list(Topics().all(per_page=200))
 
 # Now do local grouping
 from collections import Counter

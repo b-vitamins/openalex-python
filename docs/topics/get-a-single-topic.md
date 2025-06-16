@@ -71,7 +71,7 @@ minimal_topic = Topics().select([
     "id",
     "display_name",
     "works_count"
-]).get("T11636")
+])["T11636"]
 
 # Now only the selected fields are populated
 print(minimal_topic.display_name)  # Works
