@@ -37,7 +37,6 @@ print(source.homepage_url)  # "https://www.nature.com/"
 print(source.host_organization)  # "https://openalex.org/P4310319965"
 print(source.host_organization_name)  # "Springer Nature"
 print(source.host_organization_lineage)  # List of parent org IDs
-print(source.publisher)  # "Nature Portfolio"
 
 # Scale metrics
 print(source.works_count)  # 185,779
@@ -75,6 +74,8 @@ else:
 ## Summary statistics
 
 ```python
+from openalex import Sources
+source = Sources()["S137773608"]
 stats = source.summary_stats
 if stats:
     # Impact factor (2-year mean citedness)
@@ -94,6 +95,8 @@ if stats:
 ## Publication trends
 
 ```python
+from openalex import Sources
+source = Sources()["S137773608"]
 # Track output over the last 10 years
 print("Publication trends:")
 for count in source.counts_by_year[:5]:  # Last 5 years
@@ -112,6 +115,8 @@ if len(source.counts_by_year) >= 2:
 ## Society information
 
 ```python
+from openalex import Sources
+source = Sources()["S137773608"]
 # Societies that sponsor this source
 if source.societies:
     print(f"Published on behalf of {len(source.societies)} society(ies):")
@@ -124,6 +129,8 @@ if source.societies:
 ## External identifiers
 
 ```python
+from openalex import Sources
+source = Sources()["S137773608"]
 ids = source.ids
 print(f"OpenAlex: {ids.openalex}")
 print(f"ISSN-L: {ids.issn_l}")
@@ -139,6 +146,8 @@ if ids.wikidata:
 ## Concepts (deprecated)
 
 ```python
+from openalex import Sources
+source = Sources()["S137773608"]
 # Note: x_concepts will be deprecated soon, replaced by Topics
 if source.x_concepts:
     print("Top research areas:")
@@ -153,7 +162,8 @@ if source.x_concepts:
 print(f"Works URL: {source.works_api_url}")
 
 # To actually fetch works using the client:
-from openalex import Works
+from openalex import Sources, Works
+source = Sources()["S137773608"]
 
 # Get recent works from this source
 source_works = (
@@ -174,6 +184,7 @@ for work in source_works.results[:5]:
 ### Analyze journal quality
 
 ```python
+from openalex import Sources
 def analyze_journal_quality(source_id):
     """Comprehensive quality analysis of a journal."""
     source = Sources()[source_id]
@@ -191,18 +202,28 @@ def analyze_journal_quality(source_id):
     if source.summary_stats:
         stats = source.summary_stats
         print(f"\nImpact Metrics:")
-        print(f"  Impact Factor: {stats['2yr_mean_citedness']:.3f}")
+        impact_factor = (
+            stats.get("2yr_mean_citedness")
+            if isinstance(stats, dict)
+            else stats.two_year_mean_citedness
+        )
+        print(f"  Impact Factor: {impact_factor:.3f}")
         print(f"  H-index: {stats.h_index}")
         print(f"  Total citations: {source.cited_by_count:,}")
         
         # Quality tier
-        if stats['2yr_mean_citedness'] > 20:
+        stat_val = (
+            stats.get("2yr_mean_citedness")
+            if isinstance(stats, dict)
+            else stats.two_year_mean_citedness or 0
+        )
+        if stat_val > 20:
             tier = "Elite"
-        elif stats['2yr_mean_citedness'] > 10:
+        elif stat_val > 10:
             tier = "High Impact"
-        elif stats['2yr_mean_citedness'] > 5:
+        elif stat_val > 5:
             tier = "Good"
-        elif stats['2yr_mean_citedness'] > 2:
+        elif stat_val > 2:
             tier = "Average"
         else:
             tier = "Developing"
@@ -228,6 +249,7 @@ analyze_journal_quality("S137773608")  # Nature
 ### Compare similar sources
 
 ```python
+from openalex import Sources
 def compare_sources(source_ids):
     """Compare multiple sources side by side."""
     sources = []
@@ -269,6 +291,7 @@ compare_sources([
 ### Find related sources
 
 ```python
+from openalex import Sources
 def find_related_sources(source_id):
     """Find sources similar to a given source."""
     source = Sources()[source_id]
@@ -300,7 +323,7 @@ def find_related_sources(source_id):
             .filter_gt(summary_stats={"2yr_mean_citedness": min_impact})
             .filter_lt(summary_stats={"2yr_mean_citedness": max_impact})
             .filter_not(openalex=source_id)
-            .sort(summary_stats={"2yr_mean_citedness": "desc"})
+            .sort(**{"summary_stats.2yr_mean_citedness": "desc"})
             .get(per_page=10)
         )
         
@@ -318,6 +341,8 @@ find_related_sources("S137773608")
 Many fields can be None or empty:
 
 ```python
+from openalex import Sources
+source = Sources()["S137773608"]
 # Safe access patterns
 if source.homepage_url:
     print(f"Homepage: {source.homepage_url}")
@@ -355,7 +380,7 @@ When sources appear in other objects (like in work locations), you get a simplif
 
 ```python
 # Get a work to see dehydrated sources
-from openalex import Works
+from openalex import Sources, Works
 work = Works()["W2741809807"]
 
 # Access dehydrated source in primary location
@@ -367,10 +392,7 @@ if work.primary_location and work.primary_location.source:
     print(source.type)
     print(source.is_oa)
     print(source.is_in_doaj)
-    print(source.host_organization)
-    print(source.host_organization_name)
     print(source.issn_l)
-    print(source.issn)
     
     # To get full details, fetch the complete source:
     full_source = Sources()[source.id]

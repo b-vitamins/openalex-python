@@ -160,7 +160,7 @@ doaj_apcs = (
 european_publishers = (
     Sources()
     .filter(continent="europe")
-    .group_by("host_organization_name")
+    .group_by("host_organization")
     .get()
 )
 ```
@@ -180,9 +180,7 @@ country_type = Sources().group_by("country_code", "type").get()
 
 # This shows which countries have which types of sources
 for group in country_type.group_by[:20]:
-    # Keys are pipe-separated for multi-dimensional groups
-    country, source_type = group.key.split('|')
-    print(f"{country} - {source_type}: {group.count}")
+    print(f"{group.key}: {group.count}")
 
 # Publisher and source type
 # Group by host organization and source type
