@@ -25,6 +25,7 @@ for source in results.results[:5]:
 The search checks multiple fields:
 
 ```python
+from openalex import Sources
 # This searches display_name, alternate_titles, AND abbreviated_title
 nature_results = Sources().search("Nature").get()
 
@@ -133,7 +134,7 @@ high_impact_search = (
     .search("Science")
     .filter(type="journal")
     .filter_gt(summary_stats={"2yr_mean_citedness": 5.0})
-    .sort(summary_stats={"2yr_mean_citedness": "desc"})
+    .sort(**{"summary_stats.2yr_mean_citedness": "desc"})
     .get()
 )
 
@@ -210,7 +211,7 @@ def find_sources_by_topic(topic, source_type=None):
         print(f"   Type: {source.type}")
         print(f"   Works: {source.works_count:,}")
         if source.summary_stats and source.type == "journal":
-            impact = source.summary_stats.get("2yr_mean_citedness", 0)
+            impact = source.summary_stats.two_year_mean_citedness or 0
             print(f"   Impact Factor: {impact:.2f}")
 
 # Examples
@@ -258,6 +259,7 @@ search_publisher_catalog("P4310319965", "quantum")
 ### Finding specific journal types
 
 ```python
+from openalex import Sources
 # Open access journals in a field
 oa_cs_journals = (
     Sources()
@@ -274,7 +276,7 @@ top_medical = (
     .search("medical OR medicine OR clinical")
     .filter(type="journal")
     .filter_gt(summary_stats={"2yr_mean_citedness": 10.0})
-    .sort(summary_stats={"2yr_mean_citedness": "desc"})
+    .sort(**{"summary_stats.2yr_mean_citedness": "desc"})
     .get()
 )
 
@@ -346,7 +348,7 @@ def comprehensive_journal_search(search_terms, min_impact=None):
         for source in results.results:
             # Apply additional filters
             if min_impact and source.summary_stats:
-                impact = source.summary_stats.get("2yr_mean_citedness", 0)
+                impact = source.summary_stats.two_year_mean_citedness or 0
                 if impact < min_impact:
                     continue
             

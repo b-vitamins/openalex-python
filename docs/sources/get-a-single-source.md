@@ -66,14 +66,8 @@ nature_comms = Sources()["issn:2041-1723"]
 source = Sources()["issn:1476-4687"]  # Print ISSN
 source = Sources()["issn:0028-0836"]  # Electronic ISSN
 
-# Get source by Wikidata ID
-source = Sources()["wikidata:Q180445"]
-
 # Get source by MAG ID
 source = Sources()["mag:137773608"]
-
-# Get source by Fatcat ID
-source = Sources()["fatcat:z3ijzhu7zzey3f7jwws7rzopoq"]
 ```
 
 Available external IDs for sources are:
@@ -93,12 +87,15 @@ You can use `select` to limit the fields that are returned in a source object:
 from openalex import Sources
 
 # Fetch only specific fields to reduce response size
-minimal_source = Sources().select([
-    "id", 
-    "display_name", 
-    "type",
-    "is_oa"
-]).get("S137773608")
+minimal_source = (
+    Sources()
+    .select([
+        "id",
+        "display_name",
+        "type",
+        "is_oa",
+    ])
+)["S137773608"]
 
 # Now only the selected fields are populated
 print(minimal_source.display_name)  # Works

@@ -15,6 +15,9 @@ print(type(source))  # <class 'openalex.models.source.Source'>
 ## Basic properties
 
 ```python
+from openalex import Sources
+source = Sources()["S137773608"]
+
 # Identifiers
 print(source.id)  # "https://openalex.org/S137773608"
 print(source.issn_l)  # "0028-0836" (canonical ISSN)
@@ -53,6 +56,9 @@ print(source.updated_date)  # "2024-01-02T00:27:23.088909"
 ## Article Processing Charges (APCs)
 
 ```python
+from openalex import Sources
+source = Sources()["S137773608"]
+
 # APC information from DOAJ
 if source.apc_prices:
     print(f"APCs offered in {len(source.apc_prices)} currencies:")
@@ -72,7 +78,7 @@ else:
 stats = source.summary_stats
 if stats:
     # Impact factor (2-year mean citedness)
-    print(f"Impact Factor: {stats['2yr_mean_citedness']:.3f}")
+    print(f"Impact Factor: {stats.two_year_mean_citedness:.3f}")
     
     # H-index for the source
     print(f"H-index: {stats.h_index}")
@@ -81,7 +87,7 @@ if stats:
     print(f"i10-index: {stats.i10_index:,}")
     
     # Interpret the metrics
-    if stats['2yr_mean_citedness'] > 10:
+    if stats.two_year_mean_citedness and stats.two_year_mean_citedness > 10:
         print("This is a high-impact journal")
 ```
 
@@ -235,8 +241,8 @@ def compare_sources(source_ids):
     
     for src in sources:
         impact_factor = "N/A"
-        if src.summary_stats and '2yr_mean_citedness' in src.summary_stats:
-            impact_factor = f"{src.summary_stats['2yr_mean_citedness']:.2f}"
+        if src.summary_stats and src.summary_stats.two_year_mean_citedness:
+            impact_factor = f"{src.summary_stats.two_year_mean_citedness:.2f}"
         
         apc = "N/A"
         if src.apc_usd is not None:
@@ -283,8 +289,8 @@ def find_related_sources(source_id):
         print(f"  - {src.display_name}")
     
     # Find sources with similar impact
-    if source.summary_stats and '2yr_mean_citedness' in source.summary_stats:
-        impact = source.summary_stats['2yr_mean_citedness']
+    if source.summary_stats and source.summary_stats.two_year_mean_citedness:
+        impact = source.summary_stats.two_year_mean_citedness
         min_impact = impact * 0.7
         max_impact = impact * 1.3
         
@@ -300,7 +306,7 @@ def find_related_sources(source_id):
         
         print(f"\nWith similar impact factor ({impact:.1f}):")
         for src in similar_impact.results[:5]:
-            src_if = src.summary_stats['2yr_mean_citedness']
+            src_if = src.summary_stats.two_year_mean_citedness
             print(f"  - {src.display_name} (IF: {src_if:.1f})")
 
 # Find sources related to Nature
@@ -319,8 +325,8 @@ else:
     print("No homepage listed")
 
 # Handle missing statistics
-if source.summary_stats and '2yr_mean_citedness' in source.summary_stats:
-    print(f"Impact Factor: {source.summary_stats['2yr_mean_citedness']:.3f}")
+if source.summary_stats and source.summary_stats.two_year_mean_citedness:
+    print(f"Impact Factor: {source.summary_stats.two_year_mean_citedness:.3f}")
 else:
     print("Impact Factor not calculated")
 
@@ -361,7 +367,6 @@ if work.primary_location and work.primary_location.source:
     print(source.type)
     print(source.is_oa)
     print(source.is_in_doaj)
-    print(source.is_core)
     print(source.host_organization)
     print(source.host_organization_name)
     print(source.issn_l)
