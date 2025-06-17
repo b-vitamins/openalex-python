@@ -5757,3 +5757,18 @@ def sample_search_params():
         "sample": 100,
         "seed": 42,
     }
+
+
+@pytest.fixture(autouse=True)
+def _reset_global_state():
+    """Ensure cache and connection state do not leak between tests."""
+    from openalex.cache.manager import clear_cache, _cache_managers
+    from openalex.api import _connection_pool
+
+    clear_cache()
+    _cache_managers.clear()
+    _connection_pool.clear()
+    yield
+    clear_cache()
+    _cache_managers.clear()
+    _connection_pool.clear()
