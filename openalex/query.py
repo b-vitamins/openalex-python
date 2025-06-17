@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
 
 from pydantic import ValidationError
 
-if TYPE_CHECKING:  # pragma: no cover - for type checking only
+if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Iterator
 
     from .config import OpenAlexConfig
@@ -149,46 +149,33 @@ class Query(Generic[T, F]):
                 and isinstance(filt, dict)
                 and not isinstance(filt, or_)
             ):
-                for key, value in filt.items():
-                    if key in current:
-                        existing = current[key]
-                        if isinstance(existing, dict) and isinstance(value, dict):
-                            current[key] = self._merge_filter_dict(existing, value)
-                        elif isinstance(existing, tuple):
-                            current[key] = (*existing, value)
-                        else:
-                            current[key] = (existing, value)
-                    else:
-                        current[key] = value
-                params["filter"] = current
+                params["filter"] = self._merge_filters(current, filt)
             else:
                 params["filter"] = filt
 
         params.update(updates)
         return Query(self.entity, params)
 
-    def _merge_filter_dict(
+    def _merge_filters(
         self,
-        current: dict[str, Any],
-        new: dict[str, Any],
+        current: Any,
+        new: Any,
         operation: str = "and",
-    ) -> dict[str, Any]:
-        """Merge filter dictionaries based on operation type."""
+    ) -> Any:
+        """Merge filter dictionaries with proper operator handling."""
         if operation == "or":
-            return or_(current | new)
-        merged = current.copy()
+            return or_({**current, **new}) if isinstance(current, dict) else or_(new)
+
+        if not isinstance(current, dict):
+            return new
+
+        result = current.copy()
         for key, value in new.items():
-            if key in merged and isinstance(merged[key], dict) and isinstance(value, dict):
-                merged[key] = self._merge_filter_dict(merged[key], value, operation)
-            elif key in merged:
-                existing = merged[key]
-                if isinstance(existing, tuple):
-                    merged[key] = (*existing, value)
-                else:
-                    merged[key] = (existing, value)
+            if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+                result[key] = self._merge_filters(result[key], value)
             else:
-                merged[key] = value
-        return merged
+                result[key] = value
+        return result
 
     def _apply_logical_operation(
         self, filter_dict: dict[str, Any], operation: type[_LogicalExpression]
@@ -250,7 +237,7 @@ class Query(Generic[T, F]):
         """Add OR filter parameters."""
         current = self.params.get("filter", {})
         if isinstance(current, dict):
-            new_filter = self._merge_filter_dict(current, kwargs, "or")
+            new_filter = self._merge_filters(current, kwargs, "or")
             return self._clone(filter=new_filter)
         return self._clone(filter=or_(kwargs))
 

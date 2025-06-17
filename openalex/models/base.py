@@ -172,6 +172,13 @@ class Meta(OpenAlexBase):
     groups_count: int | None = Field(None, description="Number of groups")
     next_cursor: str | None = Field(None, description="Cursor for next page")
 
+    def __repr__(self) -> str:
+        parts = [f"count={self.count:,}"]
+        if self.page:
+            total_pages = (self.count + self.per_page - 1) // self.per_page
+            parts.append(f"page={self.page}/{total_pages}")
+        return f"<Meta({', '.join(parts)})>"
+
 
 class GroupByResult(OpenAlexBase):
     """Result of a group-by operation."""
@@ -181,13 +188,8 @@ class GroupByResult(OpenAlexBase):
     count: int
 
     def __repr__(self) -> str:
-        """Return readable representation."""
-        return (
-            f"<GroupByResult("
-            f"key='{self.key}', "
-            f"count={self.count}"
-            f")>"
-        )
+        name = f'"{self.key_display_name}"' if self.key_display_name else self.key
+        return f"<GroupByResult({name}: {self.count:,})>"
 
 
 T = TypeVar("T")

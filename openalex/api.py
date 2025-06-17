@@ -37,7 +37,7 @@ from .utils.retry import (
     retry_with_rate_limit,
 )
 
-if TYPE_CHECKING:  # pragma: no cover - for type checking only
+if TYPE_CHECKING:
     from .connection import AsyncConnection
     from .resilience import CircuitBreaker, RequestQueue
 

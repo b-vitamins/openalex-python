@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     import builtins
     from collections.abc import AsyncIterator, Iterator
 
@@ -69,7 +69,7 @@ from .utils import Paginator, strip_id_prefix
 from .utils.params import normalize_params
 from .utils.validation import validate_entity_id
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from .config import OpenAlexConfig
     from .query import AsyncQuery
 
