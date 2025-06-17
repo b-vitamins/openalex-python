@@ -65,11 +65,28 @@ class Connection:
         method: str,
         url: str,
         params: dict[str, Any] | None = None,
+        operation: str | None = None,
         **kwargs: Any,
     ) -> httpx.Response:
         if self._client is None:
             self.open()
         assert self._client is not None
+
+        if operation is None:
+            if "/autocomplete/" in url:
+                operation = "autocomplete"
+            elif method == "GET" and url.count("/") > 3:
+                operation = "get"
+            elif params and (
+                (isinstance(params.get("filter"), dict) and "search" in params["filter"]) or params.get("search")
+            ):
+                operation = "search"
+            else:
+                operation = "list"
+
+        timeout_val = self._config.operation_timeouts.get(operation, self._config.timeout)
+        if "timeout" not in kwargs:
+            kwargs["timeout"] = httpx.Timeout(timeout_val)
 
         metrics = None
         start_time = 0.0
@@ -103,8 +120,8 @@ class Connection:
             if metrics is not None:
                 duration = time.time() - start_time
                 metrics.record_request(endpoint, duration, success=False)
-            msg = f"Request timed out after {self._config.timeout}s"
-            raise TimeoutError(msg) from e
+            msg = f"Request timed out after {timeout_val}s"
+            raise TimeoutError(msg, operation=operation, timeout_value=timeout_val) from e
         except httpx.NetworkError as e:
             if metrics is not None:
                 duration = time.time() - start_time

@@ -7,7 +7,15 @@ from typing import Any
 
 __all__ = ["OpenAlexConfig"]
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    HttpUrl,
+    field_validator,
+    model_validator,
+)
+from structlog import get_logger
 
 from . import __version__
 from .constants import (
@@ -24,6 +32,8 @@ from .constants import (
 )
 from .middleware import Middleware
 from .utils.rate_limit import DEFAULT_BUFFER
+
+logger = get_logger(__name__)
 
 
 class OpenAlexConfig(BaseModel):
@@ -186,3 +196,13 @@ class OpenAlexConfig(BaseModel):
             super().__setattr__(name, value)
         except ValidationError as exc:  # pragma: no cover - defensive
             raise AttributeError(str(exc)) from exc
+
+    @model_validator(mode="after")
+    def validate_metrics_config(self) -> OpenAlexConfig:
+        """Ensure metrics dependencies are configured correctly."""
+        if self.collect_metrics and not self.email:
+            logger.warning(
+                "metrics_without_email",
+                message="Metrics collection enabled without email; some features may be limited",
+            )
+        return self

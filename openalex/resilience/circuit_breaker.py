@@ -5,10 +5,14 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
+from structlog import get_logger
+
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from collections.abc import Callable
 
 __all__ = ["CircuitBreaker", "CircuitState"]
+
+logger = get_logger(__name__)
 
 
 class CircuitState(Enum):
@@ -70,6 +74,7 @@ class CircuitBreaker:
         with self._lock:
             self._failure_count = 0
             if self._state == CircuitState.HALF_OPEN:
+                logger.info("circuit_breaker_closed", recovered=True)
                 self._state = CircuitState.CLOSED
 
     def _on_failure(self) -> None:
@@ -78,6 +83,11 @@ class CircuitBreaker:
             self._failure_count += 1
             self._last_failure_time = datetime.now()
             if self._failure_count >= self.failure_threshold:
+                logger.warning(
+                    "circuit_breaker_opened",
+                    failure_count=self._failure_count,
+                    threshold=self.failure_threshold,
+                )
                 self._state = CircuitState.OPEN
 
     def reset(self) -> None:

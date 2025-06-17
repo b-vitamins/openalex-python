@@ -199,6 +199,7 @@ class BaseEntity(Generic[T, F]):
                 HTTP_METHOD_GET,
                 url,
                 params=norm_params,
+                operation="get",
             )
             raise_for_status(response)
             return cast("dict[str, Any]", response.json())
@@ -419,6 +420,18 @@ class BaseEntity(Generic[T, F]):
             collector = get_metrics_collector(self._config)
             return collector.get_report()
         return None
+
+    def circuit_breaker_status(self) -> dict[str, Any] | None:
+        """Get circuit breaker status if enabled."""
+        connection = self._connection
+        breaker = getattr(connection, "_circuit_breaker", None)
+        if breaker is not None:
+            return {
+                "state": breaker.state.value,
+                "failure_count": getattr(breaker, "_failure_count", 0),
+                "enabled": True,
+            }
+        return {"enabled": False}
 
 
 def _build_list_result(data: dict[str, Any], model: type[_T]) -> ListResult[_T]:
