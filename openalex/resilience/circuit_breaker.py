@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 
 from structlog import get_logger
 
-if TYPE_CHECKING:  # pragma: no cover - typing only
+if TYPE_CHECKING:
     from collections.abc import Callable
 
 __all__ = ["CircuitBreaker", "CircuitState"]

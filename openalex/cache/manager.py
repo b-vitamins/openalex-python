@@ -9,7 +9,7 @@ from structlog import get_logger
 
 __all__ = ["CacheManager", "clear_cache", "get_cache_manager"]
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from collections.abc import Callable
 
     from ..config import OpenAlexConfig

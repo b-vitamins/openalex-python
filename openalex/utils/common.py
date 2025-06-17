@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, overload
 
-if TYPE_CHECKING:  # pragma: no cover - for type checking only
+if TYPE_CHECKING:
     from collections.abc import Iterable
 
 from ..constants import OPENALEX_ID_PREFIX

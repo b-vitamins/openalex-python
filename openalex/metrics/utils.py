@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from .collector import MetricsCollector
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from ..config import OpenAlexConfig
 
 _metrics_collectors: dict[int, MetricsCollector] = {}

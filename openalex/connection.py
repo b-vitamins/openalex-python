@@ -15,7 +15,7 @@ __all__ = [
     "get_connection",
 ]
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from .config import OpenAlexConfig
 from .exceptions import (
     APIError,
