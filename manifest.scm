@@ -11,9 +11,8 @@
    "poetry"
    ;; Core Python dependencies (from pyproject.toml)
    "python-httpx"
-   "python-pydantic"
-   "python-tenacity"
-   "python-structlog"
+  "python-pydantic"
+  "python-structlog"
    "python-rich"
    "python-dateutil"
    "python-orjson"
