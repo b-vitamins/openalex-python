@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cache keys now include endpoint prefix to avoid collisions
 - Verified caching behavior with updated tests
 - Documentation examples for institutions are now self-contained
+- Expanded README with advanced usage and configuration sections
 - Updated docs to use `model_dump()` instead of `dict()`
 - Removed GitHub workflow `tests.yml` to avoid duplicate test runs
 
