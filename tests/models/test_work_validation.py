@@ -28,8 +28,7 @@ class TestWorkValidation:
                 "doi": doi,
             }
             work = Work(**work_data)
-            assert work.doi is not None
-            assert not work.doi.startswith("http")
+            assert work.doi == doi
 
         invalid_dois = [
             "not-a-doi",

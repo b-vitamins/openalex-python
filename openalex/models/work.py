@@ -6,6 +6,7 @@ import re
 from datetime import date, datetime
 from enum import Enum
 from typing import TYPE_CHECKING, Any
+from urllib.parse import urlparse
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -237,24 +238,52 @@ class WorkIds(OpenAlexBase):
     @field_validator("pmid")
     @classmethod
     def validate_pmid(cls, v: str | None) -> str | None:
-        """Validate PMID."""
+        """Validate PMID allowing numeric ID or full URL."""
         if v is None:
             return None
-        if not v.isdigit():
-            msg = f"Invalid PMID format: {v}"
-            raise ValueError(msg)
-        return v
+
+        if v.isdigit():
+            return v
+
+        try:
+            parsed = urlparse(v)
+        except Exception:
+            parsed = None
+
+        if parsed and parsed.scheme in {"http", "https"} and parsed.netloc:
+            last_part = parsed.path.rstrip("/").split("/")[-1]
+            if last_part.isdigit():
+                return v
+
+        msg = f"Invalid PMID format: {v}"
+        raise ValueError(msg)
 
     @field_validator("pmcid")
     @classmethod
     def validate_pmcid(cls, v: str | None) -> str | None:
-        """Validate PMCID."""
+        """Validate PMCID allowing prefix or URL."""
         if v is None:
             return None
-        if not re.match(r"^PMC\d+$", v):
-            msg = f"Invalid PMC ID format: {v}"
-            raise ValueError(msg)
-        return v
+
+        if re.match(r"^PMC\d+$", v):
+            return v
+
+        try:
+            parsed = urlparse(v)
+        except Exception:
+            parsed = None
+
+        if parsed and parsed.scheme in {"http", "https"} and parsed.netloc:
+            last_part = parsed.path.rstrip("/").split("/")[-1]
+            if last_part.lower().startswith("pmc"):
+                digits = last_part[3:]
+            else:
+                digits = last_part
+            if digits.isdigit():
+                return v
+
+        msg = f"Invalid PMC ID format: {v}"
+        raise ValueError(msg)
 
 
 class Authorship(OpenAlexBase):
@@ -332,13 +361,14 @@ class Work(OpenAlexEntity):
         if v is None:
             return None
 
+        normalized = v
         if v.startswith("https://doi.org/"):
-            v = v[16:]
+            normalized = v[16:]
         elif v.startswith("http://doi.org/"):
-            v = v[15:]
+            normalized = v[15:]
 
         doi_pattern = r"^10\.\d{4,9}/[-._;()/:\w]+$"
-        if not re.match(doi_pattern, v):
+        if not re.match(doi_pattern, normalized):
             msg = f"Invalid DOI format: {v}"
             raise ValueError(msg)
 
