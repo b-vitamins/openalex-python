@@ -108,11 +108,16 @@ class OpenAlexEntity(OpenAlexBase):
             return v
 
 
-class DehydratedEntity(OpenAlexBase):
-    """Base model for dehydrated (minimal) entities."""
+class DehydratedEntity(BaseModel):
+    """Minimal entity representation."""
 
-    id: str = Field(..., description="OpenAlex ID")
-    display_name: str | None = Field(None, description="Display name")
+    id: str | None = None
+    display_name: str | None = None
+
+    @property
+    def openalex_id(self) -> str | None:
+        """Return the OpenAlex ID."""
+        return self.id
 
 
 class CountsByYear(OpenAlexBase):
