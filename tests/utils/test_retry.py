@@ -427,24 +427,24 @@ class TestBackoffStrategies:
         """Test exponential backoff calculation."""
         from openalex.utils import exponential_backoff
 
-        assert exponential_backoff(1, initial=1.0, multiplier=2.0) == 1.0
-        assert exponential_backoff(2, initial=1.0, multiplier=2.0) == 2.0
-        assert exponential_backoff(3, initial=1.0, multiplier=2.0) == 4.0
-        assert exponential_backoff(4, initial=1.0, multiplier=2.0) == 8.0
+        cfg = exponential_backoff(initial=1.0, base=2.0, max_wait=60.0)
+        assert cfg.initial_wait == 1.0
+        assert cfg.multiplier == 2.0
+        assert cfg.max_wait == 60.0
 
     def test_linear_backoff(self):
         """Test linear backoff calculation."""
         from openalex.utils import linear_backoff
 
-        assert linear_backoff(1, initial=1.0, increment=0.5) == 1.0
-        assert linear_backoff(2, initial=1.0, increment=0.5) == 1.5
-        assert linear_backoff(3, initial=1.0, increment=0.5) == 2.0
-        assert linear_backoff(4, initial=1.0, increment=0.5) == 2.5
+        cfg = linear_backoff(initial=1.0, increment=0.5)
+        assert cfg.initial_wait == 1.0
+        assert cfg.multiplier == 1.5
 
     def test_constant_backoff(self):
         """Test constant backoff (no increase)."""
         from openalex.utils import constant_backoff
 
-        assert constant_backoff(1, wait=1.0) == 1.0
-        assert constant_backoff(2, wait=1.0) == 1.0
-        assert constant_backoff(3, wait=1.0) == 1.0
+        cfg = constant_backoff(delay=1.0)
+        assert cfg.initial_wait == 1.0
+        assert cfg.multiplier == 1.0
+        assert cfg.jitter is False

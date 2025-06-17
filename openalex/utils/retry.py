@@ -7,25 +7,15 @@ import random
 import time
 from dataclasses import dataclass
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Final, TypeVar
+from typing import TYPE_CHECKING, Any, Final, TypeVar, cast
 
 from structlog import get_logger
-from tenacity import (
-    RetryError,
-    Retrying,
-    retry_if_exception_type,
-    stop_after_attempt,
-    wait_exponential,
-    wait_exponential_jitter,
-)
 
 from ..exceptions import (
     APIError,
     NetworkError,
     RateLimitError,
-    RateLimitExceededError,
     RetryableError,
-    ServerError,
     TimeoutError,
 )
 
@@ -68,7 +58,11 @@ def is_retryable_error(error: BaseException) -> bool:
 
 @dataclass(slots=True)
 class RetryConfig:
-    """Configuration for retry behavior."""
+    """Configuration for retry behavior.
+
+    IMPORTANT: max_attempts is the TOTAL number of attempts including the first try.
+    So max_attempts=3 means: 1 initial attempt + 2 retries.
+    """
 
     max_attempts: int = 3
     initial_wait: float = 1.0
@@ -76,75 +70,20 @@ class RetryConfig:
     multiplier: float = 2.0
     jitter: bool = True
 
-    def get_wait_strategy(self) -> Any:
-        """Return the appropriate tenacity wait strategy."""
-        return (
-            wait_exponential_jitter(
-                initial=self.initial_wait,
-                max=self.max_wait,
-                exp_base=self.multiplier,
-            )
-            if self.jitter
-            else wait_exponential(
-                multiplier=self.initial_wait,
-                max=self.max_wait,
-                exp_base=self.multiplier,
-            )
-        )
-
-
-def with_retry(
-    func: Callable[..., T], config: RetryConfig | None = None
-) -> Callable[..., T]:
-    """Decorator to add retry logic to a function."""
-
-    handler = RetryHandler(config)
-
-    def wrapper(*args: Any, **kwargs: Any) -> T:
-        attempt = 1
-        while True:
-            try:
-                return func(*args, **kwargs)
-            except Exception as exc:
-                if not handler.should_retry(exc, attempt):
-                    raise
-                wait_time = handler.get_wait_time(exc, attempt)
-                handler.wait_sync(wait_time)
-                attempt += 1
-
-    return wrapper
-
-
-def async_with_retry(
-    func: Callable[..., Awaitable[T]],
-    config: RetryConfig | None = None,
-) -> Callable[..., Awaitable[T]]:
-    """Async decorator to add retry logic to a function.
-
-    Args:
-        func: Async function to retry
-        config: Retry configuration
-
-    Returns:
-        Wrapped async function with retry logic
-    """
-    if config is None:
-        config = RetryConfig()
-    handler = RetryHandler(config)
-
-    async def wrapper(*args: Any, **kwargs: Any) -> T:
-        attempt = 1
-        while True:
-            try:
-                return await func(*args, **kwargs)
-            except Exception as exc:
-                if not handler.should_retry(exc, attempt):
-                    raise
-                wait_time = handler.get_wait_time(exc, attempt)
-                await handler.wait(wait_time)
-                attempt += 1
-
-    return wrapper
+    def __post_init__(self) -> None:
+        """Validate configuration."""
+        if self.max_attempts < 1:
+            msg = "max_attempts must be at least 1"
+            raise ValueError(msg)
+        if self.initial_wait < 0:
+            msg = "initial_wait must be non-negative"
+            raise ValueError(msg)
+        if self.max_wait < self.initial_wait:
+            msg = "max_wait must be >= initial_wait"
+            raise ValueError(msg)
+        if self.multiplier < 1.0:
+            msg = "multiplier must be >= 1.0"
+            raise ValueError(msg)
 
 
 class RetryHandler:
@@ -158,14 +97,37 @@ class RetryHandler:
         self._rate_limit_reset: float | None = None
 
     def should_retry(self, error: Exception, attempt: int) -> bool:
-        """Check if request should be retried."""
+        """Check if request should be retried.
+
+        Args:
+            error: The exception that occurred
+            attempt: Current attempt number (1-based)
+
+        Returns:
+            True if should retry, False otherwise
+        """
+        # CRITICAL: Check >= not > to prevent off-by-one error
         if attempt >= self.config.max_attempts:
+            logger.debug(
+                "max_attempts_reached",
+                attempt=attempt,
+                max_attempts=self.config.max_attempts,
+            )
             return False
 
-        return is_retryable_error(error)
+        should_retry = is_retryable_error(error)
+        logger.debug(
+            "retry_decision",
+            attempt=attempt,
+            max_attempts=self.config.max_attempts,
+            error_type=type(error).__name__,
+            should_retry=should_retry,
+        )
+        return should_retry
 
     def calculate_wait(self, attempt: int) -> float:
         """Calculate base wait time for ``attempt``."""
+        # attempt is 1-based, so subtract 1 for exponential calculation
         base_wait = self.config.initial_wait * (
             self.config.multiplier ** (attempt - 1)
         )
@@ -186,210 +148,283 @@ class RetryHandler:
 
     async def wait(self, seconds: float) -> None:
         """Wait for specified seconds."""
-        logger.debug("Waiting %.2f seconds before retry", seconds)
+        logger.debug("retry_wait_async", seconds=seconds)
         await asyncio.sleep(seconds)
 
     def wait_sync(self, seconds: float) -> None:
         """Synchronous wait for specified seconds."""
-        logger.debug("Waiting %.2f seconds before retry", seconds)
+        logger.debug("retry_wait_sync", seconds=seconds)
         time.sleep(seconds)
 
 
-# ---------------------------------------------------------------------------
-# Additional retry utilities used for connection-level retries
-# ---------------------------------------------------------------------------
+def with_retry(
+    func: Callable[..., T], config: RetryConfig | None = None
+) -> Callable[..., T]:
+    """Decorator to add retry logic to a function.
 
+    CRITICAL: This properly tracks attempts to avoid infinite loops.
+    """
+    if config is None:
+        config = RetryConfig()
 
-def is_retryable_error_simple(exception: Exception) -> bool:
-    """Check if an error should trigger a retry based on class hierarchy."""
-    return isinstance(exception, RetryableError)
-
-
-def get_retry_after(exception: Exception) -> int | None:
-    """Extract retry-after value from exception."""
-    if isinstance(exception, RateLimitExceededError):
-        return exception.retry_after
-    return None
-
-
-def before_retry_log(retry_state: Any) -> None:
-    """Log before retry attempt."""
-    attempt = retry_state.attempt_number
-    exception = retry_state.outcome.exception() if retry_state.outcome else None
-    wait_time = retry_state.next_action.sleep if retry_state.next_action else 0
-
-    logger.warning(
-        "retrying_request",
-        attempt=attempt,
-        exception_type=type(exception).__name__ if exception else None,
-        exception_message=str(exception) if exception else "",
-        wait_seconds=wait_time,
-    )
-
-
-def create_retry_decorator(
-    max_attempts: int = 3,
-    initial_wait: float = 1.0,
-    max_wait: float = 60.0,
-    exponential_base: float = 2.0,
-) -> Callable[[Callable[..., T]], Callable[..., T]]:
-    """Create a retry decorator with configurable parameters."""
-
-    def decorator(func: Callable[..., T]) -> Callable[..., T]:
-        @wraps(func)
-        def wrapper(*args: Any, **kwargs: Any) -> T:
-            retry_instance = Retrying(
-                stop=stop_after_attempt(max_attempts),
-                wait=wait_exponential(
-                    multiplier=initial_wait,
-                    max=max_wait,
-                    exp_base=exponential_base,
-                ),
-                retry=retry_if_exception_type(RetryableError),
-                before=before_retry_log,
-                reraise=True,
-            )
-
-            try:
-                for attempt in retry_instance:
-                    with attempt:
-                        return func(*args, **kwargs)
-            except RetryError as e:
-                exc = e.last_attempt.exception()
-                if isinstance(exc, BaseException):
-                    raise exc from None
-                raise RuntimeError(RETRY_FAIL_MSG) from None
-
-            raise RuntimeError(RETRY_FAIL_MSG)
-
-        return wrapper
-
-    return decorator
-
-
-# Default retry decorator
-retry_on_error = create_retry_decorator()
-
-
-def retry_with_rate_limit(func: Callable[..., T]) -> Callable[..., T]:
-    """Retry decorator that respects rate limit headers."""
+    handler = RetryHandler(config)
 
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> T:
-        self = args[0]
-        max_attempts = 5
-        if hasattr(self, "config"):
-            config = self.config
-            if getattr(config, "retry_enabled", True):
-                # ``retry_max_attempts`` represents the number of retries,
-                # so add one for the initial attempt.
-                max_attempts = getattr(config, "retry_max_attempts", 5) + 1
-            else:
-                max_attempts = 1
-        attempt = 1
-        # attempt 1 is the initial request, 2+ are retries
+        last_error: Exception | None = None
 
-        while attempt <= max_attempts:
+        # CRITICAL: Start at attempt 1, not 0
+        for attempt in range(1, config.max_attempts + 1):
             try:
+                logger.debug(
+                    "retry_attempt",
+                    attempt=attempt,
+                    max_attempts=config.max_attempts,
+                    func=func.__name__,
+                )
                 return func(*args, **kwargs)
-            except RateLimitExceededError as e:
-                logger.debug("retry_attempt", attempt=attempt)
-                attempt += 1
-                if attempt > max_attempts:
+            except Exception as exc:
+                last_error = exc
+
+                # Check if we should retry BEFORE waiting
+                if not handler.should_retry(exc, attempt):
+                    logger.debug(
+                        "retry_exhausted",
+                        attempt=attempt,
+                        error_type=type(exc).__name__,
+                    )
                     raise
 
-                wait_time = e.retry_after or (2**attempt)
-                logger.warning(
-                    "rate_limit_hit",
-                    retry_after=e.retry_after,
-                    wait_time=wait_time,
-                    attempt=attempt,
-                )
-                time.sleep(wait_time)
-            except ServerError as e:
-                logger.debug("retry_attempt", attempt=attempt)
-                attempt += 1
-                if attempt > max_attempts:
-                    raise
+                # Only wait if we're not on the last attempt
+                if attempt < config.max_attempts:
+                    wait_time = handler.get_wait_time(exc, attempt)
+                    handler.wait_sync(wait_time)
 
-                wait_time = min(60, 2**attempt)
-                logger.warning(
-                    "server_error",
-                    error=str(e),
-                    wait_time=wait_time,
-                    attempt=attempt,
-                )
-                time.sleep(wait_time)
-
-        raise RuntimeError(RETRY_FAIL_MSG)
+        # This should never be reached due to the logic above
+        raise last_error or RuntimeError("Retry logic error")
 
     return wrapper
 
 
-def exponential_backoff(
-    attempt: int,
-    *,
-    initial: float = 1.0,
-    multiplier: float = 2.0,
-    max_wait: float | None = None,
-) -> float:
-    """Calculate exponential backoff time."""
-    wait = initial * (multiplier ** (attempt - 1))
-    if max_wait is not None:
-        wait = min(wait, max_wait)
-    return wait
+def async_with_retry(
+    func: Callable[..., Awaitable[T]],
+    config: RetryConfig | None = None,
+) -> Callable[..., Awaitable[T]]:
+    """Async decorator to add retry logic to a function."""
+    if config is None:
+        config = RetryConfig()
 
+    handler = RetryHandler(config)
 
-def linear_backoff(
-    attempt: int,
-    *,
-    initial: float = 1.0,
-    increment: float = 1.0,
-    max_wait: float | None = None,
-) -> float:
-    """Calculate linear backoff time."""
-    wait = initial + increment * (attempt - 1)
-    if max_wait is not None:
-        wait = min(wait, max_wait)
-    return wait
+    @wraps(func)
+    async def wrapper(*args: Any, **kwargs: Any) -> T:
+        last_error: Exception | None = None
 
+        # CRITICAL: Start at attempt 1, not 0
+        for attempt in range(1, config.max_attempts + 1):
+            try:
+                logger.debug(
+                    "retry_attempt_async",
+                    attempt=attempt,
+                    max_attempts=config.max_attempts,
+                    func=func.__name__,
+                )
+                return await func(*args, **kwargs)
+            except Exception as exc:
+                last_error = exc
 
-def constant_backoff(_attempt: int, *, wait: float = 1.0) -> float:
-    """Return a constant backoff regardless of ``attempt``."""
-    return wait
+                # Check if we should retry BEFORE waiting
+                if not handler.should_retry(exc, attempt):
+                    logger.debug(
+                        "retry_exhausted_async",
+                        attempt=attempt,
+                        error_type=type(exc).__name__,
+                    )
+                    raise
+
+                # Only wait if we're not on the last attempt
+                if attempt < config.max_attempts:
+                    wait_time = handler.get_wait_time(exc, attempt)
+                    await handler.wait(wait_time)
+
+        # This should never be reached
+        raise last_error or RuntimeError("Retry logic error")
+
+    return wrapper
 
 
 class RetryContext:
-    """Simple context manager to manually control retries."""
+    """Context manager for retry operations with explicit attempt tracking."""
 
     def __init__(self, config: RetryConfig | None = None) -> None:
+        """Initialize retry context."""
         self.config = config or RetryConfig()
+        self.handler = RetryHandler(self.config)
         self.attempt = 0
         self.last_error: BaseException | None = None
         self.succeeded = False
+        self._entered = False
 
     def __enter__(self) -> RetryContext:
+        """Enter retry context."""
+        self._entered = True
+        self.attempt = 0
+        self.last_error = None
+        self.succeeded = False
         return self
 
     def __exit__(
         self,
         exc_type: type[BaseException] | None,
-        exc: BaseException | None,
-        tb: Any,
-    ) -> None:
-        if exc is not None:
-            self.record_error(exc)
-            return
+        exc_val: BaseException | None,
+        exc_tb: Any,
+    ) -> bool:
+        """Handle exception in retry context."""
+        if exc_val is not None:
+            self.record_error(exc_val)
+            if not self.should_retry():
+                return False
+            wait_time = self.handler.get_wait_time(cast(Exception, exc_val), self.attempt)
+            self.handler.wait_sync(wait_time)
+            return True
 
         if not self.succeeded:
             if self.attempt >= self.config.max_attempts and self.last_error:
                 raise self.last_error
             self.succeeded = True
-        return
+        return False
+
+    async def __aenter__(self) -> RetryContext:
+        """Enter async retry context."""
+        self._entered = True
+        self.attempt = 0
+        self.last_error = None
+        self.succeeded = False
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: Any,
+    ) -> bool:
+        """Handle exception in async retry context."""
+        if exc_val is not None:
+            self.record_error(exc_val)
+            if not self.should_retry():
+                return False
+            wait_time = self.handler.get_wait_time(cast(Exception, exc_val), self.attempt)
+            await self.handler.wait(wait_time)
+            return True
+
+        if not self.succeeded:
+            if self.attempt >= self.config.max_attempts and self.last_error:
+                raise self.last_error
+            self.succeeded = True
+        return False
 
     def should_retry(self) -> bool:
+        """Return ``True`` if another attempt should be made."""
         return self.attempt < self.config.max_attempts and not self.succeeded
 
     def record_error(self, error: BaseException) -> None:
+        """Record an error and increment attempt counter."""
         self.last_error = error
         self.attempt += 1
+
+
+# Convenience decorators
+
+def retry_on_error(
+    retries: int = 3,
+    delay: float = 1.0,
+    backoff: float = 2.0,
+    max_delay: float = 60.0,
+    *,
+    jitter: bool = True,
+) -> Callable[[Callable[..., T]], Callable[..., T]]:
+    """Simplified decorator for retry logic."""
+    config = RetryConfig(
+        max_attempts=retries,
+        initial_wait=delay,
+        multiplier=backoff,
+        max_wait=max_delay,
+        jitter=jitter,
+    )
+
+    def decorator(func: Callable[..., T]) -> Callable[..., T]:
+        return with_retry(func, config)
+
+    return decorator
+
+
+def retry_with_rate_limit(
+    func: Callable[..., T],
+    max_attempts: int = 3,
+    *,
+    respect_retry_after: bool = True,
+) -> Callable[..., T]:
+    """Decorator specifically for handling rate limits."""
+
+    @wraps(func)
+    def wrapper(*args: Any, **kwargs: Any) -> T:
+        last_error: Exception | None = None
+
+        attempts = max_attempts
+        if args:
+            self_obj = args[0]
+            cfg = getattr(self_obj, "config", None)
+            if cfg is not None:
+                if getattr(cfg, "retry_enabled", True):
+                    attempts = getattr(cfg, "retry_max_attempts", attempts - 1) + 1
+                else:
+                    attempts = 1
+
+        for attempt in range(1, attempts + 1):
+            try:
+                return func(*args, **kwargs)
+            except RateLimitError as e:
+                last_error = e
+                if attempt >= max_attempts:
+                    raise
+
+                wait_time = (
+                    float(e.retry_after) if e.retry_after and respect_retry_after else 60.0
+                )
+                logger.warning(
+                    "rate_limit_hit",
+                    attempt=attempt,
+                    max_attempts=max_attempts,
+                    wait_time=wait_time,
+                )
+                time.sleep(wait_time)
+            except Exception as e:
+                if not is_retryable_error(e):
+                    raise
+                last_error = e
+                if attempt >= max_attempts:
+                    raise
+
+                wait_time = min(2 ** (attempt - 1), 60)
+                time.sleep(wait_time)
+
+        raise last_error or RuntimeError("Retry failed")
+
+    return wrapper
+
+
+# Backoff strategies
+
+def constant_backoff(delay: float = 1.0) -> RetryConfig:
+    """Create config for constant backoff."""
+    return RetryConfig(initial_wait=delay, multiplier=1.0, jitter=False)
+
+
+def linear_backoff(initial: float = 1.0, increment: float = 1.0) -> RetryConfig:
+    """Create config for linear backoff."""
+    return RetryConfig(initial_wait=initial, multiplier=1.0 + increment, jitter=False)
+
+
+def exponential_backoff(initial: float = 1.0, base: float = 2.0, max_wait: float = 60.0) -> RetryConfig:
+    """Create config for exponential backoff."""
+    return RetryConfig(initial_wait=initial, multiplier=base, max_wait=max_wait)
