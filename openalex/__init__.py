@@ -42,6 +42,8 @@ from .exceptions import (
     TimeoutError,
     ValidationError,
 )
+from .logging import configure_logging
+from .metrics import get_metrics, reset_metrics
 from .models import (
     Author,
     Concept,
@@ -97,10 +99,13 @@ __all__ = [
     "Works",
     "__version__",
     "close_all_async_connections",
+    "configure_logging",
+    "get_metrics",
     "gt_",
     "gte_",
     "lt_",
     "lte_",
     "not_",
     "or_",
+    "reset_metrics",
 ]

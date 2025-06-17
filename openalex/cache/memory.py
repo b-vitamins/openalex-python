@@ -8,6 +8,8 @@ from typing import Any
 
 from structlog import get_logger
 
+from ..metrics import get_collector
+
 __all__ = [
     "MemoryCache",
     "SmartMemoryCache",
@@ -32,19 +34,24 @@ class MemoryCache(BaseCache):
 
     def get(self, key: str) -> Any | None:
         """Get a value from the cache."""
+        collector = get_collector()
+
         with self._lock:
             entry = self._cache.get(key)
             if entry is None:
                 self._misses += 1
+                collector.record_cache_miss()
                 logger.debug("cache_miss", key=key)
                 return None
             if entry.is_expired():
                 del self._cache[key]
                 self._misses += 1
+                collector.record_cache_miss()
                 logger.debug("cache_expired", key=key)
                 return None
             entry.increment_hits()
             self._hits += 1
+            collector.record_cache_hit()
             logger.debug("cache_hit", key=key, hits=entry.hit_count)
             return entry.data
 
