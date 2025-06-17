@@ -314,7 +314,7 @@ def retry_with_rate_limit(
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> T:
         self_obj = args[0] if args else None
-        if max_attempts is None and hasattr(self_obj, "config"):
+        if max_attempts is None and self_obj is not None and hasattr(self_obj, "config"):
             cfg = self_obj.config
             attempts = cfg.retry_max_attempts if cfg.retry_enabled else 1
         else:
