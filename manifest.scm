@@ -12,7 +12,6 @@
    ;; Core Python dependencies (from pyproject.toml)
    "python-httpx"
    "python-pydantic"
-   "python-tenacity"
    "python-structlog"
    "python-rich"
    "python-dateutil"
