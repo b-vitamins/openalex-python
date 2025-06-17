@@ -21,128 +21,143 @@ logger = get_logger(__name__)
 class MemoryCache(BaseCache):
     """Thread-safe in-memory cache implementation."""
 
-    __slots__ = ("_cache", "_default_ttl", "_lock", "_maxsize", "_stats")
-
-    def __init__(self, maxsize: int = 1000, ttl: float = 3600.0) -> None:
+    def __init__(self, max_size: int = 1000) -> None:
+        """Initialize memory cache with maximum size limit."""
         self._cache: dict[str, CacheEntry] = {}
+        self._max_size = max_size
         self._lock = threading.RLock()
-        self._maxsize = maxsize
-        self._default_ttl = ttl
-        self._stats = {
-            "hits": 0,
-            "misses": 0,
-            "sets": 0,
-            "deletes": 0,
-            "evictions": 0,
-        }
+        self._hits = 0
+        self._misses = 0
+        self._evictions = 0
 
     def get(self, key: str) -> Any | None:
+        """Get a value from the cache."""
         with self._lock:
             entry = self._cache.get(key)
             if entry is None:
-                self._stats["misses"] += 1
+                self._misses += 1
+                logger.debug("cache_miss", key=key)
                 return None
-
             if entry.is_expired():
                 del self._cache[key]
-                self._stats["misses"] += 1
-                self._stats["evictions"] += 1
+                self._misses += 1
+                logger.debug("cache_expired", key=key)
                 return None
-
             entry.increment_hits()
-            self._stats["hits"] += 1
-
-            logger.debug(
-                "cache_hit",
-                key=key,
-                hit_count=entry.hit_count,
-                age_seconds=int(time.time() - entry.created_at),
-            )
-
+            self._hits += 1
+            logger.debug("cache_hit", key=key, hits=entry.hit_count)
             return entry.data
 
-    def set(self, key: str, value: Any, ttl: float | None = None) -> None:
-        if ttl is None:
-            ttl = self._default_ttl
-
+    def set(self, key: str, value: Any, ttl: float) -> None:
+        """Set a value in the cache with TTL in seconds."""
         with self._lock:
-            if len(self._cache) >= self._maxsize and key not in self._cache:
+            if len(self._cache) >= self._max_size:
                 self._evict_oldest()
-
             self._cache[key] = CacheEntry.create(value, ttl)
-            self._stats["sets"] += 1
-
-            logger.debug(
-                "cache_set",
-                key=key,
-                ttl=ttl,
-                cache_size=len(self._cache),
-            )
+            logger.debug("cache_set", key=key, ttl=ttl)
 
     def delete(self, key: str) -> None:
+        """Delete a value from the cache."""
         with self._lock:
             if key in self._cache:
                 del self._cache[key]
-                self._stats["deletes"] += 1
+                logger.debug("cache_delete", key=key)
 
     def clear(self) -> None:
+        """Clear all cache entries."""
         with self._lock:
-            count = len(self._cache)
             self._cache.clear()
-            logger.info("cache_cleared", entries_removed=count)
+            self._hits = 0
+            self._misses = 0
+            self._evictions = 0
+            logger.info("cache_cleared")
 
     def stats(self) -> dict[str, Any]:
+        """Get cache statistics."""
         with self._lock:
-            total_requests = self._stats["hits"] + self._stats["misses"]
-            hit_rate = (
-                self._stats["hits"] / total_requests
-                if total_requests > 0
-                else 0
-            )
-
+            total_requests = self._hits + self._misses
+            hit_rate = self._hits / total_requests if total_requests > 0 else 0
             return {
-                **self._stats,
                 "size": len(self._cache),
-                "maxsize": self._maxsize,
+                "max_size": self._max_size,
+                "hits": self._hits,
+                "misses": self._misses,
+                "evictions": self._evictions,
                 "hit_rate": hit_rate,
+                "total_requests": total_requests,
             }
 
     def _evict_oldest(self) -> None:
+        """Evict the oldest entry when cache is full."""
         if not self._cache:
             return
         oldest_key = min(
-            self._cache.keys(),
-            key=lambda k: self._cache[k].created_at,
+            self._cache.keys(), key=lambda k: self._cache[k].created_at
         )
         del self._cache[oldest_key]
-        self._stats["evictions"] += 1
+        self._evictions += 1
+        logger.debug("cache_evicted", key=oldest_key)
 
 
 class SmartMemoryCache(MemoryCache):
-    """Memory cache with smart eviction based on usage patterns."""
+    """Memory cache with adaptive TTL based on hit patterns."""
 
-    __slots__ = ()
+    def __init__(
+        self,
+        max_size: int = 1000,
+        base_ttl: float = 300.0,
+        ttl_multiplier: float = 1.5,
+        max_ttl: float = 3600.0,
+    ) -> None:
+        """Initialize smart cache with adaptive TTL."""
+        super().__init__(max_size)
+        self._base_ttl = base_ttl
+        self._ttl_multiplier = ttl_multiplier
+        self._max_ttl = max_ttl
+        self._key_ttls: dict[str, float] = {}
 
-    def _evict_oldest(self) -> None:
-        if not self._cache:
-            return
-        current_time = time.time()
-        age_weight = 1.0
-        hit_weight = 10.0
+    def get(self, key: str) -> Any | None:
+        """Get value and potentially extend TTL based on access patterns."""
+        result = super().get(key)
+        if result is not None:
+            # Extend TTL for frequently accessed items
+            with self._lock:
+                entry = self._cache.get(key)
+                if entry and entry.hit_count > 2:
+                    current_ttl = self._key_ttls.get(key, self._base_ttl)
+                    new_ttl = min(
+                        current_ttl * self._ttl_multiplier, self._max_ttl
+                    )
+                    self._key_ttls[key] = new_ttl
+                    entry.expires_at = time.time() + new_ttl
+                    logger.debug("cache_ttl_extended", key=key, new_ttl=new_ttl)
+        return result
 
-        def eviction_score(key: str) -> float:
-            entry = self._cache[key]
-            age = current_time - entry.created_at
-            return age_weight * age - hit_weight * entry.hit_count
+    def set(self, key: str, value: Any, ttl: float | None = None) -> None:
+        """Set value with adaptive TTL."""
+        if ttl is None:
+            ttl = self._key_ttls.get(key, self._base_ttl)
+        super().set(key, value, ttl)
+        self._key_ttls[key] = ttl
 
-        evict_key = max(self._cache.keys(), key=eviction_score)
+    def clear(self) -> None:
+        """Clear cache and TTL history."""
+        super().clear()
+        self._key_ttls.clear()
 
-        logger.debug(
-            "smart_eviction",
-            key=evict_key,
-            hit_count=self._cache[evict_key].hit_count,
-            age=int(current_time - self._cache[evict_key].created_at),
-        )
-
-        del self._cache[evict_key]
-        self._stats["evictions"] += 1
+    def stats(self) -> dict[str, Any]:
+        """Get extended statistics including TTL info."""
+        stats = super().stats()
+        with self._lock:
+            avg_ttl = (
+                sum(self._key_ttls.values()) / len(self._key_ttls)
+                if self._key_ttls
+                else self._base_ttl
+            )
+            stats.update(
+                {
+                    "avg_ttl": avg_ttl,
+                    "adaptive_keys": len(self._key_ttls),
+                }
+            )
+        return stats

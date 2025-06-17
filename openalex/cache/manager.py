@@ -31,8 +31,8 @@ class CacheManager:
 
         if config.cache_enabled:
             self._cache = SmartMemoryCache(
-                maxsize=config.cache_maxsize,
-                ttl=config.cache_ttl,
+                max_size=config.cache_maxsize,
+                base_ttl=config.cache_ttl,
             )
 
     @property

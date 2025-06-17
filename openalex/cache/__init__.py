@@ -1,15 +1,12 @@
 """Cache module exports."""
 
-from .base import BaseCache, CacheKeyBuilder
-from .manager import CacheManager, clear_cache, get_cache_manager
+from .base import BaseCache, CacheEntry, CacheKeyBuilder
 from .memory import MemoryCache, SmartMemoryCache
 
 __all__ = [
     "BaseCache",
+    "CacheEntry",
     "CacheKeyBuilder",
-    "CacheManager",
     "MemoryCache",
     "SmartMemoryCache",
-    "clear_cache",
-    "get_cache_manager",
 ]
