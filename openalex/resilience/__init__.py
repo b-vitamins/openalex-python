@@ -1,5 +1,11 @@
 from .async_queue import AsyncRequestQueue
-from .circuit_breaker import CircuitBreaker, CircuitState
+from .circuit_breaker import AsyncCircuitBreaker, CircuitBreaker, CircuitState
 from .request_queue import RequestQueue
 
-__all__ = ["AsyncRequestQueue", "CircuitBreaker", "CircuitState", "RequestQueue"]
+__all__ = [
+    "AsyncCircuitBreaker",
+    "AsyncRequestQueue",
+    "CircuitBreaker",
+    "CircuitState",
+    "RequestQueue",
+]

@@ -7,25 +7,15 @@ import random
 import time
 from dataclasses import dataclass
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Final, TypeVar
+from typing import TYPE_CHECKING, Any, Final, TypeVar, cast
 
 from structlog import get_logger
-from tenacity import (
-    RetryError,
-    Retrying,
-    retry_if_exception_type,
-    stop_after_attempt,
-    wait_exponential,
-    wait_exponential_jitter,
-)
 
 from ..exceptions import (
     APIError,
     NetworkError,
     RateLimitError,
-    RateLimitExceededError,
     RetryableError,
-    ServerError,
     TimeoutError,
 )
 
@@ -75,22 +65,6 @@ class RetryConfig:
     max_wait: float = 60.0
     multiplier: float = 2.0
     jitter: bool = True
-
-    def get_wait_strategy(self) -> Any:
-        """Return the appropriate tenacity wait strategy."""
-        return (
-            wait_exponential_jitter(
-                initial=self.initial_wait,
-                max=self.max_wait,
-                exp_base=self.multiplier,
-            )
-            if self.jitter
-            else wait_exponential(
-                multiplier=self.initial_wait,
-                max=self.max_wait,
-                exp_base=self.multiplier,
-            )
-        )
 
 
 def with_retry(
@@ -195,201 +169,164 @@ class RetryHandler:
         time.sleep(seconds)
 
 
-# ---------------------------------------------------------------------------
-# Additional retry utilities used for connection-level retries
-# ---------------------------------------------------------------------------
-
-
-def is_retryable_error_simple(exception: Exception) -> bool:
-    """Check if an error should trigger a retry based on class hierarchy."""
-    return isinstance(exception, RetryableError)
-
-
-def get_retry_after(exception: Exception) -> int | None:
-    """Extract retry-after value from exception."""
-    if isinstance(exception, RateLimitExceededError):
-        return exception.retry_after
-    return None
-
-
-def before_retry_log(retry_state: Any) -> None:
-    """Log before retry attempt."""
-    attempt = retry_state.attempt_number
-    exception = retry_state.outcome.exception() if retry_state.outcome else None
-    wait_time = retry_state.next_action.sleep if retry_state.next_action else 0
-
-    logger.warning(
-        "retrying_request",
-        attempt=attempt,
-        exception_type=type(exception).__name__ if exception else None,
-        exception_message=str(exception) if exception else "",
-        wait_seconds=wait_time,
-    )
-
-
-def create_retry_decorator(
-    max_attempts: int = 3,
-    initial_wait: float = 1.0,
-    max_wait: float = 60.0,
-    exponential_base: float = 2.0,
-) -> Callable[[Callable[..., T]], Callable[..., T]]:
-    """Create a retry decorator with configurable parameters."""
-
-    def decorator(func: Callable[..., T]) -> Callable[..., T]:
-        @wraps(func)
-        def wrapper(*args: Any, **kwargs: Any) -> T:
-            retry_instance = Retrying(
-                stop=stop_after_attempt(max_attempts),
-                wait=wait_exponential(
-                    multiplier=initial_wait,
-                    max=max_wait,
-                    exp_base=exponential_base,
-                ),
-                retry=retry_if_exception_type(RetryableError),
-                before=before_retry_log,
-                reraise=True,
-            )
-
-            try:
-                for attempt in retry_instance:
-                    with attempt:
-                        return func(*args, **kwargs)
-            except RetryError as e:
-                exc = e.last_attempt.exception()
-                if isinstance(exc, BaseException):
-                    raise exc from None
-                raise RuntimeError(RETRY_FAIL_MSG) from None
-
-            raise RuntimeError(RETRY_FAIL_MSG)
-
-        return wrapper
-
-    return decorator
-
-
-# Default retry decorator
-retry_on_error = create_retry_decorator()
-
-
-def retry_with_rate_limit(func: Callable[..., T]) -> Callable[..., T]:
-    """Retry decorator that respects rate limit headers."""
-
-    @wraps(func)
-    def wrapper(*args: Any, **kwargs: Any) -> T:
-        self = args[0]
-        max_attempts = 5
-        if hasattr(self, "config"):
-            config = self.config
-            if getattr(config, "retry_enabled", True):
-                # ``retry_max_attempts`` represents the number of retries,
-                # so add one for the initial attempt.
-                max_attempts = getattr(config, "retry_max_attempts", 5) + 1
-            else:
-                max_attempts = 1
-        attempt = 1
-        # attempt 1 is the initial request, 2+ are retries
-
-        while attempt <= max_attempts:
-            try:
-                return func(*args, **kwargs)
-            except RateLimitExceededError as e:
-                logger.debug("retry_attempt", attempt=attempt)
-                attempt += 1
-                if attempt > max_attempts:
-                    raise
-
-                wait_time = e.retry_after or (2**attempt)
-                logger.warning(
-                    "rate_limit_hit",
-                    retry_after=e.retry_after,
-                    wait_time=wait_time,
-                    attempt=attempt,
-                )
-                time.sleep(wait_time)
-            except ServerError as e:
-                logger.debug("retry_attempt", attempt=attempt)
-                attempt += 1
-                if attempt > max_attempts:
-                    raise
-
-                wait_time = min(60, 2**attempt)
-                logger.warning(
-                    "server_error",
-                    error=str(e),
-                    wait_time=wait_time,
-                    attempt=attempt,
-                )
-                time.sleep(wait_time)
-
-        raise RuntimeError(RETRY_FAIL_MSG)
-
-    return wrapper
-
-
-def exponential_backoff(
-    attempt: int,
-    *,
-    initial: float = 1.0,
-    multiplier: float = 2.0,
-    max_wait: float | None = None,
-) -> float:
-    """Calculate exponential backoff time."""
-    wait = initial * (multiplier ** (attempt - 1))
-    if max_wait is not None:
-        wait = min(wait, max_wait)
-    return wait
-
-
-def linear_backoff(
-    attempt: int,
-    *,
-    initial: float = 1.0,
-    increment: float = 1.0,
-    max_wait: float | None = None,
-) -> float:
-    """Calculate linear backoff time."""
-    wait = initial + increment * (attempt - 1)
-    if max_wait is not None:
-        wait = min(wait, max_wait)
-    return wait
-
-
-def constant_backoff(_attempt: int, *, wait: float = 1.0) -> float:
-    """Return a constant backoff regardless of ``attempt``."""
-    return wait
-
-
 class RetryContext:
-    """Simple context manager to manually control retries."""
+    """Context manager for retry operations."""
 
     def __init__(self, config: RetryConfig | None = None) -> None:
+        """Initialize retry context."""
         self.config = config or RetryConfig()
+        self.handler = RetryHandler(self.config)
         self.attempt = 0
-        self.last_error: BaseException | None = None
-        self.succeeded = False
 
     def __enter__(self) -> RetryContext:
+        """Enter retry context."""
+        self.attempt = 0
         return self
 
     def __exit__(
         self,
         exc_type: type[BaseException] | None,
-        exc: BaseException | None,
-        tb: Any,
-    ) -> None:
-        if exc is not None:
-            self.record_error(exc)
-            return
+        exc_val: BaseException | None,
+        exc_tb: Any,
+    ) -> bool:
+        """Handle exception in retry context."""
+        if exc_type is None:
+            return False
 
-        if not self.succeeded:
-            if self.attempt >= self.config.max_attempts and self.last_error:
-                raise self.last_error
-            self.succeeded = True
-        return
-
-    def should_retry(self) -> bool:
-        return self.attempt < self.config.max_attempts and not self.succeeded
-
-    def record_error(self, error: BaseException) -> None:
-        self.last_error = error
+        assert exc_val is not None
+        error = cast("Exception", exc_val)
         self.attempt += 1
+        if not self.handler.should_retry(error, self.attempt):
+            return False
+
+        wait_time = self.handler.get_wait_time(error, self.attempt)
+        self.handler.wait_sync(wait_time)
+        return True  # Suppress exception to retry
+
+    async def __aenter__(self) -> RetryContext:
+        """Enter async retry context."""
+        self.attempt = 0
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: Any,
+    ) -> bool:
+        """Handle exception in async retry context."""
+        if exc_type is None:
+            return False
+
+        assert exc_val is not None
+        error = cast("Exception", exc_val)
+        self.attempt += 1
+        if not self.handler.should_retry(error, self.attempt):
+            return False
+
+        wait_time = self.handler.get_wait_time(error, self.attempt)
+        await self.handler.wait(wait_time)
+        return True  # Suppress exception to retry
+
+
+def retry_on_error(
+    retries: int = 3,
+    delay: float = 1.0,
+    backoff: float = 2.0,
+    max_delay: float = 60.0,
+    *,
+    jitter: bool = True,
+) -> Callable[[Callable[..., T]], Callable[..., T]]:
+    """Simplified decorator for retry logic.
+
+    Args:
+        retries: Maximum number of retry attempts
+        delay: Initial delay between retries
+        backoff: Multiplier for delay after each retry
+        max_delay: Maximum delay between retries
+        jitter: Whether to add random jitter
+
+    Returns:
+        Decorated function with retry logic
+    """
+    config = RetryConfig(
+        max_attempts=retries,
+        initial_wait=delay,
+        multiplier=backoff,
+        max_wait=max_delay,
+        jitter=jitter,
+    )
+
+    def decorator(func: Callable[..., T]) -> Callable[..., T]:
+        return with_retry(func, config)
+
+    return decorator
+
+
+def retry_with_rate_limit(
+    func: Callable[..., T],
+    max_attempts: int = 3,
+    *,
+    respect_retry_after: bool = True,
+) -> Callable[..., T]:
+    """Decorator specifically for handling rate limits.
+
+    Args:
+        func: Function to wrap
+        max_attempts: Maximum retry attempts
+        respect_retry_after: Whether to respect Retry-After headers
+
+    Returns:
+        Wrapped function with rate limit handling
+    """
+    @wraps(func)
+    def wrapper(*args: Any, **kwargs: Any) -> T:
+        last_error: Exception | None = None
+
+        for attempt in range(1, max_attempts + 1):
+            try:
+                return func(*args, **kwargs)
+            except RateLimitError as e:
+                last_error = e
+                if attempt >= max_attempts:
+                    raise
+
+                wait_time = float(e.retry_after) if e.retry_after and respect_retry_after else 60.0
+                logger.warning(
+                    "rate_limit_hit",
+                    attempt=attempt,
+                    max_attempts=max_attempts,
+                    wait_time=wait_time,
+                )
+                time.sleep(wait_time)
+            except Exception as e:
+                if not is_retryable_error(e):
+                    raise
+                last_error = e
+                if attempt >= max_attempts:
+                    raise
+
+                wait_time = min(2 ** (attempt - 1), 60)
+                time.sleep(wait_time)
+
+        raise last_error or RuntimeError("Retry failed")
+
+    return wrapper
+
+
+# Backoff strategies for convenience
+def constant_backoff(delay: float = 1.0) -> RetryConfig:
+    """Create config for constant backoff."""
+    return RetryConfig(initial_wait=delay, multiplier=1.0, jitter=False)
+
+
+def linear_backoff(initial: float = 1.0, increment: float = 1.0) -> RetryConfig:
+    """Create config for linear backoff."""
+    return RetryConfig(initial_wait=initial, multiplier=1.0 + increment, jitter=False)
+
+
+def exponential_backoff(initial: float = 1.0, base: float = 2.0, max_wait: float = 60.0) -> RetryConfig:
+    """Create config for exponential backoff."""
+    return RetryConfig(initial_wait=initial, multiplier=base, max_wait=max_wait)
+
+
