@@ -44,6 +44,18 @@ for page in query.paginate(per_page=200):  # Max allowed
 print(f"Completed processing {processed} works")
 ```
 
+## Stream Results
+
+```python
+# Iterate over results one item at a time
+from openalex import Works
+
+query = Works().filter(publication_year=2023)
+
+for work in query.stream(per_page=200, max_results=500):
+    print(work.id)
+```
+
 ## Select Fields
 
 ```python

@@ -12,6 +12,7 @@ if TYPE_CHECKING:  # pragma: no cover - for type checking only
 
     from .config import OpenAlexConfig
     from .entities import AsyncBaseEntity, BaseEntity
+    from .streaming.stream import AsyncStreamingPaginator, StreamingPaginator
 from .models import BaseFilter, GroupByResult
 from .models.base import ListResult, Meta
 from .utils.pagination import MAX_PER_PAGE, AsyncPaginator, Paginator
@@ -310,6 +311,28 @@ class Query(Generic[T, F]):
             **params,
         )
 
+    def stream(
+        self,
+        per_page: int = 200,
+        max_results: int | None = None,
+        **kwargs: Any,
+    ) -> StreamingPaginator[T]:
+        """Return a memory-efficient streaming paginator."""
+        from .streaming import StreamingPaginator
+
+        params = {**self.params, **kwargs}
+        filter_param = params.pop("filter", None)
+
+        def fetch_page(page_params: dict[str, Any]) -> ListResult[T]:
+            return self.entity.list(filter=filter_param, **{**params, **page_params})
+
+        return StreamingPaginator(
+            fetch_func=fetch_page,
+            params=params,
+            per_page=per_page,
+            max_results=max_results,
+        )
+
     def all(
         self,
         per_page: int = 1,
@@ -445,6 +468,29 @@ class AsyncQuery(Generic[T, F]):
             return _build_list_result(data, self._model_class)
 
         return AsyncPaginator(
+            fetch_func=fetch_page,
+            params=params,
+            per_page=per_page,
+            max_results=max_results,
+        )
+
+    async def stream(
+        self,
+        per_page: int = 200,
+        max_results: int | None = None,
+        **kwargs: Any,
+    ) -> AsyncStreamingPaginator[T]:
+        """Return a memory-efficient async streaming paginator."""
+        from .streaming import AsyncStreamingPaginator
+
+        params = {**self._params, **kwargs}
+
+        async def fetch_page(page_params: dict[str, Any]) -> ListResult[T]:
+            all_params = {**params, **page_params}
+            data = await self._entity.get_list(params=all_params)
+            return _build_list_result(data, self._model_class)
+
+        return AsyncStreamingPaginator(
             fetch_func=fetch_page,
             params=params,
             per_page=per_page,
