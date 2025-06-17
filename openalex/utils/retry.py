@@ -18,6 +18,7 @@ from ..exceptions import (
     RetryableError,
     TimeoutError,
 )
+from ..metrics import get_collector
 
 RETRY_FAIL_MSG: Final = "Retry logic failed unexpectedly"
 
@@ -116,6 +117,11 @@ class RetryHandler:
             return False
 
         should_retry = is_retryable_error(error)
+
+        if should_retry and attempt < self.config.max_attempts:
+            collector = get_collector()
+            collector.record_retry()
+
         logger.debug(
             "retry_decision",
             attempt=attempt,
@@ -285,7 +291,7 @@ class RetryContext:
             if not self.should_retry():
                 return False
             wait_time = self.handler.get_wait_time(
-                cast(Exception, exc_val), self.attempt
+                cast("Exception", exc_val), self.attempt
             )
             self.handler.wait_sync(wait_time)
             return True
@@ -316,7 +322,7 @@ class RetryContext:
             if not self.should_retry():
                 return False
             wait_time = self.handler.get_wait_time(
-                cast(Exception, exc_val), self.attempt
+                cast("Exception", exc_val), self.attempt
             )
             await self.handler.wait(wait_time)
             return True
