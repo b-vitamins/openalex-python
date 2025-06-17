@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Circuit breaker state transition logging
 - Improved timeout errors with context
 - Streaming paginator handles empty cursors
+- Async circuit breaker for network resilience
+- Unified retry utilities with context manager support
 
 ### Changed
 - Fixed caching logic to handle list queries and thread safety
@@ -36,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation examples for institutions are now self-contained
 - Updated docs to use `model_dump()` instead of `dict()`
 - Removed GitHub workflow `tests.yml` to avoid duplicate test runs
+- Removed Tenacity dependency in favor of built-in retry logic
 
 ### Fixed
 - Retry logic now honors `max_retries` without exceeding the limit
