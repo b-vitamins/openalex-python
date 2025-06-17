@@ -166,13 +166,19 @@ class Query(Generic[T, F]):
         if operation == "or":
             return or_({**current, **new}) if isinstance(current, dict) else or_(new)
 
-        if not isinstance(current, dict):
-            return new
+        if not isinstance(current, dict) or not isinstance(new, dict):
+            return new if not isinstance(current, dict) else {**current, **new}
 
         result = current.copy()
         for key, value in new.items():
-            if key in result and isinstance(result[key], dict) and isinstance(value, dict):
-                result[key] = self._merge_filters(result[key], value)
+            if key in result:
+                existing = result[key]
+                if isinstance(existing, dict) and isinstance(value, dict):
+                    result[key] = self._merge_filters(existing, value)
+                elif isinstance(existing, tuple):
+                    result[key] = (*existing, value)
+                else:
+                    result[key] = (existing, value)
             else:
                 result[key] = value
         return result
