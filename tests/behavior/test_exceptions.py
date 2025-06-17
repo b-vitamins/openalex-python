@@ -249,32 +249,26 @@ class TestExceptionBehavior:
         """Retry-After header should be parsed correctly."""
         from openalex import Authors
         from openalex.exceptions import RateLimitError
-        from datetime import datetime
 
-        with patch("httpx.Client.request") as mock_request:
-            # Test numeric seconds
-            mock_request.return_value = Mock(
-                status_code=429,
-                json=Mock(return_value={"error": "Rate limited"}),
-                headers={"Retry-After": "120"},
-            )
-
-            authors = Authors()
-
-            with pytest.raises(RateLimitError) as exc_info:
-                authors.get("A123")
-
-            assert exc_info.value.retry_after == 120
-
-            # Test HTTP date format
-            future_date = "Wed, 21 Oct 2025 07:28:00 GMT"
-            mock_request.return_value.headers = {"Retry-After": future_date}
-
-            with pytest.raises(RateLimitError) as exc_info:
-                authors.get("A456")
-
-            # Should parse date and return seconds
-            assert exc_info.value.retry_after > 0
+        with patch("time.sleep") as mock_sleep:  # Mock sleep to avoid waiting
+            with patch("httpx.Client.request") as mock_request:
+                # Test numeric seconds
+                mock_request.return_value = Mock(
+                    status_code=429,
+                    json=Mock(return_value={"error": "Rate limited"}),
+                    headers={"Retry-After": "120"},
+                )
+                authors = Authors()
+                with pytest.raises(RateLimitError) as exc_info:
+                    authors.get("A123")
+                assert exc_info.value.retry_after == 120
+                # Test HTTP date format
+                future_date = "Wed, 21 Oct 2025 07:28:00 GMT"
+                mock_request.return_value.headers = {"Retry-After": future_date}
+                with pytest.raises(RateLimitError) as exc_info:
+                    authors.get("A456")
+                # Should parse date and return seconds
+                assert exc_info.value.retry_after > 0
 
     def test_error_context_preserved(self):
         """Error context should include request details."""
