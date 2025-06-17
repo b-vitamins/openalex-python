@@ -128,6 +128,12 @@ class OpenAlexConfig(BaseModel):
         le=4.0,
     )
 
+    circuit_breaker_enabled: bool = Field(default=True)
+    circuit_breaker_failure_threshold: int = Field(default=5)
+    circuit_breaker_recovery_timeout: int = Field(default=60)
+    request_queue_enabled: bool = Field(default=True)
+    request_queue_max_size: int = Field(default=1000)
+
     @field_validator("base_url")
     @classmethod
     def validate_base_url(cls, v: HttpUrl) -> HttpUrl:

@@ -21,6 +21,7 @@ A Python client for the [OpenAlex](https://openalex.org) API with:
 - **Fluent query API**
 - **Built-in caching**
 - **Connection pooling** and concurrent requests
+- **Resilience with circuit breaker and queued requests**
 - **Comprehensive error handling**
 - **Documentation and examples**
 

@@ -190,3 +190,21 @@ all_results = process_many_queries(queries)
 print(f"Successfully processed {len(all_results)} queries")
 ```
 
+## Resilience Patterns
+
+The client can optionally enable a circuit breaker to prevent cascading
+failures. When multiple consecutive requests fail, the circuit opens and
+temporarily blocks additional calls until a cooldown period has passed.
+
+```python
+from openalex import Works, OpenAlexConfig
+
+config = OpenAlexConfig(circuit_breaker_failure_threshold=3)
+works = Works(config=config)
+
+try:
+    works.get("W999")
+except Exception as exc:
+    print(f"Request failed: {exc}")
+```
+

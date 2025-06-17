@@ -23,6 +23,7 @@ from .constants import (
 from .exceptions import (
     APIError,
     NetworkError,
+    ServerError,
     TimeoutError,
     raise_for_status,
 )
@@ -38,6 +39,7 @@ if TYPE_CHECKING:  # pragma: no cover - for type checking only
     from httpx import Response
 
     from .connection import AsyncConnection
+    from .resilience import CircuitBreaker, RequestQueue
 
 T = TypeVar("T")
 
@@ -47,13 +49,45 @@ logger = get_logger(__name__)
 class APIConnection:
     """Handles direct API communication."""
 
-    __slots__ = ("_client", "config", "rate_limiter", "retry_config")
+    __slots__ = (
+        "_circuit_breaker",
+        "_client",
+        "_request_queue",
+        "config",
+        "rate_limiter",
+        "retry_config",
+    )
 
     def __init__(self, config: OpenAlexConfig | None = None) -> None:
         self.config = config or OpenAlexConfig()
         self.rate_limiter = RateLimiter(DEFAULT_RATE_LIMIT)
         self.retry_config = RetryConfig()
         self._client: httpx.Client | None = None
+
+        self._circuit_breaker: CircuitBreaker | None
+        self._request_queue: RequestQueue | None
+
+        if self.config.circuit_breaker_enabled:
+            from .resilience import CircuitBreaker
+
+            self._circuit_breaker = CircuitBreaker(
+                failure_threshold=self.config.circuit_breaker_failure_threshold,
+                recovery_timeout=self.config.circuit_breaker_recovery_timeout,
+                expected_exception=(ServerError, NetworkError),
+            )
+        else:
+            self._circuit_breaker = None
+
+        if self.config.request_queue_enabled:
+            from .resilience import RequestQueue
+
+            self._request_queue = RequestQueue(
+                max_size=self.config.request_queue_max_size
+            )
+            self._request_queue.set_rate_limiter(self.rate_limiter)
+            self._request_queue.start()
+        else:
+            self._request_queue = None
 
     @property
     def client(self) -> httpx.Client:
@@ -88,7 +122,6 @@ class APIConnection:
     def __repr__(self) -> str:  # pragma: no cover - debugging aid
         return f"<APIConnection base_url={self.base_url}>"
 
-    @retry_with_rate_limit
     def request(
         self,
         method: str,
@@ -96,7 +129,43 @@ class APIConnection:
         params: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> Response:
-        """Make HTTP request with retry logic."""
+        if self._request_queue is not None:
+            return cast(
+                httpx.Response,
+                self._request_queue.enqueue(
+                    self._protected_request,
+                    method,
+                    url,
+                    params,
+                    **kwargs,
+                ),
+            )
+        return self._protected_request(method, url, params, **kwargs)
+
+    def _protected_request(
+        self,
+        method: str,
+        url: str,
+        params: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> Response:
+        if self._circuit_breaker is not None:
+            return cast(
+                httpx.Response,
+                self._circuit_breaker.call(
+                    self._do_request, method, url, params, **kwargs
+                ),
+            )
+        return self._do_request(method, url, params, **kwargs)
+
+    @retry_with_rate_limit
+    def _do_request(
+        self,
+        method: str,
+        url: str,
+        params: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> Response:
         params = self._default_params(params)
         kwargs["headers"] = self._default_headers(kwargs.get("headers"))
 
@@ -168,6 +237,8 @@ class APIConnection:
     def close(self) -> None:
         if self._client:
             self._client.close()
+        if self._request_queue is not None:
+            self._request_queue.stop()
 
     def __enter__(self) -> APIConnection:
         return self
