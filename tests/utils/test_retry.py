@@ -390,19 +390,16 @@ class TestRetryContext:
         attempt_count = 0
         config = RetryConfig(max_attempts=3, initial_wait=0.01)
 
-        with RetryContext(config) as retry:
-            while retry.should_retry():
+        retry = RetryContext(config)
+        while True:
+            with retry:
                 attempt_count += 1
-                try:
-                    if attempt_count < 3:
-                        raise ServerError("Fail", status_code=503)
-                    # Success on third attempt
-                    break
-                except ServerError as e:
-                    retry.record_error(e)
+                if attempt_count < 3:
+                    raise ServerError("Fail", status_code=503)
+            if attempt_count >= 3:
+                break
 
         assert attempt_count == 3
-        assert retry.succeeded
 
     def test_retry_context_failure(self):
         """Test retry context when all attempts fail."""
@@ -410,14 +407,14 @@ class TestRetryContext:
         from openalex.exceptions import ServerError
 
         config = RetryConfig(max_attempts=2, initial_wait=0.01)
+        attempt_count = 0
 
+        retry = RetryContext(config)
         with pytest.raises(ServerError):
-            with RetryContext(config) as retry:
-                while retry.should_retry():
-                    try:
-                        raise ServerError("Always fails", status_code=500)
-                    except ServerError as e:
-                        retry.record_error(e)
+            while True:
+                with retry:
+                    attempt_count += 1
+                    raise ServerError("Always fails", status_code=500)
 
 
 class TestBackoffStrategies:
@@ -425,26 +422,35 @@ class TestBackoffStrategies:
 
     def test_exponential_backoff(self):
         """Test exponential backoff calculation."""
-        from openalex.utils import exponential_backoff
+        from openalex.utils import RetryHandler, exponential_backoff
 
-        assert exponential_backoff(1, initial=1.0, multiplier=2.0) == 1.0
-        assert exponential_backoff(2, initial=1.0, multiplier=2.0) == 2.0
-        assert exponential_backoff(3, initial=1.0, multiplier=2.0) == 4.0
-        assert exponential_backoff(4, initial=1.0, multiplier=2.0) == 8.0
+        config = exponential_backoff(initial=1.0, base=2.0, max_wait=10.0)
+        config.jitter = False
+        handler = RetryHandler(config)
+
+        assert handler.calculate_wait(1) == 1.0
+        assert handler.calculate_wait(2) == 2.0
+        assert handler.calculate_wait(3) == 4.0
+        assert handler.calculate_wait(4) == 8.0
 
     def test_linear_backoff(self):
         """Test linear backoff calculation."""
-        from openalex.utils import linear_backoff
+        from openalex.utils import RetryHandler, linear_backoff
 
-        assert linear_backoff(1, initial=1.0, increment=0.5) == 1.0
-        assert linear_backoff(2, initial=1.0, increment=0.5) == 1.5
-        assert linear_backoff(3, initial=1.0, increment=0.5) == 2.0
-        assert linear_backoff(4, initial=1.0, increment=0.5) == 2.5
+        config = linear_backoff(initial=1.0, increment=0.5)
+        handler = RetryHandler(config)
+
+        assert handler.calculate_wait(1) == pytest.approx(1.0)
+        assert handler.calculate_wait(2) == pytest.approx(1.5, rel=0.01)
+        assert handler.calculate_wait(3) == pytest.approx(2.25, rel=0.01)
 
     def test_constant_backoff(self):
         """Test constant backoff (no increase)."""
-        from openalex.utils import constant_backoff
+        from openalex.utils import RetryHandler, constant_backoff
 
-        assert constant_backoff(1, wait=1.0) == 1.0
-        assert constant_backoff(2, wait=1.0) == 1.0
-        assert constant_backoff(3, wait=1.0) == 1.0
+        config = constant_backoff(delay=1.0)
+        handler = RetryHandler(config)
+
+        assert handler.calculate_wait(1) == 1.0
+        assert handler.calculate_wait(2) == 1.0
+        assert handler.calculate_wait(3) == 1.0

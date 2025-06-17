@@ -217,7 +217,6 @@ class RetryContext:
 
     def __enter__(self) -> RetryContext:
         """Enter retry context."""
-        self.attempt = 0
         return self
 
     def __exit__(
@@ -240,7 +239,6 @@ class RetryContext:
 
     async def __aenter__(self) -> RetryContext:
         """Enter async retry context."""
-        self.attempt = 0
         return self
 
     async def __aexit__(
