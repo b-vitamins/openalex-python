@@ -164,7 +164,11 @@ class Query(Generic[T, F]):
     ) -> Any:
         """Merge filter dictionaries with proper operator handling."""
         if operation == "or":
-            return or_({**current, **new}) if isinstance(current, dict) else or_(new)
+            return (
+                or_({**current, **new})
+                if isinstance(current, dict)
+                else or_(new)
+            )
 
         if not isinstance(current, dict) or not isinstance(new, dict):
             return new if not isinstance(current, dict) else {**current, **new}
@@ -224,7 +228,9 @@ class Query(Generic[T, F]):
         else:
             new_keys = list(keys)
 
-        group_param: str | list[str] = new_keys[0] if len(new_keys) == 1 else new_keys
+        group_param: str | list[str] = (
+            new_keys[0] if len(new_keys) == 1 else new_keys
+        )
 
         return self._clone(group_by=group_param)
 
@@ -317,7 +323,9 @@ class Query(Generic[T, F]):
         filter_param = params.pop("filter", None)
 
         def fetch_page(page_params: dict[str, Any]) -> ListResult[T]:
-            return self.entity.list(filter=filter_param, **{**params, **page_params})
+            return self.entity.list(
+                filter=filter_param, **{**params, **page_params}
+            )
 
         return StreamingPaginator(
             fetch_func=fetch_page,

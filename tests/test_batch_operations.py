@@ -13,7 +13,9 @@ class TestBatchOperations:
         ids = [f"W{i}" for i in range(2000000000, 2000000050)]
 
         def side_effect(entity_id, params=None):
-            return Work(id=f"https://openalex.org/{entity_id}", display_name="x")
+            return Work(
+                id=f"https://openalex.org/{entity_id}", display_name="x"
+            )
 
         with patch.object(Works, "_get_single_entity", side_effect=side_effect):
             results = works.get_many(ids)
@@ -26,11 +28,14 @@ class TestBatchOperations:
         ids = ["W123", "invalid-id", "W456"]
 
         def side_effect(entity_id, params=None):
-            return Work(id=f"https://openalex.org/{entity_id}", display_name=entity_id)
+            return Work(
+                id=f"https://openalex.org/{entity_id}", display_name=entity_id
+            )
 
-        with patch.object(Works, "_get_single_entity", side_effect=side_effect), patch(
-            "openalex.entities.logger.warning"
-        ) as mock_warn:
+        with (
+            patch.object(Works, "_get_single_entity", side_effect=side_effect),
+            patch("openalex.entities.logger.warning") as mock_warn,
+        ):
             results = works.get_many(ids)
 
         assert len(results) == 2
@@ -46,7 +51,9 @@ class TestBatchOperations:
         def side_effect(entity_id, params=None):
             call_times.append(time.time())
             time.sleep(0.1)
-            return Work(id=f"https://openalex.org/{entity_id}", display_name="x")
+            return Work(
+                id=f"https://openalex.org/{entity_id}", display_name="x"
+            )
 
         with patch.object(Works, "_get_single_entity", side_effect=side_effect):
             start = time.time()
@@ -63,9 +70,13 @@ class TestBatchOperations:
         ids = [f"W{i}" for i in range(2000000000, 2000000010)]
 
         async def async_side_effect(entity_id):
-            return Work(id=f"https://openalex.org/{entity_id}", display_name="x")
+            return Work(
+                id=f"https://openalex.org/{entity_id}", display_name="x"
+            )
 
-        with patch.object(AsyncWorks, "get", new=AsyncMock(side_effect=async_side_effect)):
+        with patch.object(
+            AsyncWorks, "get", new=AsyncMock(side_effect=async_side_effect)
+        ):
             results = await works.get_many(ids)
 
         assert len(results) == len(ids)

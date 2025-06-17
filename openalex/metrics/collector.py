@@ -26,7 +26,9 @@ class MetricsCollector:
         self._cache_hits = 0
         self._cache_misses = 0
 
-    def record_request(self, endpoint: str, duration: float, *, success: bool = True) -> None:
+    def record_request(
+        self, endpoint: str, duration: float, *, success: bool = True
+    ) -> None:
         with self._lock:
             self._requests[endpoint] += 1
             self._response_times.append(duration)
@@ -57,7 +59,9 @@ class MetricsCollector:
                 cache_misses=self._cache_misses,
                 requests_by_endpoint=dict(self._requests),
                 average_response_time=avg_time,
-                error_rate=(total_errors / total_requests) if total_requests > 0 else 0,
+                error_rate=(total_errors / total_requests)
+                if total_requests > 0
+                else 0,
                 cache_hit_rate=(
                     self._cache_hits / (self._cache_hits + self._cache_misses)
                     if (self._cache_hits + self._cache_misses) > 0

@@ -20,13 +20,18 @@ class TestAuthorsDocs(BaseDocTest):
         docs_path = self.get_docs_path()
 
         for example in find_examples(*docs_path.glob("*.md")):
-            if ("python" not in example.prefix.lower() or self.should_skip(example)):
+            if "python" not in example.prefix.lower() or self.should_skip(
+                example
+            ):
                 continue
             code = example.source
 
             if "orcid" in code.lower():
                 import re
-                bad_orcid_pattern = r'orcid["\']?\s*[:=]\s*["\']?\d{15,16}["\']?'
+
+                bad_orcid_pattern = (
+                    r'orcid["\']?\s*[:=]\s*["\']?\d{15,16}["\']?'
+                )
                 if re.search(bad_orcid_pattern, code, re.IGNORECASE):
                     pytest.fail(
                         f"ORCID should use XXXX-XXXX-XXXX-XXXX format at {example.path.name}:{example.start_line}\n"
@@ -39,12 +44,15 @@ class TestAuthorsDocs(BaseDocTest):
         docs_path = self.get_docs_path()
 
         for example in find_examples(*docs_path.glob("*.md")):
-            if ("python" not in example.prefix.lower() or self.should_skip(example)):
+            if "python" not in example.prefix.lower() or self.should_skip(
+                example
+            ):
                 continue
             code = example.source
 
             if "Authors()[" in code or 'author": {"id":' in code:
                 import re
+
                 bad_id_pattern = r'Authors\(\)\[["\'](?!A)[^"\']*["\']'
                 if re.search(bad_id_pattern, code):
                     pytest.fail(

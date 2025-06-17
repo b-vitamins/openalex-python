@@ -25,4 +25,3 @@ class Middleware:
     def __init__(self) -> None:
         self.request_interceptors: list[RequestInterceptor] = []
         self.response_interceptors: list[ResponseInterceptor] = []
-

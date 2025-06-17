@@ -19,7 +19,9 @@ class TestGettingStartedDoc(BaseDocTest):
     """Test getting-started.md."""
 
     def get_docs_path(self) -> Path:
-        return Path(__file__).parent.parent.parent / "docs" / "getting-started.md"
+        return (
+            Path(__file__).parent.parent.parent / "docs" / "getting-started.md"
+        )
 
     @pytest.mark.docs
     def test_progressive_complexity(self):
@@ -63,7 +65,9 @@ class TestApiReferenceDoc(BaseDocTest):
             "Concepts",
         ]
 
-        missing = [e for e in entities if f"from openalex import {e}" not in content]
+        missing = [
+            e for e in entities if f"from openalex import {e}" not in content
+        ]
 
         if missing:
             pytest.fail(
@@ -77,7 +81,11 @@ class TestPerformanceGuideDoc(BaseDocTest):
     """Test performance-guide.md."""
 
     def get_docs_path(self) -> Path:
-        return Path(__file__).parent.parent.parent / "docs" / "performance-guide.md"
+        return (
+            Path(__file__).parent.parent.parent
+            / "docs"
+            / "performance-guide.md"
+        )
 
     @pytest.mark.docs
     def test_demonstrates_efficient_patterns(self):
@@ -113,7 +121,6 @@ class TestPerformanceGuideDoc(BaseDocTest):
 
         if issues:
             pytest.fail(
-                "Performance guide missing key examples:\n" + "\n".join(f"  - {issue}" for issue in issues)
+                "Performance guide missing key examples:\n"
+                + "\n".join(f"  - {issue}" for issue in issues)
             )
-
-

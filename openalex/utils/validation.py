@@ -2,8 +2,12 @@ import re
 from urllib.parse import urlparse
 
 VALID_ENTITY_ID_PATTERN = re.compile(r"^[A-Z]\d{1,15}$")
-VALID_OPENALEX_URL_PATTERN = re.compile(r"^https://openalex\.org/[A-Z]\d{1,15}$")
-VALID_KEYWORD_URL_PATTERN = re.compile(r"^https://openalex\.org/keywords/[A-Za-z0-9-]+$")
+VALID_OPENALEX_URL_PATTERN = re.compile(
+    r"^https://openalex\.org/[A-Z]\d{1,15}$"
+)
+VALID_KEYWORD_URL_PATTERN = re.compile(
+    r"^https://openalex\.org/keywords/[A-Za-z0-9-]+$"
+)
 
 
 def validate_entity_id(entity_id: str, entity_type: str) -> str:

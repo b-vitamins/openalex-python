@@ -20,7 +20,10 @@ class TestCacheWarming:
                 Mock(
                     status_code=200,
                     json=Mock(
-                        return_value={"id": f"https://openalex.org/{i}", "title": str(i)}
+                        return_value={
+                            "id": f"https://openalex.org/{i}",
+                            "title": str(i),
+                        }
                     ),
                 )
                 for i in ids
@@ -40,7 +43,12 @@ class TestCacheWarming:
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
-                json=Mock(return_value={"id": f"https://openalex.org/{id}", "title": "x"}),
+                json=Mock(
+                    return_value={
+                        "id": f"https://openalex.org/{id}",
+                        "title": "x",
+                    }
+                ),
             )
             works.warm_cache([id])
 
@@ -62,7 +70,12 @@ class TestCacheWarming:
             mock_request.side_effect = [
                 Mock(
                     status_code=200,
-                    json=Mock(return_value={"id": f"https://openalex.org/{i}", "title": "x"}),
+                    json=Mock(
+                        return_value={
+                            "id": f"https://openalex.org/{i}",
+                            "title": "x",
+                        }
+                    ),
                 )
                 for i in ids
             ]

@@ -6,7 +6,6 @@ from pytest_examples import CodeExample, find_examples
 from abc import ABC, abstractmethod
 
 
-
 class BaseDocTest(ABC):
     """Base class for documentation tests."""
 
@@ -44,7 +43,9 @@ def parametrize_examples(test_class):
     for path in md_paths:
         examples.extend(find_examples(path))
 
-    orig_method = test_class.__dict__.get("test_examples", BaseDocTest.test_examples)
+    orig_method = test_class.__dict__.get(
+        "test_examples", BaseDocTest.test_examples
+    )
 
     def wrapped(self, example):
         return orig_method(self, example)
@@ -56,9 +57,7 @@ def parametrize_examples(test_class):
             ids=lambda e: f"{e.path.name}::line-{e.start_line}",
         )(wrapped)
     else:
-        wrapped = pytest.mark.skip(
-            f"No examples found in {docs_path}"
-        )(wrapped)
+        wrapped = pytest.mark.skip(f"No examples found in {docs_path}")(wrapped)
 
     test_class.test_examples = wrapped
 

@@ -30,7 +30,8 @@ class CircuitBreaker:
         self,
         failure_threshold: int = 5,
         recovery_timeout: int = 60,
-        expected_exception: type[Exception] | tuple[type[Exception], ...] = Exception,
+        expected_exception: type[Exception]
+        | tuple[type[Exception], ...] = Exception,
     ) -> None:
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout

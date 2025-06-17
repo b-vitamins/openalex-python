@@ -40,11 +40,16 @@ class StreamingPaginator(Iterator[T]):
         if self._exhausted:
             raise StopIteration
 
-        if self._max_results is not None and self._total_yielded >= self._max_results:
+        if (
+            self._max_results is not None
+            and self._total_yielded >= self._max_results
+        ):
             self._exhausted = True
             raise StopIteration
 
-        if self._current_page is None or self._current_index >= len(self._current_page.results):
+        if self._current_page is None or self._current_index >= len(
+            self._current_page.results
+        ):
             self._fetch_next_page()
 
         if self._current_page is None or not self._current_page.results:
@@ -113,11 +118,16 @@ class AsyncStreamingPaginator(AsyncIterator[T]):
         if self._exhausted:
             raise StopAsyncIteration
 
-        if self._max_results is not None and self._total_yielded >= self._max_results:
+        if (
+            self._max_results is not None
+            and self._total_yielded >= self._max_results
+        ):
             self._exhausted = True
             raise StopAsyncIteration
 
-        if self._current_page is None or self._current_index >= len(self._current_page.results):
+        if self._current_page is None or self._current_index >= len(
+            self._current_page.results
+        ):
             await self._fetch_next_page()
 
         if self._current_page is None or not self._current_page.results:

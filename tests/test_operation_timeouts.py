@@ -18,8 +18,7 @@ class TestOperationTimeouts:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value={"id": "W123"})
+                status_code=200, json=Mock(return_value={"id": "W123"})
             )
 
             works.get("W123")
@@ -40,8 +39,7 @@ class TestOperationTimeouts:
 
         with patch("httpx.Client.request") as mock_request:
             mock_request.return_value = Mock(
-                status_code=200,
-                json=Mock(return_value={"results": []})
+                status_code=200, json=Mock(return_value={"results": []})
             )
 
             works.search("machine learning").get()
