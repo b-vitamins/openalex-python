@@ -296,7 +296,7 @@ def retry_on_error(
 
 def retry_with_rate_limit(
     func: Callable[..., T],
-    max_attempts: int = 3,
+    max_attempts: int | None = None,
     *,
     respect_retry_after: bool = True,
 ) -> Callable[..., T]:
@@ -313,21 +313,28 @@ def retry_with_rate_limit(
 
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> T:
+        self_obj = args[0] if args else None
+        if max_attempts is None and hasattr(self_obj, "config"):
+            cfg = self_obj.config
+            attempts = cfg.retry_max_attempts if cfg.retry_enabled else 1
+        else:
+            attempts = max_attempts or 1
+
         last_error: Exception | None = None
 
-        for attempt in range(1, max_attempts + 1):
+        for attempt in range(1, attempts + 1):
             try:
                 return func(*args, **kwargs)
             except RateLimitError as e:
                 last_error = e
-                if attempt >= max_attempts:
+                if attempt >= attempts:
                     raise
 
                 wait_time = float(e.retry_after) if e.retry_after and respect_retry_after else 60.0
                 logger.warning(
                     "rate_limit_hit",
                     attempt=attempt,
-                    max_attempts=max_attempts,
+                    max_attempts=attempts,
                     wait_time=wait_time,
                 )
                 time.sleep(wait_time)
@@ -335,7 +342,7 @@ def retry_with_rate_limit(
                 if not is_retryable_error(e):
                     raise
                 last_error = e
-                if attempt >= max_attempts:
+                if attempt >= attempts:
                     raise
 
                 wait_time = min(2 ** (attempt - 1), 60)

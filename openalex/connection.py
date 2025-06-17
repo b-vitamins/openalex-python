@@ -221,7 +221,7 @@ class AsyncConnection:
         def _raise(err: Exception) -> None:
             raise err
 
-        while attempt < max_attempts:
+        while attempt <= max_attempts:
             try:
                 assert self._client is not None
                 response = await self._client.request(

@@ -152,6 +152,7 @@ markers = [
     "docs: mark test as documentation test (deselect with '-m \"not docs\"')",
     "slow: mark test as slow",
     "requires_api: mark test as requiring real API access",
+    "asyncio: mark test that uses pytest-asyncio",
 ]
 
 addopts = [
