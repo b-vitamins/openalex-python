@@ -52,7 +52,9 @@ def validate_date_param(value: str) -> str:
     return value
 
 
-def validate_numeric_param(value: int | float, min_val: int = 0, max_val: int = 1_000_000) -> int | float:
+def validate_numeric_param(
+    value: int | float, min_val: int = 0, max_val: int = 1_000_000
+) -> int | float:
     """Ensure numeric parameters are within reasonable ranges."""
     if not isinstance(value, int | float):
         message = f"Numeric value required, got {type(value).__name__}"
@@ -130,8 +132,16 @@ def flatten_filter_dict(
                 gte_val = value.get("gte")
                 lte_val = value.get("lte")
                 if gte_val is not None or lte_val is not None:
-                    start = serialize_filter_value(gte_val) if gte_val is not None else ""
-                    end = serialize_filter_value(lte_val) if lte_val is not None else ""
+                    start = (
+                        serialize_filter_value(gte_val)
+                        if gte_val is not None
+                        else ""
+                    )
+                    end = (
+                        serialize_filter_value(lte_val)
+                        if lte_val is not None
+                        else ""
+                    )
                     parts.append(f"{full_key}:{start}-{end}")
                     continue
 
@@ -151,9 +161,19 @@ def flatten_filter_dict(
                     lte_val = item.value
                 else:
                     range_candidates = False
-            if range_candidates and (gte_val is not None or lte_val is not None):
-                start = serialize_filter_value(gte_val) if gte_val is not None else ""
-                end = serialize_filter_value(lte_val) if lte_val is not None else ""
+            if range_candidates and (
+                gte_val is not None or lte_val is not None
+            ):
+                start = (
+                    serialize_filter_value(gte_val)
+                    if gte_val is not None
+                    else ""
+                )
+                end = (
+                    serialize_filter_value(lte_val)
+                    if lte_val is not None
+                    else ""
+                )
                 parts.append(f"{full_key}:{start}-{end}")
                 continue
 

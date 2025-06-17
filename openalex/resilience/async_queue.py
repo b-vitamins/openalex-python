@@ -16,7 +16,9 @@ class AsyncRequestQueue:
     """Async version of request queue."""
 
     def __init__(self, max_size: int = 1000) -> None:
-        self._queue: asyncio.Queue[AsyncQueuedRequest] = asyncio.Queue(maxsize=max_size)
+        self._queue: asyncio.Queue[AsyncQueuedRequest] = asyncio.Queue(
+            maxsize=max_size
+        )
         self._worker_task: asyncio.Task[None] | None = None
         self._rate_limiter = None
         self._stop_event = asyncio.Event()
@@ -48,9 +50,7 @@ class AsyncRequestQueue:
         )
 
         try:
-            await asyncio.wait_for(
-                self._queue.put(request), timeout=5.0
-            )
+            await asyncio.wait_for(self._queue.put(request), timeout=5.0)
         except TimeoutError:
             msg = "Request queue is full"
             raise RuntimeError(msg) from None
@@ -60,9 +60,7 @@ class AsyncRequestQueue:
     async def _process_queue(self) -> None:
         while not self._stop_event.is_set():
             try:
-                request = await asyncio.wait_for(
-                    self._queue.get(), timeout=1.0
-                )
+                request = await asyncio.wait_for(self._queue.get(), timeout=1.0)
             except TimeoutError:
                 continue
 

@@ -47,7 +47,9 @@ class TestMiddleware:
             request=httpx.Request("GET", "https://api.openalex.org/works"),
         )
 
-        with patch("httpx.Client.send", return_value=mock_response) as mock_send:
+        with patch(
+            "httpx.Client.send", return_value=mock_response
+        ) as mock_send:
             works.get("W1")
             args, kwargs = mock_send.call_args
             sent_request = args[0]
@@ -77,7 +79,10 @@ class TestMiddleware:
         order: list[str] = []
         config = OpenAlexConfig()
         config.middleware.request_interceptors.extend(
-            [OrderInterceptor(order, "first"), OrderInterceptor(order, "second")]
+            [
+                OrderInterceptor(order, "first"),
+                OrderInterceptor(order, "second"),
+            ]
         )
         works = Works(config=config)
 

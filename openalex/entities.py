@@ -222,15 +222,20 @@ class BaseEntity(Generic[T, F]):
         validated_ids: list[str] = []
         for entity_id in ids:
             try:
-                valid_id = validate_entity_id(entity_id, self.endpoint.rstrip("s"))
+                valid_id = validate_entity_id(
+                    entity_id, self.endpoint.rstrip("s")
+                )
                 validated_ids.append(valid_id)
             except ValueError as e:
                 logger.warning("Skipping invalid ID %s: %s", entity_id, e)
 
         results: list[T] = []
-        with concurrent.futures.ThreadPoolExecutor(max_workers=max_concurrent) as executor:
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=max_concurrent
+        ) as executor:
             future_to_id = {
-                executor.submit(self._get_single_entity, vid): vid for vid in validated_ids
+                executor.submit(self._get_single_entity, vid): vid
+                for vid in validated_ids
             }
 
             for future in concurrent.futures.as_completed(future_to_id):
@@ -584,7 +589,9 @@ class AsyncBaseEntity(AsyncBaseAPI[T], Generic[T, F]):
         validated_ids: list[str] = []
         for entity_id in ids:
             try:
-                valid_id = validate_entity_id(entity_id, self.endpoint.rstrip("s"))
+                valid_id = validate_entity_id(
+                    entity_id, self.endpoint.rstrip("s")
+                )
                 validated_ids.append(valid_id)
             except ValueError as e:
                 logger.warning("Skipping invalid ID %s: %s", entity_id, e)

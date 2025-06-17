@@ -136,7 +136,11 @@ class APIConnection:
             elif method == "GET" and url.count("/") > 3:
                 operation = "get"
             elif params and (
-                (isinstance(params.get("filter"), dict) and "search" in params["filter"]) or params.get("search")
+                (
+                    isinstance(params.get("filter"), dict)
+                    and "search" in params["filter"]
+                )
+                or params.get("search")
             ):
                 operation = "search"
             else:
@@ -225,11 +229,15 @@ class APIConnection:
                     timeout=httpx.Timeout(timeout_value),
                     **kwargs,
                 )
-                for req_interceptor in self.config.middleware.request_interceptors:
+                for (
+                    req_interceptor
+                ) in self.config.middleware.request_interceptors:
                     request = req_interceptor.process_request(request)
                 response = self.client.send(request)
                 raise_for_status(response)
-                for resp_interceptor in self.config.middleware.response_interceptors:
+                for (
+                    resp_interceptor
+                ) in self.config.middleware.response_interceptors:
                     response = resp_interceptor.process_response(response)
             else:
                 response = self.client.request(
@@ -246,7 +254,9 @@ class APIConnection:
                 metrics.record_request(endpoint, duration, success=False)
             msg = f"Request timed out after {timeout_value}s"
             raise TimeoutError(
-                msg, operation=cast(str | None, operation), timeout_value=timeout_value
+                msg,
+                operation=cast(str | None, operation),
+                timeout_value=timeout_value,
             ) from e
         except httpx.NetworkError as e:
             if metrics is not None:
@@ -263,7 +273,9 @@ class APIConnection:
         else:
             if metrics is not None:
                 duration = time.time() - start_time
-                metrics.record_request(endpoint, duration, success=response.is_success)
+                metrics.record_request(
+                    endpoint, duration, success=response.is_success
+                )
             return response
 
     def close(self) -> None:
@@ -282,7 +294,13 @@ class APIConnection:
 class AsyncAPIConnection:
     """Async version of API connection."""
 
-    __slots__ = ("_client", "_request_queue", "config", "rate_limiter", "retry_config")
+    __slots__ = (
+        "_client",
+        "_request_queue",
+        "config",
+        "rate_limiter",
+        "retry_config",
+    )
 
     def __init__(self, config: OpenAlexConfig | None = None) -> None:
         self.config = config or OpenAlexConfig()
@@ -392,7 +410,9 @@ class AsyncAPIConnection:
                         timeout=self.config.timeout,
                         **kwargs,
                     )
-                    for req_interceptor in self.config.middleware.request_interceptors:
+                    for (
+                        req_interceptor
+                    ) in self.config.middleware.request_interceptors:
                         request = req_interceptor.process_request(request)
                     response = await self._client.send(request)
                 else:
@@ -409,7 +429,9 @@ class AsyncAPIConnection:
             except httpx.RequestError as e:  # pragma: no cover - network
                 raise NetworkError(str(e)) from e
             else:
-                for resp_interceptor in self.config.middleware.response_interceptors:
+                for (
+                    resp_interceptor
+                ) in self.config.middleware.response_interceptors:
                     response = resp_interceptor.process_response(response)
                 return response
 

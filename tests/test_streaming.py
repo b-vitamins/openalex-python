@@ -40,7 +40,10 @@ class TestStreaming:
         for i in range(5):
             page = {
                 "results": [
-                    {"id": f"https://openalex.org/W{i}", "display_name": f"W{i}"}
+                    {
+                        "id": f"https://openalex.org/W{i}",
+                        "display_name": f"W{i}",
+                    }
                 ],
                 "meta": {
                     "count": 5,
@@ -49,7 +52,9 @@ class TestStreaming:
                     "next_cursor": "c" if i < 4 else None,
                 },
             }
-            responses.append(Mock(status_code=200, json=Mock(return_value=page)))
+            responses.append(
+                Mock(status_code=200, json=Mock(return_value=page))
+            )
 
         with patch("httpx.Client.request", side_effect=responses):
             tracemalloc.start()
@@ -108,7 +113,9 @@ class TestStreaming:
                 ),
             )
 
-        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+        with patch(
+            "httpx.AsyncClient.request", new_callable=AsyncMock
+        ) as mock_request:
             mock_request.side_effect = async_response
             query = works.filter(publication_year=2023)
             paginator = await query.stream(per_page=1, max_results=2)

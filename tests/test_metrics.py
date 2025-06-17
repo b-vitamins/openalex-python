@@ -8,19 +8,25 @@ from openalex import OpenAlexConfig, Works
 class TestMetrics:
     def test_metrics_collection_when_enabled(self):
         config = OpenAlexConfig(
-            collect_metrics=True, retry_enabled=False, email="enabled@example.com"
+            collect_metrics=True,
+            retry_enabled=False,
+            email="enabled@example.com",
         )
         works = Works(config=config)
 
         resp1 = httpx.Response(
             200,
             json={"id": "https://openalex.org/W2000000001", "title": "x"},
-            request=httpx.Request("GET", "https://api.openalex.org/works/W2000000001"),
+            request=httpx.Request(
+                "GET", "https://api.openalex.org/works/W2000000001"
+            ),
         )
         resp2 = httpx.Response(
             200,
             json={"id": "https://openalex.org/W2000000002", "title": "y"},
-            request=httpx.Request("GET", "https://api.openalex.org/works/W2000000002"),
+            request=httpx.Request(
+                "GET", "https://api.openalex.org/works/W2000000002"
+            ),
         )
 
         with patch("httpx.Client.request", side_effect=[resp1, resp2]):
@@ -35,14 +41,18 @@ class TestMetrics:
 
     def test_no_metrics_when_disabled(self):
         config = OpenAlexConfig(
-            collect_metrics=False, retry_enabled=False, email="disabled@example.com"
+            collect_metrics=False,
+            retry_enabled=False,
+            email="disabled@example.com",
         )
         works = Works(config=config)
 
         resp = httpx.Response(
             200,
             json={"id": "https://openalex.org/W2000000001"},
-            request=httpx.Request("GET", "https://api.openalex.org/works/W2000000001"),
+            request=httpx.Request(
+                "GET", "https://api.openalex.org/works/W2000000001"
+            ),
         )
 
         with patch("httpx.Client.request", return_value=resp):
@@ -63,7 +73,9 @@ class TestMetrics:
         resp = httpx.Response(
             200,
             json={"id": "https://openalex.org/W2000000001"},
-            request=httpx.Request("GET", "https://api.openalex.org/works/W2000000001"),
+            request=httpx.Request(
+                "GET", "https://api.openalex.org/works/W2000000001"
+            ),
         )
 
         with patch("httpx.Client.request", return_value=resp) as mock_request:

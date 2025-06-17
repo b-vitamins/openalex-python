@@ -15,7 +15,9 @@ logger = get_logger(__name__)
 
 
 class AsyncBaseEntity(_AsyncBaseEntity[T, F]):
-    async def get_many(self, ids: list[str], max_concurrent: int = 10) -> list[T]:
+    async def get_many(
+        self, ids: list[str], max_concurrent: int = 10
+    ) -> list[T]:
         """Fetch multiple entities efficiently using concurrent requests."""
         import asyncio
 

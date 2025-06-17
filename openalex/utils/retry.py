@@ -284,7 +284,9 @@ class RetryContext:
             self.record_error(exc_val)
             if not self.should_retry():
                 return False
-            wait_time = self.handler.get_wait_time(cast(Exception, exc_val), self.attempt)
+            wait_time = self.handler.get_wait_time(
+                cast(Exception, exc_val), self.attempt
+            )
             self.handler.wait_sync(wait_time)
             return True
 
@@ -313,7 +315,9 @@ class RetryContext:
             self.record_error(exc_val)
             if not self.should_retry():
                 return False
-            wait_time = self.handler.get_wait_time(cast(Exception, exc_val), self.attempt)
+            wait_time = self.handler.get_wait_time(
+                cast(Exception, exc_val), self.attempt
+            )
             await self.handler.wait(wait_time)
             return True
 
@@ -334,6 +338,7 @@ class RetryContext:
 
 
 # Convenience decorators
+
 
 def retry_on_error(
     retries: int = 3,
@@ -376,7 +381,9 @@ def retry_with_rate_limit(
             cfg = getattr(self_obj, "config", None)
             if cfg is not None:
                 if getattr(cfg, "retry_enabled", True):
-                    attempts = getattr(cfg, "retry_max_attempts", attempts - 1) + 1
+                    attempts = (
+                        getattr(cfg, "retry_max_attempts", attempts - 1) + 1
+                    )
                 else:
                     attempts = 1
 
@@ -389,7 +396,9 @@ def retry_with_rate_limit(
                     raise
 
                 wait_time = (
-                    float(e.retry_after) if e.retry_after and respect_retry_after else 60.0
+                    float(e.retry_after)
+                    if e.retry_after and respect_retry_after
+                    else 60.0
                 )
                 logger.warning(
                     "rate_limit_hit",
@@ -415,6 +424,7 @@ def retry_with_rate_limit(
 
 # Backoff strategies
 
+
 def constant_backoff(delay: float = 1.0) -> RetryConfig:
     """Create config for constant backoff."""
     return RetryConfig(initial_wait=delay, multiplier=1.0, jitter=False)
@@ -422,9 +432,13 @@ def constant_backoff(delay: float = 1.0) -> RetryConfig:
 
 def linear_backoff(initial: float = 1.0, increment: float = 1.0) -> RetryConfig:
     """Create config for linear backoff."""
-    return RetryConfig(initial_wait=initial, multiplier=1.0 + increment, jitter=False)
+    return RetryConfig(
+        initial_wait=initial, multiplier=1.0 + increment, jitter=False
+    )
 
 
-def exponential_backoff(initial: float = 1.0, base: float = 2.0, max_wait: float = 60.0) -> RetryConfig:
+def exponential_backoff(
+    initial: float = 1.0, base: float = 2.0, max_wait: float = 60.0
+) -> RetryConfig:
     """Create config for exponential backoff."""
     return RetryConfig(initial_wait=initial, multiplier=base, max_wait=max_wait)

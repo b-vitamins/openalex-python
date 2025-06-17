@@ -30,7 +30,8 @@ class AsyncCircuitBreaker:
         self,
         failure_threshold: int = 5,
         recovery_timeout: int = 60,
-        expected_exception: type[Exception] | tuple[type[Exception], ...] = Exception,
+        expected_exception: type[Exception]
+        | tuple[type[Exception], ...] = Exception,
     ) -> None:
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout
@@ -53,7 +54,9 @@ class AsyncCircuitBreaker:
                 self._state = CircuitState.HALF_OPEN
             return self._state
 
-    async def call(self, func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
+    async def call(
+        self, func: Callable[..., Any], *args: Any, **kwargs: Any
+    ) -> Any:
         """Execute ``func`` protected by the circuit breaker."""
         if await self.state() == CircuitState.OPEN:
             msg = "Circuit breaker is open - API is unavailable"

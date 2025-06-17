@@ -51,7 +51,9 @@ class RequestQueue:
         if self._worker_thread is not None:
             self._worker_thread.join(timeout=5)
 
-    def enqueue(self, func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
+    def enqueue(
+        self, func: Callable[..., Any], *args: Any, **kwargs: Any
+    ) -> Any:
         """Add a request to the queue and wait for the result."""
         request = QueuedRequest(
             func=func,

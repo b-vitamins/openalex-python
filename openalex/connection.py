@@ -78,13 +78,19 @@ class Connection:
             elif method == "GET" and url.count("/") > 3:
                 operation = "get"
             elif params and (
-                (isinstance(params.get("filter"), dict) and "search" in params["filter"]) or params.get("search")
+                (
+                    isinstance(params.get("filter"), dict)
+                    and "search" in params["filter"]
+                )
+                or params.get("search")
             ):
                 operation = "search"
             else:
                 operation = "list"
 
-        timeout_val = self._config.operation_timeouts.get(operation, self._config.timeout)
+        timeout_val = self._config.operation_timeouts.get(
+            operation, self._config.timeout
+        )
         if "timeout" not in kwargs:
             kwargs["timeout"] = httpx.Timeout(timeout_val)
 
@@ -106,11 +112,15 @@ class Connection:
                 request = self._client.build_request(
                     method, url, params=params, **kwargs
                 )
-                for req_interceptor in self._config.middleware.request_interceptors:
+                for (
+                    req_interceptor
+                ) in self._config.middleware.request_interceptors:
                     request = req_interceptor.process_request(request)
                 send_kwargs: dict[str, Any] = {}
                 response = self._client.send(request, **send_kwargs)
-                for resp_interceptor in self._config.middleware.response_interceptors:
+                for (
+                    resp_interceptor
+                ) in self._config.middleware.response_interceptors:
                     response = resp_interceptor.process_response(response)
             else:
                 response = self._client.request(
@@ -121,7 +131,9 @@ class Connection:
                 duration = time.time() - start_time
                 metrics.record_request(endpoint, duration, success=False)
             msg = f"Request timed out after {timeout_val}s"
-            raise TimeoutError(msg, operation=operation, timeout_value=timeout_val) from e
+            raise TimeoutError(
+                msg, operation=operation, timeout_value=timeout_val
+            ) from e
         except httpx.NetworkError as e:
             if metrics is not None:
                 duration = time.time() - start_time
@@ -137,7 +149,9 @@ class Connection:
         else:
             if metrics is not None:
                 duration = time.time() - start_time
-                metrics.record_request(endpoint, duration, success=response.is_success)
+                metrics.record_request(
+                    endpoint, duration, success=response.is_success
+                )
             return response
 
     def _build_headers(self) -> dict[str, str]:

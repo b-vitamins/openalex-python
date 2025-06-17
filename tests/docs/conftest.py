@@ -16,7 +16,9 @@ def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "docs: mark test as documentation test")
 
 
-def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
+def pytest_collection_modifyitems(
+    config: pytest.Config, items: list[pytest.Item]
+) -> None:
     """Skip docs tests unless --docs flag is used."""
     if config.getoption("--docs"):
         return

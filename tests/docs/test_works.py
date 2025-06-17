@@ -20,7 +20,9 @@ class TestWorksDocs(BaseDocTest):
         docs_path = self.get_docs_path()
 
         for example in find_examples(*docs_path.glob("*.md")):
-            if "python" not in example.prefix.lower() or self.should_skip(example):
+            if "python" not in example.prefix.lower() or self.should_skip(
+                example
+            ):
                 continue
 
             code = example.source
@@ -37,11 +39,9 @@ class TestWorksDocs(BaseDocTest):
                 )
 
             import re
+
             pattern = r"Works\(\)\s*\.get\(\)"
-            if (
-                re.search(pattern, code)
-                and "# BAD" not in code
-            ):
+            if re.search(pattern, code) and "# BAD" not in code:
                 pytest.fail(
                     f"Unfiltered Works query at {example.path.name}:{example.start_line}\n"
                     "Avoid calling Works().get() without filters"
@@ -53,20 +53,24 @@ class TestWorksDocs(BaseDocTest):
         docs_path = self.get_docs_path()
 
         for example in find_examples(*docs_path.glob("*.md")):
-            if "python" not in example.prefix.lower() or self.should_skip(example):
+            if "python" not in example.prefix.lower() or self.should_skip(
+                example
+            ):
                 continue
 
             code = example.source
 
             if ".paginate(" in code and "Works()" in code:
-                has_limit = any([
-                    "break" in code,
-                    "[:1000]" in code,
-                    "max_results" in code,
-                    "limit" in code.lower(),
-                    "first 100" in code.lower(),
-                    "# Stop after" in code,
-                ])
+                has_limit = any(
+                    [
+                        "break" in code,
+                        "[:1000]" in code,
+                        "max_results" in code,
+                        "limit" in code.lower(),
+                        "first 100" in code.lower(),
+                        "# Stop after" in code,
+                    ]
+                )
 
                 if not has_limit:
                     pytest.fail(

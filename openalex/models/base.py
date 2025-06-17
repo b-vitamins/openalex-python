@@ -188,7 +188,9 @@ class GroupByResult(OpenAlexBase):
     count: int
 
     def __repr__(self) -> str:
-        name = f'"{self.key_display_name}"' if self.key_display_name else self.key
+        name = (
+            f'"{self.key_display_name}"' if self.key_display_name else self.key
+        )
         return f"<GroupByResult({name}: {self.count:,})>"
 
 
