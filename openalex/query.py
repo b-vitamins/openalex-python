@@ -537,3 +537,16 @@ class AsyncQuery(Generic[T, F]):
             raise TypeError(msg)
 
         return results.results[0] if results.results else None
+
+    def __repr__(self) -> str:
+        """String representation of async query."""
+        parts = []
+        for k in ("filter", "search", "sort", "select"):
+            if k in self._params:
+                if k == "search":
+                    parts.append(f"{k}={self._params[k]!r}")
+                else:
+                    parts.append(f"{k}={self._params[k]}")
+
+        params_str = ", ".join(parts) if parts else "no filters"
+        return f"<AsyncQuery({self._entity.__class__.__name__}) {params_str}>"

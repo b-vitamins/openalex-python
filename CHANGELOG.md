@@ -21,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Batch fetching via ``BaseEntity.get_many`` and ``AsyncBaseEntity.get_many``
 - Cache warming utility to pre-populate frequently accessed items
 - Streaming paginator for memory-efficient iteration
+- Operation-specific timeouts for API requests
+- Async request queue with rate limiting
+- Circuit breaker state transition logging
+- Improved timeout errors with context
+- Streaming paginator handles empty cursors
 
 ### Changed
 - Fixed caching logic to handle list queries and thread safety

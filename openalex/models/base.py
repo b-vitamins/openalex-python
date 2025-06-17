@@ -180,6 +180,15 @@ class GroupByResult(OpenAlexBase):
     key_display_name: str | None = None
     count: int
 
+    def __repr__(self) -> str:
+        """Return readable representation."""
+        return (
+            f"<GroupByResult("
+            f"key='{self.key}', "
+            f"count={self.count}"
+            f")>"
+        )
+
 
 T = TypeVar("T")
 

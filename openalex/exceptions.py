@@ -138,14 +138,19 @@ class NetworkError(OpenAlexError):
 class TimeoutError(NetworkError):
     """Request timeout error."""
 
-    __slots__ = ()
+    __slots__ = ("operation", "timeout_value")
 
     def __init__(
         self,
         message: str = "Request timed out",
+        *,
+        operation: str | None = None,
+        timeout_value: float | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(message, **kwargs)
+        self.operation = operation
+        self.timeout_value = timeout_value
 
 
 class RetryableError(OpenAlexError):

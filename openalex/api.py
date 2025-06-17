@@ -11,6 +11,8 @@ from structlog import get_logger
 
 __all__ = ["APIConnection", "AsyncAPIConnection", "get_connection"]
 
+from httpx import Response
+
 from .cache.manager import get_cache_manager
 from .config import OpenAlexConfig
 from .constants import (
@@ -36,8 +38,6 @@ from .utils.retry import (
 )
 
 if TYPE_CHECKING:  # pragma: no cover - for type checking only
-    from httpx import Response
-
     from .connection import AsyncConnection
     from .resilience import CircuitBreaker, RequestQueue
 
@@ -127,36 +127,61 @@ class APIConnection:
         method: str,
         url: str,
         params: dict[str, Any] | None = None,
+        operation: str | None = None,
         **kwargs: Any,
     ) -> Response:
+        if operation is None:
+            if "/autocomplete/" in url:
+                operation = "autocomplete"
+            elif method == "GET" and url.count("/") > 3:
+                operation = "get"
+            elif params and (
+                (isinstance(params.get("filter"), dict) and "search" in params["filter"]) or params.get("search")
+            ):
+                operation = "search"
+            else:
+                operation = "list"
+
         if self._request_queue is not None:
             return cast(
-                httpx.Response,
+                Response,
                 self._request_queue.enqueue(
                     self._protected_request,
                     method,
                     url,
                     params,
+                    operation=operation,
                     **kwargs,
                 ),
             )
-        return self._protected_request(method, url, params, **kwargs)
+        return self._protected_request(
+            method, url, params, operation=operation, **kwargs
+        )
 
     def _protected_request(
         self,
         method: str,
         url: str,
         params: dict[str, Any] | None = None,
+        *,
+        operation: str | None = None,
         **kwargs: Any,
     ) -> Response:
         if self._circuit_breaker is not None:
             return cast(
                 httpx.Response,
                 self._circuit_breaker.call(
-                    self._do_request, method, url, params, **kwargs
+                    self._do_request,
+                    method,
+                    url,
+                    params,
+                    operation=operation,
+                    **kwargs,
                 ),
             )
-        return self._do_request(method, url, params, **kwargs)
+        return self._do_request(
+            method, url, params, operation=operation, **kwargs
+        )
 
     @retry_with_rate_limit
     def _do_request(
@@ -166,6 +191,7 @@ class APIConnection:
         params: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> Response:
+        operation = kwargs.pop("operation", None)
         params = self._default_params(params)
         kwargs["headers"] = self._default_headers(kwargs.get("headers"))
 
@@ -183,6 +209,10 @@ class APIConnection:
             start_time = time.time()
             endpoint = url.split("/")[-2] if "/" in url else "unknown"
 
+        timeout_value = self.config.operation_timeouts.get(
+            cast(str, operation), self.config.timeout
+        )
+
         try:
             if (
                 self.config.middleware.request_interceptors
@@ -192,7 +222,7 @@ class APIConnection:
                     method=method,
                     url=url,
                     params=params,
-                    timeout=self.config.timeout,
+                    timeout=httpx.Timeout(timeout_value),
                     **kwargs,
                 )
                 for req_interceptor in self.config.middleware.request_interceptors:
@@ -206,7 +236,7 @@ class APIConnection:
                     method=method,
                     url=url,
                     params=params,
-                    timeout=self.config.timeout,
+                    timeout=httpx.Timeout(timeout_value),
                     **kwargs,
                 )
                 raise_for_status(response)
@@ -214,8 +244,10 @@ class APIConnection:
             if metrics is not None:
                 duration = time.time() - start_time
                 metrics.record_request(endpoint, duration, success=False)
-            msg = f"Request timed out after {self.config.timeout}s"
-            raise TimeoutError(msg) from e
+            msg = f"Request timed out after {timeout_value}s"
+            raise TimeoutError(
+                msg, operation=cast(str | None, operation), timeout_value=timeout_value
+            ) from e
         except httpx.NetworkError as e:
             if metrics is not None:
                 duration = time.time() - start_time
@@ -250,13 +282,22 @@ class APIConnection:
 class AsyncAPIConnection:
     """Async version of API connection."""
 
-    __slots__ = ("_client", "config", "rate_limiter", "retry_config")
+    __slots__ = ("_client", "_request_queue", "config", "rate_limiter", "retry_config")
 
     def __init__(self, config: OpenAlexConfig | None = None) -> None:
         self.config = config or OpenAlexConfig()
         self.rate_limiter = AsyncRateLimiter(DEFAULT_RATE_LIMIT)
         self.retry_config = RetryConfig()
         self._client: httpx.AsyncClient | None = None
+        if self.config.request_queue_enabled:
+            from .resilience import AsyncRequestQueue
+
+            self._request_queue: AsyncRequestQueue | None = AsyncRequestQueue(
+                max_size=self.config.request_queue_max_size
+            )
+            self._request_queue.set_rate_limiter(self.rate_limiter)
+        else:
+            self._request_queue = None
 
     @property
     def base_url(self) -> str:
@@ -285,16 +326,22 @@ class AsyncAPIConnection:
             timeout=httpx.Timeout(self.config.timeout),
             follow_redirects=True,
         )
+        if self._request_queue is not None:
+            self._request_queue.start()
         return self
 
     async def __aexit__(self, *args: Any) -> None:
         if self._client:
             await self._client.aclose()
+        if self._request_queue is not None:
+            await self._request_queue.stop()
 
     async def close(self) -> None:
         """Close the underlying HTTP client."""
         if self._client:
             await self._client.aclose()
+        if self._request_queue is not None:
+            await self._request_queue.stop()
 
     async def request(
         self,
@@ -304,6 +351,22 @@ class AsyncAPIConnection:
         **kwargs: Any,
     ) -> Response:
         """Make async HTTP request with retry and rate limiting."""
+        if self._request_queue is not None:
+            return cast(
+                Response,
+                await self._request_queue.enqueue(
+                    self._protected_request, method, url, params, **kwargs
+                ),
+            )
+        return await self._protected_request(method, url, params, **kwargs)
+
+    async def _protected_request(
+        self,
+        method: str,
+        url: str,
+        params: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> Response:
         if not self._client:
             msg = "Use async with statement"
             raise RuntimeError(msg)

@@ -3,10 +3,14 @@ from __future__ import annotations
 from collections.abc import AsyncIterator, Awaitable, Callable, Iterator
 from typing import TYPE_CHECKING, Any, TypeVar
 
+from structlog import get_logger
+
 if TYPE_CHECKING:  # pragma: no cover
     from ..models import ListResult
 
 T = TypeVar("T")
+
+logger = get_logger(__name__)
 
 
 class StreamingPaginator(Iterator[T]):
@@ -57,15 +61,29 @@ class StreamingPaginator(Iterator[T]):
             self._exhausted = True
             return
 
+        if self._cursor == "":
+            self._exhausted = True
+            return
+
         params = {
             **self._params,
             "per_page": self._per_page,
             "cursor": self._cursor,
         }
 
-        self._current_page = self._fetch_func(params)
+        try:
+            self._current_page = self._fetch_func(params)
+        except Exception as e:
+            logger.exception(
+                "streaming_fetch_error", error=str(e), cursor=self._cursor
+            )
+            self._exhausted = True
+            raise
         self._current_index = 0
         self._cursor = self._current_page.meta.next_cursor
+
+        if self._cursor == "":
+            self._cursor = None
 
 
 class AsyncStreamingPaginator(AsyncIterator[T]):
@@ -116,12 +134,26 @@ class AsyncStreamingPaginator(AsyncIterator[T]):
             self._exhausted = True
             return
 
+        if self._cursor == "":
+            self._exhausted = True
+            return
+
         params = {
             **self._params,
             "per_page": self._per_page,
             "cursor": self._cursor,
         }
 
-        self._current_page = await self._fetch_func(params)
+        try:
+            self._current_page = await self._fetch_func(params)
+        except Exception as e:
+            logger.exception(
+                "streaming_fetch_error", error=str(e), cursor=self._cursor
+            )
+            self._exhausted = True
+            raise
         self._current_index = 0
         self._cursor = self._current_page.meta.next_cursor
+
+        if self._cursor == "":
+            self._cursor = None
