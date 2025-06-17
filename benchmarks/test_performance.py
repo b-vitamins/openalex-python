@@ -1,11 +1,14 @@
 """Performance benchmarks for OpenAlex client."""
 
-import pytest
 import time
+from typing import Any
 from unittest.mock import Mock, patch
 
-from openalex import Works, config
+import pytest
+
+from openalex import Works
 from openalex.cache.memory import MemoryCache
+from openalex.models import Work
 from tests.fixtures.api_responses import APIResponseFixtures
 
 
@@ -17,7 +20,7 @@ class TestPerformanceBenchmarks:
         """Mock API with consistent fast response times."""
         fixtures = APIResponseFixtures()
 
-        def mock_get(*args, **kwargs):
+        def mock_get(*_args: Any, **_kwargs: Any) -> Mock:
             time.sleep(0.05)
             return Mock(
                 json=lambda: fixtures.work_response(),
@@ -31,7 +34,9 @@ class TestPerformanceBenchmarks:
     @pytest.mark.benchmark
     def test_single_request_performance(self, mock_fast_api, benchmark):
         """Benchmark single API request."""
-        with patch("openalex.client.http_client.get_client", return_value=mock_fast_api):
+        with patch(
+            "openalex.client.http_client.get_client", return_value=mock_fast_api
+        ):
             result = benchmark(lambda: Works()["W2755950973"])
             assert result.id is not None
 
@@ -40,15 +45,20 @@ class TestPerformanceBenchmarks:
         """Benchmark cache hit vs miss performance."""
         cache = MemoryCache()
 
-        with patch("openalex.client.http_client.get_client", return_value=mock_fast_api):
-            with patch("openalex.config.get_cache", return_value=cache):
-                Works()["W2755950973"]
+        with (
+            patch(
+                "openalex.client.http_client.get_client",
+                return_value=mock_fast_api,
+            ),
+            patch("openalex.config.get_cache", return_value=cache),
+        ):
+            Works()["W2755950973"]
 
-                def cache_hit():
-                    return Works()["W2755950973"]
+            def cache_hit() -> Work:
+                return Works()["W2755950973"]
 
-                result = benchmark(cache_hit)
-                assert result.id is not None
+            result = benchmark(cache_hit)
+            assert result.id is not None
 
     @pytest.mark.benchmark
     def test_filter_building_performance(self, benchmark):
@@ -68,8 +78,9 @@ class TestPerformanceBenchmarks:
             )
 
         query = benchmark(build_complex_filter)
-        assert query._search == "machine learning"
-        assert len(query._filters) >= 5
+        filters = query.params.get("filter", {})
+        assert query.params.get("search") == "machine learning"
+        assert len(filters) >= 5
 
     @pytest.mark.benchmark
     def test_response_parsing_performance(self, benchmark):

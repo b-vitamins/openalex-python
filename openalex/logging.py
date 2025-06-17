@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import structlog
-from structlog.types import EventDict, Processor
+
+if TYPE_CHECKING:  # pragma: no cover - typing-only imports
+    from structlog.types import EventDict, Processor
 
 __all__ = [
     "RequestLogger",
@@ -53,7 +55,7 @@ class PrivacyProcessor:
         self, _logger: Any, _method_name: str, event_dict: EventDict
     ) -> EventDict:
         """Process log event to remove sensitive data."""
-        return cast(EventDict, sanitize_sensitive_data(event_dict))
+        return cast("EventDict", sanitize_sensitive_data(event_dict))
 
 
 class RequestLogger:
