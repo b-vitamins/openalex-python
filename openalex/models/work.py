@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from datetime import date, datetime
 from enum import Enum
 from typing import TYPE_CHECKING, Any
@@ -90,12 +91,14 @@ class OpenAccess(BaseModel):
 class DehydratedAuthor(DehydratedEntity):
     """Minimal author representation."""
 
-    id: str | None = None  # type: ignore[assignment]
+    id: str | None = None
     orcid: str | None = None
 
 
 class DehydratedConcept(DehydratedEntity):
     """Minimal concept representation with optional details."""
+
+    id: str | None = None
 
     level: int | None = None
     score: float | None = None
@@ -104,6 +107,8 @@ class DehydratedConcept(DehydratedEntity):
 
 class DehydratedInstitution(DehydratedEntity):
     """Minimal institution representation with optional details."""
+
+    id: str | None = None
 
     ror: str | None = None
     country_code: str | None = None
@@ -114,6 +119,8 @@ class DehydratedInstitution(DehydratedEntity):
 class DehydratedSource(DehydratedEntity):
     """Minimal source representation."""
 
+    id: str | None = None
+
     type: str | None = None
     issn_l: str | None = None
     is_oa: bool | None = None
@@ -122,6 +129,8 @@ class DehydratedSource(DehydratedEntity):
 
 class DehydratedTopic(DehydratedEntity):
     """Minimal topic representation."""
+
+    id: str | None = None
 
     score: float | None = None
     subfield: TopicHierarchy | None = None
@@ -219,6 +228,34 @@ class WorkIds(OpenAlexBase):
     pmcid: str | None = None
     mag: str | None = None
 
+    @field_validator("doi")
+    @classmethod
+    def normalize_doi(cls, v: str | None) -> str | None:
+        """Normalize DOI to lowercase."""
+        return v.lower() if v else None
+
+    @field_validator("pmid")
+    @classmethod
+    def validate_pmid(cls, v: str | None) -> str | None:
+        """Validate PMID."""
+        if v is None:
+            return None
+        if not v.isdigit():
+            msg = f"Invalid PMID format: {v}"
+            raise ValueError(msg)
+        return v
+
+    @field_validator("pmcid")
+    @classmethod
+    def validate_pmcid(cls, v: str | None) -> str | None:
+        """Validate PMCID."""
+        if v is None:
+            return None
+        if not re.match(r"^PMC\d+$", v):
+            msg = f"Invalid PMC ID format: {v}"
+            raise ValueError(msg)
+        return v
+
 
 class Authorship(OpenAlexBase):
     """Authorship information."""
@@ -264,6 +301,10 @@ class Work(OpenAlexEntity):
     locations_count: int | None = None
     locations: list[Location] = Field(default_factory=list)
     biblio: Biblio | None = None
+    volume: str | None = None
+    issue: str | None = None
+    first_page: str | None = None
+    last_page: str | None = None
     apc_list: APC | None = None
     apc_paid: APC | None = None
     grants: list[Grant] = Field(default_factory=list)
@@ -284,6 +325,95 @@ class Work(OpenAlexEntity):
     ngrams_url: str | None = None
     relevance_score: float | None = None
 
+    @field_validator("doi")
+    @classmethod
+    def validate_doi(cls, v: str | None) -> str | None:
+        """Validate DOI format."""
+        if v is None:
+            return None
+
+        if v.startswith("https://doi.org/"):
+            v = v[16:]
+        elif v.startswith("http://doi.org/"):
+            v = v[15:]
+
+        doi_pattern = r"^10\.\d{4,9}/[-._;()/:\w]+$"
+        if not re.match(doi_pattern, v):
+            msg = f"Invalid DOI format: {v}"
+            raise ValueError(msg)
+
+        return v
+
+    @field_validator("publication_date", "created_date", mode="before")
+    @classmethod
+    def validate_dates(cls, v: str | date | None) -> date | None:
+        """Validate and parse date fields."""
+        if v is None:
+            return None
+        if isinstance(v, date):
+            return v
+        try:
+            return datetime.fromisoformat(v.replace("Z", "+00:00")).date()
+        except ValueError:
+            for fmt in ["%Y-%m-%d", "%Y/%m/%d", "%d/%m/%Y"]:
+                try:
+                    return datetime.strptime(v, fmt).date()
+                except ValueError:
+                    continue
+            msg = f"Unable to parse date: {v}"
+            raise ValueError(msg) from None
+
+    @field_validator("language")
+    @classmethod
+    def validate_language(cls, v: str | None) -> str | None:
+        """Validate language code is ISO 639-1."""
+        if v is None:
+            return None
+        if not re.match(r"^[a-z]{2}$", v.lower()):
+            msg = f"Invalid language code: {v}. Expected ISO 639-1 format (e.g., 'en', 'es')"
+            raise ValueError(msg)
+        return v.lower()
+
+    @field_validator("volume", "issue", "first_page", "last_page")
+    @classmethod
+    def validate_bibliographic_info(cls, v: str | None) -> str | None:
+        """Validate bibliographic information fields."""
+        if v is None:
+            return None
+        v = v.strip()
+        if v == "":
+            return None
+        return v
+
+    @model_validator(mode="after")
+    def validate_page_range(self) -> Work:
+        """Validate that page range is logical."""
+        if self.first_page and self.last_page:
+            try:
+                first = int(re.sub(r"[^\d]", "", self.first_page))
+                last = int(re.sub(r"[^\d]", "", self.last_page))
+            except ValueError:
+                pass
+            else:
+                if first > last:
+                    msg = f"Invalid page range: {self.first_page}-{self.last_page}"
+                    raise ValueError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def validate_citation_count(self) -> Work:
+        """Ensure citation counts are non-negative."""
+        if self.cited_by_count is not None and self.cited_by_count < 0:
+            msg = "cited_by_count cannot be negative"
+            raise ValueError(msg)
+        if (
+            self.referenced_works_count is not None
+            and self.referenced_works_count < 0
+        ):
+            msg = "referenced_works_count cannot be negative"
+            raise ValueError(msg)
+        return self
+
     @property
     def abstract(self) -> str | None:
         """Get abstract as plaintext."""
@@ -300,6 +430,28 @@ class Work(OpenAlexEntity):
             self.doi = self.ids.doi
         if self.ids is None and self.doi is not None:
             self.ids = WorkIds(doi=self.doi, openalex=self.id)
+        if self.biblio is None and any(
+            [self.volume, self.issue, self.first_page, self.last_page]
+        ):
+            object.__setattr__(
+                self,
+                "biblio",
+                Biblio(
+                    volume=self.volume,
+                    issue=self.issue,
+                    first_page=self.first_page,
+                    last_page=self.last_page,
+                ),
+            )
+        elif self.biblio is not None:
+            if self.volume is None:
+                object.__setattr__(self, "volume", self.biblio.volume)
+            if self.issue is None:
+                object.__setattr__(self, "issue", self.biblio.issue)
+            if self.first_page is None:
+                object.__setattr__(self, "first_page", self.biblio.first_page)
+            if self.last_page is None:
+                object.__setattr__(self, "last_page", self.biblio.last_page)
         return self
 
     def citations_in_year(self, year: int) -> int:
