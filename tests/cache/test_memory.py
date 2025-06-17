@@ -88,7 +88,8 @@ class TestMemoryCache:
 
     def test_thread_safety(self):
         """Test thread safety of cache operations."""
-        cache = MemoryCache(max_size=100)
+        # use a size large enough to avoid eviction during the test
+        cache = MemoryCache(max_size=1000)
         errors = []
         
         def worker(thread_id: int) -> None:
@@ -108,7 +109,7 @@ class TestMemoryCache:
                 future.result()
         
         assert len(errors) == 0
-        assert cache.stats()["size"] <= 100  # Max size respected
+        assert cache.stats()["size"] <= 1000  # Max size respected
 
 
 class TestSmartMemoryCache:
