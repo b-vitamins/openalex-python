@@ -10,6 +10,7 @@ class TestMetrics:
         config = OpenAlexConfig(
             collect_metrics=True,
             retry_enabled=False,
+            cache_enabled=False,
             email="enabled@example.com",
         )
         works = Works(config=config)
@@ -62,6 +63,11 @@ class TestMetrics:
         assert report is None
 
     def test_cache_metrics_tracked(self):
+        # Clear any existing cache managers to ensure test isolation
+        from openalex.cache.manager import _cache_managers
+
+        _cache_managers.clear()
+
         config = OpenAlexConfig(
             collect_metrics=True,
             cache_enabled=True,

@@ -56,7 +56,7 @@ class TestMiddleware:
             assert sent_request.headers.get("X-Test") == "42"
 
     def test_response_interceptor_transforms_data(self):
-        config = OpenAlexConfig()
+        config = OpenAlexConfig(cache_enabled=False)
         config.middleware.response_interceptors.append(TitleUpperInterceptor())
         works = Works(config=config)
 

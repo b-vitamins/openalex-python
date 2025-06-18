@@ -13,6 +13,7 @@ class TestResilience:
         config = OpenAlexConfig(
             circuit_breaker_enabled=True,
             circuit_breaker_failure_threshold=3,
+            cache_enabled=False,
         )
 
         with patch("httpx.Client.request") as mock_request:
