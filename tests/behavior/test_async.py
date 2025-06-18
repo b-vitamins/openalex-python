@@ -553,8 +553,8 @@ class TestAsyncBehavior:
             AsyncPublishers, AsyncFunders, AsyncKeywords, AsyncConcepts
         ]
 
-        for EntityClass in entity_classes:
-            entity = EntityClass(email="test@example.com")
+        for entity_class in entity_classes:
+            entity = entity_class(email="test@example.com")
             assert entity._config.email == "test@example.com"
             assert hasattr(entity, "endpoint")
             assert entity.endpoint != ""
@@ -580,7 +580,7 @@ class TestAsyncBehavior:
             await asyncio.sleep(0.1)
             concurrent_calls -= 1
             if entity_id == "W_FAIL":
-                raise Exception("Simulated failure")
+                raise RuntimeError("Simulated failure")
             return type("Work", (), {
                 "id": f"https://openalex.org/{entity_id}",
                 "display_name": f"Work {entity_id}"

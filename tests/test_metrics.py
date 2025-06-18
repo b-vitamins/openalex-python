@@ -95,7 +95,7 @@ class TestMetrics(IsolatedTestCase):
         assert report.cache_hit_rate == 0.5
 
 
-class TestMetrics:
+class TestPerformanceMetrics:
     def test_performance_metrics_tracking(self):
         """Test complete performance metrics collection."""
         from openalex.metrics.performance import MetricsCollector, get_collector

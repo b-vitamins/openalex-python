@@ -8,7 +8,7 @@ from unittest.mock import Mock, patch, AsyncMock
 import asyncio
 
 
-class TestPaginationBehavior:
+class TestPaginationAdvanced:
     """Test pagination functionality from user perspective."""
 
     def test_default_pagination_parameters(self):
