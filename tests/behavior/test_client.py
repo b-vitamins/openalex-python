@@ -73,7 +73,7 @@ class TestOpenAlexClient:
         config = OpenAlexConfig(max_retries=1)
         client = OpenAlexClient(config)
 
-        with patch("httpx.Client.request") as mock_request:
+        with patch("httpx.Client.request") as mock_request, patch("time.sleep") as mock_sleep:
             mock_request.return_value = mock_response(
                 {"error": "Rate limit exceeded"},
                 status_code=429,
@@ -83,6 +83,7 @@ class TestOpenAlexClient:
             with pytest.raises(RateLimitError) as exc_info:
                 client.get("/works")
 
+            mock_sleep.assert_called()
             assert exc_info.value.retry_after == 60
 
     def test_client_handles_not_found_response(self, mock_response):

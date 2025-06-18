@@ -459,9 +459,15 @@ class TestExceptionBehavior:
 
         with patch.object(conn._client, "request", failing_request):
             with patch("openalex.connection.logger.warning") as mock_warning:
-                with patch("asyncio.sleep") as mock_sleep:
-                    mock_sleep.side_effect = lambda x: wait_times.append(x)
-                    response = await conn.request("GET", "https://api.openalex.org/works")
+                async def fake_sleep(delay: float) -> None:
+                    wait_times.append(delay)
+
+                with patch("asyncio.sleep", side_effect=fake_sleep):
+                    response = await conn.request(
+                        "GET", "https://api.openalex.org/works"
+                    )
+
+        await conn.close()
 
         assert attempt_count == 4
         assert len(wait_times) == 3
