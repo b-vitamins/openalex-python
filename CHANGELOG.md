@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation examples for institutions are now self-contained
 - Expanded README with advanced usage and configuration sections
 - Updated docs to use `model_dump()` instead of `dict()`
+- Refreshed features section in README
 - Removed GitHub workflow `tests.yml` to avoid duplicate test runs
 
 ### Fixed
