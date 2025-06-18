@@ -318,3 +318,72 @@ class TestExceptionBehavior:
 
             # Should have reference to original error
             assert "SSL" in str(exc_info.value)
+
+    def test_connection_timeout_handling(self):
+        """Test proper timeout error handling with operation context."""
+        from openalex import Works, OpenAlexConfig
+        from openalex.exceptions import TimeoutError
+        import httpx
+
+        config = OpenAlexConfig(timeout=0.5)
+
+        with patch("httpx.Client.request") as mock_request:
+            mock_request.side_effect = httpx.TimeoutException("Request timed out")
+
+            works = Works(config=config)
+
+            with pytest.raises(TimeoutError) as exc_info:
+                works.search("machine learning").get()
+
+            assert "0.5" in str(exc_info.value)
+            assert exc_info.value.timeout_value == 0.5
+
+    def test_async_connection_lifecycle(self):
+        """Test async connection open/close lifecycle."""
+        from openalex.connection import AsyncConnection
+        from openalex import OpenAlexConfig
+
+        @pytest.mark.asyncio
+        async def run_test():
+            config = OpenAlexConfig()
+            conn = AsyncConnection(config)
+
+            async with conn:
+                assert conn._client is not None
+
+            assert conn._client is None
+
+        asyncio.run(run_test())
+
+    def test_operation_specific_timeouts(self):
+        """Test different timeouts for different operations."""
+        from openalex import Works, OpenAlexConfig
+
+        config = OpenAlexConfig(
+            operation_timeouts={
+                "get": 5.0,
+                "list": 10.0,
+                "search": 15.0,
+                "autocomplete": 2.0,
+            }
+        )
+
+        test_cases = [
+            ("get", lambda w: w.get("W123"), 5.0),
+            ("list", lambda w: w.list(), 10.0),
+            ("search", lambda w: w.search("test").get(), 15.0),
+            ("autocomplete", lambda w: w.autocomplete("test"), 2.0),
+        ]
+
+        with patch("httpx.Client.request") as mock_request:
+            mock_request.return_value = Mock(
+                status_code=200,
+                json=Mock(return_value={"results": []}),
+            )
+
+            works = Works(config=config)
+
+            for operation, func, expected_timeout in test_cases:
+                func(works)
+                assert isinstance(mock_request.call_args.kwargs["timeout"], httpx.Timeout)
+                assert mock_request.call_args.kwargs["timeout"].read == expected_timeout

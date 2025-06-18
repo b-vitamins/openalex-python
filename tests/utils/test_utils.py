@@ -446,3 +446,75 @@ class TestTextProcessing:
 
         assert invert_abstract(None) is None
         assert invert_abstract({}) == ""
+
+
+class TestLogging:
+    """Test logging configuration and privacy features."""
+
+    def test_configure_logging_json_format(self):
+        """Test JSON logging configuration."""
+        from openalex.logging import configure_logging
+        import logging
+        import json
+
+        import io
+        log_capture = io.StringIO()
+        handler = logging.StreamHandler(log_capture)
+
+        configure_logging(level="DEBUG", format="json", include_timestamps=True, privacy_mode=True)
+
+        logger = logging.getLogger("openalex")
+        logger.addHandler(handler)
+        logger.info("Test message", api_key="secret123")
+
+        log_output = log_capture.getvalue()
+        log_data = json.loads(log_output.strip())
+
+        assert log_data["event"] == "Test message"
+        assert log_data["api_key"] == "[REDACTED]"
+        assert "timestamp" in log_data
+
+    def test_sanitize_sensitive_data(self):
+        """Test sensitive data sanitization."""
+        from openalex.logging import sanitize_sensitive_data
+
+        test_data = {
+            "user": "john",
+            "api_key": "sk-proj-abc123",
+            "email": "user@example.com",
+            "nested": {
+                "password": "secret",
+                "token": "bearer-xyz",
+            },
+            "safe_field": "public data",
+        }
+
+        sanitized = sanitize_sensitive_data(test_data)
+
+        assert sanitized["user"] == "john"
+        assert sanitized["api_key"] == "[REDACTED]"
+        assert "[EMAIL]" in sanitized["email"]
+        assert sanitized["nested"]["password"] == "[REDACTED]"
+        assert sanitized["nested"]["token"] == "[REDACTED]"
+        assert sanitized["safe_field"] == "public data"
+
+    def test_request_logger(self):
+        """Test HTTP request/response logging."""
+        from openalex.logging import RequestLogger
+
+        logger = RequestLogger(enabled=True, include_headers=True)
+
+        with patch("structlog.get_logger") as mock_get_logger:
+            mock_logger = Mock()
+            mock_get_logger.return_value = mock_logger
+
+            logger.log_request(
+                "GET",
+                "https://api.openalex.org/works?api_key=secret",
+                headers={"Authorization": "Bearer token123"},
+            )
+
+            mock_logger.info.assert_called_once()
+            call_args = mock_logger.info.call_args[1]
+            assert "api_key=[REDACTED]" in call_args["url"]
+            assert call_args["headers"]["Authorization"] == "[REDACTED]"

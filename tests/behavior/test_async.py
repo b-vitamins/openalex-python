@@ -395,3 +395,131 @@ class TestAsyncBehavior:
 
             # Verify cleanup was called (implementation dependent)
             # Main point is it doesn't raise an error
+
+    async def test_all_async_entity_types_work(self):
+        """Test that all async entity types can perform basic operations."""
+        from openalex import (
+            AsyncConcepts,
+            AsyncFunders,
+            AsyncKeywords,
+            AsyncPublishers,
+            AsyncTopics,
+        )
+
+        test_cases = [
+            (AsyncConcepts(), "C2778407487", "artificial intelligence"),
+            (AsyncFunders(), "F4320306076", "National Science Foundation"),
+            (AsyncKeywords(), "K123", "machine learning"),
+            (AsyncPublishers(), "P4310319965", "Elsevier"),
+            (AsyncTopics(), "T10001", "Climate change"),
+        ]
+
+        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+            for entity, entity_id, expected_name in test_cases:
+                mock_request.return_value = Mock(
+                    status_code=200,
+                    json=Mock(
+                        return_value={
+                            "id": f"https://openalex.org/{entity_id}",
+                            "display_name": expected_name,
+                        }
+                    ),
+                )
+
+                result = await entity.get(entity_id)
+
+                assert result.display_name == expected_name
+                assert entity.endpoint in mock_request.call_args.kwargs["url"]
+                assert entity_id in mock_request.call_args.kwargs["url"]
+
+    async def test_async_ngrams_functionality(self):
+        """Test async Works.ngrams() method."""
+        from openalex import AsyncWorks
+
+        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = Mock(
+                status_code=200,
+                json=Mock(
+                    return_value={
+                        "meta": {"count": 2},
+                        "results": [
+                            {
+                                "ngram": "climate change",
+                                "ngram_count": 5,
+                                "ngram_tokens": 2,
+                            },
+                            {
+                                "ngram": "global warming",
+                                "ngram_count": 3,
+                                "ngram_tokens": 2,
+                            },
+                        ],
+                    }
+                ),
+            )
+
+            works = AsyncWorks()
+            ngrams = await works.ngrams("W2741809807")
+
+            assert len(ngrams.results) == 2
+            assert ngrams.results[0].ngram == "climate change"
+
+    async def test_async_autocomplete(self):
+        """Test async autocomplete functionality."""
+        from openalex import AsyncWorks, AsyncAuthors
+
+        test_cases = [
+            (
+                AsyncWorks(),
+                "climate ch",
+                ["Climate change impacts", "Climate change mitigation"],
+            ),
+            (
+                AsyncAuthors(),
+                "einstein a",
+                ["Einstein, Albert", "Einstein, Alfred"],
+            ),
+        ]
+
+        for entity, query, expected_hints in test_cases:
+            with patch(
+                "httpx.AsyncClient.request", new_callable=AsyncMock
+            ) as mock_request:
+                mock_request.return_value = Mock(
+                    status_code=200,
+                    json=Mock(
+                        return_value={
+                            "results": [
+                                {"id": f"hint{i}", "display_name": hint}
+                                for i, hint in enumerate(expected_hints)
+                            ],
+                            "meta": {"count": len(expected_hints)},
+                        }
+                    ),
+                )
+
+                results = await entity.autocomplete(query)
+                assert len(results.results) == len(expected_hints)
+                assert results.results[0].display_name == expected_hints[0]
+
+    async def test_async_random_entity(self):
+        """Test async random entity fetching."""
+        from openalex import AsyncInstitutions
+
+        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = Mock(
+                status_code=200,
+                json=Mock(
+                    return_value={
+                        "id": "https://openalex.org/I123",
+                        "display_name": "Random University",
+                    }
+                ),
+            )
+
+            institutions = AsyncInstitutions()
+            random_inst = await institutions.random()
+
+            assert random_inst.display_name == "Random University"
+            assert "/random" in mock_request.call_args[0][1]
+
