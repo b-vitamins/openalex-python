@@ -6,7 +6,7 @@
   # Python Client for the OpenAlex API
 
   [![Python](https://github.com/b-vitamins/openalex-python/actions/workflows/python.yml/badge.svg)](https://github.com/b-vitamins/openalex-python/actions/workflows/python.yml)
-  [![codecov](https://codecov.io/gh/b-vitamins/openalex-python/graph/badge.svg?branch=master)](https://codecov.io/gh/b-vitamins/openalex-python)
+  [![codecov](https://codecov.io/gh/b-vitamins/openalex-python/graph/badge.svg?token=XB5KI75WU1)](https://codecov.io/gh/b-vitamins/openalex-python)
 </div>
 
 > **Disclaimer**: This is an **unofficial** client library for OpenAlex. It is not endorsed by or affiliated with OpenAlex or its parent organization. The library's author is not associated with OpenAlex.

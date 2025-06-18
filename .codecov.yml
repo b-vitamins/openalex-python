@@ -1,0 +1,87 @@
+# Codecov configuration for openalex-python
+codecov:
+  require_ci_to_pass: true
+  notify:
+    wait_for_ci: true
+
+coverage:
+  precision: 2
+  round: down
+
+  status:
+    project:
+      default:
+        target: 90%
+        threshold: 1%
+        if_ci_failed: error
+        informational: false
+        only_pulls: false
+
+    patch:
+      default:
+        target: 85%
+        threshold: 0%
+        base: auto
+        if_ci_failed: error
+        informational: false
+
+    changes: false
+
+comment:
+  layout: "header,diff,flags,components,tree"
+  behavior: default
+  require_changes: true
+  require_base: true
+  require_head: true
+  show_carryforward_flags: false
+
+parsers:
+  gcov:
+    branch_detection:
+      conditional: true
+      loop: true
+      method: false
+      macro: false
+
+ignore:
+  - "tests/**"
+  - "examples/**"
+  - "benchmarks/**"
+  - "**/__init__.py"
+  - "**/conftest.py"
+  - "**/_version.py"
+  - "docs/**"
+  - "*.pyi"
+
+flags:
+  unittests:
+    paths:
+      - openalex/
+    carryforward: true
+
+component_management:
+  default_rules:
+    statuses:
+      - type: project
+        target: auto
+        threshold: 1%
+  individual_components:
+    - component_id: core
+      name: Core
+      paths:
+        - openalex/*.py
+        - openalex/utils/**
+        - openalex/cache/**
+        - openalex/resilience/**
+    - component_id: models
+      name: Models
+      paths:
+        - openalex/models/**
+    - component_id: client
+      name: Client
+      paths:
+        - openalex/client.py
+        - openalex/api.py
+        - openalex/connection.py
+        - openalex/async_entities.py
+        - openalex/entities.py
