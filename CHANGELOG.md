@@ -82,5 +82,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Autocomplete requests now use ``/autocomplete/{endpoint}`` to avoid 404 errors
 - Pagination utilities no longer loop indefinitely when cursors are ignored and
   now respect ``max_results`` across sync and async iterators.
+- Codecov upload step now includes repository slug and verbose output
 
 [Unreleased]: https://github.com/b-vitamins/openalex-python/compare/HEAD
