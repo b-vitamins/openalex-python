@@ -464,8 +464,8 @@ class TestAsyncBehavior:
             assert len(ngrams.results) == 2
             assert ngrams.results[0].ngram == "climate change"
 
-    async def test_async_autocomplete(self):
-        """Test async autocomplete functionality."""
+    async def test_async_autocomplete_multi_entities(self):
+        """Test async autocomplete functionality for multiple entity types."""
         from openalex import AsyncWorks, AsyncAuthors
 
         test_cases = [

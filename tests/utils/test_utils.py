@@ -5,7 +5,7 @@ Tests what utilities should do, not how they're implemented.
 
 import asyncio
 import time
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 

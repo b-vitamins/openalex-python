@@ -1,5 +1,6 @@
 import time
 from unittest.mock import Mock, patch
+import asyncio
 
 import pytest
 

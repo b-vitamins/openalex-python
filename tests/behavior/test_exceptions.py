@@ -6,6 +6,7 @@ Tests what exceptions should be raised in different scenarios.
 import pytest
 from unittest.mock import Mock, patch
 import httpx
+import asyncio
 
 
 class TestExceptionBehavior:
@@ -383,7 +384,12 @@ class TestExceptionBehavior:
 
             works = Works(config=config)
 
-            for operation, func, expected_timeout in test_cases:
+            for _operation, func, expected_timeout in test_cases:
                 func(works)
-                assert isinstance(mock_request.call_args.kwargs["timeout"], httpx.Timeout)
-                assert mock_request.call_args.kwargs["timeout"].read == expected_timeout
+                assert isinstance(
+                    mock_request.call_args.kwargs["timeout"], httpx.Timeout
+                )
+                assert (
+                    mock_request.call_args.kwargs["timeout"].read
+                    == expected_timeout
+                )
