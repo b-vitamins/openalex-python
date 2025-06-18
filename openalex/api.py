@@ -148,7 +148,7 @@ class APIConnection:
 
         if self._request_queue is not None:
             return cast(
-                Response,
+                "Response",
                 self._request_queue.enqueue(
                     self._protected_request,
                     method,
@@ -173,7 +173,7 @@ class APIConnection:
     ) -> Response:
         if self._circuit_breaker is not None:
             return cast(
-                httpx.Response,
+                "httpx.Response",
                 self._circuit_breaker.call(
                     self._do_request,
                     method,
@@ -214,7 +214,7 @@ class APIConnection:
             endpoint = url.split("/")[-2] if "/" in url else "unknown"
 
         timeout_value = self.config.operation_timeouts.get(
-            cast(str, operation), self.config.timeout
+            cast("str", operation), self.config.timeout
         )
 
         try:
@@ -255,7 +255,7 @@ class APIConnection:
             msg = f"Request timed out after {timeout_value}s"
             raise TimeoutError(
                 msg,
-                operation=cast(str | None, operation),
+                operation=cast("str | None", operation),
                 timeout_value=timeout_value,
             ) from e
         except httpx.NetworkError as e:
@@ -371,7 +371,7 @@ class AsyncAPIConnection:
         """Make async HTTP request with retry and rate limiting."""
         if self._request_queue is not None:
             return cast(
-                Response,
+                "Response",
                 await self._request_queue.enqueue(
                     self._protected_request, method, url, params, **kwargs
                 ),
@@ -438,14 +438,15 @@ class AsyncAPIConnection:
         return await async_with_retry(make_request, self.retry_config)()
 
 
-_connection_pool: dict[str, APIConnection] = {}
+_connection_pool: dict[int, APIConnection] = {}
 
 
 def get_connection(config: OpenAlexConfig | None = None) -> APIConnection:
-    """Get or create an API connection."""
-    key = str(config) if config else "default"
+    """Get or create an API connection scoped to ``config``."""
+    cfg = config or OpenAlexConfig()
+    key = id(cfg)
     if key not in _connection_pool:
-        _connection_pool[key] = APIConnection(config)
+        _connection_pool[key] = APIConnection(cfg)
     return _connection_pool[key]
 
 
