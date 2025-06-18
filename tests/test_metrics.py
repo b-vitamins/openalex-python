@@ -3,18 +3,12 @@ import pytest
 from unittest.mock import patch
 
 from openalex import OpenAlexConfig, Works
+from tests.base import IsolatedTestCase
 
 
-class TestMetrics:
+class TestMetrics(IsolatedTestCase):
+    @pytest.mark.isolated
     def test_metrics_collection_when_enabled(self):
-        # Force clear any existing cache managers and patches
-        from openalex.cache.manager import _cache_managers, get_cache_manager as original_get_cache_manager
-        import openalex.cache.manager
-        import openalex.entities
-
-        _cache_managers.clear()
-        openalex.cache.manager.get_cache_manager = original_get_cache_manager
-        openalex.entities.get_cache_manager = original_get_cache_manager
 
         config = OpenAlexConfig(
             collect_metrics=True,
@@ -71,15 +65,8 @@ class TestMetrics:
         report = works.get_metrics()
         assert report is None
 
+    @pytest.mark.isolated
     def test_cache_metrics_tracked(self):
-        # Force clear any existing cache managers and patches
-        from openalex.cache.manager import _cache_managers, get_cache_manager as original_get_cache_manager
-        import openalex.cache.manager
-        import openalex.entities
-
-        _cache_managers.clear()
-        openalex.cache.manager.get_cache_manager = original_get_cache_manager
-        openalex.entities.get_cache_manager = original_get_cache_manager
 
         config = OpenAlexConfig(
             collect_metrics=True,

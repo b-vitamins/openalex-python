@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Circuit breaker state transition logging
 - Improved timeout errors with context
 - Streaming paginator handles empty cursors
+- Test isolation utilities to prevent patch interference and improve reliability
 
 ### Changed
 - Fixed caching logic to handle list queries and thread safety

@@ -4,6 +4,7 @@ import httpx
 
 from openalex import OpenAlexConfig, Works
 from openalex.middleware import RequestInterceptor, ResponseInterceptor
+from tests.base import IsolatedTestCase
 
 
 class HeaderInterceptor(RequestInterceptor):
@@ -35,7 +36,7 @@ class OrderInterceptor(RequestInterceptor):
         return request
 
 
-class TestMiddleware:
+class TestMiddleware(IsolatedTestCase):
     def test_request_interceptor_adds_headers(self):
         config = OpenAlexConfig()
         config.middleware.request_interceptors.append(HeaderInterceptor())
@@ -55,15 +56,8 @@ class TestMiddleware:
             sent_request = args[0]
             assert sent_request.headers.get("X-Test") == "42"
 
+    @pytest.mark.isolated
     def test_response_interceptor_transforms_data(self):
-        # Force clear any existing cache managers and patches
-        from openalex.cache.manager import _cache_managers, get_cache_manager as original_get_cache_manager
-        import openalex.cache.manager
-        import openalex.entities
-
-        _cache_managers.clear()
-        openalex.cache.manager.get_cache_manager = original_get_cache_manager
-        openalex.entities.get_cache_manager = original_get_cache_manager
 
         config = OpenAlexConfig(cache_enabled=False)
         config.middleware.response_interceptors.append(TitleUpperInterceptor())
