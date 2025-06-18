@@ -296,3 +296,65 @@ class TestTopicModel:
         assert topic.ids is not None
         assert topic.created_date is not None
         assert topic.updated_date is not None
+
+
+class TestTopic:
+    def test_topic_siblings_and_subfield_parsing(self):
+        """Test Topic model parses related entities correctly."""
+        from openalex.models import Topic
+
+        topic_data = {
+            "id": "https://openalex.org/T10001",
+            "display_name": "Climate Change",
+            "subfield": {
+                "id": "https://openalex.org/subfields/2306",
+                "display_name": "Global and Planetary Change"
+            },
+            "field": {
+                "id": "https://openalex.org/fields/23",
+                "display_name": "Environmental Science"
+            },
+            "domain": {
+                "id": "https://openalex.org/domains/3",
+                "display_name": "Physical Sciences"
+            },
+            "siblings": [
+                {
+                    "id": "https://openalex.org/T10002",
+                    "display_name": "Global Warming"
+                },
+                {
+                    "id": "https://openalex.org/T10003",
+                    "display_name": "Carbon Cycle"
+                }
+            ],
+            "works_count": 250000,
+            "cited_by_count": 5000000,
+            "keywords": [
+                {
+                    "id": "https://openalex.org/keywords/climate-change",
+                    "display_name": "climate change",
+                    "score": 0.95
+                }
+            ]
+        }
+
+        topic = Topic(**topic_data)
+
+        assert topic.subfield.display_name == "Global and Planetary Change"
+        assert topic.field.display_name == "Environmental Science"
+        assert topic.domain.display_name == "Physical Sciences"
+        assert len(topic.siblings) == 2
+        assert all(hasattr(s, "display_name") for s in topic.siblings)
+        assert topic.siblings[0].display_name == "Global Warming"
+        assert len(topic.keywords) == 1
+        assert topic.keywords[0].score == 0.95
+        assert topic.openalex_id == "T10001"
+
+        minimal_topic = Topic(
+            id="https://openalex.org/T20001",
+            display_name="Minimal Topic"
+        )
+        assert minimal_topic.siblings == []
+        assert minimal_topic.subfield is None
+        assert minimal_topic.keywords == []

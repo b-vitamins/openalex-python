@@ -261,17 +261,22 @@ class AsyncConnection:
                     msg = f"Temporary error {response.status_code}: Service unavailable"
                     _raise(TemporaryError(msg))
 
-            except (RateLimitExceededError, ServerError, TemporaryError) as e:
+            except (RateLimitExceededError, ServerError, TemporaryError, httpx.NetworkError) as e:
                 attempt += 1
                 if attempt > max_attempts:
                     raise
 
                 if isinstance(e, RateLimitExceededError) and e.retry_after:
-                    wait_time = e.retry_after
+                    wait_time = float(e.retry_after)
                 else:
-                    wait_time = min(
-                        60,
-                        self._config.retry_initial_wait * (2 ** (attempt - 1)),
+                    wait_time = float(
+                        min(
+                            60,
+                            self._config.retry_initial_wait
+                            * (
+                                self._config.retry_exponential_base ** (attempt - 1)
+                            ),
+                        )
                     )
 
                 logger.warning(

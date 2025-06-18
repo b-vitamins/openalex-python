@@ -254,3 +254,38 @@ class TestKeywordModel:
         assert not hasattr(keyword, "summary_stats")
         assert not hasattr(keyword, "international")
         assert not hasattr(keyword, "counts_by_year")
+
+
+class TestKeyword:
+    def test_keyword_validation_and_properties(self):
+        """Test Keyword model validation and computed properties."""
+        from openalex.models import Keyword
+        from datetime import date
+
+        keyword_data = {
+            "id": "https://openalex.org/K123",
+            "display_name": "machine learning",
+            "created_date": "2015-01-01",
+            "updated_date": "2024-01-01",
+            "works_count": 50000,
+            "cited_by_count": 1000000,
+            "works_api_url": "https://api.openalex.org/works?filter=keywords.id:K123",
+            "updated": "2024-01-01T00:00:00"
+        }
+
+        keyword = Keyword(**keyword_data)
+
+        assert keyword.id == "https://openalex.org/K123"
+        assert isinstance(keyword.created_date, date)
+        assert isinstance(keyword.updated_date, date)
+        assert keyword.works_count == 50000
+        assert keyword.cited_by_count == 1000000
+        assert keyword.openalex_id == "K123"
+
+        minimal_keyword = Keyword(
+            id="https://openalex.org/K456",
+            display_name="test keyword"
+        )
+        assert minimal_keyword.works_count == 0
+        assert minimal_keyword.cited_by_count == 0
+        assert minimal_keyword.created_date is None
