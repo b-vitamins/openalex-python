@@ -5764,11 +5764,14 @@ def _reset_global_state():
     """Ensure cache and connection state do not leak between tests."""
     from openalex.cache.manager import clear_cache, _cache_managers
     from openalex.api import _connection_pool
+    from openalex.metrics.utils import _metrics_collectors
 
     clear_cache()
     _cache_managers.clear()
     _connection_pool.clear()
+    _metrics_collectors.clear()
     yield
     clear_cache()
     _cache_managers.clear()
     _connection_pool.clear()
+    _metrics_collectors.clear()
