@@ -197,6 +197,10 @@ class OpenAlexConfig(BaseModel):
         except ValidationError as exc:  # pragma: no cover - defensive
             raise AttributeError(str(exc)) from exc
 
+    def __hash__(self) -> int:
+        """Hash based on object identity for weak dictionary usage."""
+        return id(self)
+
     @model_validator(mode="after")
     def validate_metrics_config(self) -> OpenAlexConfig:
         """Ensure metrics dependencies are configured correctly."""

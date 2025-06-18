@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import threading
 from typing import TYPE_CHECKING, Any, TypeVar, cast
+from weakref import WeakKeyDictionary
 
 from structlog import get_logger
 
@@ -158,16 +159,15 @@ class CacheManager:
         return float(self.config.cache_ttl)
 
 
-_cache_managers: dict[int, CacheManager] = {}
+_cache_managers: WeakKeyDictionary[OpenAlexConfig, CacheManager] = WeakKeyDictionary()
 
 
 def get_cache_manager(config: OpenAlexConfig) -> CacheManager:
     """Return a shared :class:`CacheManager` for ``config``."""
-    key = id(config)
-    manager = _cache_managers.get(key)
+    manager = _cache_managers.get(config)
     if manager is None:
         manager = CacheManager(config)
-        _cache_managers[key] = manager
+        _cache_managers[config] = manager
     return manager
 
 
