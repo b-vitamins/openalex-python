@@ -152,6 +152,11 @@ markers = [
     "docs: mark test as documentation test (deselect with '-m \"not docs\"')",
     "slow: mark test as slow",
     "requires_api: mark test as requiring real API access",
+    "asyncio: mark a test as using asyncio",
+    "integration: Integration tests that may patch core functionality",
+    "isolated: Tests that must run in isolation from others",
+    "modifies_global_state: Tests that modify global state and need cleanup",
+    "unit: Fast unit tests with no external dependencies",
 ]
 
 addopts = [

@@ -4,20 +4,14 @@ from unittest.mock import Mock, patch
 import pytest
 
 from openalex import Works, OpenAlexConfig
+from tests.base import IsolatedTestCase
 from openalex.exceptions import ServerError
 from openalex.resilience import CircuitBreaker, CircuitState
 
 
-class TestResilience:
+class TestResilience(IsolatedTestCase):
+    @pytest.mark.isolated
     def test_circuit_breaker_opens_after_failures(self):
-        # Force clear any existing cache managers and patches
-        from openalex.cache.manager import _cache_managers, get_cache_manager as original_get_cache_manager
-        import openalex.cache.manager
-        import openalex.entities
-
-        _cache_managers.clear()
-        openalex.cache.manager.get_cache_manager = original_get_cache_manager
-        openalex.entities.get_cache_manager = original_get_cache_manager
 
         config = OpenAlexConfig(
             circuit_breaker_enabled=True,
