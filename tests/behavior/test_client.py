@@ -315,3 +315,43 @@ class TestOpenAlexClient:
         assert err.field_path == ["works", "year"]
         assert err.invalid_value == "abc"
         assert err.expected_type == "int"
+
+    def test_connection_pooling(self):
+        """Test connection pool reuses connections for same config."""
+        from openalex import Works, Authors
+        from openalex.api import _connection_pool
+
+        _connection_pool.clear()
+
+        shared_config = Works().config
+        works1 = Works(config=shared_config)
+        works2 = Works(config=shared_config)
+        authors = Authors(config=shared_config)
+
+        assert works1._connection is works2._connection
+        assert works1._connection is authors._connection
+
+        from openalex import OpenAlexConfig
+        custom_config = OpenAlexConfig(api_key="different-key")
+        works3 = Works(config=custom_config)
+
+        assert works3._connection is not works1._connection
+
+    def test_connection_headers_built_correctly(self):
+        """Test connection builds correct headers."""
+        from openalex.connection import Connection
+        from openalex import OpenAlexConfig
+
+        config = OpenAlexConfig(
+            email="test@example.com",
+            api_key="sk-123",
+            user_agent="MyBot/1.0",
+        )
+
+        conn = Connection(config)
+        headers = conn._build_headers()
+
+        assert headers["Authorization"] == "Bearer sk-123"
+        assert "test@example.com" in headers["User-Agent"]
+        assert "MyBot/1.0" in headers["User-Agent"]
+        assert headers["Accept"] == "application/json"
