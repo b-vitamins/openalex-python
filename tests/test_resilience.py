@@ -10,9 +10,19 @@ from openalex.resilience import CircuitBreaker, CircuitState
 
 class TestResilience:
     def test_circuit_breaker_opens_after_failures(self):
+        # Force clear any existing cache managers and patches
+        from openalex.cache.manager import _cache_managers, get_cache_manager as original_get_cache_manager
+        import openalex.cache.manager
+        import openalex.entities
+
+        _cache_managers.clear()
+        openalex.cache.manager.get_cache_manager = original_get_cache_manager
+        openalex.entities.get_cache_manager = original_get_cache_manager
+
         config = OpenAlexConfig(
             circuit_breaker_enabled=True,
             circuit_breaker_failure_threshold=3,
+            cache_enabled=False,
         )
 
         with patch("httpx.Client.request") as mock_request:

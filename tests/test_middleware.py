@@ -56,7 +56,16 @@ class TestMiddleware:
             assert sent_request.headers.get("X-Test") == "42"
 
     def test_response_interceptor_transforms_data(self):
-        config = OpenAlexConfig()
+        # Force clear any existing cache managers and patches
+        from openalex.cache.manager import _cache_managers, get_cache_manager as original_get_cache_manager
+        import openalex.cache.manager
+        import openalex.entities
+
+        _cache_managers.clear()
+        openalex.cache.manager.get_cache_manager = original_get_cache_manager
+        openalex.entities.get_cache_manager = original_get_cache_manager
+
+        config = OpenAlexConfig(cache_enabled=False)
         config.middleware.response_interceptors.append(TitleUpperInterceptor())
         works = Works(config=config)
 
