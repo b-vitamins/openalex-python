@@ -5,9 +5,9 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
-from openalex import Works, Authors, config
-from openalex.metrics import get_metrics, reset_metrics
+from openalex import Authors, Works, config
 from openalex.logging import configure_logging
+from openalex.metrics import get_metrics, reset_metrics
 
 
 def demo_performance_monitoring() -> None:
@@ -71,12 +71,12 @@ def demo_performance_monitoring() -> None:
     print(f"95th Percentile: {report['performance']['p95_response_time_ms']}ms")
 
     print("\nRequests by Endpoint:")
-    for endpoint, count in report['endpoints'].items():
+    for endpoint, count in report["endpoints"].items():
         print(f"  - {endpoint}: {count}")
 
-    if report['errors']:
+    if report["errors"]:
         print("\nErrors:")
-        for error_type, count in report['errors'].items():
+        for error_type, count in report["errors"].items():
             print(f"  - {error_type}: {count}")
 
 

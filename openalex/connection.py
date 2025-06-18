@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import time
+import weakref
 from typing import TYPE_CHECKING, Any
 
 import httpx
@@ -299,26 +300,41 @@ class AsyncConnection:
         return headers
 
 
-_connections: dict[str, Connection] = {}
-_async_connections: dict[str, AsyncConnection] = {}
+_connections: dict[int, tuple[weakref.ReferenceType[OpenAlexConfig], Connection]] = {}
+_async_connections: dict[int, tuple[weakref.ReferenceType[OpenAlexConfig], AsyncConnection]] = {}
 
 
 def get_connection(config: OpenAlexConfig) -> Connection:
-    key = f"{config.api_key or ''}{config.email or ''}"
-    if key not in _connections:
-        _connections[key] = Connection(config)
-    return _connections[key]
+    key = id(config)
+    entry = _connections.get(key)
+    if entry is not None:
+        ref, conn = entry
+        if ref() is config:
+            return conn
+        if ref() is None:
+            del _connections[key]
+    conn = Connection(config)
+    _connections[key] = (weakref.ref(config), conn)
+    return conn
 
 
 async def get_async_connection(config: OpenAlexConfig) -> AsyncConnection:
-    key = f"{config.api_key or ''}{config.email or ''}"
-    if key not in _async_connections:
-        _async_connections[key] = AsyncConnection(config)
-    return _async_connections[key]
+    key = id(config)
+    entry = _async_connections.get(key)
+    if entry is not None:
+        ref, conn = entry
+        if ref() is config:
+            return conn
+        if ref() is None:
+            del _async_connections[key]
+    conn = AsyncConnection(config)
+    _async_connections[key] = (weakref.ref(config), conn)
+    return conn
 
 
 async def close_all_async_connections() -> None:
     """Close all async connections."""
-    for connection in list(_async_connections.values()):
+    for key, (ref, connection) in list(_async_connections.items()):
         await connection.close()
-    _async_connections.clear()
+        if ref() is None:
+            del _async_connections[key]

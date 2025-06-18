@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import threading
+import weakref
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from structlog import get_logger
@@ -158,20 +159,27 @@ class CacheManager:
         return float(self.config.cache_ttl)
 
 
-_cache_managers: dict[int, CacheManager] = {}
+_cache_managers: dict[int, tuple[weakref.ReferenceType[OpenAlexConfig], CacheManager]] = {}
 
 
 def get_cache_manager(config: OpenAlexConfig) -> CacheManager:
     """Return a shared :class:`CacheManager` for ``config``."""
     key = id(config)
-    manager = _cache_managers.get(key)
-    if manager is None:
-        manager = CacheManager(config)
-        _cache_managers[key] = manager
+    entry = _cache_managers.get(key)
+    if entry is not None:
+        ref, manager = entry
+        if ref() is config:
+            return manager
+        if ref() is None:
+            del _cache_managers[key]
+    manager = CacheManager(config)
+    _cache_managers[key] = (weakref.ref(config), manager)
     return manager
 
 
 def clear_cache() -> None:
     """Clear all managed caches."""
-    for manager in _cache_managers.values():
+    for key, (ref, manager) in list(_cache_managers.items()):
         manager.clear()
+        if ref() is None:
+            del _cache_managers[key]
