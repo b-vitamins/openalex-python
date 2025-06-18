@@ -7,6 +7,15 @@ from openalex import OpenAlexConfig, Works
 
 class TestMetrics:
     def test_metrics_collection_when_enabled(self):
+        # Force clear any existing cache managers and patches
+        from openalex.cache.manager import _cache_managers, get_cache_manager as original_get_cache_manager
+        import openalex.cache.manager
+        import openalex.entities
+
+        _cache_managers.clear()
+        openalex.cache.manager.get_cache_manager = original_get_cache_manager
+        openalex.entities.get_cache_manager = original_get_cache_manager
+
         config = OpenAlexConfig(
             collect_metrics=True,
             retry_enabled=False,
@@ -63,10 +72,14 @@ class TestMetrics:
         assert report is None
 
     def test_cache_metrics_tracked(self):
-        # Clear any existing cache managers to ensure test isolation
-        from openalex.cache.manager import _cache_managers
+        # Force clear any existing cache managers and patches
+        from openalex.cache.manager import _cache_managers, get_cache_manager as original_get_cache_manager
+        import openalex.cache.manager
+        import openalex.entities
 
         _cache_managers.clear()
+        openalex.cache.manager.get_cache_manager = original_get_cache_manager
+        openalex.entities.get_cache_manager = original_get_cache_manager
 
         config = OpenAlexConfig(
             collect_metrics=True,

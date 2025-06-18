@@ -5762,9 +5762,22 @@ def sample_search_params():
 @pytest.fixture(autouse=True)
 def _reset_global_state():
     """Ensure cache and connection state do not leak between tests."""
-    from openalex.cache.manager import clear_cache, _cache_managers
+    from openalex.cache.manager import (
+        clear_cache,
+        _cache_managers,
+        get_cache_manager as original_get_cache_manager,
+    )
     from openalex.api import _connection_pool
     from openalex.metrics.utils import _metrics_collectors
+
+    import openalex.cache.manager
+    import openalex.entities
+
+    if not hasattr(_reset_global_state, "_original_get_cache_manager"):
+        _reset_global_state._original_get_cache_manager = original_get_cache_manager
+
+    openalex.cache.manager.get_cache_manager = _reset_global_state._original_get_cache_manager
+    openalex.entities.get_cache_manager = _reset_global_state._original_get_cache_manager
 
     clear_cache()
     _cache_managers.clear()
