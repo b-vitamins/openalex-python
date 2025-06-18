@@ -74,9 +74,12 @@ class Connection:
         assert self._client is not None
 
         if operation is None:
+            path = url.split("://", 1)[-1].split("/", 1)[-1]
+            parts = path.split("?")[0].strip("/").split("/")
+
             if "/autocomplete/" in url:
                 operation = "autocomplete"
-            elif method == "GET" and url.count("/") > 3:
+            elif method == "GET" and len(parts) >= 2:
                 operation = "get"
             elif params and (
                 (
@@ -231,12 +234,11 @@ class AsyncConnection:
             else 1
         )
         attempt = 1
-        # attempt 1 is the initial request, 2+ are retries
 
         def _raise(err: Exception) -> None:
             raise err
 
-        while attempt < max_attempts:
+        while attempt <= max_attempts:
             try:
                 assert self._client is not None
                 response = await self._client.request(
@@ -262,16 +264,16 @@ class AsyncConnection:
                     _raise(TemporaryError(msg))
 
             except (RateLimitExceededError, ServerError, TemporaryError) as e:
-                attempt += 1
-                if attempt > max_attempts:
+                if attempt >= max_attempts:
                     raise
 
                 if isinstance(e, RateLimitExceededError) and e.retry_after:
-                    wait_time = e.retry_after
+                    wait_time = float(e.retry_after)
                 else:
                     wait_time = min(
                         60,
-                        self._config.retry_initial_wait * (2 ** (attempt - 1)),
+                        self._config.retry_initial_wait
+                        * (self._config.retry_exponential_base ** (attempt - 1)),
                     )
 
                 logger.warning(
@@ -282,6 +284,7 @@ class AsyncConnection:
                 )
 
                 await asyncio.sleep(wait_time)
+                attempt += 1
             else:
                 return response
 

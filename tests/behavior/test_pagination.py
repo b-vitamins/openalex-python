@@ -533,3 +533,98 @@ class TestPaginationBehavior:
             # Should raise error when hitting bad page
             with pytest.raises(ServerError):
                 list(authors.paginate(per_page=1))
+
+    def test_pagination_auto_mode_selection(self):
+        """Test paginator automatically selects best pagination mode."""
+        from openalex import Works
+        from openalex.utils.pagination import Paginator
+
+        with patch("httpx.Client.request") as mock_request:
+            mock_request.return_value = Mock(
+                status_code=200,
+                json=Mock(
+                    return_value={
+                        "results": [{"id": f"W{i}"} for i in range(25)],
+                        "meta": {
+                            "count": 1000,
+                            "page": 1,
+                            "per_page": 25,
+                            "next_cursor": "cursor_abc123",
+                        },
+                    }
+                ),
+            )
+
+            works = Works()
+            paginator = works.filter(publication_year=2023).paginate()
+
+            first_page = next(paginator)
+            assert len(first_page.results) == 25
+
+            next(paginator)
+            second_call_params = mock_request.call_args_list[1][1]["params"]
+            assert "cursor" in second_call_params
+            assert second_call_params["cursor"] == "cursor_abc123"
+            assert "page" not in second_call_params
+
+        with patch("httpx.Client.request") as mock_request:
+            mock_request.return_value = Mock(
+                status_code=200,
+                json=Mock(
+                    return_value={
+                        "results": [],
+                        "meta": {"count": 100, "page": 1},
+                        "group_by": [{"key": "2023", "count": 50}],
+                    }
+                ),
+            )
+
+            works = Works()
+            paginator = works.group_by("publication_year").paginate()
+
+            next(paginator)
+            params = mock_request.call_args[1]["params"]
+            assert "page" in params
+            assert "cursor" not in params
+
+    def test_pagination_edge_cases(self):
+        """Test pagination handles edge cases correctly."""
+        from openalex import Authors
+
+        with patch("httpx.Client.request") as mock_request:
+            def mock_response(*args, **kwargs):
+                page = kwargs["params"].get("page", 1)
+                if page == 1:
+                    return Mock(
+                        status_code=200,
+                        json=Mock(
+                            return_value={
+                                "results": [{"id": f"A{i}"} for i in range(25)],
+                                "meta": {"count": 30, "page": 1, "per_page": 25},
+                            }
+                        ),
+                    )
+                else:
+                    return Mock(
+                        status_code=200,
+                        json=Mock(
+                            return_value={
+                                "results": [{"id": f"A{i}"} for i in range(25, 30)],
+                                "meta": {"count": 30, "page": 2, "per_page": 25},
+                            }
+                        ),
+                    )
+
+            mock_request.side_effect = mock_response
+
+            authors = Authors()
+            all_results = list(authors.paginate(per_page=25))
+
+            assert len(all_results) == 2
+            assert len(all_results[0].results) == 25
+            assert len(all_results[1].results) == 5
+
+            all_ids = []
+            for page in all_results:
+                all_ids.extend([r.id for r in page.results])
+            assert len(all_ids) == 30

@@ -388,3 +388,127 @@ class TestExceptionBehavior:
                 func(works)
                 assert isinstance(mock_request.call_args.kwargs["timeout"], httpx.Timeout)
                 assert mock_request.call_args.kwargs["timeout"].read == expected_timeout
+
+    def test_connection_operation_detection(self):
+        """Test connection correctly detects operation types."""
+        from openalex.connection import Connection
+        from openalex import OpenAlexConfig, exceptions as openalex
+        import httpx
+
+        config = OpenAlexConfig(
+            operation_timeouts={
+                "get": 1.0,
+                "list": 2.0,
+                "search": 3.0,
+                "autocomplete": 0.5,
+            }
+        )
+
+        conn = Connection(config)
+
+        timeout_used = None
+
+        def mock_request(method, url, **kwargs):
+            nonlocal timeout_used
+            timeout_used = kwargs.get("timeout")
+            return Mock(
+                status_code=200,
+                json=Mock(return_value={"results": []}),
+                is_success=True,
+            )
+
+        with patch.object(conn, "_client") as mock_client:
+            mock_client.request = mock_request
+
+            conn.request("GET", "https://api.openalex.org/autocomplete/works", {"q": "test"})
+            assert timeout_used == 0.5
+
+            conn.request("GET", "https://api.openalex.org/works/W123")
+            assert timeout_used == 1.0
+
+            conn.request(
+                "GET",
+                "https://api.openalex.org/works",
+                {"filter": {"search": "climate"}},
+            )
+            assert timeout_used == 3.0
+
+            conn.request("GET", "https://api.openalex.org/works", {"page": 1})
+            assert timeout_used == 2.0
+
+    @pytest.mark.asyncio
+    async def test_async_connection_retry_with_logging(self):
+        """Test async connection retry behavior with proper logging."""
+        from openalex.connection import AsyncConnection
+        from openalex import OpenAlexConfig
+        import httpx
+
+        config = OpenAlexConfig(
+            retry_enabled=True,
+            retry_max_attempts=3,
+            retry_initial_wait=1.0,
+            retry_exponential_base=2.0,
+        )
+
+        conn = AsyncConnection(config)
+        await conn.open()
+
+        attempt_count = 0
+        wait_times = []
+
+        async def failing_request(*args, **kwargs):
+            nonlocal attempt_count
+            attempt_count += 1
+            if attempt_count < 4:
+                raise httpx.NetworkError("Connection failed")
+            return Mock(status_code=200, json=lambda: {})
+
+        with patch.object(conn._client, "request", failing_request):
+            with patch("openalex.connection.logger.warning") as mock_warning:
+                with patch("asyncio.sleep") as mock_sleep:
+                    mock_sleep.side_effect = lambda x: wait_times.append(x)
+                    response = await conn.request("GET", "https://api.openalex.org/works")
+
+        assert attempt_count == 4
+        assert len(wait_times) == 3
+        assert abs(wait_times[0] - 1.0) < 0.1
+        assert abs(wait_times[1] - 2.0) < 0.1
+        assert abs(wait_times[2] - 4.0) < 0.1
+
+        assert mock_warning.call_count == 3
+        for i, call in enumerate(mock_warning.call_args_list):
+            log_data = call[1]
+            assert log_data["attempt"] == i + 1
+            assert "wait_time" in log_data
+            assert "Connection failed" in log_data["error"]
+
+    def test_connection_network_error_handling(self):
+        """Test connection converts httpx errors to custom exceptions."""
+        from openalex.connection import Connection
+        from openalex import OpenAlexConfig, exceptions as openalex
+        from openalex.exceptions import NetworkError, TimeoutError
+        import httpx
+
+        config = OpenAlexConfig(collect_metrics=True)
+        conn = Connection(config)
+
+        test_cases = [
+            (httpx.NetworkError("DNS failed"), NetworkError, "Network error: DNS failed"),
+            (httpx.TimeoutException("Read timeout"), TimeoutError, "Request timed out after"),
+            (httpx.HTTPError("Generic HTTP error"), openalex.exceptions.APIError, "HTTP error:"),
+        ]
+
+        for original_exc, expected_type, expected_msg in test_cases:
+            with patch.object(conn._client, "request") as mock_request:
+                mock_request.side_effect = original_exc
+
+                with pytest.raises(expected_type) as exc_info:
+                    conn.request("GET", "https://api.openalex.org/works")
+
+                assert exc_info.value.__cause__ is original_exc
+                assert expected_msg in str(exc_info.value)
+
+        from openalex.metrics import get_metrics_collector
+        metrics = get_metrics_collector(config).get_report()
+        assert metrics.total_requests >= 3
+        assert metrics.total_requests == metrics.total_errors

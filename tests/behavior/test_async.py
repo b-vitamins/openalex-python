@@ -520,6 +520,107 @@ class TestAsyncBehavior:
             institutions = AsyncInstitutions()
             random_inst = await institutions.random()
 
-            assert random_inst.display_name == "Random University"
-            assert "/random" in mock_request.call_args.kwargs["url"]
+        assert random_inst.display_name == "Random University"
+        assert "/random" in mock_request.call_args.kwargs["url"]
+
+
+@pytest.mark.asyncio
+class TestAsyncAdditionalBehavior:
+    """Additional async behavior tests."""
+
+    async def test_async_entity_initialization(self):
+        """Test async entities can be initialized with different configs."""
+        from openalex import (
+            AsyncWorks,
+            AsyncAuthors,
+            AsyncInstitutions,
+            AsyncSources,
+            AsyncTopics,
+            AsyncPublishers,
+            AsyncFunders,
+            AsyncKeywords,
+            AsyncConcepts,
+            OpenAlexConfig,
+        )
+
+        base_config = OpenAlexConfig(email="base@example.com", api_key="base-key")
+
+        works = AsyncWorks(config=base_config)
+        assert works._config.email == "base@example.com"
+        assert works._config.api_key == "base-key"
+
+        authors = AsyncAuthors(
+            email="override@example.com",
+            api_key="override-key",
+            config=base_config,
+        )
+        assert authors._config.email == "override@example.com"
+        assert authors._config.api_key == "override-key"
+
+        entity_classes = [
+            AsyncInstitutions,
+            AsyncSources,
+            AsyncTopics,
+            AsyncPublishers,
+            AsyncFunders,
+            AsyncKeywords,
+            AsyncConcepts,
+        ]
+
+        for entity_cls in entity_classes:
+            entity = entity_cls(email="test@example.com")
+            assert entity._config.email == "test@example.com"
+            assert hasattr(entity, "endpoint")
+            assert entity.endpoint != ""
+            assert hasattr(entity, "model_class")
+            assert entity.model_class is not None
+
+    async def test_async_get_many_functionality(self):
+        """Test async get_many fetches multiple entities efficiently."""
+        from openalex import AsyncWorks
+        from openalex.entities import AsyncBaseEntity as BaseEntityImpl
+        import asyncio
+
+        concurrent_calls = 0
+        max_concurrent_observed = 0
+        call_times = []
+
+        async def mock_get(self, entity_id):
+            nonlocal concurrent_calls, max_concurrent_observed
+            concurrent_calls += 1
+            max_concurrent_observed = max(max_concurrent_observed, concurrent_calls)
+            call_times.append(asyncio.get_event_loop().time())
+            await asyncio.sleep(0.1)
+            concurrent_calls -= 1
+            if entity_id == "W99999":
+                raise RuntimeError("Simulated failure")
+            return type(
+                "Work",
+                (),
+                {"id": f"https://openalex.org/{entity_id}", "display_name": f"Work {entity_id}"},
+            )()
+
+        works = AsyncWorks()
+
+        with (
+            patch.object(BaseEntityImpl, "get", mock_get),
+            patch("openalex.entities.logger") as mock_logger,
+        ):
+            mock_warning = mock_logger.warning
+            mock_logger.exception.return_value = None
+            results = await works.get_many(
+                ["W123", "invalid-id", "W456", "W99999", "W789"],
+                max_concurrent=2,
+            )
+
+        mock_warning.assert_called()
+        warning_args = mock_warning.call_args[0]
+        assert "invalid-id" in str(warning_args)
+
+        assert len(results) == 3
+        assert all(hasattr(r, "display_name") for r in results)
+        assert max_concurrent_observed <= 2
+        assert any("W123" in r.id for r in results)
+        assert any("W789" in r.id for r in results)
+        assert not any("W99999" in r.id for r in results)
 

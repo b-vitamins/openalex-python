@@ -96,6 +96,13 @@ class OpenAlexEntity(OpenAlexBase):
         TypeAdapter(HttpUrl).validate_python(v)
         return v
 
+    @property
+    def openalex_id(self) -> str:
+        """Return the ID without the standard URL prefix."""
+        from ..utils import strip_id_prefix
+
+        return strip_id_prefix(self.id)
+
     @field_validator("created_date", mode="before")
     @classmethod
     def parse_created_date(cls, v: Any) -> date | Any:
