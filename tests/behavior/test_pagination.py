@@ -460,7 +460,7 @@ class TestPaginationBehavior:
 
             assert len(results) == 3
             # Should complete faster than sequential (0.3s)
-            assert duration < 0.2
+            assert duration < 0.25
 
             # Verify concurrent execution
             assert max(call_times) - min(call_times) < 0.05

@@ -45,8 +45,8 @@ class TestTopicModel:
         assert topic.keywords == expected_keywords
 
         # Metrics
-        assert topic.works_count == 42251
-        assert topic.cited_by_count == 468006
+        assert topic.works_count == 42324
+        assert topic.cited_by_count == 469365
 
     def test_topic_ids_structure(self, mock_topic_data):
         """Test the IDs nested structure."""
@@ -92,7 +92,7 @@ class TestTopicModel:
         from openalex.models import Topic
 
         topic = Topic(**mock_topic_data)
-        assert topic.updated_date == date(2025, 6, 9)
+        assert topic.updated_date == date(2025, 6, 16)
 
     def test_topic_created_date(self, mock_topic_data):
         """Test created date field."""

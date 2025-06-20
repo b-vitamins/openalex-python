@@ -31,8 +31,8 @@ class TestConceptModel:
         )
 
         # Metrics
-        assert concept.works_count == 64992842
-        assert concept.cited_by_count == 856329809
+        assert concept.works_count == 65001994
+        assert concept.cited_by_count == 856611704
 
     def test_concept_summary_stats(self, mock_concept_data):
         """Test summary statistics."""
@@ -44,11 +44,11 @@ class TestConceptModel:
         assert (
             concept.summary_stats.two_year_mean_citedness == 1.7869663176673092
         )
-        assert concept.summary_stats.h_index == 3292
+        assert concept.summary_stats.h_index == 3300
         assert concept.summary_stats.i10_index == 14227920
 
         # Test convenience properties
-        assert concept.h_index == 3292
+        assert concept.h_index == 3300
         assert concept.i10_index == 14227920
 
     def test_concept_ids_structure(self, mock_concept_data):
@@ -164,7 +164,7 @@ class TestConceptModel:
         from openalex.models import Concept
 
         concept = Concept(**mock_concept_data)
-        assert concept.updated_date == date(2025, 6, 8)
+        assert concept.updated_date == date(2025, 6, 15)
 
     def test_concept_created_date(self, mock_concept_data):
         """Test created date field."""

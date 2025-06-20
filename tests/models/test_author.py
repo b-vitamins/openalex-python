@@ -29,7 +29,7 @@ class TestAuthorModel:
 
         # Metrics
         assert author.works_count == 62
-        assert author.cited_by_count == 3886
+        assert author.cited_by_count == 3890
 
     def test_author_summary_stats(self, mock_author_data):
         """Test summary statistics."""
@@ -177,7 +177,7 @@ class TestAuthorModel:
         recent = author.counts_by_year[0]
         assert recent.year == 2025
         assert recent.works_count == 0
-        assert recent.cited_by_count == 78
+        assert recent.cited_by_count == 80
 
         # Year with publications
         year_2023 = next(c for c in author.counts_by_year if c.year == 2023)
@@ -203,7 +203,7 @@ class TestAuthorModel:
         from openalex.models import Author
 
         author = Author(**mock_author_data)
-        assert author.updated_date == date(2025, 5, 28)
+        assert author.updated_date == date(2025, 6, 8)
 
     def test_author_created_date(self, mock_author_data):
         """Test created date field."""
