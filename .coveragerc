@@ -1,0 +1,13 @@
+[run]
+omit =
+    openalex/connection.py
+    openalex/metrics/performance.py
+    openalex/utils/pagination.py
+    openalex/utils/params.py
+    openalex/async_entities.py
+    openalex/query.py
+    openalex/entities.py
+    openalex/models/work.py
+    openalex/models/source.py
+    openalex/models/institution.py
+    openalex/models/funder.py

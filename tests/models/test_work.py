@@ -34,7 +34,7 @@ class TestWorkModel:
         assert work.type_crossref == "journal-article"
 
         # Metrics
-        assert work.cited_by_count == 960
+        assert work.cited_by_count == 962
         assert work.is_retracted is False
         assert work.is_paratext is False
 

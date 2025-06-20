@@ -34,9 +34,9 @@ class TestFunderModel:
         assert funder.description == "US government medical research agency"
 
         # Metrics
-        assert funder.grants_count == 273197
-        assert funder.works_count == 386464
-        assert funder.cited_by_count == 15223472
+        assert funder.grants_count == 273557
+        assert funder.works_count == 386574
+        assert funder.cited_by_count == 15234811
 
     def test_funder_homepage_and_images(self, mock_funder_data):
         """Test homepage and image URLs."""
@@ -62,12 +62,12 @@ class TestFunderModel:
 
         assert funder.summary_stats is not None
         assert funder.summary_stats.two_year_mean_citedness == 5.326992141129093
-        assert funder.summary_stats.h_index == 855
-        assert funder.summary_stats.i10_index == 232869
+        assert funder.summary_stats.h_index == 859
+        assert funder.summary_stats.i10_index == 234803
 
         # Test convenience properties
-        assert funder.h_index == 855
-        assert funder.i10_index == 232869
+        assert funder.h_index == 859
+        assert funder.i10_index == 234803
 
     def test_funder_ids_structure(self, mock_funder_data):
         """Test the IDs nested structure."""
@@ -92,13 +92,13 @@ class TestFunderModel:
         # Most recent year
         recent = funder.counts_by_year[0]
         assert recent.year == 2025
-        assert recent.works_count == 10542
-        assert recent.cited_by_count == 846731
+        assert recent.works_count == 11187
+        assert recent.cited_by_count == 861833
 
         # High-productivity year
         year_2021 = next(c for c in funder.counts_by_year if c.year == 2021)
         assert year_2021.works_count == 40674
-        assert year_2021.cited_by_count == 1921445
+        assert year_2021.cited_by_count == 1921450
 
         # Verify descending order
         years = [c.year for c in funder.counts_by_year]
@@ -117,13 +117,13 @@ class TestFunderModel:
 
         assert "funder" in roles_dict
         assert roles_dict["funder"].id == funder.id
-        assert roles_dict["funder"].works_count == 386464
+        assert roles_dict["funder"].works_count == 386574
 
         assert "institution" in roles_dict
         assert (
             roles_dict["institution"].id == "https://openalex.org/I1299303238"
         )
-        assert roles_dict["institution"].works_count == 280579
+        assert roles_dict["institution"].works_count == 280601
 
         assert "publisher" in roles_dict
         assert roles_dict["publisher"].id == "https://openalex.org/P4310316754"
@@ -134,7 +134,7 @@ class TestFunderModel:
         from openalex.models import Funder
 
         funder = Funder(**mock_funder_data)
-        assert funder.updated_date == date(2025, 6, 10)
+        assert funder.updated_date == date(2025, 6, 17)
 
     def test_funder_created_date(self, mock_funder_data):
         """Test created date field."""

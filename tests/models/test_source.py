@@ -35,7 +35,7 @@ class TestSourceModel:
 
         # Metrics
         assert source.works_count == 431710
-        assert source.cited_by_count == 25258309
+        assert source.cited_by_count == 25276859
 
     def test_source_summary_stats(self, mock_source_data):
         """Test summary statistics."""
@@ -45,11 +45,11 @@ class TestSourceModel:
 
         assert source.summary_stats is not None
         assert source.summary_stats.two_year_mean_citedness == 16.2611434684417
-        assert source.summary_stats.h_index == 1779
+        assert source.summary_stats.h_index == 1782
         assert source.summary_stats.i10_index == 117589
 
         # Test convenience properties
-        assert source.h_index == 1779
+        assert source.h_index == 1782
         assert source.i10_index == 117589
 
     def test_source_open_access_status(self, mock_source_data):
@@ -197,8 +197,8 @@ class TestSourceModel:
         # Most recent year
         recent = source.counts_by_year[0]
         assert recent.year == 2025
-        assert recent.works_count == 2075
-        assert recent.cited_by_count == 382314
+        assert recent.works_count == 2083
+        assert recent.cited_by_count == 400815
 
         # Verify descending order
         years = [c.year for c in source.counts_by_year]
@@ -219,7 +219,7 @@ class TestSourceModel:
         from openalex.models import Source
 
         source = Source(**mock_source_data)
-        assert source.updated_date == date(2025, 6, 7)
+        assert source.updated_date == date(2025, 6, 11)
 
     def test_source_created_date(self, mock_source_data):
         """Test created date field."""

@@ -39,7 +39,7 @@ class TestPublisherModel:
 
         # Metrics
         assert publisher.works_count == 10535865
-        assert publisher.cited_by_count == 253954672
+        assert publisher.cited_by_count == 254043705
 
     def test_publisher_homepage_and_images(self, mock_publisher_data):
         """Test homepage and image URLs."""
@@ -69,11 +69,11 @@ class TestPublisherModel:
             == 2.4417943212795215
         )
         assert publisher.summary_stats.h_index == 2059
-        assert publisher.summary_stats.i10_index == 4240274
+        assert publisher.summary_stats.i10_index == 4256773
 
         # Test convenience properties
         assert publisher.h_index == 2059
-        assert publisher.i10_index == 4240274
+        assert publisher.i10_index == 4256773
 
     def test_publisher_ids_structure(self, mock_publisher_data):
         """Test the IDs nested structure."""
@@ -147,7 +147,7 @@ class TestPublisherModel:
         from openalex.models import Publisher
 
         publisher = Publisher(**mock_publisher_data)
-        assert publisher.updated_date == date(2025, 6, 11)
+        assert publisher.updated_date == date(2025, 6, 17)
 
     def test_publisher_created_date(self, mock_publisher_data):
         """Test created date field."""

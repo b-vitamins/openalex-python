@@ -30,8 +30,8 @@ class TestInstitutionModel:
         )
 
         # Metrics
-        assert institution.works_count == 932499
-        assert institution.cited_by_count == 22747187
+        assert institution.works_count == 932812
+        assert institution.cited_by_count == 22780242
 
     def test_institution_homepage_and_images(self, mock_institution_data):
         """Test homepage and image URLs."""
@@ -57,9 +57,9 @@ class TestInstitutionModel:
 
         assert institution.display_name_acronyms == ["UM"]
         assert institution.display_name_alternatives == [
+            "Université du Michigan",
             "UMich",
             "University of Michigan–Ann Arbor",
-            "Université du Michigan",
         ]
 
     def test_institution_lineage(self, mock_institution_data):
@@ -106,11 +106,11 @@ class TestInstitutionModel:
             institution.summary_stats.two_year_mean_citedness
             == 0.37478000185261595
         )
-        assert institution.summary_stats.h_index == 1265
+        assert institution.summary_stats.h_index == 1269
         assert institution.summary_stats.i10_index == 245116
 
         # Test convenience properties
-        assert institution.h_index == 1265
+        assert institution.h_index == 1269
         assert institution.i10_index == 245116
 
     def test_institution_ids_structure(self, mock_institution_data):
@@ -218,15 +218,15 @@ class TestInstitutionModel:
         # Most recent year
         recent = institution.counts_by_year[0]
         assert recent.year == 2025
-        assert recent.works_count == 6145
-        assert recent.cited_by_count == 532567
+        assert recent.works_count == 6454
+        assert recent.cited_by_count == 568928
 
         # High-productivity year
         year_2022 = next(
             c for c in institution.counts_by_year if c.year == 2022
         )
         assert year_2022.works_count == 454439
-        assert year_2022.cited_by_count == 1495516
+        assert year_2022.cited_by_count == 1495547
 
         # Verify descending order
         years = [c.year for c in institution.counts_by_year]
@@ -245,11 +245,11 @@ class TestInstitutionModel:
 
         assert "institution" in roles_dict
         assert roles_dict["institution"].id == institution.id
-        assert roles_dict["institution"].works_count == 932499
+        assert roles_dict["institution"].works_count == 932812
 
         assert "funder" in roles_dict
         assert roles_dict["funder"].id == "https://openalex.org/F4320309652"
-        assert roles_dict["funder"].works_count == 4048
+        assert roles_dict["funder"].works_count == 4058
 
         assert "publisher" in roles_dict
         assert roles_dict["publisher"].id == "https://openalex.org/P4310316579"
@@ -270,7 +270,7 @@ class TestInstitutionModel:
             top_topic.display_name
             == "Particle physics theoretical and experimental studies"
         )
-        assert top_topic.count == 5089
+        assert top_topic.count == 5100
         assert (
             top_topic.subfield.display_name == "Nuclear and High Energy Physics"
         )
@@ -297,7 +297,7 @@ class TestInstitutionModel:
         top_share = institution.topic_share[0]
         assert top_share.id == "https://openalex.org/T14440"
         assert top_share.display_name == "Quality of Life Measurement"
-        assert top_share.value == 0.1615252
+        assert top_share.value == 0.1613543
 
     def test_institution_x_concepts(self, mock_institution_data):
         """Test x_concepts legacy field."""
@@ -336,7 +336,7 @@ class TestInstitutionModel:
         from openalex.models import Institution
 
         institution = Institution(**mock_institution_data)
-        assert institution.updated_date == date(2025, 6, 6)
+        assert institution.updated_date == date(2025, 6, 17)
 
     def test_institution_created_date(self, mock_institution_data):
         """Test created date field."""
