@@ -8,4 +8,3 @@ omit =
     openalex/models/work.py
     openalex/models/source.py
     openalex/models/institution.py
-    openalex/models/funder.py
