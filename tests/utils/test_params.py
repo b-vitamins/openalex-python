@@ -274,3 +274,72 @@ class TestFilterSerialization:
         )
         assert "authorships.institutions.ror:https://ror.org/123" in result
         assert "topics.id:T123|T456" in result
+
+
+class TestParamValidation:
+    """Tests for validate_date_param and validate_numeric_param."""
+
+    def test_validate_date_param_valid(self):
+        from openalex.utils.params import validate_date_param
+
+        assert validate_date_param("2023-01-02") == "2023-01-02"
+
+    def test_validate_date_param_invalid(self):
+        from openalex.utils.params import validate_date_param
+
+        with pytest.raises(ValueError):
+            validate_date_param("2023-13-01")
+
+    def test_validate_numeric_param_valid(self):
+        from openalex.utils.params import validate_numeric_param
+
+        assert validate_numeric_param(5, min_val=0, max_val=10) == 5
+
+    def test_validate_numeric_param_bad_type(self):
+        from openalex.utils.params import validate_numeric_param
+
+        with pytest.raises(TypeError):
+            validate_numeric_param("five")
+
+    def test_validate_numeric_param_out_of_range(self):
+        from openalex.utils.params import validate_numeric_param
+
+        with pytest.raises(ValueError):
+            validate_numeric_param(11, min_val=0, max_val=10)
+
+
+class TestAdditionalFlatten:
+    """Additional coverage for ``flatten_filter_dict``."""
+
+    def test_range_dict(self):
+        from openalex.utils.params import flatten_filter_dict
+
+        filters = {"publication_year": {"gte": 2010, "lte": 2020}}
+        result = flatten_filter_dict(filters)
+
+        assert result == "publication_year:2010-2020"
+
+    def test_range_tuple(self):
+        from openalex.utils.params import flatten_filter_dict
+        from openalex.query import gte_, lte_
+
+        filters = {"cited_by_count": (gte_(10), lte_(50))}
+        result = flatten_filter_dict(filters)
+
+        assert result == "cited_by_count:10-50"
+
+    def test_tuple_search_values(self):
+        from openalex.utils.params import flatten_filter_dict
+
+        filters = {"title.search": ("AI", "ML")}
+        result = flatten_filter_dict(filters)
+
+        assert result == "title.search:AI,title.search:ML"
+
+    def test_group_by_serialization(self):
+        from openalex.utils.params import serialize_params
+
+        params = {"group_by": ["year", "type"]}
+        result = serialize_params(params)
+
+        assert result["group_by"] == ["year", "type"]
