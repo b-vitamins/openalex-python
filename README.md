@@ -6,7 +6,7 @@
   # Python Client for the OpenAlex API
 
   [![Python](https://github.com/b-vitamins/openalex-python/actions/workflows/python.yml/badge.svg)](https://github.com/b-vitamins/openalex-python/actions/workflows/python.yml)
-  [![codecov](https://codecov.io/gh/b-vitamins/openalex-python/graph/badge.svg?token=6DSB7U0GJF)](https://codecov.io/gh/b-vitamins/openalex-python)
+  [![codecov](https://codecov.io/gh/b-vitamins/openalex-python/graph/badge.svg?token=XB5KI75WU1)](https://codecov.io/gh/b-vitamins/openalex-python)
 </div>
 
 > **Disclaimer**: This is an **unofficial** client library for OpenAlex. It is not endorsed by or affiliated with OpenAlex or its parent organization. The library's author is not associated with OpenAlex.
@@ -237,27 +237,53 @@ works = Works(config=config)
 
 ## Features
 
-A Python client for the [OpenAlex](https://openalex.org) API providing:
+A Python client for the [OpenAlex](https://openalex.org) API with the following capabilities:
 
-### Core Capabilities
-- **Type-safe data models** using Pydantic for all OpenAlex entities
-- **Fluent query interface** with method chaining for intuitive query building
-- **Async support** for concurrent operations
-- **Automatic pagination** with streaming, cursor-based, and traditional approaches
+### Core Functionality
+- [x] **Type-safe data models** - Pydantic models for all OpenAlex entities
+- [x] **Fluent query interface** - Method chaining (`.filter().sort().select()`)
+- [x] **Comprehensive filtering** - Including comparison operators and boolean logic
+- [x] **Field selection** - Fetch only needed fields for better performance
+- [x] **Search functionality** - Full-text search across entities
+- [x] **Sorting** - Multi-field sorting with configurable order
+- [x] **Group-by queries** - Aggregate statistics without fetching individual records
 
-### Performance & Reliability
-- **Request caching** with configurable TTL to reduce API calls
-- **Automatic retries** with exponential backoff for transient failures
-- **Circuit breaker** pattern to handle API outages gracefully
-- **Connection pooling** for efficient HTTP connection reuse
-- **Rate limiting** with automatic request queuing
+### Async Support
+- [x] **Full async/await API** - Complete mirror of synchronous interface
+- [x] **Concurrent fetching** - `get_many()` for efficient multi-entity retrieval
+- [x] **Async pagination** - All pagination strategies available in async
+- [x] **Semaphore concurrency control** - Prevent overwhelming the API
+
+### Pagination
+- [x] **Cursor-based pagination** - Efficient for large datasets
+- [x] **Page-based pagination** - Traditional pagination with page numbers
+- [x] **Streaming paginator** - Memory-efficient iteration
+- [x] **Auto-pagination** - Simple `.paginate()` method
+
+### Reliability & Performance
+- [x] **Automatic retries** - Exponential backoff for transient failures
+- [x] **Rate limiting** - Configurable request throttling
+- [x] **Circuit breaker** - Fail fast when API is down
+- [x] **Connection pooling** - Reuse HTTP connections
+- [x] **In-memory caching** - Reduce duplicate API calls (off by default)
+- [ ] **Redis cache backend** - For persistent, distributed caching
+- [ ] **Request/response middleware** - For custom authentication, logging, etc.
+- [ ] **Adaptive rate limiting** - Automatically adjust to API response headers
 
 ### Developer Experience
-- **Comprehensive type hints** for IDE autocomplete and type checking
-- **Field selection** to fetch only needed data
-- **Flexible filtering** with support for complex boolean logic
-- **Group-by queries** for efficient aggregations
-- **Detailed exceptions** for different error scenarios
+- [x] **Full type hints** - IDE autocomplete and type checking
+- [x] **Structured exceptions** - Different error types for different failures
+- [x] **Environment variable config** - Easy configuration management
+- [x] **Comprehensive documentation** - Examples and API reference
+- [ ] **Async context managers** - Better resource lifecycle management
+- [ ] **Request retry budgets** - Limit total retry time across requests
+
+### Data Handling
+- [x] **Automatic validation** - Pydantic validates all API responses
+- [x] **Flexible result formats** - Individual entities, lists, or generators
+- [x] **Group-by aggregations** - Statistical summaries
+- [ ] **Streaming JSON parsing** - For extremely large single responses
+- [ ] **Bulk operations** - Send multiple updates in one request (when API supports it)
 
 For the official OpenAlex API documentation, visit [docs.openalex.org](https://docs.openalex.org/).
 

@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation examples for institutions are now self-contained
 - Expanded README with advanced usage and configuration sections
 - Updated docs to use `model_dump()` instead of `dict()`
+- Refreshed features section in README
 - Removed GitHub workflow `tests.yml` to avoid duplicate test runs
 
 ### Fixed
@@ -82,6 +83,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Autocomplete requests now use ``/autocomplete/{endpoint}`` to avoid 404 errors
 - Pagination utilities no longer loop indefinitely when cursors are ignored and
   now respect ``max_results`` across sync and async iterators.
-- Codecov upload step now includes repository slug and verbose output
+- Codecov badge updated with repo token and new `.codecov.yml`
 
 [Unreleased]: https://github.com/b-vitamins/openalex-python/compare/HEAD

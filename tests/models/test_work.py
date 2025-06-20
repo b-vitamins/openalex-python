@@ -480,3 +480,24 @@ class TestWorkModel:
         assert "crossref" in work.indexed_in
         assert "doaj" in work.indexed_in
         assert "pubmed" in work.indexed_in
+
+    def test_work_convenience_methods(self, mock_work_data):
+        """Test Work model convenience methods."""
+        from openalex.models import Work
+
+        work = Work(**mock_work_data)
+
+        assert work.citations_in_year(2023) > 0
+        assert work.citations_in_year(1999) == 0
+
+        author_names = work.author_names()
+        assert any("Heather" in name for name in author_names)
+        assert any("Jason" in name for name in author_names)
+
+        inst_names = work.institution_names()
+        assert len(inst_names) > 0
+
+        assert work.has_references() is True
+
+        work_no_abstract = Work(**{**mock_work_data, "abstract": None, "abstract_inverted_index": None})
+        assert work_no_abstract.has_abstract() is False
