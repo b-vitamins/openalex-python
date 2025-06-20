@@ -53,10 +53,10 @@ def demo_performance_monitoring() -> None:
     Authors()["A2150889177"]
     second_time = time.time() - start
 
-    print(f"   - First call: {first_time*1000:.2f}ms (cache miss)")
-    print(f"   - Second call: {second_time*1000:.2f}ms (cache hit)")
+    print(f"   - First call: {first_time * 1000:.2f}ms (cache miss)")
+    print(f"   - Second call: {second_time * 1000:.2f}ms (cache hit)")
     if second_time > 0:
-        print(f"   - Speedup: {first_time/second_time:.1f}x")
+        print(f"   - Speedup: {first_time / second_time:.1f}x")
 
     print("\n3. Performance Metrics Summary:")
     print("-" * 50)
@@ -67,7 +67,9 @@ def demo_performance_monitoring() -> None:
     print(f"Total Requests: {report['summary']['total_requests']}")
     print(f"Success Rate: {report['summary']['success_rate']}")
     print(f"Cache Hit Rate: {report['cache']['hit_rate']}")
-    print(f"Avg Response Time: {report['performance']['avg_response_time_ms']}ms")
+    print(
+        f"Avg Response Time: {report['performance']['avg_response_time_ms']}ms"
+    )
     print(f"95th Percentile: {report['performance']['p95_response_time_ms']}ms")
 
     print("\nRequests by Endpoint:")
@@ -108,7 +110,7 @@ def demo_concurrent_performance() -> None:
     total_time = time.time() - start
 
     print(f"\nCompleted in {total_time:.2f}s")
-    print(f"Average time per request: {total_time/len(work_ids):.2f}s")
+    print(f"Average time per request: {total_time / len(work_ids):.2f}s")
 
     metrics = get_metrics()
     print(f"\nCache hit rate: {metrics.cache_hit_rate:.1%}")

@@ -12,7 +12,6 @@ from openalex.resilience import CircuitBreaker, CircuitState
 class TestResilience(IsolatedTestCase):
     @pytest.mark.isolated
     def test_circuit_breaker_opens_after_failures(self):
-
         config = OpenAlexConfig(
             circuit_breaker_enabled=True,
             circuit_breaker_failure_threshold=3,

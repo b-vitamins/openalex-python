@@ -9,7 +9,6 @@ from tests.base import IsolatedTestCase
 class TestMetrics(IsolatedTestCase):
     @pytest.mark.isolated
     def test_metrics_collection_when_enabled(self):
-
         config = OpenAlexConfig(
             collect_metrics=True,
             retry_enabled=False,
@@ -67,7 +66,6 @@ class TestMetrics(IsolatedTestCase):
 
     @pytest.mark.isolated
     def test_cache_metrics_tracked(self):
-
         config = OpenAlexConfig(
             collect_metrics=True,
             cache_enabled=True,

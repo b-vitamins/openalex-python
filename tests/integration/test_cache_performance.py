@@ -59,9 +59,15 @@ class TestCachePerformance(CachePatchingTestCase):
                         Mock(json=lambda: search_response2, status_code=200),
                         Mock(json=lambda: search_response1, status_code=200),
                     ]
-                    results1 = Works().search("AI").filter(publication_year=2023).get()
-                    results2 = Works().search("ML").filter(publication_year=2023).get()
-                    results3 = Works().search("AI").filter(publication_year=2023).get()
+                    results1 = (
+                        Works().search("AI").filter(publication_year=2023).get()
+                    )
+                    results2 = (
+                        Works().search("ML").filter(publication_year=2023).get()
+                    )
+                    results3 = (
+                        Works().search("AI").filter(publication_year=2023).get()
+                    )
 
                     assert (
                         results1.results[0].display_name
@@ -77,7 +83,9 @@ class TestCachePerformance(CachePatchingTestCase):
         """Test cache respects TTL."""
         work_response = fixtures.work_response()
         with self.isolated_cache() as short_ttl_cache:
-            with self.patch_cache_manager(cache=short_ttl_cache, cache_enabled=True):
+            with self.patch_cache_manager(
+                cache=short_ttl_cache, cache_enabled=True
+            ):
                 with patch("httpx.Client.request") as mock_request:
                     mock_request.return_value = Mock(
                         json=lambda: work_response, status_code=200
@@ -120,9 +128,12 @@ class TestCachePerformance(CachePatchingTestCase):
         results: list[str] = []
 
         with self.isolated_cache() as cache:
+
             def fetch_work(work_id: str) -> None:
                 try:
-                    with self.patch_cache_manager(cache=cache, cache_enabled=True):
+                    with self.patch_cache_manager(
+                        cache=cache, cache_enabled=True
+                    ):
                         with patch("httpx.Client.request") as mock_request:
                             mock_request.return_value = Mock(
                                 json=lambda: work_response, status_code=200
@@ -134,7 +145,8 @@ class TestCachePerformance(CachePatchingTestCase):
 
             with ThreadPoolExecutor(max_workers=10) as executor:
                 futures = [
-                    executor.submit(fetch_work, "W2755950973") for _ in range(20)
+                    executor.submit(fetch_work, "W2755950973")
+                    for _ in range(20)
                 ]
                 for future in futures:
                     future.result()

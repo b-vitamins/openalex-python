@@ -5774,10 +5774,16 @@ def _reset_global_state():
     import openalex.entities
 
     if not hasattr(_reset_global_state, "_original_get_cache_manager"):
-        _reset_global_state._original_get_cache_manager = original_get_cache_manager
+        _reset_global_state._original_get_cache_manager = (
+            original_get_cache_manager
+        )
 
-    openalex.cache.manager.get_cache_manager = _reset_global_state._original_get_cache_manager
-    openalex.entities.get_cache_manager = _reset_global_state._original_get_cache_manager
+    openalex.cache.manager.get_cache_manager = (
+        _reset_global_state._original_get_cache_manager
+    )
+    openalex.entities.get_cache_manager = (
+        _reset_global_state._original_get_cache_manager
+    )
 
     clear_cache()
     _cache_managers.clear()

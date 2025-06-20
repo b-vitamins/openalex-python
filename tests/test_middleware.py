@@ -58,7 +58,6 @@ class TestMiddleware(IsolatedTestCase):
 
     @pytest.mark.isolated
     def test_response_interceptor_transforms_data(self):
-
         config = OpenAlexConfig(cache_enabled=False)
         config.middleware.response_interceptors.append(TitleUpperInterceptor())
         works = Works(config=config)

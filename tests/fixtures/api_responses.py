@@ -120,7 +120,9 @@ class APIResponseFixtures:
         }
 
     @staticmethod
-    def search_response(query: str, page: int = 1, per_page: int = 25) -> dict[str, Any]:
+    def search_response(
+        query: str, page: int = 1, per_page: int = 25
+    ) -> dict[str, Any]:
         """Create a search response with pagination."""
         total_results = 150  # Simulate 150 total results
         results = []
@@ -207,7 +209,9 @@ class APIResponseFixtures:
         }
 
     @staticmethod
-    def error_response(status_code: int, error_type: str = "Bad Request") -> dict[str, Any]:
+    def error_response(
+        status_code: int, error_type: str = "Bad Request"
+    ) -> dict[str, Any]:
         """Create an error response."""
         messages = {
             400: "Invalid filter parameter",
@@ -226,10 +230,14 @@ class APIResponseFixtures:
         }
 
     @staticmethod
-    def rate_limit_headers(remaining: int = 0, reset_time: int | None = None) -> dict[str, str]:
+    def rate_limit_headers(
+        remaining: int = 0, reset_time: int | None = None
+    ) -> dict[str, str]:
         """Create rate limit headers."""
         if reset_time is None:
-            reset_time = int((datetime.now() + timedelta(seconds=60)).timestamp())
+            reset_time = int(
+                (datetime.now() + timedelta(seconds=60)).timestamp()
+            )
 
         headers: dict[str, str] = {
             "X-RateLimit-Limit": "100",

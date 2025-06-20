@@ -49,6 +49,7 @@ class TestIsolationMechanisms:
     def test_patch_cleanup_works(self) -> None:
         test_case = CachePatchingTestCase()
         import openalex.cache.manager as cm
+
         original_get_cache_manager = cm.get_cache_manager
 
         with test_case.patch_cache_manager(cache_enabled=True) as mock_manager:

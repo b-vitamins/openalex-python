@@ -300,8 +300,12 @@ class AsyncConnection:
         return headers
 
 
-_connections: dict[int, tuple[weakref.ReferenceType[OpenAlexConfig], Connection]] = {}
-_async_connections: dict[int, tuple[weakref.ReferenceType[OpenAlexConfig], AsyncConnection]] = {}
+_connections: dict[
+    int, tuple[weakref.ReferenceType[OpenAlexConfig], Connection]
+] = {}
+_async_connections: dict[
+    int, tuple[weakref.ReferenceType[OpenAlexConfig], AsyncConnection]
+] = {}
 
 
 def get_connection(config: OpenAlexConfig) -> Connection:

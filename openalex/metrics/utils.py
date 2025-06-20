@@ -8,7 +8,9 @@ from .collector import MetricsCollector
 if TYPE_CHECKING:
     from ..config import OpenAlexConfig
 
-_metrics_collectors: dict[int, tuple[weakref.ReferenceType[OpenAlexConfig], MetricsCollector]] = {}
+_metrics_collectors: dict[
+    int, tuple[weakref.ReferenceType[OpenAlexConfig], MetricsCollector]
+] = {}
 
 
 def get_metrics_collector(config: OpenAlexConfig) -> MetricsCollector:
