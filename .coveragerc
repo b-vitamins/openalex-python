@@ -3,7 +3,6 @@ omit =
     openalex/connection.py
     openalex/metrics/performance.py
     openalex/utils/pagination.py
-    openalex/async_entities.py
     openalex/query.py
     openalex/entities.py
     openalex/models/work.py
