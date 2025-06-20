@@ -6,6 +6,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+pytest.importorskip("pytest_benchmark")
+
 from openalex import Works
 from openalex.cache.memory import MemoryCache
 from openalex.models import Work
