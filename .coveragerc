@@ -1,7 +1,6 @@
 [run]
 omit =
     openalex/connection.py
-    openalex/metrics/performance.py
     openalex/query.py
     openalex/entities.py
     openalex/models/work.py
