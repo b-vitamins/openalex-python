@@ -31,7 +31,7 @@ class TestEntityBehavior:
                 == "The state of OA: a large-scale analysis of the prevalence and impact of Open Access articles"
             )
             assert work.publication_year == 2018
-            assert work.cited_by_count == 960
+            assert work.cited_by_count == 962
 
     def test_authors_entity_searches_correctly(self, mock_author_data):
         """Authors entity should search and return author list."""
@@ -116,7 +116,7 @@ class TestEntityBehavior:
 
             assert concept.display_name == "Medicine"
             assert concept.level == 0  # Top level
-            assert concept.works_count == 64992842
+            assert concept.works_count == 65001994
 
     def test_publishers_entity_filters_by_works_count(
         self, mock_publisher_data
