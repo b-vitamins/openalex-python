@@ -6,5 +6,4 @@ omit =
     openalex/query.py
     openalex/entities.py
     openalex/models/work.py
-    openalex/models/source.py
     openalex/models/institution.py
