@@ -11,8 +11,8 @@
    "poetry"
    ;; Core Python dependencies (from pyproject.toml)
    "python-httpx"
-  "python-pydantic"
-  "python-structlog"
+   "python-pydantic"
+   "python-structlog"
    "python-rich"
    "python-dateutil"
    "python-orjson"
@@ -22,6 +22,7 @@
    ;; Testing framework and tools
    "python-pytest"
    "python-pytest-asyncio"
+   "python-pytest-benchmark"
    "python-pytest-cov"
    "python-pytest-httpx"
    "python-pytest-examples"
