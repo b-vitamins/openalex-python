@@ -42,7 +42,9 @@ async def test_get_many_skips_invalid(monkeypatch: pytest.MonkeyPatch) -> None:
     results = await entity.get_many(["a1", "bad", "a2"], max_concurrent=2)
 
     assert results == ["item-A1", "item-A2"]
-    assert logger.warnings  # invalid ID logged
+    assert logger.warnings == [
+        "Skipping invalid ID bad: bad id"
+    ]
 
 
 @pytest.mark.asyncio
@@ -64,5 +66,7 @@ async def test_get_many_handles_errors(monkeypatch: pytest.MonkeyPatch) -> None:
     results = await entity.get_many(["A1", "B2"], max_concurrent=2)
 
     assert results == ["ok-A1"]
-    assert logger.errors  # error logged for failing ID
+    assert logger.errors == [
+        "Failed to fetch B2"
+    ]
 
