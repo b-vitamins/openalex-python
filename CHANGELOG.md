@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Development guidelines for contributors in `AGENTS.md`
 - Behavior-driven test suite covering async, caching, config, pagination, etc.
 - Synchronous ``OpenAlexClient`` for simple API access
+- Unexcluded ``Source`` model from coverage and added tests
+- Unexcluded ``Institution`` model from coverage and added tests
+- Unexcluded pagination utilities from coverage and added tests
+- Unexcluded metrics performance module from coverage and added tests
 - Batch fetching via ``BaseEntity.get_many`` and ``AsyncBaseEntity.get_many``
 - Cache warming utility to pre-populate frequently accessed items
 - Streaming paginator for memory-efficient iteration
