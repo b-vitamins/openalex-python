@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove unused import and simplify error handling in client
 
 ### Added
+- Comprehensive test naming convention and guidelines in tests/README.md
 - Comprehensive retry logic for API requests
 - Request caching layer for improved performance
 - Full async/await support for all API operations
