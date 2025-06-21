@@ -142,6 +142,7 @@ class Paginator(Generic[T]):
             elif page is not None:
                 page += 1
             else:
+                # No next_cursor and no page left, prevent infinite loop
                 break
 
     def __iter__(self) -> Iterator[ListResult[T]]:
@@ -262,6 +263,7 @@ class AsyncPaginator(Generic[T]):
             elif page is not None:
                 page += 1
             else:
+                # No next_cursor, and page is None: we're at the end, break!
                 break
 
     async def pages(self) -> AsyncIterator[ListResult[T]]:
@@ -313,7 +315,7 @@ class AsyncPaginator(Generic[T]):
 
     async def all(self) -> list[T]:
         """Get all results as a list."""
-        results = []
+        results: list[T] = []
         async for item in self:
             results.append(item)
         return results
@@ -356,7 +358,7 @@ class AsyncPaginator(Generic[T]):
         ]
 
         # Limit concurrency
-        results = []
+        results: list[T] = []
         for i in range(0, len(tasks), self.concurrency):
             batch = tasks[i : i + self.concurrency]
             batch_results = await asyncio.gather(*batch)

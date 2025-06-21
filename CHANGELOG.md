@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix unnecessary comparison warnings in publisher hierarchy checks
 - Correct type annotation for topic date parsing to include date type
 - Fix possibly unbound cache_key variable in async API cache handling
+- Add explicit type annotations for generic collections to improve type inference
 
 ### Added
 - Comprehensive retry logic for API requests

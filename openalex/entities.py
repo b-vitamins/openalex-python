@@ -112,7 +112,7 @@ class BaseEntity(Generic[T, F]):
         return self._config
 
     def __repr__(self) -> str:
-        config_parts = []
+        config_parts: list[str] = []
         if self._config.email:
             config_parts.append(f"email='{self._config.email}'")
         if self._config.api_key:
@@ -135,7 +135,7 @@ class BaseEntity(Generic[T, F]):
     def _parse_list_response(self, data: dict[str, Any]) -> ListResult[T]:
         results = [self._parse_response(it) for it in data.get("results", [])]
 
-        group_items = []
+        group_items: list[GroupByResult] = []
         for grp in data.get("group_by", []) or []:
             try:
                 group_items.append(GroupByResult(**grp))
@@ -448,7 +448,7 @@ def _build_list_result(data: dict[str, Any], model: type[_T]) -> ListResult[_T]:
         except ValidationError:
             results.append(model.model_construct(**item))  # type: ignore
 
-    group_items = []
+    group_items: list[GroupByResult] = []
     for grp in data.get("group_by", []) or []:
         try:
             group_items.append(GroupByResult(**grp))
