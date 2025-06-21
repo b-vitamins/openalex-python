@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated requirements.txt to use httpx[http2] and flexible version constraints
 - Migrated from mypy to pyright for type checking in development dependencies
 - Added pytest-benchmark to support performance benchmarking tests
+- Configure pyright for strict type checking with optimized unknown type handling
 
 ### Added
 - Comprehensive retry logic for API requests
