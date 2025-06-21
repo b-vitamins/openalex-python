@@ -89,7 +89,7 @@ class Topic(OpenAlexEntity):
 
     @field_validator("updated_date", mode="before")
     @classmethod
-    def parse_updated_date(cls, v: datetime | str | None) -> date | None:
+    def parse_updated_date(cls, v: datetime | date | str | None) -> date | None:
         """Parse potentially malformed datetime strings without dateutil."""
         if v is None:
             return None

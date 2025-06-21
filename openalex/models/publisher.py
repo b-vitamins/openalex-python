@@ -106,11 +106,7 @@ class Publisher(OpenAlexEntity):
     @property
     def is_parent_publisher(self) -> bool:
         """Check if this is a parent publisher."""
-        return (
-            self.hierarchy_level == 0
-            if self.hierarchy_level is not None
-            else False
-        )
+        return self.hierarchy_level == 0
 
     @property
     def countries(self) -> list[str]:

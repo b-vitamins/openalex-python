@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Make LogicalExpression class public to resolve private usage warnings
 - Remove redundant type checking in validate_numeric_param function
+- Remove unnecessary None checks in is_openalex_id function
+- Fix unnecessary comparison warnings in publisher hierarchy checks
+- Correct type annotation for topic date parsing to include date type
 
 ### Added
 - Comprehensive retry logic for API requests

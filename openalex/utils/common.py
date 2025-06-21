@@ -51,7 +51,7 @@ def strip_id_prefix(
 
 def is_openalex_id(value: str | None, prefix: str = OPENALEX_ID_PREFIX) -> bool:
     """Return ``True`` if ``value`` looks like an OpenAlex ID."""
-    return bool(value) and isinstance(value, str) and value.startswith(prefix)
+    return value is not None and value.startswith(prefix)
 
 
 def ensure_prefix(value: str | None, prefix: str) -> str | None:
