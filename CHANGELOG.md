@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactor test configuration and fixtures for improved test isolation
 - Update existing behavior and integration tests to follow new conventions
 
+### Removed
+- Legacy test structure in favor of organized unit/behavior/integration layout
+- Duplicate and inconsistent test files replaced by standardized structure
+
 ### Fixed
 - Make LogicalExpression class public to resolve private usage warnings
 - Remove redundant type checking in validate_numeric_param function
