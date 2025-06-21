@@ -487,6 +487,7 @@ class AsyncBaseAPI(Generic[T]):
             raise_for_status(response)
             return cast("dict[str, Any]", response.json())
 
+        cache_key = None
         if cache_manager.enabled:
             from .cache.base import CacheKeyBuilder
 
@@ -503,7 +504,11 @@ class AsyncBaseAPI(Generic[T]):
 
         data = await fetch()
 
-        if cache_manager.enabled and cache_manager.cache:
+        if (
+            cache_manager.enabled
+            and cache_manager.cache
+            and cache_key is not None
+        ):
             ttl = cache_manager.get_ttl_for_endpoint(self.endpoint)
             cache_manager.cache.set(cache_key, data, ttl)
 

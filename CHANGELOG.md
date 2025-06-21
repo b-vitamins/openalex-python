@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove unnecessary None checks in is_openalex_id function
 - Fix unnecessary comparison warnings in publisher hierarchy checks
 - Correct type annotation for topic date parsing to include date type
+- Fix possibly unbound cache_key variable in async API cache handling
 
 ### Added
 - Comprehensive retry logic for API requests
