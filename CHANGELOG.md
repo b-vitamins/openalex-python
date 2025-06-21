@@ -28,6 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Comprehensive test naming convention and guidelines in tests/README.md
+- New unit test structure following module mirroring principles
+- Enhanced test helpers and base classes for better test organization
+- Performance benchmark tests for cache and query operations
+- Structured fixture data directory with real API response samples
 - Comprehensive retry logic for API requests
 - Request caching layer for improved performance
 - Full async/await support for all API operations

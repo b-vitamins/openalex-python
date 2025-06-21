@@ -1,0 +1,257 @@
+{
+  "id": "https://openalex.org/W2755950973",
+  "doi": "https://doi.org/10.1103/physrevlett.118.091101",
+  "display_name": "GW170104: Observation of a 50-Solar-Mass Binary Black Hole Coalescence at Redshift 0.2",
+  "publication_year": 2017,
+  "publication_date": "2017-06-01",
+  "type": "article",
+  "cited_by_count": 850,
+  "is_retracted": false,
+  "is_paratext": false,
+  "open_access": {
+    "is_oa": true,
+    "oa_status": "gold",
+    "oa_url": "https://journals.aps.org/prl/pdf/10.1103/PhysRevLett.118.221101",
+    "any_repository_has_fulltext": true
+  },
+  "authorships": [
+    {
+      "author_position": "first",
+      "author": {
+        "id": "https://openalex.org/A2150889177",
+        "display_name": "B. P. Abbott",
+        "orcid": null
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I157725225",
+          "display_name": "California Institute of Technology",
+          "ror": "https://ror.org/05dxps055",
+          "country_code": "US",
+          "type": "education"
+        }
+      ],
+      "raw_affiliation_strings": [
+        "LIGO Laboratory, California Institute of Technology, Pasadena, CA 91125, USA"
+      ]
+    }
+  ],
+  "host_venue": {
+    "id": "https://openalex.org/V78458016",
+    "display_name": "Physical Review Letters",
+    "publisher": "American Physical Society",
+    "issn_l": "0031-9007",
+    "issn": ["0031-9007", "1079-7114"],
+    "is_oa": false,
+    "is_in_doaj": false,
+    "url": "https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.118.221101"
+  },
+  "alternate_host_venues": [],
+  "locations": [
+    {
+      "source": {
+        "id": "https://openalex.org/S78458016",
+        "display_name": "Physical Review Letters",
+        "issn_l": "0031-9007",
+        "issn": ["0031-9007", "1079-7114"],
+        "is_oa": false,
+        "is_in_doaj": false,
+        "host_organization": "https://openalex.org/P4310320261",
+        "host_organization_name": "American Physical Society",
+        "host_organization_lineage": ["https://openalex.org/P4310320261"]
+      },
+      "landing_page_url": "https://doi.org/10.1103/PhysRevLett.118.221101",
+      "pdf_url": null,
+      "source_text": null,
+      "license": null,
+      "is_oa": false,
+      "version": "publishedVersion"
+    }
+  ],
+  "best_oa_location": {
+    "is_oa": true,
+    "landing_page_url": "https://doi.org/10.1103/PhysRevLett.118.221101",
+    "pdf_url": "https://journals.aps.org/prl/pdf/10.1103/PhysRevLett.118.221101",
+    "source": {
+      "id": "https://openalex.org/S78458016",
+      "display_name": "Physical Review Letters",
+      "issn_l": "0031-9007",
+      "issn": ["0031-9007", "1079-7114"],
+      "is_oa": false,
+      "is_in_doaj": false,
+      "host_organization": "https://openalex.org/P4310320261",
+      "host_organization_name": "American Physical Society",
+      "host_organization_lineage": ["https://openalex.org/P4310320261"]
+    },
+    "license": null,
+    "version": "publishedVersion"
+  },
+  "primary_location": {
+    "source": {
+      "id": "https://openalex.org/S78458016",
+      "display_name": "Physical Review Letters",
+      "issn_l": "0031-9007",
+      "issn": ["0031-9007", "1079-7114"],
+      "is_oa": false,
+      "is_in_doaj": false,
+      "host_organization": "https://openalex.org/P4310320261",
+      "host_organization_name": "American Physical Society",
+      "host_organization_lineage": ["https://openalex.org/P4310320261"]
+    },
+    "landing_page_url": "https://doi.org/10.1103/PhysRevLett.118.221101",
+    "pdf_url": null,
+    "source_text": null,
+    "license": null,
+    "is_oa": false,
+    "version": "publishedVersion"
+  },
+  "biblio": {
+    "volume": "118",
+    "issue": "22",
+    "first_page": "221101",
+    "last_page": "221101"
+  },
+  "is_oa": true,
+  "is_in_doaj": false,
+  "corresponding_author_ids": [],
+  "corresponding_institution_ids": [],
+  "apc_list": null,
+  "apc_paid": null,
+  "fwci": 1.926,
+  "has_fulltext": true,
+  "fulltext_origin": "ngrams",
+  "cited_by_api_url": "https://api.openalex.org/works?filter=cites:W2755950973",
+  "counts_by_year": [
+    {
+      "year": 2023,
+      "cited_by_count": 45
+    },
+    {
+      "year": 2022,
+      "cited_by_count": 52
+    },
+    {
+      "year": 2021,
+      "cited_by_count": 63
+    },
+    {
+      "year": 2020,
+      "cited_by_count": 71
+    },
+    {
+      "year": 2019,
+      "cited_by_count": 89
+    },
+    {
+      "year": 2018,
+      "cited_by_count": 95
+    },
+    {
+      "year": 2017,
+      "cited_by_count": 25
+    }
+  ],
+  "updated_date": "2024-02-18T12:15:30.123456",
+  "created_date": "2017-06-02T09:23:45.789012",
+  "abstract_inverted_index": {
+    "We": [0, 45],
+    "present": [1],
+    "the": [2, 12, 23, 34, 47, 58],
+    "observation": [3],
+    "of": [4, 13, 24, 35, 48, 59],
+    "GW170104": [5],
+    "a": [6, 14, 25, 36, 49, 60],
+    "gravitational": [7, 15, 26, 37, 50, 61],
+    "wave": [8, 16, 27, 38, 51, 62],
+    "signal": [9, 17, 28, 39, 52, 63],
+    "produced": [10],
+    "by": [11, 22, 33, 46, 57],
+    "coalescence": [18, 29, 40, 53, 64],
+    "two": [19, 30, 41, 54, 65],
+    "black": [20, 31, 42, 55, 66],
+    "holes": [21, 32, 43, 56, 67]
+  },
+  "topics": [
+    {
+      "id": "https://openalex.org/T10309",
+      "display_name": "Gravitational Wave Astronomy and Cosmology",
+      "score": 0.9998,
+      "subfield": {
+        "id": "https://openalex.org/subfields/3103",
+        "display_name": "Astronomy and Astrophysics"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/31",
+        "display_name": "Physics and Astronomy"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    }
+  ],
+  "keywords": [
+    {
+      "id": "https://openalex.org/keywords/gravitational-waves",
+      "display_name": "Gravitational Waves",
+      "score": 0.98
+    },
+    {
+      "id": "https://openalex.org/keywords/black-holes",
+      "display_name": "Black Holes",
+      "score": 0.95
+    },
+    {
+      "id": "https://openalex.org/keywords/ligo",
+      "display_name": "LIGO",
+      "score": 0.89
+    }
+  ],
+  "concepts": [
+    {
+      "id": "https://openalex.org/C103989177",
+      "wikidata": "https://www.wikidata.org/wiki/Q11412",
+      "display_name": "Gravitational wave",
+      "level": 2,
+      "score": 0.9823
+    },
+    {
+      "id": "https://openalex.org/C126255220",
+      "wikidata": "https://www.wikidata.org/wiki/Q36465",
+      "display_name": "Physics",
+      "level": 0,
+      "score": 0.9156
+    },
+    {
+      "id": "https://openalex.org/C62520636",
+      "wikidata": "https://www.wikidata.org/wiki/Q186",
+      "display_name": "Astronomy",
+      "level": 1,
+      "score": 0.8934
+    },
+    {
+      "id": "https://openalex.org/C197903097",
+      "wikidata": "https://www.wikidata.org/wiki/Q1046",
+      "display_name": "Cosmology",
+      "level": 1,
+      "score": 0.7345
+    }
+  ],
+  "mesh": [],
+  "referenced_works": [
+    "https://openalex.org/W1966251278",
+    "https://openalex.org/W2080644306",
+    "https://openalex.org/W2127639127",
+    "https://openalex.org/W2140779492",
+    "https://openalex.org/W2140837291"
+  ],
+  "related_works": [
+    "https://openalex.org/W2755950973",
+    "https://openalex.org/W2962828210",
+    "https://openalex.org/W2963537863",
+    "https://openalex.org/W2963661157",
+    "https://openalex.org/W2964137901"
+  ],
+  "ngrams_url": "https://api.openalex.org/works/W2755950973/ngrams",
+  "cited_by_api_url": "https://api.openalex.org/works?filter=cites:W2755950973"
+}

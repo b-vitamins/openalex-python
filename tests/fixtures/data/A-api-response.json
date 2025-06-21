@@ -1,0 +1,32 @@
+{
+  "id": "https://openalex.org/A2150889177",
+  "orcid": "https://orcid.org/0000-0002-3666-1234",
+  "display_name": "B. P. Abbott",
+  "display_name_alternatives": [
+    "Barry P. Abbott",
+    "B.P. Abbott",
+    "Abbott, B.P."
+  ],
+  "works_count": 523,
+  "cited_by_count": 28451,
+  "last_known_institution": {
+    "id": "https://openalex.org/I157725225",
+    "display_name": "California Institute of Technology",
+    "ror": "https://ror.org/05dxps055",
+    "country_code": "US",
+    "type": "education"
+  },
+  "counts_by_year": [
+    {
+      "year": 2023,
+      "works_count": 15,
+      "cited_by_count": 2150
+    },
+    {
+      "year": 2022,
+      "works_count": 18,
+      "cited_by_count": 2543
+    }
+  ],
+  "updated_date": "2023-08-01T00:00:00"
+}
