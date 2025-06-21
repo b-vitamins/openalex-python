@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Correct type annotation for topic date parsing to include date type
 - Fix possibly unbound cache_key variable in async API cache handling
 - Add explicit type annotations for generic collections to improve type inference
+- Resolve filter type assignment issues with proper type narrowing
+- Fix async entity method call to use self instead of parent class
+- Remove unused import and simplify error handling in client
 
 ### Added
 - Comprehensive retry logic for API requests

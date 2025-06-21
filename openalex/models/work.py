@@ -433,7 +433,7 @@ class Work(OpenAlexEntity):
     @model_validator(mode="after")
     def validate_citation_count(self) -> Work:
         """Ensure citation counts are non-negative."""
-        if self.cited_by_count is not None and self.cited_by_count < 0:
+        if self.cited_by_count < 0:
             msg = "cited_by_count cannot be negative"
             raise ValueError(msg)
         if (
@@ -632,9 +632,11 @@ class WorksFilter(BaseFilter):
         if isinstance(year, int):
             year = [year]
 
-        current_filter = self.filter or {}
-        if isinstance(current_filter, str):
-            current_filter = {"raw": current_filter}
+        filter_value = self.filter or {}
+        if isinstance(filter_value, str):
+            current_filter: dict[str, Any] = {"raw": filter_value}
+        else:
+            current_filter = filter_value
 
         current_filter["publication_year"] = year
         return self.model_copy(update={"filter": current_filter})
@@ -644,18 +646,22 @@ class WorksFilter(BaseFilter):
         if isinstance(work_type, str):
             work_type = [work_type]
 
-        current_filter = self.filter or {}
-        if isinstance(current_filter, str):
-            current_filter = {"raw": current_filter}
+        filter_value = self.filter or {}
+        if isinstance(filter_value, str):
+            current_filter: dict[str, Any] = {"raw": filter_value}
+        else:
+            current_filter = filter_value
 
         current_filter["type"] = work_type
         return self.model_copy(update={"filter": current_filter})
 
     def with_open_access(self, is_oa: bool = True) -> WorksFilter:  # noqa: FBT001,FBT002
         """Filter by open access status."""
-        current_filter = self.filter or {}
-        if isinstance(current_filter, str):
-            current_filter = {"raw": current_filter}
+        filter_value = self.filter or {}
+        if isinstance(filter_value, str):
+            current_filter: dict[str, Any] = {"raw": filter_value}
+        else:
+            current_filter = filter_value
 
         current_filter["is_oa"] = is_oa
         return self.model_copy(update={"filter": current_filter})
@@ -685,9 +691,11 @@ class InstitutionsFilter(BaseFilter):
         if isinstance(country_code, str):
             country_code = [country_code]
 
-        current_filter = self.filter or {}
-        if isinstance(current_filter, str):
-            current_filter = {"raw": current_filter}
+        filter_value = self.filter or {}
+        if isinstance(filter_value, str):
+            current_filter: dict[str, Any] = {"raw": filter_value}
+        else:
+            current_filter = filter_value
 
         current_filter["country_code"] = country_code
         return self.model_copy(update={"filter": current_filter})
@@ -699,9 +707,11 @@ class InstitutionsFilter(BaseFilter):
         if isinstance(institution_type, str):
             institution_type = [institution_type]
 
-        current_filter = self.filter or {}
-        if isinstance(current_filter, str):
-            current_filter = {"raw": current_filter}
+        filter_value = self.filter or {}
+        if isinstance(filter_value, str):
+            current_filter: dict[str, Any] = {"raw": filter_value}
+        else:
+            current_filter = filter_value
 
         current_filter["type"] = institution_type
         return self.model_copy(update={"filter": current_filter})

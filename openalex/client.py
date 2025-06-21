@@ -158,11 +158,10 @@ class OpenAlexClient:
                 )
                 continue
             if status == 404:
+                message = "Resource not found"
                 with contextlib.suppress(Exception):
                     data = response.json()
-                message = (
-                    locals().get("data", {}).get("error", "Resource not found")
-                )
+                    message = data.get("error", "Resource not found")
                 raise NotFoundError(message)
 
             raise_for_status(response)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TypeVar, cast
+from typing import TypeVar
 
 from structlog import get_logger
 
@@ -34,7 +34,7 @@ class AsyncBaseEntity(_AsyncBaseEntity[T, F]):
         async def fetch_with_semaphore(id: str) -> T | None:
             async with semaphore:
                 try:
-                    return cast(T, await _AsyncBaseEntity.get(self, id))
+                    return await self.get(id)
                 except Exception:
                     logger.exception("Failed to fetch %s", id)
                     return None
