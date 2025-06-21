@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced test helpers and base classes for better test organization
 - Performance benchmark tests for cache and query operations
 - Structured fixture data directory with real API response samples
+- New behavior tests for batch operations, cache warming, and network isolation
 - Comprehensive retry logic for API requests
 - Request caching layer for improved performance
 - Full async/await support for all API operations
