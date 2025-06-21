@@ -27,7 +27,7 @@ jobs:
         run: poetry run ruff check .
 
       - name: Type check
-        run: poetry run mypy openalex
+        run: poetry run pyright
 
       - name: Run tests
         run: poetry run pytest --cov=openalex --cov-report=xml --cov-report=term-missing

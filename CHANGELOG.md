@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Configure pyright for strict type checking with optimized unknown type handling
 - Refactor test configuration and fixtures for improved test isolation
 - Update existing behavior and integration tests to follow new conventions
+- Update CI/CD workflows and project configuration for new test structure
 
 ### Removed
 - Legacy test structure in favor of organized unit/behavior/integration layout
