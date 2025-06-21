@@ -18,6 +18,7 @@ from .models.base import ListResult, Meta
 from .utils.pagination import MAX_PER_PAGE, AsyncPaginator, Paginator
 
 __all__ = [
+    "LogicalExpression",
     "Query",
     "gt_",
     "gte_",
@@ -36,7 +37,7 @@ class or_(dict[str, Any]):  # noqa: N801
 
 
 @dataclass(slots=True)
-class _LogicalExpression:
+class LogicalExpression:
     """Base class for logical expressions."""
 
     value: Any
@@ -46,31 +47,35 @@ class _LogicalExpression:
         return f"{self.token}{self.value}"
 
 
-class not_(_LogicalExpression):  # noqa: N801
+# Maintain backward compatibility
+_LogicalExpression = LogicalExpression
+
+
+class not_(LogicalExpression):  # noqa: N801
     """Logical NOT expression."""
 
     token = "!"
 
 
-class gt_(_LogicalExpression):  # noqa: N801
+class gt_(LogicalExpression):  # noqa: N801
     """Greater than expression."""
 
     token = ">"
 
 
-class lt_(_LogicalExpression):  # noqa: N801
+class lt_(LogicalExpression):  # noqa: N801
     """Less than expression."""
 
     token = "<"
 
 
-class gte_(_LogicalExpression):  # noqa: N801
+class gte_(LogicalExpression):  # noqa: N801
     """Greater than or equal expression."""
 
     token = ">="
 
 
-class lte_(_LogicalExpression):  # noqa: N801
+class lte_(LogicalExpression):  # noqa: N801
     """Less than or equal expression."""
 
     token = "<="

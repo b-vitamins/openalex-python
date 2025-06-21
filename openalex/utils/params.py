@@ -10,7 +10,7 @@ from typing import Any, Final
 # applied so that raw values are sent and encoded once by the HTTP client.
 from urllib.parse import quote_plus
 
-from ..query import _LogicalExpression, gte_, lte_, or_
+from ..query import LogicalExpression, gte_, lte_, or_
 
 KEY_MAP: Final[dict[str, str]] = {
     "per_page": "per-page",
@@ -56,9 +56,6 @@ def validate_numeric_param(
     value: int | float, min_val: int = 0, max_val: int = 1_000_000
 ) -> int | float:
     """Ensure numeric parameters are within reasonable ranges."""
-    if not isinstance(value, int | float):
-        message = f"Numeric value required, got {type(value).__name__}"
-        raise TypeError(message)
     if value < min_val or value > max_val:
         message = f"Value {value} outside allowed range [{min_val}, {max_val}]"
         raise ValueError(message)
@@ -75,7 +72,7 @@ def serialize_filter_value(value: Any) -> str:
     - Regular values (URL encoded)
     """
     # Handle logical expressions
-    if isinstance(value, _LogicalExpression):
+    if isinstance(value, LogicalExpression):
         # Recursively serialize the inner value
         inner = serialize_filter_value(value.value)
         return f"{value.token}{inner}"

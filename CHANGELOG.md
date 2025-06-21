@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added pytest-benchmark to support performance benchmarking tests
 - Configure pyright for strict type checking with optimized unknown type handling
 
+### Fixed
+- Make LogicalExpression class public to resolve private usage warnings
+- Remove redundant type checking in validate_numeric_param function
+
 ### Added
 - Comprehensive retry logic for API requests
 - Request caching layer for improved performance
