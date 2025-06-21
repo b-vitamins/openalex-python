@@ -22,16 +22,13 @@
    ;; Testing framework and tools
    "python-pytest"
    "python-pytest-asyncio"
-   "python-pytest-benchmark"
    "python-pytest-cov"
    "python-pytest-httpx"
    "python-pytest-examples"
-   "python-coverage"
+   "python-pytest-benchmark"
    ;; Code quality and linting
-   "python-mypy"
-   "python-black"
-   "python-isort"
    "python-ruff"
+   "node-pyright"
    "pre-commit"
    ;; Development tools
    "python-ipython"

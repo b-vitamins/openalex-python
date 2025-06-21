@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Synchronized dependency files with pyproject.toml for consistency
+- Updated requirements.txt to use httpx[http2] and flexible version constraints
+- Migrated from mypy to pyright for type checking in development dependencies
+- Added pytest-benchmark to support performance benchmarking tests
+
 ### Added
 - Comprehensive retry logic for API requests
 - Request caching layer for improved performance
