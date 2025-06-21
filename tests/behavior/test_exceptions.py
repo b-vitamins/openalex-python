@@ -329,10 +329,13 @@ class TestExceptionBehavior:
         config = OpenAlexConfig(timeout=0.5)
 
         from openalex.api import _connection_pool
+
         _connection_pool.clear()
 
         with patch("httpx.Client.request") as mock_request:
-            mock_request.side_effect = httpx.TimeoutException("Request timed out")
+            mock_request.side_effect = httpx.TimeoutException(
+                "Request timed out"
+            )
 
             works = Works(config=config)
 
@@ -386,5 +389,10 @@ class TestExceptionBehavior:
 
             for _operation, func, expected_timeout in test_cases:
                 func(works)
-                assert isinstance(mock_request.call_args.kwargs["timeout"], httpx.Timeout)
-                assert mock_request.call_args.kwargs["timeout"].read == expected_timeout
+                assert isinstance(
+                    mock_request.call_args.kwargs["timeout"], httpx.Timeout
+                )
+                assert (
+                    mock_request.call_args.kwargs["timeout"].read
+                    == expected_timeout
+                )

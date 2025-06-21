@@ -8,7 +8,9 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import Mock, patch
 
+import httpx
 import pytest
+import requests
 
 DATA_DIR = Path(__file__).parent / "fixtures" / "data"
 
@@ -20,6 +22,7 @@ def _load_data(filename: str) -> dict[str, Any]:
 
 
 # Basic entity data fixtures -------------------------------------------------
+
 
 @pytest.fixture
 def mock_s137773608_data() -> dict[str, Any]:
@@ -77,6 +80,7 @@ def mock_f4320332161_data() -> dict[str, Any]:
 
 # Common fixtures for API mocking -------------------------------------------
 
+
 @pytest.fixture
 def mock_http_get():
     """Mock HTTP GET requests without external dependencies."""
@@ -88,8 +92,12 @@ def mock_http_get():
 def mock_api_response():
     """Create mock API response objects."""
 
-    def create_response(json_data: Any | None = None, status_code: int = 200,
-                        text: str = "", headers: dict[str, str] | None = None):
+    def create_response(
+        json_data: Any | None = None,
+        status_code: int = 200,
+        text: str = "",
+        headers: dict[str, str] | None = None,
+    ):
         response = Mock()
         response.status_code = status_code
         response.text = text
@@ -97,7 +105,9 @@ def mock_api_response():
         response.json.return_value = json_data
         response.raise_for_status = Mock()
         if status_code >= 400:
-            response.raise_for_status.side_effect = Exception(f"HTTP {status_code}")
+            response.raise_for_status.side_effect = Exception(
+                f"HTTP {status_code}"
+            )
         return response
 
     return create_response
@@ -126,6 +136,7 @@ def setup_mock_api(mock_http_get, mock_api_response):
 
 # Full entity data fixtures --------------------------------------------------
 
+
 @pytest.fixture
 def mock_work_data(mock_w2741809807_data: dict[str, Any]) -> dict[str, Any]:
     """Comprehensive mock work data."""
@@ -139,7 +150,9 @@ def mock_author_data(mock_a5023888391_data: dict[str, Any]) -> dict[str, Any]:
 
 
 @pytest.fixture
-def mock_institution_data(mock_i27837315_data: dict[str, Any]) -> dict[str, Any]:
+def mock_institution_data(
+    mock_i27837315_data: dict[str, Any],
+) -> dict[str, Any]:
     """Comprehensive mock institution data."""
     return mock_i27837315_data
 
@@ -151,7 +164,9 @@ def mock_source_data(mock_s137773608_data: dict[str, Any]) -> dict[str, Any]:
 
 
 @pytest.fixture
-def mock_publisher_data(mock_p4310319965_data: dict[str, Any]) -> dict[str, Any]:
+def mock_publisher_data(
+    mock_p4310319965_data: dict[str, Any],
+) -> dict[str, Any]:
     """Comprehensive mock publisher data."""
     return mock_p4310319965_data
 
@@ -175,12 +190,15 @@ def mock_concept_data(mock_c71924100_data: dict[str, Any]) -> dict[str, Any]:
 
 
 @pytest.fixture
-def mock_keyword_data(mock_cardiac_imaging_data: dict[str, Any]) -> dict[str, Any]:
+def mock_keyword_data(
+    mock_cardiac_imaging_data: dict[str, Any],
+) -> dict[str, Any]:
     """Comprehensive mock keyword data."""
     return mock_cardiac_imaging_data
 
 
 # Entity-specific mock fixtures ---------------------------------------------
+
 
 @pytest.fixture
 def mock_work_entity(mock_work_data: dict[str, Any]):
@@ -227,9 +245,11 @@ def mock_institution_entity(mock_institution_data: dict[str, Any]):
 def mock_paginated_response():
     """Mock paginated API response structure."""
 
-    def create_response(results: list[dict[str, Any]] | None = None,
-                        meta: dict[str, Any] | None = None,
-                        group_by: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+    def create_response(
+        results: list[dict[str, Any]] | None = None,
+        meta: dict[str, Any] | None = None,
+        group_by: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
         if results is None:
             results = []
         if meta is None:
@@ -268,6 +288,7 @@ def mock_api_client():
 
 # Fixtures for testing different API endpoints -------------------------------
 
+
 @pytest.fixture
 def setup_all_api_mocks(
     setup_mock_api,
@@ -287,7 +308,9 @@ def setup_all_api_mocks(
         f"{base_url}/sources/S137773608": mock_source_data,
         f"{base_url}/works?": mock_paginated_response([mock_work_data]),
         f"{base_url}/authors?": mock_paginated_response([mock_author_data]),
-        f"{base_url}/institutions?": mock_paginated_response([mock_institution_data]),
+        f"{base_url}/institutions?": mock_paginated_response(
+            [mock_institution_data]
+        ),
         f"{base_url}/sources?": mock_paginated_response([mock_source_data]),
     }
 
@@ -295,6 +318,7 @@ def setup_all_api_mocks(
 
 
 # Fixtures for testing edge cases -------------------------------------------
+
 
 @pytest.fixture
 def mock_empty_response() -> dict[str, Any]:
@@ -334,6 +358,7 @@ def mock_not_found_response() -> dict[str, Any]:
 
 # Utility fixtures ----------------------------------------------------------
 
+
 @pytest.fixture
 def temp_cache_dir(tmp_path: Path) -> Path:
     """Temporary directory for cache testing."""
@@ -353,6 +378,7 @@ def mock_datetime_now():
 
 
 # Configuration fixtures ----------------------------------------------------
+
 
 @pytest.fixture
 def mock_config():
@@ -379,6 +405,95 @@ def mock_session():
 
 
 # Helper fixtures for common test patterns ---------------------------------
+
+
+@pytest.fixture
+def mock_http_response():
+    """Create mock HTTP responses with consistent structure."""
+
+    def create_response(
+        json_data: dict[str, Any] | None = None,
+        status_code: int = 200,
+        headers: dict[str, str] | None = None,
+    ) -> Mock:
+        response = Mock()
+        response.status_code = status_code
+        response.headers = headers or {}
+
+        if json_data is not None:
+            response.json.return_value = json_data
+        else:
+            response.json.side_effect = Exception("No JSON data")
+
+        if status_code >= 400:
+            response.raise_for_status.side_effect = Exception(
+                f"HTTP {status_code}"
+            )
+        else:
+            response.raise_for_status.return_value = None
+
+        return response
+
+    return create_response
+
+
+@pytest.fixture
+def mock_entity_factory():
+    """Factory for creating test entities with overrides."""
+
+    def create_entity(
+        entity_type: str, entity_id: str | None = None, **overrides: Any
+    ) -> dict[str, Any]:
+        """Create entity data with defaults and overrides."""
+        base_data = {
+            "work": {
+                "id": f"https://openalex.org/W{entity_id or '12345'}",
+                "doi": "https://doi.org/10.1000/test",
+                "display_name": "Test Work",
+                "publication_year": 2023,
+                "cited_by_count": 10,
+                "type": "article",
+            },
+            "author": {
+                "id": f"https://openalex.org/A{entity_id or '12345'}",
+                "display_name": "Test Author",
+                "orcid": None,
+                "works_count": 5,
+                "cited_by_count": 50,
+            },
+            "institution": {
+                "id": f"https://openalex.org/I{entity_id or '12345'}",
+                "display_name": "Test Institution",
+                "ror": None,
+                "country_code": "US",
+                "type": "education",
+                "works_count": 100,
+            },
+            "source": {
+                "id": f"https://openalex.org/S{entity_id or '12345'}",
+                "display_name": "Test Source",
+                "issn_l": "1234-5678",
+                "is_oa": False,
+                "works_count": 200,
+            },
+            "funder": {
+                "id": f"https://openalex.org/F{entity_id or '12345'}",
+                "display_name": "Test Funder",
+                "grants_count": 50,
+                "works_count": 100,
+            },
+        }
+
+        if entity_type not in base_data:
+            msg = f"Unsupported entity type: {entity_type}"
+            raise ValueError(msg)
+
+        data = base_data[entity_type].copy()
+        data.update(overrides)
+        return data
+
+    return create_entity
+
 
 @pytest.fixture
 def assert_valid_openalex_id():
@@ -447,10 +562,16 @@ def _reset_global_state():
     import openalex.entities
 
     if not hasattr(_reset_global_state, "_original_get_cache_manager"):
-        _reset_global_state._original_get_cache_manager = original_get_cache_manager
+        _reset_global_state._original_get_cache_manager = (
+            original_get_cache_manager
+        )
 
-    openalex.cache.manager.get_cache_manager = _reset_global_state._original_get_cache_manager
-    openalex.entities.get_cache_manager = _reset_global_state._original_get_cache_manager
+    openalex.cache.manager.get_cache_manager = (
+        _reset_global_state._original_get_cache_manager
+    )
+    openalex.entities.get_cache_manager = (
+        _reset_global_state._original_get_cache_manager
+    )
 
     clear_cache()
     _cache_managers.clear()
@@ -461,3 +582,40 @@ def _reset_global_state():
     _cache_managers.clear()
     _connection_pool.clear()
     _metrics_collectors.clear()
+
+
+# Network blocking fixture (moved from helpers/network.py to avoid pytest assertion rewrite warnings)
+
+
+class NetworkAccessError(RuntimeError):
+    """Raised when a test attempts to access the real network."""
+
+
+# Synchronous and asynchronous blockers
+
+
+def _fail(*_args: Any, **_kwargs: Any) -> None:
+    raise NetworkAccessError("Network access blocked during tests")
+
+
+async def _async_fail(*_args: Any, **_kwargs: Any) -> None:
+    raise NetworkAccessError("Network access blocked during tests")
+
+
+@pytest.fixture(autouse=True)
+def no_network(
+    monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRequest
+) -> None:
+    """Disable outbound network access unless a test uses ``requires_api``."""
+
+    if "requires_api" in request.keywords:
+        yield
+        return
+
+    monkeypatch.setattr(requests, "get", _fail)
+    monkeypatch.setattr(requests, "post", _fail)
+    monkeypatch.setattr(httpx.Client, "request", _fail)
+    monkeypatch.setattr(httpx.Client, "send", _fail)
+    monkeypatch.setattr(httpx.AsyncClient, "request", _async_fail)
+    monkeypatch.setattr(httpx.AsyncClient, "send", _async_fail)
+    yield

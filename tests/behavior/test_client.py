@@ -8,6 +8,7 @@ from unittest.mock import Mock, patch
 import httpx
 
 
+@pytest.mark.behavior
 class TestOpenAlexClient:
     """Test the core client functionality with proper API mocking."""
 
@@ -332,6 +333,7 @@ class TestOpenAlexClient:
         assert works1._connection is authors._connection
 
         from openalex import OpenAlexConfig
+
         custom_config = OpenAlexConfig(api_key="different-key")
         works3 = Works(config=custom_config)
 

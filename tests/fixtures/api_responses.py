@@ -1,6 +1,8 @@
 """Fixtures for mocked API responses."""
 
+import json
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Any
 
 
@@ -8,116 +10,25 @@ class APIResponseFixtures:
     """Container for API response fixtures."""
 
     @staticmethod
+    def _load_fixture(filename: str) -> dict[str, Any]:
+        """Load fixture data from JSON file."""
+        fixture_path = Path(__file__).parent / "data" / filename
+        with fixture_path.open() as f:
+            return json.load(f)
+
+    @staticmethod
     def work_response(work_id: str = "W2755950973") -> dict[str, Any]:
         """Create a realistic work response."""
-        return {
-            "id": f"https://openalex.org/{work_id}",
-            "doi": "https://doi.org/10.1103/physrevlett.118.091101",
-            "display_name": (
-                "GW170104: Observation of a 50-Solar-Mass Binary Black Hole Coalescence at Redshift 0.2"
-            ),
-            "publication_year": 2017,
-            "publication_date": "2017-06-01",
-            "type": "article",
-            "cited_by_count": 850,
-            "is_retracted": False,
-            "is_paratext": False,
-            "open_access": {
-                "is_oa": True,
-                "oa_status": "gold",
-                "oa_url": (
-                    "https://journals.aps.org/prl/pdf/10.1103/PhysRevLett.118.221101"
-                ),
-                "any_repository_has_fulltext": True,
-            },
-            "authorships": [
-                {
-                    "author_position": "first",
-                    "author": {
-                        "id": "https://openalex.org/A2150889177",
-                        "display_name": "B. P. Abbott",
-                        "orcid": None,
-                    },
-                    "institutions": [
-                        {
-                            "id": "https://openalex.org/I157725225",
-                            "display_name": "California Institute of Technology",
-                            "ror": "https://ror.org/05dxps055",
-                            "country_code": "US",
-                            "type": "education",
-                        }
-                    ],
-                    "raw_affiliation_strings": [
-                        "LIGO, California Institute of Technology, Pasadena, CA 91125, USA"
-                    ],
-                }
-            ],
-            "locations": [
-                {
-                    "is_primary": True,
-                    "source": {
-                        "id": "https://openalex.org/S16175027",
-                        "display_name": "Physical Review Letters",
-                        "issn_l": "0031-9007",
-                        "is_oa": False,
-                        "is_in_doaj": False,
-                    },
-                }
-            ],
-            "primary_location": {
-                "is_primary": True,
-                "source": {
-                    "id": "https://openalex.org/S16175027",
-                    "display_name": "Physical Review Letters",
-                    "issn_l": "0031-9007",
-                    "is_oa": False,
-                    "is_in_doaj": False,
-                },
-            },
-            "referenced_works": [
-                "https://openalex.org/W2126385722",
-                "https://openalex.org/W2170499123",
-            ],
-            "referenced_works_count": 95,
-            "related_works": [
-                "https://openalex.org/W2755951606",
-                "https://openalex.org/W2736953509",
-            ],
-            "counts_by_year": [
-                {"year": 2023, "cited_by_count": 125},
-                {"year": 2022, "cited_by_count": 143},
-                {"year": 2021, "cited_by_count": 156},
-            ],
-            "updated_date": "2023-08-01T00:00:00",
-        }
+        data = APIResponseFixtures._load_fixture("W-api-response.json")
+        data["id"] = f"https://openalex.org/{work_id}"
+        return data
 
     @staticmethod
     def author_response(author_id: str = "A2150889177") -> dict[str, Any]:
         """Create a realistic author response."""
-        return {
-            "id": f"https://openalex.org/{author_id}",
-            "orcid": "https://orcid.org/0000-0002-3666-1234",
-            "display_name": "B. P. Abbott",
-            "display_name_alternatives": [
-                "Barry P. Abbott",
-                "B.P. Abbott",
-                "Abbott, B.P.",
-            ],
-            "works_count": 523,
-            "cited_by_count": 28451,
-            "last_known_institution": {
-                "id": "https://openalex.org/I157725225",
-                "display_name": "California Institute of Technology",
-                "ror": "https://ror.org/05dxps055",
-                "country_code": "US",
-                "type": "education",
-            },
-            "counts_by_year": [
-                {"year": 2023, "works_count": 15, "cited_by_count": 2150},
-                {"year": 2022, "works_count": 18, "cited_by_count": 2543},
-            ],
-            "updated_date": "2023-08-01T00:00:00",
-        }
+        data = APIResponseFixtures._load_fixture("A-api-response.json")
+        data["id"] = f"https://openalex.org/{author_id}"
+        return data
 
     @staticmethod
     def search_response(

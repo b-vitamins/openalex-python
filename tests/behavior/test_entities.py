@@ -7,6 +7,7 @@ import pytest
 from unittest.mock import Mock, patch
 
 
+@pytest.mark.behavior
 class TestEntityBehavior:
     """Test entity classes interact correctly with the API."""
 

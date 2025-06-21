@@ -8,7 +8,7 @@ import pytest
 
 from openalex import Works
 from openalex.cache.memory import MemoryCache
-from tests.base import CachePatchingTestCase
+from tests.helpers.base import CachePatchingTestCase
 from tests.fixtures.api_responses import APIResponseFixtures
 
 

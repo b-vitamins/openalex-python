@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migrated from mypy to pyright for type checking in development dependencies
 - Added pytest-benchmark to support performance benchmarking tests
 - Configure pyright for strict type checking with optimized unknown type handling
+- Refactor test configuration and fixtures for improved test isolation
+- Update existing behavior and integration tests to follow new conventions
 
 ### Fixed
 - Make LogicalExpression class public to resolve private usage warnings

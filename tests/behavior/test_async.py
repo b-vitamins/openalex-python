@@ -8,6 +8,7 @@ import asyncio
 from unittest.mock import Mock, patch, AsyncMock
 
 
+@pytest.mark.behavior
 @pytest.mark.asyncio
 class TestAsyncBehavior:
     """Test async client behavior matches sync behavior."""
@@ -414,7 +415,9 @@ class TestAsyncBehavior:
             (AsyncTopics(), "T10001", "Climate change"),
         ]
 
-        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+        with patch(
+            "httpx.AsyncClient.request", new_callable=AsyncMock
+        ) as mock_request:
             for entity, entity_id, expected_name in test_cases:
                 mock_request.return_value = Mock(
                     status_code=200,
@@ -436,7 +439,9 @@ class TestAsyncBehavior:
         """Test async Works.ngrams() method."""
         from openalex import AsyncWorks
 
-        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+        with patch(
+            "httpx.AsyncClient.request", new_callable=AsyncMock
+        ) as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
                 json=Mock(
@@ -506,7 +511,9 @@ class TestAsyncBehavior:
         """Test async random entity fetching."""
         from openalex import AsyncInstitutions
 
-        with patch("httpx.AsyncClient.request", new_callable=AsyncMock) as mock_request:
+        with patch(
+            "httpx.AsyncClient.request", new_callable=AsyncMock
+        ) as mock_request:
             mock_request.return_value = Mock(
                 status_code=200,
                 json=Mock(
@@ -522,4 +529,3 @@ class TestAsyncBehavior:
 
             assert random_inst.display_name == "Random University"
             assert "/random" in mock_request.call_args.kwargs["url"]
-

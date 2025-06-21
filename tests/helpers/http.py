@@ -39,4 +39,3 @@ def make_response(
     """Create a JSON response tied to a matching request."""
     request = make_request(method, url)
     return httpx.Response(status_code=status_code, json=data, request=request)
-
