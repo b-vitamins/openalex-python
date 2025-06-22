@@ -1,14 +1,14 @@
 <!--
-OpenAlex Python Testing Excellence Guide
+OpenAlex Python Testing Documentation
 -->
 
-# OpenAlex Python: Testing Excellence Guide
+# OpenAlex Python: Testing Documentation
 
-This document defines the canonical standards for the `tests/` directory.
+This document defines the standards for the `tests/` directory.
 It serves three purposes:
-1. **Objective Evaluation**: Provides a rigorous, objective basis for identifying technical debt and code smell in the test infrastructure.
-2. **Contributor Guide**: Sets clear, detailed expectations for new tests, including style, structure, and code quality.
-3. **Refactoring Blueprint**: Acts as a mulit-stage, precise guide for evolving/modernizing the current suite toward the platonic ideal.
+1. **Objective Evaluation**: Provides a basis for identifying technical debt and code issues in the test infrastructure.
+2. **Contributor Guide**: Sets expectations for new tests, including style, structure, and code requirements.
+3. **Refactoring Blueprint**: Acts as a guide for evolving and modernizing the current test suite.
 
 ## Table of Contents
 1. [Directory Layout and Categories](#directory-layout-and-categories)
@@ -58,17 +58,17 @@ No test should be present outside the above structure without compelling rationa
    - Shared data fixtures in `conftest.py` or explicitly documented helpers ("helpers").
    - Never call helpers from another test except through conftest-registered fixtures.
 - **Never** couple test logic between files or modules.
-- Test with **only** canonical fixtures; never bake complex logic into tests that would be better as a reusable fixture or factory.
+- Test with **only** standard fixtures; never bake complex logic into tests that would be better as a reusable fixture or factory.
 
 ### Fixture and Helper Use
-- **Canonical data**: All "realistic" entity data comes from `fixtures/data/`. No unrelated ad-hoc dicts in tests.
+- **Standard data**: All entity data comes from `fixtures/data/`. No unrelated ad-hoc dicts in tests.
 - **Minimal fixture dependency**: Imported fixtures must be declared explicitly in the test function/class signature.
 - **Helpers**: Use only as explicitly registered pytest fixtures or in the central `helpers` directory.
 
 ### Mocking and Flakiness
 - Prefer using built-in fixtures, patching/mocking via `pytest` and `unittest.mock` with strict scoping (never global monkeypatch).
-- When simulating remote resources, import only helpers/fixtures that are clearly named and self-contained.
-- Tests that require mocking network/caches/async must either use canonical shared mocks or request a new helper in `helpers/`.
+- When simulating remote resources, import only helpers/fixtures that are named and self-contained.
+- Tests that require mocking network/caches/async must either use standard shared mocks or request a new helper in `helpers/`.
 - Never mock the code under test itself or the behavior of the SUT, only its dependencies.
 
 ## Behavior, Integration & Docs
@@ -77,16 +77,16 @@ No test should be present outside the above structure without compelling rationa
 - **Docs**: Covber code snippets in documentation only, never test implementation logic or behaviors.
 
 ## Fixtures, Helpers, Data, and Mocking
-- Only `fixtures/data/` contains authoritative static entity data for *all* types (authors, works, etc).
+- Only `fixtures/data/` contains static entity data for *all* types (authors, works, etc).
 - Additional fixture files/modules must clearly indicate their purpose by naming (`api_responses.py` etc).
 - `conftest.py` provides only "universal" fixtures—avoid technical debt by never letting it become a grab bag.
 - Any repetitive mocking patterns must become shared helpers. If you find yourself copy-pasting, refactor.
 
 ## Naming, Markers & Structure
 
-### Comprehensive Naming Convention
+### Naming Convention
 
-This section establishes the canonical naming standards for all test files, classes, and methods in the OpenAlex Python test suite.
+This section establishes the naming standards for all test files, classes, and methods in the OpenAlex Python test suite.
 
 #### File Naming Convention
 
@@ -306,7 +306,7 @@ class TestCachePerformance:
 ## Duplication and Redundancy Policies
 - If any test or fixture duplicates existing code or logic, that is a technical debt smell.
 - *Explicitly prohibited*: Duplicating entity dicts/fixtures, duplicating mocking/patch logic, duplicating test class logic across files.
-- All entity data must derive from `fixtures/data/` or its canonical loaders.
+- All entity data must derive from `fixtures/data/` or its loaders.
 - If two tests are nearly identical (other than names), refactor using parameterization, fixtures, or test utils.
 
 ## Flakiness, Determinism, and Reliability
@@ -321,7 +321,7 @@ class TestCachePerformance:
 - [ ] No fixture or helper code reinvents or duplicates another.
 - [ ] All test files and classes are named for the code under test.
 - [ ] No test code or logic is invoked by other test code except fixtures/helpers.
-- [ ] Only the documented canonical fixtures/helpers are imported—no magic globals.
+- [ ] Only the documented fixtures/helpers are imported—no magic globals.
 - [ ] Markers used are documented here or in the test module.
 - [ ] Any apparent duplication or cross-file dependency is documented or refactored.
 
@@ -350,4 +350,4 @@ class TestCachePerformance:
 
 ---
 
-This document is the sole reference for technical debt assessment and improvement of the OpenAlex Python test suite. Any violation must either be fixed, marked, or documented here.
+This document is the reference for technical debt assessment and improvement of the OpenAlex Python test suite. Any violation must either be fixed, marked, or documented here.

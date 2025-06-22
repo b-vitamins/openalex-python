@@ -11,7 +11,7 @@
 
 > **Disclaimer**: This is an **unofficial** client library for OpenAlex. It is not endorsed by or affiliated with OpenAlex or its parent organization. The library's author is not associated with OpenAlex.
 
-> **Note**: This project is inspired by and builds upon the excellent work of [PyAlex](https://github.com/J535D165/pyalex).
+> **Note**: This project is inspired by and builds upon [PyAlex](https://github.com/J535D165/pyalex).
 
 ## Quick Start
 
