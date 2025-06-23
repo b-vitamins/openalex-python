@@ -29,15 +29,21 @@ def sanitize_sensitive_data(data: Any) -> Any:
             "authorization",
         }
 
-        for key, value in data.items():
-            if any(sensitive in key.lower() for sensitive in sensitive_keys):
+        data_dict: dict[Any, Any] = cast(dict[Any, Any], data)
+        for key, value in data_dict.items():
+            key_str: str = str(key)
+            value_any: Any = value
+            if any(
+                sensitive in key_str.lower() for sensitive in sensitive_keys
+            ):
                 sanitized[key] = "[REDACTED]"
             else:
-                sanitized[key] = sanitize_sensitive_data(value)
+                sanitized[key] = sanitize_sensitive_data(value_any)
         return sanitized
 
     if isinstance(data, list):
-        return [sanitize_sensitive_data(item) for item in data]
+        data_list: list[Any] = cast(list[Any], data)
+        return [sanitize_sensitive_data(item) for item in data_list]
 
     if isinstance(data, str):
         import re
