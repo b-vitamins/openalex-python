@@ -38,12 +38,12 @@ class CacheManager:
 
     @property
     def enabled(self) -> bool:
-        return self._cache is not None
+        return self._cache is not None and self.config.cache_enabled
 
     @property
     def cache(self) -> BaseCache | None:
         """Expose the underlying cache object, if enabled."""
-        return self._cache
+        return self._cache if self.config.cache_enabled else None
 
     def get_ttl_for_endpoint(self, endpoint: str) -> float:
         """Public wrapper for ``_get_ttl_for_endpoint``."""

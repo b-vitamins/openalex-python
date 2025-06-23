@@ -11,7 +11,7 @@ class MetricsReport:
     total_errors: int = 0
     cache_hits: int = 0
     cache_misses: int = 0
-    requests_by_endpoint: dict[str, int] = field(default_factory=dict)
+    requests_by_endpoint: dict[str, int] = field(default_factory=lambda: {})
     average_response_time: float = 0.0
     error_rate: float = 0.0
     cache_hit_rate: float = 0.0

@@ -46,7 +46,7 @@ class PerformanceMetrics:
     total_retries: int = 0
     rate_limit_hits: int = 0
 
-    response_times: list[float] = field(default_factory=list)
+    response_times: list[float] = field(default_factory=lambda: [])
     errors_by_type: dict[str, int] = field(
         default_factory=lambda: defaultdict(int)
     )
