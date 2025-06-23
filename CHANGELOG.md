@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- Refactor entity classes to use template-based architecture for reduced code duplication
+- Consolidate sync and async entity implementations into template classes
+- Enhance connection layer with improved retry logic and HTTP date parsing
+- Add type safety improvements for datetime operations in retry mechanisms
+- Consolidate exception classes by removing duplicate RateLimitExceededError
+- Improve query system filter merging with explicit type casting
+- Update model validation with enhanced type annotations and cast operations
+- Improve cache and metrics systems with better type annotations
+- Update parameter handling utilities with enhanced type safety
+- Update test suite to work with new template-based architecture
+- Improve logging module with enhanced type safety
 - Synchronized dependency files with pyproject.toml for consistency
 - Updated requirements.txt to use httpx[http2] and flexible version constraints
 - Migrated from mypy to pyright for type checking in development dependencies
