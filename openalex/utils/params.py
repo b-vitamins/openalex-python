@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Final
+from typing import Any, Final, cast
 
 # ``quote_plus`` was previously used to pre-encode filter values.  This
 # resulted in parameters being double-encoded when passed to ``httpx``.
@@ -28,6 +28,7 @@ ALLOWED_KEYS: Final[set[str]] = {
     "cursor",
     "sample",
     "seed",
+    "q",
 }
 
 __all__ = [
@@ -83,11 +84,13 @@ def serialize_filter_value(value: Any) -> str:
 
     # Handle lists - join with pipe for OR operation
     if isinstance(value, list):
-        return "|".join(serialize_filter_value(v) for v in value)
+        value_list: list[Any] = cast(list[Any], value)
+        return "|".join(serialize_filter_value(v) for v in value_list)
 
     # Handle tuples - used for multiple AND conditions on same field
     if isinstance(value, tuple):
-        return ",".join(serialize_filter_value(v) for v in value)
+        value_tuple: tuple[Any, ...] = cast(tuple[Any, ...], value)
+        return ",".join(serialize_filter_value(v) for v in value_tuple)
 
     # Handle None/null
     if value is None:
@@ -125,9 +128,10 @@ def flatten_filter_dict(
 
         if isinstance(value, dict) and not isinstance(value, or_):
             range_keys = {"gte", "lte"}
-            if set(value.keys()) <= range_keys:
-                gte_val = value.get("gte")
-                lte_val = value.get("lte")
+            value_dict: dict[str, Any] = cast(dict[str, Any], value)
+            if set(value_dict.keys()) <= range_keys:
+                gte_val = value_dict.get("gte")
+                lte_val = value_dict.get("lte")
                 if gte_val is not None or lte_val is not None:
                     start = (
                         serialize_filter_value(gte_val)
@@ -142,7 +146,7 @@ def flatten_filter_dict(
                     parts.append(f"{full_key}:{start}-{end}")
                     continue
 
-            nested = flatten_filter_dict(value, full_key, ",")
+            nested = flatten_filter_dict(value_dict, full_key, ",")
             if nested:
                 parts.append(nested)
             continue
@@ -151,7 +155,8 @@ def flatten_filter_dict(
             gte_val = None
             lte_val = None
             range_candidates = True
-            for item in value:
+            value_tuple: tuple[Any, ...] = cast(tuple[Any, ...], value)
+            for item in value_tuple:
                 if isinstance(item, gte_):
                     gte_val = item.value
                 elif isinstance(item, lte_):
@@ -174,7 +179,7 @@ def flatten_filter_dict(
                 parts.append(f"{full_key}:{start}-{end}")
                 continue
 
-            for item in value:
+            for item in value_tuple:
                 ser = serialize_filter_value(item)
                 if full_key.endswith(".search"):
                     ser = ser.replace("+", " ")
@@ -202,21 +207,31 @@ def serialize_params(params: dict[str, Any]) -> dict[str, Any]:
     serialized: dict[str, Any] = {}
 
     for key, value in params.items():
-        if key == "filter" and isinstance(value, dict):
-            filter_str = flatten_filter_dict(value)
+        key_str: str = key
+        value_any: Any = value
+        if key_str == "filter" and isinstance(value_any, dict):
+            filter_dict: dict[str, Any] = cast(dict[str, Any], value_any)
+            filter_str = flatten_filter_dict(filter_dict)
             if filter_str:
                 serialized["filter"] = filter_str
-        elif key == "sort" and isinstance(value, dict):
-            sort_parts = [f"{k}:{v}" for k, v in value.items()]
+        elif key_str == "sort" and isinstance(value_any, dict):
+            sort_dict: dict[str, Any] = cast(dict[str, Any], value_any)
+            sort_parts = [f"{k}:{v}" for k, v in sort_dict.items()]
             serialized["sort"] = ",".join(sort_parts)
-        elif key == "select" and isinstance(value, list):
-            serialized["select"] = ",".join(value)
-        elif key == "group_by" and isinstance(value, list | tuple):
-            serialized["group_by"] = list(value)
-        elif value is not None:
-            mapped = KEY_MAP.get(key, key)
+        elif key_str == "select" and isinstance(value_any, list):
+            select_list: list[str] = cast(list[str], value_any)
+            serialized["select"] = ",".join(select_list)
+        elif key_str == "group_by" and isinstance(value_any, list | tuple):
+            group_by_val: list[Any] | tuple[Any, ...] = cast(
+                list[Any] | tuple[Any, ...], value_any
+            )
+            serialized["group_by"] = list(group_by_val)
+        elif value_any is not None:
+            mapped = KEY_MAP.get(key_str, key_str)
             serialized[mapped] = (
-                str(value).lower() if isinstance(value, bool) else str(value)
+                str(value_any).lower()
+                if isinstance(value_any, bool)
+                else str(value_any)
             )
 
     return serialized
