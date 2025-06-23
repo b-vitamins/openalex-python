@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from datetime import UTC, datetime
+from email.utils import parsedate_to_datetime
+from typing import TYPE_CHECKING, Any, cast
 
 __all__ = [
     "APIError",
@@ -12,7 +14,6 @@ __all__ = [
     "NotFoundError",
     "OpenAlexError",
     "RateLimitError",
-    "RateLimitExceededError",
     "RetryableError",
     "ServerError",
     "TemporaryError",
@@ -67,6 +68,8 @@ class RateLimitError(APIError):
         retry_after: int | None = None,
         **kwargs: Any,
     ) -> None:
+        if retry_after is not None:
+            message = f"Rate limit exceeded. Retry after {retry_after} seconds"
         super().__init__(message, status_code=429, **kwargs)
         self.retry_after = retry_after
 
@@ -165,21 +168,6 @@ class ServerError(APIError, RetryableError):
     __slots__ = ()
 
 
-class RateLimitExceededError(RetryableError):
-    """Rate limit exceeded error with retry information."""
-
-    __slots__ = ("retry_after",)
-
-    def __init__(self, retry_after: int | None = None) -> None:
-        message = (
-            f"Rate limit exceeded. Retry after {retry_after} seconds"
-            if retry_after is not None
-            else "Rate limit exceeded"
-        )
-        super().__init__(message)
-        self.retry_after = retry_after
-
-
 class TemporaryError(APIError, RetryableError):
     """Temporary errors that may succeed on retry."""
 
@@ -269,14 +257,17 @@ def raise_for_status(response: httpx.Response) -> None:
             if retry_after_raw.isdigit():
                 retry_after = int(retry_after_raw)
             else:
-                from datetime import UTC, datetime
-                from email.utils import parsedate_to_datetime
-
                 try:
-                    retry_dt = parsedate_to_datetime(retry_after_raw)
-                    retry_after = int(
-                        (retry_dt - datetime.now(UTC)).total_seconds()
+                    parsed_dt = cast(
+                        datetime | None, parsedate_to_datetime(retry_after_raw)
                     )
+                    if parsed_dt is not None:
+                        retry_dt: datetime = parsed_dt
+                        retry_after = int(
+                            (retry_dt - datetime.now(UTC)).total_seconds()  # type: ignore[misc]
+                        )
+                    else:
+                        retry_after = None
                 except Exception:
                     retry_after = None
         raise RateLimitError(
