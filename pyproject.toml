@@ -13,12 +13,13 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Information Analysis",
 ]
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = ">=3.11.11"
 httpx = { version = "0.28.1", extras = ["http2"] }
 pydantic = "2.10.4"
 structlog = "23.1.0"
@@ -53,7 +54,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 80
-target-version = "py312"
+target-version = "py311"
 fix = true
 
 [tool.ruff.lint]
@@ -122,7 +123,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [tool.pyright]
-pythonVersion = "3.12"
+pythonVersion = "3.11"
 typeCheckingMode = "strict"
 include = ["openalex"]
 exclude = ["examples", "tests", "docs", "benchmarks"]
