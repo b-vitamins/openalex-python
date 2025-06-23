@@ -3,18 +3,19 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar, cast
 
-from pydantic import ValidationError
+from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Iterator
 
     from .config import OpenAlexConfig
     from .entities import AsyncBaseEntity, BaseEntity
+    from .models.base import ListResult
     from .streaming.stream import AsyncStreamingPaginator, StreamingPaginator
+
 from .models import BaseFilter, GroupByResult
-from .models.base import ListResult, Meta
 from .utils.pagination import MAX_PER_PAGE, AsyncPaginator, Paginator
 
 __all__ = [
@@ -28,7 +29,7 @@ __all__ = [
     "or_",
 ]
 
-T = TypeVar("T")
+T = TypeVar("T", bound=BaseModel)
 F = TypeVar("F", bound=BaseFilter)
 
 
@@ -82,42 +83,14 @@ class lte_(LogicalExpression):  # noqa: N801
 
 
 def _build_list_result(data: dict[str, Any], model: type[T]) -> ListResult[T]:
-    """Construct a :class:`ListResult` from raw data."""
-    results: list[T] = []
-    for item in data.get("results", []):
-        try:
-            results.append(model(**item))
-        except ValidationError:
-            results.append(model.model_construct(**item))  # type: ignore
+    """Construct a :class:`ListResult` from raw data using shared logic."""
+    from .config import OpenAlexConfig
+    from .templates import EntityLogicBase
 
-    meta_data = data.get("meta", {})
-    per_page_value = meta_data.get("per_page", len(results))
-    meta_defaults = {
-        "count": meta_data.get("count", 0),
-        "db_response_time_ms": meta_data.get("db_response_time_ms", 0),
-        "page": meta_data.get("page", 1),
-        "per_page": per_page_value,
-        "groups_count": meta_data.get("groups_count"),
-        "next_cursor": meta_data.get("next_cursor"),
-    }
-
-    try:
-        meta = Meta.model_validate(meta_defaults)
-    except ValidationError:
-        meta = Meta.model_construct(**meta_defaults)
-
-    try:
-        return ListResult[model](  # type: ignore
-            meta=meta,
-            results=results,
-            group_by=data.get("group_by"),
-        )
-    except ValidationError:
-        return ListResult[model].model_construct(  # type: ignore
-            meta=meta,
-            results=results,
-            group_by=data.get("group_by"),
-        )
+    # Use the shared parsing logic from templates
+    logic = EntityLogicBase[T, Any](config=OpenAlexConfig())
+    logic.model_class = model
+    return logic.parse_list_response(data)
 
 
 class Query(Generic[T, F]):
@@ -154,7 +127,9 @@ class Query(Generic[T, F]):
                 and isinstance(filt, dict)
                 and not isinstance(filt, or_)
             ):
-                params["filter"] = self._merge_filters(current, filt)
+                current_dict: dict[str, Any] = cast(dict[str, Any], current)
+                filt_dict: dict[str, Any] = cast(dict[str, Any], filt)
+                params["filter"] = self._merge_filters(current_dict, filt_dict)
             else:
                 params["filter"] = filt
 
@@ -163,10 +138,10 @@ class Query(Generic[T, F]):
 
     def _merge_filters(
         self,
-        current: Any,
-        new: Any,
+        current: dict[str, Any] | Any,
+        new: dict[str, Any] | Any,
         operation: str = "and",
-    ) -> Any:
+    ) -> dict[str, Any] | Any:
         """Merge filter dictionaries with proper operator handling."""
         if operation == "or":
             return (
@@ -176,20 +151,33 @@ class Query(Generic[T, F]):
             )
 
         if not isinstance(current, dict) or not isinstance(new, dict):
-            return new if not isinstance(current, dict) else {**current, **new}
+            if not isinstance(current, dict):
+                return new
+            merged: dict[str, Any] = {**current, **new}
+            return merged
 
-        result = current.copy()
-        for key, value in new.items():
-            if key in result:
-                existing = result[key]
-                if isinstance(existing, dict) and isinstance(value, dict):
-                    result[key] = self._merge_filters(existing, value)
+        current_dict: dict[str, Any] = cast(dict[str, Any], current)
+        result: dict[str, Any] = current_dict.copy()
+        new_dict: dict[str, Any] = cast(dict[str, Any], new)
+        for key, value in new_dict.items():
+            key_str: str = key
+            value_any: Any = value
+            if key_str in result:
+                existing = result[key_str]
+                if isinstance(existing, dict) and isinstance(value_any, dict):
+                    existing_dict: dict[str, Any] = cast(
+                        dict[str, Any], existing
+                    )
+                    value_dict: dict[str, Any] = cast(dict[str, Any], value_any)
+                    result[key_str] = self._merge_filters(
+                        existing_dict, value_dict
+                    )
                 elif isinstance(existing, tuple):
-                    result[key] = (*existing, value)
+                    result[key_str] = (*existing, value_any)
                 else:
-                    result[key] = (existing, value)
+                    result[key_str] = (existing, value_any)
             else:
-                result[key] = value
+                result[key_str] = value_any
         return result
 
     def _apply_logical_operation(
@@ -199,7 +187,8 @@ class Query(Generic[T, F]):
 
         def apply(value: Any) -> Any:
             if isinstance(value, dict):
-                return {k: apply(v) for k, v in value.items()}
+                value_dict: dict[str, Any] = cast(dict[str, Any], value)
+                return {k: apply(v) for k, v in value_dict.items()}
             return operation(value)
 
         return {k: apply(v) for k, v in filter_dict.items()}
@@ -227,7 +216,7 @@ class Query(Generic[T, F]):
         existing = self.params.get("group_by")
         if existing:
             if isinstance(existing, list):
-                new_keys = [*existing, *keys]
+                new_keys: list[str] = [*existing, *keys]
             else:
                 new_keys = [existing, *keys]
         else:
@@ -254,7 +243,8 @@ class Query(Generic[T, F]):
         """Add OR filter parameters."""
         current = self.params.get("filter", {})
         if isinstance(current, dict):
-            new_filter = self._merge_filters(current, kwargs, "or")
+            current_dict: dict[str, Any] = cast(dict[str, Any], current)
+            new_filter = self._merge_filters(current_dict, kwargs, "or")
             return self._clone(filter=new_filter)
         return self._clone(filter=or_(kwargs))
 
@@ -403,8 +393,9 @@ class AsyncQuery(Generic[T, F]):
     def filter(self, **kwargs: Any) -> AsyncQuery[T, F]:
         current = self._params.get("filter")
         if isinstance(current, dict):
-            current.update(kwargs)
-            self._params["filter"] = current
+            current_dict: dict[str, Any] = cast(dict[str, Any], current)
+            current_dict.update(kwargs)
+            self._params["filter"] = current_dict
         else:
             self._params["filter"] = kwargs
         return self
@@ -415,7 +406,8 @@ class AsyncQuery(Generic[T, F]):
             current.update(kwargs)
             self._params["filter"] = current
         elif isinstance(current, dict):
-            new_filter = or_(current | kwargs)
+            current_dict: dict[str, Any] = cast(dict[str, Any], current)
+            new_filter = or_(current_dict | kwargs)
             self._params["filter"] = new_filter
         else:
             self._params["filter"] = or_(kwargs)
@@ -456,8 +448,23 @@ class AsyncQuery(Generic[T, F]):
         self._params["group_by"] = field
         return self
 
-    def select(self, *fields: str) -> AsyncQuery[T, F]:
-        self._params["select"] = ",".join(fields)
+    def select(self, fields: list[str] | str) -> AsyncQuery[T, F]:
+        if isinstance(fields, str):
+            self._params["select"] = fields
+        else:
+            self._params["select"] = ",".join(fields)
+        return self
+
+    def sample(self, n: int, seed: int | None = None) -> AsyncQuery[T, F]:
+        """Sample random results."""
+        self._params["sample"] = n
+        if seed is not None:
+            self._params["seed"] = seed
+        return self
+
+    def update_params(self, **params: Any) -> AsyncQuery[T, F]:
+        """Update query parameters."""
+        self._params.update(params)
         return self
 
     def paginate(
@@ -470,7 +477,7 @@ class AsyncQuery(Generic[T, F]):
 
         async def fetch_page(page_params: dict[str, Any]) -> ListResult[T]:
             all_params = {**params, **page_params}
-            data = await self._entity.get_list(params=all_params)
+            data = await self._entity.get_list(**all_params)
             return _build_list_result(data, self._model_class)
 
         return AsyncPaginator(
@@ -493,7 +500,7 @@ class AsyncQuery(Generic[T, F]):
 
         async def fetch_page(page_params: dict[str, Any]) -> ListResult[T]:
             all_params = {**params, **page_params}
-            data = await self._entity.get_list(params=all_params)
+            data = await self._entity.get_list(**all_params)
             return _build_list_result(data, self._model_class)
 
         return AsyncStreamingPaginator(
@@ -514,7 +521,7 @@ class AsyncQuery(Generic[T, F]):
         if per_page is not None:
             params["per_page"] = per_page
 
-        data = await self._entity.get_list(params=params)
+        data = await self._entity.get_list(**params)
 
         if "group_by" in self._params:
             return GroupByResult(**data)
@@ -546,7 +553,7 @@ class AsyncQuery(Generic[T, F]):
 
     def __repr__(self) -> str:
         """String representation of async query."""
-        parts = []
+        parts: list[str] = []
         for k in ("filter", "search", "sort", "select"):
             if k in self._params:
                 if k == "search":
