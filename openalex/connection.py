@@ -3,7 +3,9 @@ from __future__ import annotations
 import asyncio
 import time
 import weakref
-from typing import TYPE_CHECKING, Any
+from datetime import UTC, datetime
+from email.utils import parsedate_to_datetime
+from typing import TYPE_CHECKING, Any, cast
 
 import httpx
 from structlog import get_logger
@@ -21,7 +23,7 @@ if TYPE_CHECKING:
 from .exceptions import (
     APIError,
     NetworkError,
-    RateLimitExceededError,
+    RateLimitError,
     ServerError,
     TemporaryError,
     TimeoutError,
@@ -73,19 +75,32 @@ class Connection:
             self.open()
         assert self._client is not None
 
+        # Merge config default params with request params
+        merged_params = self._config.params.copy()
+        if params:
+            merged_params.update(params)
+
         if operation is None:
             if "/autocomplete/" in url:
                 operation = "autocomplete"
-            elif method == "GET" and url.count("/") > 3:
-                operation = "get"
-            elif params and (
-                (
-                    isinstance(params.get("filter"), dict)
-                    and "search" in params["filter"]
-                )
-                or params.get("search")
-            ):
-                operation = "search"
+            elif method == "GET":
+                # Count path segments: /works = 1, /works/W123 = 2
+                from urllib.parse import urlparse
+
+                path = urlparse(url).path.strip("/")
+                path_segments = len(path.split("/")) if path else 0
+                if path_segments > 1:
+                    operation = "get"
+                elif merged_params and (
+                    (
+                        isinstance(merged_params.get("filter"), dict)
+                        and "search" in merged_params["filter"]
+                    )
+                    or merged_params.get("search")
+                ):
+                    operation = "search"
+                else:
+                    operation = "list"
             else:
                 operation = "list"
 
@@ -106,27 +121,9 @@ class Connection:
             endpoint = url.split("/")[-2] if "/" in url else "unknown"
 
         try:
-            if (
-                self._config.middleware.request_interceptors
-                or self._config.middleware.response_interceptors
-            ):
-                request = self._client.build_request(
-                    method, url, params=params, **kwargs
-                )
-                for (
-                    req_interceptor
-                ) in self._config.middleware.request_interceptors:
-                    request = req_interceptor.process_request(request)
-                send_kwargs: dict[str, Any] = {}
-                response = self._client.send(request, **send_kwargs)
-                for (
-                    resp_interceptor
-                ) in self._config.middleware.response_interceptors:
-                    response = resp_interceptor.process_response(response)
-            else:
-                response = self._client.request(
-                    method, url, params=params, **kwargs
-                )
+            response = self._make_request_with_retry(
+                method, url, merged_params, **kwargs
+            )
         except httpx.TimeoutException as e:
             if metrics is not None:
                 duration = time.time() - start_time
@@ -154,6 +151,145 @@ class Connection:
                     endpoint, duration, success=response.is_success
                 )
             return response
+
+    def _make_request_with_retry(
+        self,
+        method: str,
+        url: str,
+        params: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> httpx.Response:
+        max_attempts = (
+            (self._config.retry_max_attempts + 1)
+            if self._config.retry_enabled
+            else 1
+        )
+        attempt = 1
+
+        def _raise(err: Exception) -> None:
+            raise err
+
+        while attempt <= max_attempts:
+            try:
+                assert self._client is not None
+
+                if (
+                    self._config.middleware.request_interceptors
+                    or self._config.middleware.response_interceptors
+                ):
+                    request = self._client.build_request(
+                        method, url, params=params, **kwargs
+                    )
+                    for (
+                        req_interceptor
+                    ) in self._config.middleware.request_interceptors:
+                        request = req_interceptor.process_request(request)
+                    send_kwargs: dict[str, Any] = {}
+                    response = self._client.send(request, **send_kwargs)
+                    for (
+                        resp_interceptor
+                    ) in self._config.middleware.response_interceptors:
+                        response = resp_interceptor.process_response(response)
+                else:
+                    # Include headers for test compatibility
+                    headers = {
+                        **self._build_headers(),
+                        **kwargs.pop("headers", {}),
+                    }
+                    response = self._client.request(
+                        method,
+                        url=url,
+                        params=params,
+                        headers=headers,
+                        **kwargs,
+                    )
+
+                if response.status_code == 429:
+                    retry_after = response.headers.get("Retry-After")
+                    retry_after_int = None
+                    if retry_after:
+                        if retry_after.isdigit():
+                            retry_after_int = int(retry_after)
+                        else:
+                            # Try to parse as HTTP date
+                            try:
+                                parsed_dt = cast(
+                                    datetime | None,
+                                    parsedate_to_datetime(retry_after),
+                                )
+                                if parsed_dt is not None:
+                                    retry_dt: datetime = parsed_dt
+                                    retry_after_int = int(
+                                        (
+                                            retry_dt - datetime.now(UTC)
+                                        ).total_seconds()  # type: ignore[misc]
+                                    )
+                                else:
+                                    retry_after_int = None
+                            except Exception:
+                                retry_after_int = None
+                    _raise(RateLimitError(retry_after=retry_after_int))
+
+                if response.status_code == 503:
+                    msg = "Service temporarily unavailable"
+                    retry_after = response.headers.get("Retry-After")
+                    retry_after_int = None
+                    if retry_after:
+                        try:
+                            retry_after_int = (
+                                int(retry_after)
+                                if isinstance(retry_after, str | int)
+                                else None
+                            )
+                        except (ValueError, TypeError):
+                            retry_after_int = None
+                    _raise(
+                        TemporaryError(
+                            msg, status_code=503, retry_after=retry_after_int
+                        )
+                    )
+
+                if response.status_code in (502, 504):
+                    msg = f"Server error {response.status_code}: Service unavailable"
+                    _raise(ServerError(msg, status_code=response.status_code))
+
+                if 500 <= response.status_code < 600:
+                    msg = (
+                        f"Server error {response.status_code}: {response.text}"
+                    )
+                    _raise(ServerError(msg, status_code=response.status_code))
+
+            except (ServerError, TemporaryError, RateLimitError) as e:
+                attempt += 1
+                if attempt > max_attempts:
+                    raise
+
+                if isinstance(e, RateLimitError) and e.retry_after:
+                    wait_time = e.retry_after
+                else:
+                    wait_time = min(
+                        60,
+                        self._config.retry_initial_wait
+                        * (
+                            self._config.retry_exponential_base ** (attempt - 2)
+                        ),
+                    )
+
+                logger.warning(
+                    "retry_attempt",
+                    attempt=attempt,
+                    wait_time=wait_time,
+                    error=str(e),
+                )
+
+                import time
+
+                time.sleep(wait_time)
+            else:
+                return response
+
+        msg = "Retry logic failed unexpectedly"
+        raise RuntimeError(msg)
 
     def _build_headers(self) -> dict[str, str]:
         return self._config.headers.copy()
@@ -202,9 +338,14 @@ class AsyncConnection:
             await self.open()
         assert self._client is not None
 
+        # Merge config default params with request params
+        merged_params = self._config.params.copy()
+        if params:
+            merged_params.update(params)
+
         try:
             response = await self._make_request_with_retry(
-                method, url, params, **kwargs
+                method, url, merged_params, **kwargs
             )
         except httpx.TimeoutException as e:
             msg = f"Request timed out after {self._config.timeout}s"
@@ -248,25 +389,65 @@ class AsyncConnection:
 
                 if response.status_code == 429:
                     retry_after = response.headers.get("Retry-After")
-                    retry_after_int = int(retry_after) if retry_after else None
-                    _raise(RateLimitExceededError(retry_after=retry_after_int))
+                    retry_after_int = None
+                    if retry_after:
+                        if retry_after.isdigit():
+                            retry_after_int = int(retry_after)
+                        else:
+                            # Try to parse as HTTP date
+                            try:
+                                parsed_dt = cast(
+                                    datetime | None,
+                                    parsedate_to_datetime(retry_after),
+                                )
+                                if parsed_dt is not None:
+                                    retry_dt: datetime = parsed_dt
+                                    retry_after_int = int(
+                                        (
+                                            retry_dt - datetime.now(UTC)
+                                        ).total_seconds()  # type: ignore[misc]
+                                    )
+                                else:
+                                    retry_after_int = None
+                            except Exception:
+                                retry_after_int = None
+                    _raise(RateLimitError(retry_after=retry_after_int))
+
+                if response.status_code == 503:
+                    msg = "Service temporarily unavailable"
+                    retry_after = response.headers.get("Retry-After")
+                    retry_after_int = None
+                    if retry_after:
+                        try:
+                            retry_after_int = (
+                                int(retry_after)
+                                if isinstance(retry_after, str | int)
+                                else None
+                            )
+                        except (ValueError, TypeError):
+                            retry_after_int = None
+                    _raise(
+                        TemporaryError(
+                            msg, status_code=503, retry_after=retry_after_int
+                        )
+                    )
+
+                if response.status_code in (502, 504):
+                    msg = f"Server error {response.status_code}: Service unavailable"
+                    _raise(ServerError(msg, status_code=response.status_code))
 
                 if 500 <= response.status_code < 600:
                     msg = (
                         f"Server error {response.status_code}: {response.text}"
                     )
-                    _raise(ServerError(msg))
+                    _raise(ServerError(msg, status_code=response.status_code))
 
-                if response.status_code in (502, 503, 504):
-                    msg = f"Temporary error {response.status_code}: Service unavailable"
-                    _raise(TemporaryError(msg))
-
-            except (RateLimitExceededError, ServerError, TemporaryError) as e:
+            except (ServerError, TemporaryError, RateLimitError) as e:
                 attempt += 1
                 if attempt > max_attempts:
                     raise
 
-                if isinstance(e, RateLimitExceededError) and e.retry_after:
+                if isinstance(e, RateLimitError) and e.retry_after:
                     wait_time = e.retry_after
                 else:
                     wait_time = min(
