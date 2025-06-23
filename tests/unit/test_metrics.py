@@ -23,14 +23,22 @@ class TestMetrics(IsolatedTestCase):
 
         resp1 = httpx.Response(
             200,
-            json={"id": "https://openalex.org/W2000000001", "title": "x"},
+            json={
+                "id": "https://openalex.org/W2000000001",
+                "display_name": "Test Work 1",
+                "title": "x",
+            },
             request=httpx.Request(
                 "GET", "https://api.openalex.org/works/W2000000001"
             ),
         )
         resp2 = httpx.Response(
             200,
-            json={"id": "https://openalex.org/W2000000002", "title": "y"},
+            json={
+                "id": "https://openalex.org/W2000000002",
+                "display_name": "Test Work 2",
+                "title": "y",
+            },
             request=httpx.Request(
                 "GET", "https://api.openalex.org/works/W2000000002"
             ),
@@ -57,7 +65,10 @@ class TestMetrics(IsolatedTestCase):
 
         resp = httpx.Response(
             200,
-            json={"id": "https://openalex.org/W2000000001"},
+            json={
+                "id": "https://openalex.org/W2000000001",
+                "display_name": "Test Work",
+            },
             request=httpx.Request(
                 "GET", "https://api.openalex.org/works/W2000000001"
             ),
@@ -82,13 +93,24 @@ class TestMetrics(IsolatedTestCase):
 
         resp = httpx.Response(
             200,
-            json={"id": "https://openalex.org/W2000000001"},
+            json={
+                "id": "https://openalex.org/W2000000001",
+                "display_name": "Test Work",
+            },
             request=httpx.Request(
                 "GET", "https://api.openalex.org/works/W2000000001"
             ),
         )
 
-        with patch("httpx.Client.request", return_value=resp) as mock_request:
+        from openalex.cache.manager import CacheManager
+
+        with (
+            patch("httpx.Client.request", return_value=resp) as mock_request,
+            patch(
+                "openalex.templates.get_cache_manager",
+                return_value=CacheManager(config),
+            ),
+        ):
             works.get("W2000000001")
             works.get("W2000000001")
             assert mock_request.call_count == 1

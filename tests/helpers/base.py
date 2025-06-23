@@ -36,22 +36,22 @@ class IsolatedTestCase:
 
     def _store_original_functions(self) -> None:
         import openalex.cache.manager
-        import openalex.entities
+        import openalex.templates
 
         self._originals = {
             "cache_get_cache_manager": openalex.cache.manager.get_cache_manager,
-            "entities_get_cache_manager": openalex.entities.get_cache_manager,
+            "templates_get_cache_manager": openalex.templates.get_cache_manager,
         }
 
     def _restore_original_functions(self) -> None:
         import openalex.cache.manager
-        import openalex.entities
+        import openalex.templates
 
         openalex.cache.manager.get_cache_manager = self._originals[
             "cache_get_cache_manager"
         ]
-        openalex.entities.get_cache_manager = self._originals[
-            "entities_get_cache_manager"
+        openalex.templates.get_cache_manager = self._originals[
+            "templates_get_cache_manager"
         ]
 
 
@@ -65,10 +65,10 @@ class CachePatchingTestCase:
         cache_enabled: bool = True,
     ) -> Generator[CacheManager, None, None]:
         import openalex.cache.manager
-        import openalex.entities
+        import openalex.templates
 
         original_cache_get = openalex.cache.manager.get_cache_manager
-        original_entities_get = openalex.entities.get_cache_manager
+        original_templates_get = openalex.templates.get_cache_manager
 
         config = OpenAlexConfig(cache_enabled=cache_enabled)
         manager = CacheManager(config)
@@ -77,11 +77,11 @@ class CachePatchingTestCase:
 
         try:
             openalex.cache.manager.get_cache_manager = lambda cfg: manager
-            openalex.entities.get_cache_manager = lambda cfg: manager
+            openalex.templates.get_cache_manager = lambda cfg: manager
             yield manager
         finally:
             openalex.cache.manager.get_cache_manager = original_cache_get
-            openalex.entities.get_cache_manager = original_entities_get
+            openalex.templates.get_cache_manager = original_templates_get
 
     @contextmanager
     def isolated_cache(self) -> Generator[MemoryCache, None, None]:

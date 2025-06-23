@@ -7,6 +7,8 @@ import pytest
 from unittest.mock import Mock, patch
 import os
 
+from openalex.exceptions import ServerError, TemporaryError
+
 
 class TestConfigurationBehavior:
     """Test how configuration affects client behavior."""
@@ -102,7 +104,6 @@ class TestConfigurationBehavior:
     def test_retry_configuration_affects_retry_behavior(self):
         """Retry config should control retry attempts."""
         from openalex import Concepts, OpenAlexConfig
-        from openalex.exceptions import ServerError
 
         config = OpenAlexConfig(max_retries=2)
 
@@ -114,12 +115,13 @@ class TestConfigurationBehavior:
             return Mock(
                 status_code=503,
                 json=Mock(return_value={"error": "Service unavailable"}),
+                headers={},
             )
 
         with patch("httpx.Client.request", side_effect=mock_response):
             concepts = Concepts(config=config)
 
-            with pytest.raises(ServerError):
+            with pytest.raises(TemporaryError):
                 concepts.get("C123")
 
             # Should try initial + 2 retries = 3 total

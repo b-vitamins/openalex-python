@@ -109,8 +109,8 @@ class TestComplexQueries:
         with (
             patch("httpx.Client.request") as mock_request,
             patch(
-                "openalex.entities.get_cache_manager",
-                return_value=CacheManager(OpenAlexConfig()),
+                "openalex.templates.get_cache_manager",
+                return_value=CacheManager(OpenAlexConfig(cache_enabled=False)),
             ),
             patch("time.sleep") as mock_sleep,
         ):
@@ -123,7 +123,9 @@ class TestComplexQueries:
                 Mock(json=lambda: success_response, status_code=200),
             ]
 
-            work = Works()["W2755950973"]
+            work = Works(config=OpenAlexConfig(cache_enabled=False))[
+                "W2755950973"
+            ]
             assert work.display_name is not None
             assert mock_sleep.called
             assert mock_request.call_count == 2
@@ -141,7 +143,7 @@ class TestComplexQueries:
             (400, ValidationError, "invalid filter"),
             (404, NotFoundError, "not found"),
             (500, ServerError, "server error"),
-            (503, ServerError, "unavailable"),
+            (503, TemporaryError, "unavailable"),
         ]
 
         for status_code, expected_error, expected_msg in test_cases:
@@ -150,6 +152,7 @@ class TestComplexQueries:
                 mock_request.return_value = Mock(
                     json=lambda er=error_response: er,
                     status_code=status_code,
+                    headers={},
                 )
                 with pytest.raises(expected_error) as exc_info:
                     Works()["W123456789"]

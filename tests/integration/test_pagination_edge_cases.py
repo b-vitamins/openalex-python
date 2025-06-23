@@ -126,12 +126,43 @@ class TestPaginationEdgeCases:
         for i in range(5):
             response = fixtures.search_response("test", page=i + 1, per_page=50)
             response["meta"]["count"] = 500
-            responses.append(Mock(json=lambda r=response: r, status_code=200))
+            # Fix closure issue by capturing response in the default parameter
+            responses.append(
+                Mock(json=lambda response=response: response, status_code=200)
+            )
 
-        with patch("httpx.Client.request") as mock_request:
+        # Mock the cache manager to always return disabled cache
+        from openalex.cache.manager import CacheManager
+
+        def mock_cache_manager(config):
+            manager = Mock()
+            manager.enabled = False
+            manager.cache = None
+            manager.get_or_fetch = (
+                lambda endpoint, fetch_func, entity_id, params: fetch_func()
+            )
+            return manager
+
+        with (
+            patch("httpx.Client.request") as mock_request,
+            patch(
+                "openalex.cache.manager.get_cache_manager",
+                side_effect=mock_cache_manager,
+            ),
+            patch(
+                "openalex.templates.get_cache_manager",
+                side_effect=mock_cache_manager,
+            ),
+        ):
             mock_request.side_effect = responses
+
+            from openalex.config import OpenAlexConfig
+
+            config = OpenAlexConfig(cache_enabled=False)
             paginator = (
-                Works().search("test").paginate(per_page=50, max_results=125)
+                Works(config=config)
+                .search("test")
+                .paginate(per_page=50, max_results=125)
             )
             all_results = list(paginator)
 

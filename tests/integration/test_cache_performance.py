@@ -127,29 +127,31 @@ class TestCachePerformance(CachePatchingTestCase):
         errors: list[Exception] = []
         results: list[str] = []
 
-        with self.isolated_cache() as cache:
+        # Set up mock outside of thread pool to ensure it's available to all threads
+        with patch("httpx.Client.request") as mock_request:
+            mock_request.return_value = Mock(
+                json=lambda: work_response, status_code=200
+            )
 
-            def fetch_work(work_id: str) -> None:
-                try:
-                    with self.patch_cache_manager(
-                        cache=cache, cache_enabled=True
-                    ):
-                        with patch("httpx.Client.request") as mock_request:
-                            mock_request.return_value = Mock(
-                                json=lambda: work_response, status_code=200
-                            )
+            with self.isolated_cache() as cache:
+
+                def fetch_work(work_id: str) -> None:
+                    try:
+                        with self.patch_cache_manager(
+                            cache=cache, cache_enabled=True
+                        ):
                             work = Works()[work_id]
                             results.append(work.id)
-                except Exception as e:  # pragma: no cover - defensive
-                    errors.append(e)
+                    except Exception as e:  # pragma: no cover - defensive
+                        errors.append(e)
 
-            with ThreadPoolExecutor(max_workers=10) as executor:
-                futures = [
-                    executor.submit(fetch_work, "W2755950973")
-                    for _ in range(20)
-                ]
-                for future in futures:
-                    future.result()
+                with ThreadPoolExecutor(max_workers=10) as executor:
+                    futures = [
+                        executor.submit(fetch_work, "W2755950973")
+                        for _ in range(20)
+                    ]
+                    for future in futures:
+                        future.result()
 
         assert len(errors) == 0
         assert len(results) == 20

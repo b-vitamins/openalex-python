@@ -17,25 +17,26 @@ class TestExceptionBehavior:
         from openalex import Works
         from openalex.exceptions import RateLimitError
 
-        with patch("httpx.Client.request") as mock_request:
-            mock_request.return_value = Mock(
-                status_code=429,
-                json=Mock(
-                    return_value={
-                        "error": "Rate limit exceeded",
-                        "message": "Too many requests",
-                    }
-                ),
-                headers={"Retry-After": "60"},
-            )
+        with patch("time.sleep") as mock_sleep:  # Mock sleep to avoid waiting
+            with patch("httpx.Client.request") as mock_request:
+                mock_request.return_value = Mock(
+                    status_code=429,
+                    json=Mock(
+                        return_value={
+                            "error": "Rate limit exceeded",
+                            "message": "Too many requests",
+                        }
+                    ),
+                    headers={"Retry-After": "60"},
+                )
 
-            works = Works()
+                works = Works()
 
-            with pytest.raises(RateLimitError) as exc_info:
-                works.get("W123")
+                with pytest.raises(RateLimitError) as exc_info:
+                    works.get("W123")
 
-            assert exc_info.value.retry_after == 60
-            assert "Rate limit exceeded" in str(exc_info.value)
+                assert exc_info.value.retry_after == 60
+                assert "Rate limit exceeded" in str(exc_info.value)
 
     def test_not_found_error_for_missing_entities(self):
         """404 responses should raise NotFoundError."""

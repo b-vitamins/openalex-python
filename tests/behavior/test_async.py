@@ -151,12 +151,14 @@ class TestAsyncBehavior:
             call_times.append(time.time())
             # Simulate network delay
             await asyncio.sleep(0.1)
+            work_num = len(call_times)
             return Mock(
                 status_code=200,
                 json=Mock(
                     return_value={
-                        "id": f"W{len(call_times)}",
-                        "title": f"Work {len(call_times)}",
+                        "id": f"https://openalex.org/W{work_num}",
+                        "display_name": f"Work {work_num}",
+                        "title": f"Work {work_num}",
                     }
                 ),
             )

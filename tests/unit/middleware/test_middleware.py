@@ -44,8 +44,8 @@ class TestMiddleware(IsolatedTestCase):
 
         mock_response = httpx.Response(
             200,
-            json={"results": []},
-            request=httpx.Request("GET", "https://api.openalex.org/works"),
+            json={"id": "https://openalex.org/W1", "display_name": "Test Work"},
+            request=httpx.Request("GET", "https://api.openalex.org/works/W1"),
         )
 
         with patch(
@@ -73,7 +73,15 @@ class TestMiddleware(IsolatedTestCase):
             request=httpx.Request("GET", "https://api.openalex.org/works/W1"),
         )
 
-        with patch("httpx.Client.send", return_value=mock_response):
+        from openalex.cache.manager import CacheManager
+
+        with (
+            patch("httpx.Client.send", return_value=mock_response),
+            patch(
+                "openalex.templates.get_cache_manager",
+                return_value=CacheManager(config),
+            ),
+        ):
             work = works.get("W1")
             assert work.title == "ORIGINAL"
 
@@ -90,7 +98,15 @@ class TestMiddleware(IsolatedTestCase):
 
         mock_response = httpx.Response(
             200,
-            json={"results": []},
+            json={
+                "results": [],
+                "meta": {
+                    "count": 0,
+                    "db_response_time_ms": 1,
+                    "page": 1,
+                    "per_page": 25,
+                },
+            },
             request=httpx.Request("GET", "https://api.openalex.org/works"),
         )
 
