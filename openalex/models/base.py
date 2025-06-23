@@ -153,7 +153,7 @@ class Geo(OpenAlexBase):
 class InternationalNames(OpenAlexBase):
     """International names for an entity."""
 
-    display_name: dict[str, str] = Field(default_factory=dict)
+    display_name: dict[str, str] = Field(default_factory=lambda: {})
     description: dict[str, str] | None = None
 
 
@@ -206,7 +206,7 @@ class ListResult(OpenAlexBase, Generic[T]):
     """Generic list result container."""
 
     meta: Meta
-    results: list[T] = Field(default_factory=list)
+    results: list[T] = Field(default_factory=lambda: [])
     group_by: list[GroupByResult] | None = None
 
     @property

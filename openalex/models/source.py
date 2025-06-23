@@ -104,7 +104,7 @@ class Source(OpenAlexEntity):
     homepage_url: str | None = None
 
     apc_prices: list[APCPrice] = Field(
-        default_factory=list, description="Article processing charges"
+        default_factory=lambda: [], description="Article processing charges"
     )
 
     @field_validator("apc_prices", mode="before")
@@ -120,24 +120,24 @@ class Source(OpenAlexEntity):
     country_code: str | None = Field(None, description="Country code")
 
     societies: list[Society] = Field(
-        default_factory=list, description="Associated societies"
+        default_factory=lambda: [], description="Associated societies"
     )
 
     alternate_titles: list[str] = Field(
-        default_factory=list, description="Alternative titles"
+        default_factory=lambda: [], description="Alternative titles"
     )
 
     abbreviated_title: str | None = None
 
     x_concepts: list[DehydratedConcept] = Field(
-        default_factory=list, description="Associated concepts"
+        default_factory=lambda: [], description="Associated concepts"
     )
 
-    topics: list[SourceTopic] = Field(default_factory=list)
-    topic_share: list[SourceTopicShare] = Field(default_factory=list)
+    topics: list[SourceTopic] = Field(default_factory=lambda: [])
+    topic_share: list[SourceTopicShare] = Field(default_factory=lambda: [])
 
     counts_by_year: list[CountsByYear] = Field(
-        default_factory=list,
+        default_factory=lambda: [],
         description="Yearly publication and citation counts",
     )
 

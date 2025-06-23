@@ -37,7 +37,7 @@ class AuthorAffiliation(OpenAlexBase):
     """Author affiliation information."""
 
     institution: DehydratedInstitution | None = None
-    years: list[int] = Field(default_factory=list)
+    years: list[int] = Field(default_factory=lambda: [])
 
 
 class AuthorTopic(OpenAlexEntity):
@@ -85,24 +85,24 @@ class Author(OpenAlexEntity):
     summary_stats: SummaryStats | None = None
 
     affiliations: list[AuthorAffiliation] = Field(
-        default_factory=list, description="Institutional affiliations"
+        default_factory=lambda: [], description="Institutional affiliations"
     )
 
     last_known_institution: DehydratedInstitution | None = None
 
     last_known_institutions: list[DehydratedInstitution] = Field(
-        default_factory=list, description="Most recent affiliations"
+        default_factory=lambda: [], description="Most recent affiliations"
     )
 
     x_concepts: list[DehydratedConcept] = Field(
-        default_factory=list, description="Associated concepts"
+        default_factory=lambda: [], description="Associated concepts"
     )
 
-    topics: list[AuthorTopic] = Field(default_factory=list)
-    topic_share: list[AuthorTopicShare] = Field(default_factory=list)
+    topics: list[AuthorTopic] = Field(default_factory=lambda: [])
+    topic_share: list[AuthorTopicShare] = Field(default_factory=lambda: [])
 
     counts_by_year: list[CountsByYear] = Field(
-        default_factory=list,
+        default_factory=lambda: [],
         description="Yearly publication and citation counts",
     )
 

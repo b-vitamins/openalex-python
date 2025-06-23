@@ -68,7 +68,7 @@ class Topic(OpenAlexEntity):
     summary_stats: SummaryStats | None = None
 
     siblings: list[DehydratedTopic] = Field(
-        default_factory=list,
+        default_factory=lambda: [],
         description="Sibling topics",
         alias="sisters",
     )
@@ -132,7 +132,7 @@ class Topic(OpenAlexEntity):
     @property
     def hierarchy_path(self) -> str:
         """Get full hierarchy path."""
-        parts = []
+        parts: list[str] = []
 
         if self.domain and self.domain.display_name:
             parts.append(self.domain.display_name)

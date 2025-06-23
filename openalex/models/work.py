@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from datetime import date, datetime
 from enum import Enum
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 from urllib.parse import urlparse
 
 from pydantic import BaseModel, Field, field_validator, model_validator
@@ -291,11 +291,13 @@ class Authorship(OpenAlexBase):
 
     author_position: str | None = None
     author: DehydratedAuthor | None = None
-    institutions: list[DehydratedInstitution] = Field(default_factory=list)
-    countries: list[str] = Field(default_factory=list)
+    institutions: list[DehydratedInstitution] = Field(
+        default_factory=lambda: []
+    )
+    countries: list[str] = Field(default_factory=lambda: [])
     is_corresponding: bool | None = None
     raw_author_name: str | None = None
-    raw_affiliation_strings: list[str] = Field(default_factory=list)
+    raw_affiliation_strings: list[str] = Field(default_factory=lambda: [])
 
 
 class Work(OpenAlexEntity):
@@ -313,22 +315,22 @@ class Work(OpenAlexEntity):
     fwci: float | None = None
     open_access: OpenAccess | None = None
     is_oa: bool | None = None
-    authorships: list[Authorship] = Field(default_factory=list)
-    corresponding_author_ids: list[str] = Field(default_factory=list)
-    corresponding_institution_ids: list[str] = Field(default_factory=list)
+    authorships: list[Authorship] = Field(default_factory=lambda: [])
+    corresponding_author_ids: list[str] = Field(default_factory=lambda: [])
+    corresponding_institution_ids: list[str] = Field(default_factory=lambda: [])
     countries_distinct_count: int | None = None
     institutions_distinct_count: int | None = None
-    institution_assertions: list[str] = Field(default_factory=list)
-    concepts: list[DehydratedConcept] = Field(default_factory=list)
+    institution_assertions: list[str] = Field(default_factory=lambda: [])
+    concepts: list[DehydratedConcept] = Field(default_factory=lambda: [])
     primary_topic: DehydratedTopic | None = None
-    topics: list[DehydratedTopic] = Field(default_factory=list)
-    mesh: list[MeshTag] = Field(default_factory=list)
-    keywords: list[KeywordTag] = Field(default_factory=list)
+    topics: list[DehydratedTopic] = Field(default_factory=lambda: [])
+    mesh: list[MeshTag] = Field(default_factory=lambda: [])
+    keywords: list[KeywordTag] = Field(default_factory=lambda: [])
     language: str | None = None
     primary_location: Location | None = None
     best_oa_location: Location | None = None
     locations_count: int | None = None
-    locations: list[Location] = Field(default_factory=list)
+    locations: list[Location] = Field(default_factory=lambda: [])
     biblio: Biblio | None = None
     volume: str | None = None
     issue: str | None = None
@@ -336,9 +338,9 @@ class Work(OpenAlexEntity):
     last_page: str | None = None
     apc_list: APC | None = None
     apc_paid: APC | None = None
-    grants: list[Grant] = Field(default_factory=list)
+    grants: list[Grant] = Field(default_factory=lambda: [])
     citation_normalized_percentile: CitationNormalizedPercentile | None = None
-    counts_by_year: list[CountsByYear] = Field(default_factory=list)
+    counts_by_year: list[CountsByYear] = Field(default_factory=lambda: [])
     abstract_inverted_index: dict[str, list[int]] | None = None
     created_date: date | None = None
     ids: WorkIds | None = None
@@ -348,9 +350,9 @@ class Work(OpenAlexEntity):
     has_fulltext: bool | None = None
     fulltext_origin: str | None = None
     sustainable_development_goals: list[SustainableDevelopmentGoal] = Field(
-        default_factory=list
+        default_factory=lambda: []
     )
-    indexed_in: list[str] = Field(default_factory=list)
+    indexed_in: list[str] = Field(default_factory=lambda: [])
     ngrams_url: str | None = None
     relevance_score: float | None = None
 
@@ -430,6 +432,20 @@ class Work(OpenAlexEntity):
                     raise ValueError(msg)
         return self
 
+    @model_validator(mode="before")
+    @classmethod
+    def set_display_name_from_title(cls, data: Any) -> Any:
+        """Set display_name from title if not provided."""
+        if (
+            isinstance(data, dict)
+            and "display_name" not in data
+            and "title" in data
+        ):
+            data_dict: dict[str, Any] = cast(dict[str, Any], data)
+            data_dict["display_name"] = data_dict["title"]
+            return data_dict
+        return cast(Any, data)
+
     @model_validator(mode="after")
     def validate_citation_count(self) -> Work:
         """Ensure citation counts are non-negative."""
@@ -452,7 +468,7 @@ class Work(OpenAlexEntity):
     @model_validator(mode="after")
     def _set_defaults(self) -> Work:
         """Populate derived fields after initialization."""
-        if self.title is None:
+        if self.title is None and hasattr(self, "display_name"):
             self.title = self.display_name
         if self.is_oa is None and self.open_access is not None:
             self.is_oa = self.open_access.is_oa
@@ -557,9 +573,11 @@ class BaseFilter(BaseModel):
         if v is None:
             return None
         if isinstance(v, str):
-            return v
+            filter_str: str = v
+            return filter_str
         if isinstance(v, dict):
-            return v
+            filter_dict: dict[str, Any] = cast(dict[str, Any], v)
+            return filter_dict
         msg = "Filter must be a string or dictionary"
         raise ValueError(msg)
 
@@ -570,24 +588,28 @@ class BaseFilter(BaseModel):
         if v is None:
             return None
         if isinstance(v, str):
-            return v
+            select_str: str = v
+            return select_str
         if isinstance(v, list):
-            return v
+            select_list: list[str] = cast(list[str], v)
+            return select_list
         msg = "Select must be a string or list of strings"
         raise ValueError(msg)
 
     def to_params(self) -> dict[str, Any]:
         """Convert to API query parameters."""
-        params = {}
+        params: dict[str, Any] = {}
 
         for field_name, field_value in self.model_dump(
             exclude_none=True
         ).items():
             if field_name == "filter" and isinstance(field_value, dict):
                 # Convert filter dict to API format
-                params["filter"] = self._build_filter_string(field_value)
+                filter_dict: dict[str, Any] = cast(dict[str, Any], field_value)
+                params["filter"] = self._build_filter_string(filter_dict)
             elif field_name == "select" and isinstance(field_value, list):
-                params["select"] = ",".join(field_value)
+                select_list: list[str] = cast(list[str], field_value)
+                params["select"] = ",".join(select_list)
             elif field_name == "group_by":
                 params["group-by"] = field_value
             elif field_name == "per_page":
@@ -599,16 +621,20 @@ class BaseFilter(BaseModel):
 
     def _build_filter_string(self, filters: dict[str, Any]) -> str:
         """Build filter string from dictionary."""
-        filter_parts = []
+        filter_parts: list[str] = []
 
         for key, value in filters.items():
             if value is None:
                 continue
 
             if isinstance(value, bool):
-                filter_parts.append(f"{key}:{str(value).lower()}")
+                bool_val: bool = value
+                filter_parts.append(f"{key}:{str(bool_val).lower()}")
             elif isinstance(value, list | tuple):
-                values = "|".join(str(v) for v in value)
+                value_collection: list[Any] | tuple[Any, ...] = cast(
+                    list[Any] | tuple[Any, ...], value
+                )
+                values = "|".join(str(v) for v in value_collection)
                 filter_parts.append(f"{key}:{values}")
             elif isinstance(value, date | datetime):
                 filter_parts.append(f"{key}:{value.isoformat()}")

@@ -52,11 +52,12 @@ class Funder(OpenAlexEntity):
     summary_stats: SummaryStats | None = None
 
     roles: list[Role] = Field(
-        default_factory=list, description="Roles in funding ecosystem"
+        default_factory=lambda: [], description="Roles in funding ecosystem"
     )
 
     counts_by_year: list[CountsByYear] = Field(
-        default_factory=list, description="Yearly grant and citation counts"
+        default_factory=lambda: [],
+        description="Yearly grant and citation counts",
     )
 
     ids: FunderIds | None = None

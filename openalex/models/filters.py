@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from enum import Enum
-from typing import Any
+from typing import Any, cast
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -71,7 +71,8 @@ class BaseFilter(BaseModel):
         if v is None:
             return None
         if isinstance(v, str | dict):
-            return v
+            filter_val: str | dict[str, Any] = cast(str | dict[str, Any], v)
+            return filter_val
         msg = "Filter must be a string or dictionary"
         raise ValueError(msg)
 
@@ -81,7 +82,8 @@ class BaseFilter(BaseModel):
         if v is None:
             return None
         if isinstance(v, str | list):
-            return v
+            select_val: str | list[str] = cast(str | list[str], v)
+            return select_val
         msg = "Select must be a string or list of strings"
         raise ValueError(msg)
 
@@ -99,9 +101,11 @@ class BaseFilter(BaseModel):
             exclude_none=True, exclude=exclude
         ).items():
             if field_name == "filter" and isinstance(field_value, dict):
-                params["filter"] = self._build_filter_string(field_value)
+                filter_dict: dict[str, Any] = cast(dict[str, Any], field_value)
+                params["filter"] = self._build_filter_string(filter_dict)
             elif field_name == "select" and isinstance(field_value, list):
-                params["select"] = ",".join(field_value)
+                select_list: list[str] = cast(list[str], field_value)
+                params["select"] = ",".join(select_list)
             elif field_name == "group_by":
                 params["group-by"] = field_value
             elif field_name == "per_page":
@@ -112,17 +116,21 @@ class BaseFilter(BaseModel):
         return params
 
     def _build_filter_string(self, filters: dict[str, Any]) -> str:
-        filter_parts = []
+        filter_parts: list[str] = []
 
         for key, value in filters.items():
             if value is None:
                 continue
             if isinstance(value, bool):
-                filter_parts.append(f"{key}:{str(value).lower()}")
+                bool_val: bool = value
+                filter_parts.append(f"{key}:{str(bool_val).lower()}")
             elif isinstance(value, list | tuple | set):
                 if not value:
                     continue
-                values = "|".join(str(v) for v in value)
+                value_collection: list[Any] | tuple[Any, ...] | set[Any] = cast(
+                    list[Any] | tuple[Any, ...] | set[Any], value
+                )
+                values = "|".join(str(v) for v in value_collection)
                 filter_parts.append(f"{key}:{values}")
             elif isinstance(value, date | datetime):
                 filter_parts.append(f"{key}:{value.strftime('%Y-%m-%d')}")

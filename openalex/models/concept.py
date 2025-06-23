@@ -61,17 +61,17 @@ class Concept(OpenAlexEntity):
     summary_stats: SummaryStats | None = None
 
     ancestors: list[ConceptAncestor] = Field(
-        default_factory=list, description="Parent concepts in hierarchy"
+        default_factory=lambda: [], description="Parent concepts in hierarchy"
     )
 
     related_concepts: list[RelatedConcept] = Field(
-        default_factory=list, description="Similar concepts"
+        default_factory=lambda: [], description="Similar concepts"
     )
 
     international: InternationalNames | None = None
 
     counts_by_year: list[CountsByYear] = Field(
-        default_factory=list,
+        default_factory=lambda: [],
         description="Yearly publication and citation counts",
     )
 

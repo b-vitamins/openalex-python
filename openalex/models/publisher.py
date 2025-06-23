@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 from pydantic import Field, HttpUrl, TypeAdapter, field_validator
 
@@ -85,7 +85,7 @@ class Publisher(OpenAlexEntity):
         return v
 
     roles: list[Role] = Field(
-        default_factory=list, description="Roles in publishing ecosystem"
+        default_factory=lambda: [], description="Roles in publishing ecosystem"
     )
 
     @field_validator("roles", mode="before")
@@ -93,11 +93,17 @@ class Publisher(OpenAlexEntity):
     def sort_roles(cls, v: Any) -> Any:
         """Sort roles so those with higher counts appear last."""
         if isinstance(v, list):
-            return sorted(v, key=lambda r: r.get("works_count", 0))
+            role_list: list[Any] = cast(list[Any], v)
+            return sorted(
+                role_list,
+                key=lambda r: cast(dict[str, Any], r).get("works_count", 0)
+                if isinstance(r, dict)
+                else 0,
+            )
         return v
 
     counts_by_year: list[CountsByYear] = Field(
-        default_factory=list,
+        default_factory=lambda: [],
         description="Yearly publication and citation counts",
     )
 

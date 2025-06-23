@@ -115,11 +115,11 @@ class Institution(OpenAlexEntity):
     geo: Geo | None = None
 
     associated_institutions: list[AssociatedInstitution] = Field(
-        default_factory=list, description="Related institutions"
+        default_factory=lambda: [], description="Related institutions"
     )
 
     repositories: list[Repository] = Field(
-        default_factory=list, description="Institutional repositories"
+        default_factory=lambda: [], description="Institutional repositories"
     )
 
     lineage: list[str] = Field(
@@ -140,11 +140,11 @@ class Institution(OpenAlexEntity):
     international: InternationalNames | None = None
 
     topics: list[InstitutionTopic] = Field(
-        default_factory=list, description="Research topics"
+        default_factory=lambda: [], description="Research topics"
     )
 
     topic_share: list[InstitutionTopicShare] = Field(
-        default_factory=list, description="Topic share statistics"
+        default_factory=lambda: [], description="Topic share statistics"
     )
 
     works_count: int = Field(0, description="Number of works")
@@ -153,15 +153,16 @@ class Institution(OpenAlexEntity):
     summary_stats: SummaryStats | None = None
 
     roles: list[Role] = Field(
-        default_factory=list, description="Roles in the research ecosystem"
+        default_factory=lambda: [],
+        description="Roles in the research ecosystem",
     )
 
     x_concepts: list[DehydratedConcept] = Field(
-        default_factory=list, description="Associated research concepts"
+        default_factory=lambda: [], description="Associated research concepts"
     )
 
     counts_by_year: list[CountsByYear] = Field(
-        default_factory=list,
+        default_factory=lambda: [],
         description="Yearly publication and citation counts",
     )
 
